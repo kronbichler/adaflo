@@ -1,0 +1,507 @@
+Running a 3D Beltrami problem using BDF-2, Q2/Q1 elements on 3 processes
+ Number of active cells: 4096.
+ Number of degrees of freedom (velocity/pressure): 112724 (107811 + 4913).
+ Approximate size last cell: 0.125
+  L2-Errors absolute: ||e_p||_L2 = 0.02383,   ||e_u||_L2 = 0.0001993
+  L2-Errors relative: ||e_p||_L2 = 0.00394,   ||e_u||_L2 = 3.88e-05
+  Cell divergence:    |div(u)|_cells = 2.719e-12
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.05 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   2.590e+00   6.423e-02        ILUs       3.59e+01   1.03e+03      30       5.12e-04
+   9.296e-03   4.434e-05        ---        4.42e-02   9.63e+01      30       8.29e-06
+   8.261e-06   6.961e-07        ---        3.48e-04   7.22e-02      30       2.47e-08
+   2.458e-08   2.723e-09        ---        1.44e-06   8.28e-04      23       4.82e-10
+   4.800e-10   4.735e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       156       159       164            2      1     
+-- Statistics -- mat-vec     :     0.358     0.362     0.365   0.00299  0      1     
+-- Statistics -- full prec   :     0.701     0.703     0.706   0.00601  1      0     
+-- Statistics -- velocity    :     0.212     0.291     0.356   0.00249  1      0     
+-- Statistics -- div-matrix  :     0.093     0.157     0.226   0.00135  0      1     
+-- Statistics -- pres mass   :     0.115     0.124     0.135   0.00106  2      1     
+-- Statistics -- pres Poisson:     0.127      0.13     0.134   0.00111  1      0     
+
+
+Time step #2, advancing from t_n-1 = 0.05 to t = 0.1 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   2.348e+00   5.678e-02        ILUs       3.19e+01   9.87e+02      30       1.96e-04
+   7.259e-03   1.247e-05        ---        2.76e-02   1.20e+02      30       6.12e-06
+   6.099e-06   5.126e-07        ---        2.17e-04   2.29e-01      30       1.15e-08
+   1.143e-08   1.182e-09        ---        5.99e-07   9.45e-05      19       4.59e-10
+   4.572e-10   3.825e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       157       160       165            2      1     
+-- Statistics -- mat-vec     :     0.326     0.327     0.327    0.0028  1      0     
+-- Statistics -- full prec   :     0.646     0.646     0.648   0.00572  2      0     
+-- Statistics -- velocity    :     0.254     0.271     0.291    0.0024  0      1     
+-- Statistics -- div-matrix  :     0.116     0.131     0.139   0.00116  1      2     
+-- Statistics -- pres mass   :     0.119     0.125     0.137   0.00111  2      0     
+-- Statistics -- pres Poisson:     0.118     0.118     0.119   0.00104  2      1     
+
+
+Time step #3, advancing from t_n-1 = 0.1 to t = 0.15 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   2.793e-01   6.590e-03        ---        3.69e+00   2.29e+02      30       2.86e-05
+   1.010e-04   2.024e-06        ---        1.09e-03   9.60e-01      30       7.46e-08
+   7.361e-08   1.132e-08        ---        5.51e-06   6.99e-03      28       4.85e-10
+   4.835e-10   4.346e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       157       160       165            2      1     
+-- Statistics -- mat-vec     :     0.272     0.273     0.275   0.00291  0      1     
+-- Statistics -- full prec   :     0.543     0.545     0.549   0.00599  1      0     
+-- Statistics -- velocity    :     0.158     0.222     0.267   0.00244  1      0     
+-- Statistics -- div-matrix  :     0.075     0.118     0.173    0.0013  0      1     
+-- Statistics -- pres mass   :    0.0953     0.104     0.113   0.00115  2      1     
+-- Statistics -- pres Poisson:    0.0983    0.0999     0.102    0.0011  1      0     
+
+
+Time step #4, advancing from t_n-1 = 0.15 to t = 0.2 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   2.398e-01   5.825e-03        ---        3.29e+00   1.89e+02      30       2.25e-05
+   7.894e-05   1.503e-06        ---        8.29e-04   7.78e-01      30       6.71e-08
+   6.627e-08   1.012e-08        ---        4.85e-06   5.80e-03      28       3.96e-10
+   3.943e-10   3.732e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       157       160       165            2      1     
+-- Statistics -- mat-vec     :     0.259      0.26     0.261   0.00277  1      0     
+-- Statistics -- full prec   :     0.518      0.52     0.523   0.00571  2      0     
+-- Statistics -- velocity    :     0.191      0.22     0.252   0.00242  0      1     
+-- Statistics -- div-matrix  :    0.0744     0.102     0.123   0.00113  1      0     
+-- Statistics -- pres mass   :    0.0957     0.102     0.114   0.00112  1      0     
+-- Statistics -- pres Poisson:    0.0939    0.0945    0.0955   0.00104  0      1     
+
+  L2-Errors absolute: ||e_p||_L2 = 0.02156,   ||e_u||_L2 = 0.0007541
+  L2-Errors relative: ||e_p||_L2 = 0.009559,   ||e_u||_L2 = 0.0002405
+  Cell divergence:    |div(u)|_cells = 1.194e-06
+
+Time step #5, advancing from t_n-1 = 0.2 to t = 0.25 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   2.116e-01   5.149e-03        ---        2.91e+00   1.49e+02      30       1.84e-05
+   6.186e-05   1.190e-06        ---        6.73e-04   6.21e-01      30       5.61e-08
+   5.553e-08   8.137e-09        ---        3.86e-06   4.32e-03      27       4.00e-10
+   3.984e-10   3.317e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       159       162       166            2      1     
+-- Statistics -- mat-vec     :     0.255     0.256     0.257   0.00275  1      0     
+-- Statistics -- full prec   :     0.504     0.505     0.508   0.00561  1      0     
+-- Statistics -- velocity    :     0.173     0.219     0.248   0.00243  0      1     
+-- Statistics -- div-matrix  :    0.0669    0.0926     0.129   0.00103  1      0     
+-- Statistics -- pres mass   :    0.0922       0.1     0.114   0.00111  2      0     
+-- Statistics -- pres Poisson:    0.0918    0.0929    0.0939   0.00103  0      1     
+
+
+Time step #6, advancing from t_n-1 = 0.25 to t = 0.3 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.869e-01   4.551e-03        ---        2.56e+00   1.17e+02      30       1.52e-05
+   4.858e-05   9.603e-07        ---        5.52e-04   5.03e-01      30       4.55e-08
+   4.502e-08   6.378e-09        ---        3.00e-06   3.17e-03      26       3.94e-10
+   3.928e-10   2.428e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       159       162       166            2      1     
+-- Statistics -- mat-vec     :      0.25     0.251     0.252   0.00273  1      0     
+-- Statistics -- full prec   :     0.494     0.496     0.499   0.00557  1      0     
+-- Statistics -- velocity    :     0.163     0.213     0.244   0.00239  0      1     
+-- Statistics -- div-matrix  :     0.066    0.0934     0.133   0.00105  1      0     
+-- Statistics -- pres mass   :    0.0905    0.0987     0.113   0.00111  2      0     
+-- Statistics -- pres Poisson:     0.089    0.0903    0.0913   0.00101  0      1     
+
+
+Time step #7, advancing from t_n-1 = 0.3 to t = 0.35 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.650e-01   4.023e-03        ---        2.26e+00   9.20e+01      30       1.29e-05
+   3.828e-05   7.907e-07        ---        4.62e-04   4.19e-01      30       3.53e-08
+   3.494e-08   4.818e-09        ---        2.27e-06   2.32e-03      24       4.85e-10
+   4.844e-10   3.056e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       159       162       166            2      1     
+-- Statistics -- mat-vec     :     0.257     0.258     0.258   0.00286  1      2     
+-- Statistics -- full prec   :     0.502     0.503     0.504   0.00579  0      1     
+-- Statistics -- velocity    :     0.191     0.209     0.229    0.0024  2      1     
+-- Statistics -- div-matrix  :    0.0905     0.105     0.125   0.00121  1      2     
+-- Statistics -- pres mass   :    0.0915    0.0969     0.104   0.00111  1      0     
+-- Statistics -- pres Poisson:    0.0915    0.0923     0.093   0.00106  2      1     
+
+
+Time step #8, advancing from t_n-1 = 0.35 to t = 0.4 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.458e-01   3.556e-03        ---        2.00e+00   7.20e+01      30       1.11e-05
+   3.029e-05   6.726e-07        ---        3.95e-04   3.53e-01      30       2.28e-08
+   2.264e-08   2.877e-09        ---        1.41e-06   1.43e-03      22       4.00e-10
+   3.985e-10   3.327e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       159       162       166            2      1     
+-- Statistics -- mat-vec     :     0.245     0.246     0.246   0.00279  1      2     
+-- Statistics -- full prec   :     0.484     0.486     0.489   0.00572  2      0     
+-- Statistics -- velocity    :     0.191     0.205      0.23   0.00241  2      1     
+-- Statistics -- div-matrix  :    0.0762     0.097     0.112   0.00114  1      2     
+-- Statistics -- pres mass   :    0.0887    0.0947     0.103   0.00111  1      0     
+-- Statistics -- pres Poisson:    0.0884    0.0891    0.0899   0.00105  2      1     
+
+  L2-Errors absolute: ||e_p||_L2 = 0.01327,   ||e_u||_L2 = 0.0005213
+  L2-Errors relative: ||e_p||_L2 = 0.0158,   ||e_u||_L2 = 0.0002724
+  Cell divergence:    |div(u)|_cells = 4.444e-07
+
+Time step #9, advancing from t_n-1 = 0.4 to t = 0.45 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.288e-01   3.143e-03        ---        1.76e+00   5.63e+01      30       9.75e-06
+   2.410e-05   5.890e-07        ---        3.45e-04   3.01e-01      30       1.23e-08
+   1.226e-08   8.869e-10        ---        4.40e-07   8.27e-05      17       4.70e-10
+   4.691e-10   2.738e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.242     0.243     0.245   0.00292  0      2     
+-- Statistics -- full prec   :     0.486     0.486     0.487   0.00608  0      1     
+-- Statistics -- velocity    :     0.145     0.203     0.245   0.00254  2      0     
+-- Statistics -- div-matrix  :    0.0589     0.104      0.16    0.0013  0      2     
+-- Statistics -- pres mass   :    0.0835     0.089    0.0937   0.00111  1      2     
+-- Statistics -- pres Poisson:    0.0879    0.0899    0.0912   0.00112  2      0     
+
+
+Time step #10, advancing from t_n-1 = 0.45 to t = 0.5 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.137e-01   2.778e-03        ---        1.56e+00   4.40e+01      30       8.70e-06
+   1.930e-05   5.282e-07        ---        3.06e-04   2.58e-01      30       2.16e-08
+   2.158e-08   1.605e-09        ---        9.28e-07   6.79e-04      18       4.76e-10
+   4.734e-10   4.634e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.243     0.244     0.246   0.00291  0      2     
+-- Statistics -- full prec   :     0.481     0.483     0.485   0.00596  2      0     
+-- Statistics -- velocity    :     0.142     0.199     0.247   0.00246  2      0     
+-- Statistics -- div-matrix  :    0.0593     0.106     0.158   0.00131  0      2     
+-- Statistics -- pres mass   :    0.0824    0.0873    0.0926   0.00108  1      2     
+-- Statistics -- pres Poisson:    0.0881    0.0899    0.0914   0.00111  2      0     
+
+
+
++---------------------------------------------+------------+------------+
+| Total CPU time elapsed since start          |      12.3s |            |
+|                                             |            |            |
+| Section                         | no. calls |  CPU time  | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         3 |     0.468s |       3.8% |
+| NS apply boundary conditions.   |        20 |      0.26s |       2.1% |
+| NS assemble nonlinear residual. |        42 |     0.152s |       1.2% |
+| NS assemble preconditioner.     |         2 |     0.356s |       2.9% |
+| NS build preconditioner.        |         2 |      0.28s |       2.3% |
+| NS distribute DoFs.             |         1 |     0.048s |      0.39% |
+| NS setup matrix and vectors.    |         1 |     0.208s |       1.7% |
+| NS solve system.                |        32 |      9.57s |        78% |
+| Output solution.                |         3 |      0.88s |       7.1% |
+| Setup grid.                     |         1 |     0.044s |      0.36% |
+| Setup initial condition.        |         1 |     0.028s |      0.23% |
++---------------------------------+-----------+------------+------------+
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      12.8s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         3 |     0.497s |       3.9% |
+| NS apply boundary conditions.   |        20 |     0.349s |       2.7% |
+| NS assemble nonlinear residual. |        42 |     0.172s |       1.3% |
+| NS assemble preconditioner.     |         2 |     0.352s |       2.8% |
+| NS build preconditioner.        |         2 |     0.327s |       2.6% |
+| NS distribute DoFs.             |         1 |     0.051s |       0.4% |
+| NS setup matrix and vectors.    |         1 |     0.235s |       1.8% |
+| NS solve system.                |        32 |       9.8s |        77% |
+| Output solution.                |         3 |     0.871s |       6.8% |
+| Setup grid.                     |         1 |    0.0473s |      0.37% |
+| Setup initial condition.        |         1 |    0.0279s |      0.22% |
++---------------------------------+-----------+------------+------------+
+
+
+Time step #11, advancing from t_n-1 = 0.5 to t = 0.55 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   1.005e-01   2.456e-03        ---        1.38e+00   3.44e+01      30       7.84e-06
+   1.559e-05   4.811e-07        ---        2.74e-04   2.22e-01      30       2.29e-08
+   2.281e-08   1.393e-09        ---        7.88e-07   2.92e-04      19       4.46e-10
+   4.438e-10   4.672e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.236     0.236     0.237   0.00278  1      0     
+-- Statistics -- full prec   :     0.461     0.463     0.466   0.00564  2      0     
+-- Statistics -- velocity    :     0.174     0.197     0.214    0.0024  0      2     
+-- Statistics -- div-matrix  :    0.0802    0.0911     0.107   0.00111  2      0     
+-- Statistics -- pres mass   :    0.0817    0.0895    0.0996   0.00109  2      0     
+-- Statistics -- pres Poisson:    0.0844    0.0849    0.0852   0.00104  0      1     
+
+
+Time step #12, advancing from t_n-1 = 0.55 to t = 0.6 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   8.879e-02   2.171e-03        ---        1.22e+00   2.78e+01      30       7.04e-06
+   1.267e-05   4.344e-07        ---        2.44e-04   1.86e-01      30       1.97e-08
+   1.970e-08   1.273e-09        ---        7.02e-07   1.03e-04      18       4.50e-10
+   4.476e-10   4.668e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.228     0.229     0.231   0.00273  1      0     
+-- Statistics -- full prec   :     0.447     0.449     0.451   0.00554  2      0     
+-- Statistics -- velocity    :     0.148     0.194     0.222   0.00239  0      1     
+-- Statistics -- div-matrix  :    0.0601    0.0848     0.122   0.00105  1      0     
+-- Statistics -- pres mass   :    0.0794    0.0869       0.1   0.00107  2      0     
+-- Statistics -- pres Poisson:    0.0813    0.0825    0.0834   0.00102  0      1     
+
+  L2-Errors absolute: ||e_p||_L2 = 0.008076,   ||e_u||_L2 = 0.0003242
+  L2-Errors relative: ||e_p||_L2 = 0.02581,   ||e_u||_L2 = 0.0002775
+  Cell divergence:    |div(u)|_cells = 1.656e-07
+
+Time step #13, advancing from t_n-1 = 0.6 to t = 0.65 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   7.846e-02   1.919e-03        ---        1.08e+00   2.18e+01      30       6.39e-06
+   1.043e-05   3.993e-07        ---        2.20e-04   1.62e-01      30       1.68e-08
+   1.677e-08   1.206e-09        ---        6.44e-07   1.19e-04      17       3.89e-10
+   3.883e-10   2.725e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.226     0.227     0.228   0.00273  1      0     
+-- Statistics -- full prec   :     0.441     0.443     0.445   0.00554  2      0     
+-- Statistics -- velocity    :     0.146     0.192      0.22    0.0024  0      1     
+-- Statistics -- div-matrix  :    0.0594    0.0839      0.12   0.00105  1      0     
+-- Statistics -- pres mass   :     0.078    0.0855    0.0985   0.00107  2      0     
+-- Statistics -- pres Poisson:    0.0803    0.0814    0.0824   0.00102  0      1     
+
+
+Time step #14, advancing from t_n-1 = 0.65 to t = 0.7 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   6.933e-02   1.696e-03        ---        9.51e-01   1.71e+01      30       5.80e-06
+   8.669e-06   3.659e-07        ---        1.99e-04   1.40e-01      30       1.41e-08
+   1.401e-08   1.105e-09        ---        5.85e-07   1.73e-04      15       4.32e-10
+   4.308e-10   3.404e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.225     0.226     0.227   0.00278  1      0     
+-- Statistics -- full prec   :     0.434     0.436     0.438   0.00559  2      0     
+-- Statistics -- velocity    :     0.158     0.193     0.216   0.00248  0      1     
+-- Statistics -- div-matrix  :     0.059    0.0783     0.106     0.001  1      0     
+-- Statistics -- pres mass   :    0.0756    0.0821    0.0931   0.00105  2      0     
+-- Statistics -- pres Poisson:    0.0806    0.0815    0.0823   0.00104  0      1     
+
+
+Time step #15, advancing from t_n-1 = 0.7 to t = 0.75 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   6.126e-02   1.499e-03        ---        8.41e-01   1.35e+01      30       5.26e-06
+   7.285e-06   3.350e-07        ---        1.80e-04   1.21e-01      30       1.18e-08
+   1.178e-08   9.951e-10        ---        5.31e-07   1.96e-04      15       4.25e-10
+   4.232e-10   3.375e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.222     0.223     0.224   0.00275  1      0     
+-- Statistics -- full prec   :     0.433     0.433     0.433   0.00555  2      1     
+-- Statistics -- velocity    :     0.148     0.189     0.214   0.00242  0      1     
+-- Statistics -- div-matrix  :    0.0606    0.0814     0.111   0.00104  1      0     
+-- Statistics -- pres mass   :    0.0745    0.0815    0.0936   0.00104  2      0     
+-- Statistics -- pres Poisson:    0.0793    0.0803    0.0812   0.00103  0      1     
+
+
+Time step #16, advancing from t_n-1 = 0.75 to t = 0.8 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   5.414e-02   1.325e-03        ILUs       7.43e-01   1.01e+01      30       4.80e-06
+   6.180e-06   3.137e-07        ---        1.65e-04   1.13e-01      30       1.05e-08
+   1.043e-08   9.340e-10        ---        5.22e-07   1.75e-04      15       4.80e-10
+   4.784e-10   3.413e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.222     0.223     0.224   0.00276  1      0     
+-- Statistics -- full prec   :     0.432     0.433     0.435   0.00555  2      0     
+-- Statistics -- velocity    :     0.153     0.187     0.212   0.00239  0      1     
+-- Statistics -- div-matrix  :    0.0629    0.0843      0.11   0.00108  1      0     
+-- Statistics -- pres mass   :    0.0757    0.0815    0.0924   0.00104  2      0     
+-- Statistics -- pres Poisson:    0.0795    0.0803     0.081   0.00103  0      1     
+
+  L2-Errors absolute: ||e_p||_L2 = 0.004923,   ||e_u||_L2 = 0.0001974
+  L2-Errors relative: ||e_p||_L2 = 0.04221,   ||e_u||_L2 = 0.0002767
+  Cell divergence:    |div(u)|_cells = 6.203e-08
+
+Time step #17, advancing from t_n-1 = 0.8 to t = 0.85 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   4.784e-02   1.172e-03        ---        6.57e-01   7.93e+00      30       4.34e-06
+   5.300e-06   2.852e-07        ---        1.49e-04   9.88e-02      30       8.95e-09
+   8.910e-09   8.214e-10        ---        4.68e-07   1.69e-04      15       4.65e-10
+   4.644e-10   3.168e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.222     0.224     0.224   0.00276  1      0     
+-- Statistics -- full prec   :     0.434     0.435     0.438   0.00558  2      0     
+-- Statistics -- velocity    :      0.16     0.188     0.214    0.0024  0      1     
+-- Statistics -- div-matrix  :    0.0635    0.0859     0.106    0.0011  1      0     
+-- Statistics -- pres mass   :    0.0753    0.0811    0.0913   0.00104  1      0     
+-- Statistics -- pres Poisson:    0.0799    0.0805    0.0814   0.00103  0      1     
+
+
+Time step #18, advancing from t_n-1 = 0.85 to t = 0.9 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   4.228e-02   1.036e-03        ---        5.81e-01   6.21e+00      30       3.92e-06
+   4.580e-06   2.584e-07        ---        1.34e-04   8.61e-02      30       7.69e-09
+   7.660e-09   7.196e-10        ---        4.16e-07   1.57e-04      15       4.35e-10
+   4.339e-10   2.849e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.236     0.237     0.238   0.00293  0      1     
+-- Statistics -- full prec   :     0.456      0.46     0.464    0.0059  1      0     
+-- Statistics -- velocity    :     0.139     0.189     0.237   0.00243  1      0     
+-- Statistics -- div-matrix  :    0.0569     0.102     0.144   0.00131  0      1     
+-- Statistics -- pres mass   :    0.0763     0.082    0.0882   0.00105  2      1     
+-- Statistics -- pres Poisson:    0.0848    0.0862    0.0878    0.0011  1      0     
+
+
+Time step #19, advancing from t_n-1 = 0.9 to t = 0.95 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   3.737e-02   9.154e-04        ---        5.13e-01   4.86e+00      30       3.53e-06
+   3.985e-06   2.336e-07        ---        1.20e-04   7.56e-02      30       6.68e-09
+   6.644e-09   6.302e-10        ---        3.67e-07   1.42e-04      14       4.81e-10
+   4.795e-10   3.552e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.243     0.244     0.246   0.00305  0      2     
+-- Statistics -- full prec   :     0.465     0.466     0.467   0.00605  2      0     
+-- Statistics -- velocity    :     0.143     0.195     0.237   0.00253  2      0     
+-- Statistics -- div-matrix  :    0.0598       0.1     0.148    0.0013  0      2     
+-- Statistics -- pres mass   :    0.0796     0.083    0.0879   0.00108  1      2     
+-- Statistics -- pres Poisson:    0.0852    0.0868    0.0881   0.00113  2      0     
+
+
+Time step #20, advancing from t_n-1 = 0.95 to t = 1 (dt = 0.05). 
+
+   NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
+   __________________________________________________________________________________
+   3.302e-02   8.091e-04        ---        4.54e-01   3.81e+00      30       3.17e-06
+   3.485e-06   2.104e-07        ---        1.08e-04   6.61e-02      30       5.79e-09
+   5.760e-09   5.493e-10        ---        3.23e-07   1.27e-04      14       4.33e-10
+   4.320e-10   3.128e-11     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       160       163       167            2      1     
+-- Statistics -- mat-vec     :     0.233     0.235     0.236   0.00293  0      2     
+-- Statistics -- full prec   :      0.46     0.461     0.463   0.00599  2      0     
+-- Statistics -- velocity    :     0.147     0.189     0.237   0.00246  2      0     
+-- Statistics -- div-matrix  :    0.0565     0.103     0.143   0.00133  0      2     
+-- Statistics -- pres mass   :    0.0793    0.0818    0.0848   0.00106  1      2     
+-- Statistics -- pres Poisson:    0.0854    0.0867    0.0881   0.00113  2      0     
+
+  L2-Errors absolute: ||e_p||_L2 = 0.003003,   ||e_u||_L2 = 0.0001208
+  L2-Errors relative: ||e_p||_L2 = 0.06906,   ||e_u||_L2 = 0.0002775
+  Cell divergence:    |div(u)|_cells = 2.362e-08
+
+
++---------------------------------------------+------------+------------+
+| Total CPU time elapsed since start          |       9.7s |            |
+|                                             |            |            |
+| Section                         | no. calls |  CPU time  | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         3 |      0.46s |       4.7% |
+| NS apply boundary conditions.   |        20 |     0.252s |       2.6% |
+| NS assemble nonlinear residual. |        40 |     0.148s |       1.5% |
+| NS assemble preconditioner.     |         1 |     0.136s |       1.4% |
+| NS build preconditioner.        |         1 |     0.112s |       1.2% |
+| NS solve system.                |        30 |      7.62s |        79% |
+| Output solution.                |         3 |      0.96s |       9.9% |
++---------------------------------+-----------+------------+------------+
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      10.5s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         3 |     0.492s |       4.7% |
+| NS apply boundary conditions.   |        20 |     0.343s |       3.3% |
+| NS assemble nonlinear residual. |        40 |     0.166s |       1.6% |
+| NS assemble preconditioner.     |         1 |     0.172s |       1.6% |
+| NS build preconditioner.        |         1 |     0.145s |       1.4% |
+| NS solve system.                |        30 |      8.18s |        78% |
+| Output solution.                |         3 |     0.937s |         9% |
++---------------------------------+-----------+------------+------------+
+
+
++--- Memory consumption Navier-Stokes objects ---
+| DoFHandler: 1.175 MB
+| Matrix-free objects: 0.7096 MB
+| Constraints: 0.5662 MB
+| Linearized velocities: 3.546 MB
+| Preconditioner matrices: 7.91 MB
+| ILU preconditioner for uu block: 7.356 MB
+| AMG preconditioner for pp block: 0.001568 MB
+| Vectors: 2.164 MB
+| Memory consumption used objects:
+| Triangulation: 0.9892 MB
++------------------------------------------------
+
+
++---------------------------------------------+------------+------------+
+| Total CPU time elapsed since start          |     0.004s |            |
+|                                             |            |            |
+| Section                         | no. calls |  CPU time  | % of total |
++---------------------------------+-----------+------------+------------+
++---------------------------------+-----------+------------+------------+
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |   0.00279s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
++---------------------------------+-----------+------------+------------+
+

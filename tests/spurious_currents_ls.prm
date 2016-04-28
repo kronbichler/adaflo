@@ -1,0 +1,58 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+# Listing of Parameters
+#
+subsection Problem-specific
+  set two-phase method = level set okz
+end
+subsection Two phase
+  set density              = 1.
+  set density difference   = 0.
+  set viscosity            = 0.1
+  set viscosity difference = 0
+  set surface tension      = 1.0
+  set epsilon              = 1.5
+  set gravity              = 0.
+  set concentration subdivisions = 3
+  set grad pressure compatible = 1
+  set localize surface tension = 1
+  set curvature correction = 1
+  set number reinit steps = 2
+  set number initial reinit steps = 0
+end
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 0.3
+  set step size        = 0.01
+end
+subsection Navier-Stokes
+  set dimension            = 2
+  set global refinements   = 80
+  set adaptive refinements = 0
+  set velocity degree      = 2
+  subsection Solver
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-9
+    set lin max iterations           = 500
+    set lin tolerance                = 1.e-6
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename = output-spurious_currents_ls/data
+  set output verbosity = 1
+  set output frequency = 0.05
+  set output vtk files = 0
+end

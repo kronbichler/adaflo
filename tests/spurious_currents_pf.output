@@ -1,0 +1,206 @@
+
+Number of active cells: 6400.
+Number of Navier-Stokes degrees of freedom: 58403 (51842 + 6561).
+Number of phase field degrees of freedom: 13122 (6561 + 6561).
+Mesh size (largest/smallest element length at finest level): 0.0625 / 0.0625
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01). 
+  Advance Cahn-Hilliard: [0.0603/17] [7.87e-05/19] [4.56e-10/15] [7.26e-13/conv.]
+  Residual/iterations: [0.261/AMGl/12] [8.78e-07/8] [5e-10/conv.]
+  Error in pressure jump: 0.59736058 %
+  Size spurious currents, absolute: 0.0028207148
+
+Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01). 
+  Advance Cahn-Hilliard: [0.0603/17] [1.2e-05/19] [1.24e-11/13] [9.05e-13/conv.]
+  Residual/iterations: [0.0194/AMGl/12] [4.69e-07/6] [3.94e-10/conv.]
+  Error in pressure jump: 1.3923453 %
+  Size spurious currents, absolute: 0.0046002953
+
+Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01). 
+  Advance Cahn-Hilliard: [0.000213/21] [5.27e-06/19] [2.33e-12/13] [3.36e-13/conv.]
+  Residual/iterations: [0.00954/12] [3.2e-08/4] [2.87e-10/conv.]
+  Error in pressure jump: 1.9256251 %
+  Size spurious currents, absolute: 0.0061062659
+
+Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01). 
+  Advance Cahn-Hilliard: [0.000106/22] [1.84e-06/19] [4.53e-13/conv.]
+  Residual/iterations: [0.0038/12] [2.09e-08/4] [1.75e-10/conv.]
+  Error in pressure jump: 2.3125746 %
+  Size spurious currents, absolute: 0.0073254889
+
+Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01). 
+  Advance Cahn-Hilliard: [6.39e-05/22] [6.86e-07/18] [7.03e-13/conv.]
+  Residual/iterations: [0.00199/12] [1.33e-08/3] [3.45e-10/conv.]
+  Error in pressure jump: 2.6229887 %
+  Size spurious currents, absolute: 0.0082437226
+
+Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01). 
+  Advance Cahn-Hilliard: [4.39e-05/23] [2.82e-07/18] [4.46e-13/conv.]
+  Residual/iterations: [0.00143/12] [1.01e-08/3] [2.32e-10/conv.]
+  Error in pressure jump: 2.8924523 %
+  Size spurious currents, absolute: 0.0088848801
+
+Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01). 
+  Advance Cahn-Hilliard: [3.33e-05/23] [1.41e-07/18] [3.16e-13/conv.]
+  Residual/iterations: [0.00116/12] [7.45e-09/3] [1.55e-10/conv.]
+  Error in pressure jump: 3.1375976 %
+  Size spurious currents, absolute: 0.0092883849
+
+Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01). 
+  Advance Cahn-Hilliard: [2.7e-05/23] [8.86e-08/17] [7.86e-13/conv.]
+  Residual/iterations: [0.000984/12] [5.29e-09/2] [4.08e-10/conv.]
+  Error in pressure jump: 3.3658135 %
+  Size spurious currents, absolute: 0.0094740261
+
+Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01). 
+  Advance Cahn-Hilliard: [2.26e-05/23] [6.92e-08/17] [6.49e-13/conv.]
+  Residual/iterations: [0.000837/12] [3.67e-09/2] [2.78e-10/conv.]
+  Error in pressure jump: 3.5803048 %
+  Size spurious currents, absolute: 0.0094712743
+
+Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01). 
+  Advance Cahn-Hilliard: [1.92e-05/23] [5.81e-08/17] [5.65e-13/conv.]
+  Residual/iterations: [0.000711/11] [2.58e-09/2] [3.98e-10/conv.]
+  Error in pressure jump: 3.7824266 %
+  Size spurious currents, absolute: 0.0093092904
+
+Time step #11, advancing from t_n-1 = 0.1 to t = 0.11 (dt = 0.01). 
+  Advance Cahn-Hilliard: [1.66e-05/24] [4.84e-08/17] [5.05e-13/conv.]
+  Residual/iterations: [0.000599/11] [1.74e-09/1] [4.91e-10/conv.]
+  Error in pressure jump: 3.9727409 %
+  Size spurious currents, absolute: 0.0090152176
+
+Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01). 
+  Advance Cahn-Hilliard: [1.44e-05/24] [3.99e-08/17] [4.57e-13/conv.]
+  Residual/iterations: [0.000499/11] [1.17e-09/1] [3.91e-10/conv.]
+  Error in pressure jump: 4.1515175 %
+  Size spurious currents, absolute: 0.0086160867
+
+Time step #13, advancing from t_n-1 = 0.12 to t = 0.13 (dt = 0.01). 
+  Advance Cahn-Hilliard: [1.26e-05/24] [3.26e-08/17] [4.16e-13/conv.]
+  Residual/iterations: [0.00041/11] [7.8e-10/conv.]
+  Error in pressure jump: 4.3189759 %
+  Size spurious currents, absolute: 0.0081328478
+
+Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01). 
+  Advance Cahn-Hilliard: [1.11e-05/24] [2.65e-08/17] [3.81e-13/conv.]
+  Residual/iterations: [0.000331/11] [5.36e-10/conv.]
+  Error in pressure jump: 4.4753946 %
+  Size spurious currents, absolute: 0.0075860645
+
+Time step #15, advancing from t_n-1 = 0.14 to t = 0.15 (dt = 0.01). 
+  Advance Cahn-Hilliard: [9.83e-06/24] [2.16e-08/17] [3.5e-13/conv.]
+  Residual/iterations: [0.000264/11] [3.9e-10/conv.]
+  Error in pressure jump: 4.6211424 %
+  Size spurious currents, absolute: 0.0069942882
+
+Time step #16, advancing from t_n-1 = 0.15 to t = 0.16 (dt = 0.01). 
+  Advance Cahn-Hilliard: [8.77e-06/24] [1.75e-08/17] [3.21e-13/conv.]
+  Residual/iterations: [0.000208/AMGl/11] [3e-10/conv.]
+  Error in pressure jump: 4.7566736 %
+  Size spurious currents, absolute: 0.006381389
+
+Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01). 
+  Advance Cahn-Hilliard: [7.86e-06/24] [1.43e-08/17] [2.95e-13/conv.]
+  Residual/iterations: [0.000166/11] [2.43e-10/conv.]
+  Error in pressure jump: 4.8825092 %
+  Size spurious currents, absolute: 0.0057683521
+
+Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01). 
+  Advance Cahn-Hilliard: [7.07e-06/24] [1.16e-08/16] [9.72e-13/conv.]
+  Residual/iterations: [0.000139/11] [2.09e-10/conv.]
+  Error in pressure jump: 4.9992136 %
+  Size spurious currents, absolute: 0.005151788
+
+Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01). 
+  Advance Cahn-Hilliard: [6.39e-06/24] [9.48e-09/16] [8.87e-13/conv.]
+  Residual/iterations: [0.000129/11] [1.98e-10/conv.]
+  Error in pressure jump: 5.1073736 %
+  Size spurious currents, absolute: 0.0045423775
+
+Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01). 
+  Advance Cahn-Hilliard: [5.8e-06/24] [7.72e-09/16] [8.1e-13/conv.]
+  Residual/iterations: [0.000132/11] [2.03e-10/conv.]
+  Error in pressure jump: 5.2075819 %
+  Size spurious currents, absolute: 0.0040116507
+
+Time step #21, advancing from t_n-1 = 0.2 to t = 0.21 (dt = 0.01). 
+  Advance Cahn-Hilliard: [5.28e-06/24] [6.28e-09/16] [7.37e-13/conv.]
+  Residual/iterations: [0.000141/10] [5.15e-10/conv.]
+  Error in pressure jump: 5.3004231 %
+  Size spurious currents, absolute: 0.0035541243
+
+Time step #22, advancing from t_n-1 = 0.21 to t = 0.22 (dt = 0.01). 
+  Advance Cahn-Hilliard: [4.83e-06/24] [5.09e-09/16] [6.7e-13/conv.]
+  Residual/iterations: [0.000153/10] [4.96e-10/conv.]
+  Error in pressure jump: 5.3864649 %
+  Size spurious currents, absolute: 0.003112579
+
+Time step #23, advancing from t_n-1 = 0.22 to t = 0.23 (dt = 0.01). 
+  Advance Cahn-Hilliard: [4.42e-06/24] [4.12e-09/16] [6.07e-13/conv.]
+  Residual/iterations: [0.000164/10] [4.8e-10/conv.]
+  Error in pressure jump: 5.4662512 %
+  Size spurious currents, absolute: 0.0026929569
+
+Time step #24, advancing from t_n-1 = 0.23 to t = 0.24 (dt = 0.01). 
+  Advance Cahn-Hilliard: [4.07e-06/24] [3.32e-09/16] [5.49e-13/conv.]
+  Residual/iterations: [0.000173/10] [4.63e-10/conv.]
+  Error in pressure jump: 5.5402979 %
+  Size spurious currents, absolute: 0.0023049806
+
+Time step #25, advancing from t_n-1 = 0.24 to t = 0.25 (dt = 0.01). 
+  Advance Cahn-Hilliard: [3.76e-06/24] [2.67e-09/16] [4.95e-13/conv.]
+  Residual/iterations: [0.000178/10] [4.45e-10/conv.]
+  Error in pressure jump: 5.6090904 %
+  Size spurious currents, absolute: 0.0020118556
+
+Time step #26, advancing from t_n-1 = 0.25 to t = 0.26 (dt = 0.01). 
+  Advance Cahn-Hilliard: [3.49e-06/24] [2.14e-09/16] [4.45e-13/conv.]
+  Residual/iterations: [0.000181/10] [4.24e-10/conv.]
+  Error in pressure jump: 5.6730825 %
+  Size spurious currents, absolute: 0.0017369927
+
+Time step #27, advancing from t_n-1 = 0.26 to t = 0.27 (dt = 0.01). 
+  Advance Cahn-Hilliard: [3.25e-06/24] [1.7e-09/16] [4e-13/conv.]
+  Residual/iterations: [0.000182/10] [3.99e-10/conv.]
+  Error in pressure jump: 5.7326964 %
+  Size spurious currents, absolute: 0.0015294468
+
+Time step #28, advancing from t_n-1 = 0.27 to t = 0.28 (dt = 0.01). 
+  Advance Cahn-Hilliard: [3.04e-06/24] [1.35e-09/16] [3.59e-13/conv.]
+  Residual/iterations: [0.000179/10] [3.72e-10/conv.]
+  Error in pressure jump: 5.788323 %
+  Size spurious currents, absolute: 0.0013464845
+
+Time step #29, advancing from t_n-1 = 0.28 to t = 0.29 (dt = 0.01). 
+  Advance Cahn-Hilliard: [2.86e-06/24] [1.07e-09/16] [3.22e-13/conv.]
+  Residual/iterations: [0.000175/10] [3.43e-10/conv.]
+  Error in pressure jump: 5.8403233 %
+  Size spurious currents, absolute: 0.0012465238
+
+Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01). 
+  Advance Cahn-Hilliard: [2.71e-06/24] [8.52e-10/16] [2.88e-13/conv.]
+  Residual/iterations: [0.000168/10] [3.13e-10/conv.]
+  Error in pressure jump: 5.8890294 %
+  Size spurious currents, absolute: 0.001224686
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      7.86s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Cahn-Hilliard preconditioner.   |         2 |    0.0467s |      0.59% |
+| Cahn-Hilliard residual.         |        93 |     0.072s |      0.92% |
+| Cahn-Hilliard solve.            |        63 |      1.94s |        25% |
+| Compute force.                  |        30 |    0.0133s |      0.17% |
+| NS apply boundary conditions.   |        60 |    0.0286s |      0.36% |
+| NS assemble nonlinear residual. |        72 |      0.16s |         2% |
+| NS assemble preconditioner.     |         3 |     0.189s |       2.4% |
+| NS build preconditioner.        |         3 |     0.333s |       4.2% |
+| NS distribute DoFs.             |         1 |    0.0401s |      0.51% |
+| NS setup matrix and vectors.    |         1 |    0.0535s |      0.68% |
+| NS solve system.                |        42 |      4.61s |        59% |
+| TP setup problem.               |         1 |     0.184s |       2.3% |
++---------------------------------+-----------+------------+------------+
+

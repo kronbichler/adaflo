@@ -1,0 +1,61 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+# Listing of Parameters
+#
+# mpirun: 2
+subsection Problem-specific
+  set two-phase method = level set okz
+end
+subsection Two phase
+  set density              = 1.
+  set density difference   = -0.9
+  set viscosity            = 0.01
+  set viscosity difference = -0.009
+  set surface tension      = 0.0245
+  set epsilon              = 1.5
+  set gravity              = 0.98
+  set concentration subdivisions = 3
+  set grad pressure compatible = 1
+  set localize surface tension = 1
+  set curvature correction = 1
+  set number reinit steps = 2
+  set number initial reinit steps = 2
+end
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 1
+  set step size        = 0.02
+end
+subsection Navier-Stokes
+  set dimension            = 2
+  set global refinements   = 3
+  set adaptive refinements = 0
+  set velocity degree      = 2
+  subsection Solver
+    set linearization scheme         = coupled implicit Picard
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-9
+    set lin max iterations           = 30
+    set lin tolerance                = 1.e-3
+    set lin velocity preconditioner  = ilu
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename  = output-rising_bubble_ls_prm/data
+  set output verbosity = 1
+  set output frequency = 0.1
+  set output vtk files = 0
+end

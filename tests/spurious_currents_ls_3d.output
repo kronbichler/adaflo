@@ -1,0 +1,82 @@
+
+Number of active cells: 3375.
+Number of Navier-Stokes degrees of freedom: 96844 (89373 + 7471).
+Number of level set degrees of freedom: 97336.
+Mesh size (largest/smallest element length at finest level): 0.333333 / 0.333333
+
+Number of active cells: 9514.
+Number of Navier-Stokes degrees of freedom: 274815 (254079 + 20736).
+Number of level set degrees of freedom: 276862.
+Mesh size (largest/smallest element length at finest level): 0.166667 / 0.166667
+
+Number of active cells: 20014.
+Number of Navier-Stokes degrees of freedom: 572541 (529479 + 43062).
+Number of level set degrees of freedom: 578926.
+Mesh size (largest/smallest element length at finest level): 0.0833333 / 0.0833333
+
+Number of active cells: 9598.
+Number of Navier-Stokes degrees of freedom: 281763 (260595 + 21168).
+Number of level set degrees of freedom: 282676.
+Mesh size (largest/smallest element length at finest level): 0.0833333 / 0.0833333
+  reinitialize ()
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.05 (dt = 0.05). 
+  Concentration advance: advect [0/0] and reinitialize (13 + 13)
+  Residual/iterations: [0.176/ILU/30] [3.28e-05/30] [1.38e-08/5] [4.86e-09/conv.]
+  Error in pressure jump: -0.51229618 %
+  Size spurious currents, absolute: 0.00068642217
+
+Time step #2, advancing from t_n-1 = 0.05 to t = 0.1 (dt = 0.05). 
+  Concentration advance: advect [5.67e-05/8] and reinitialize (12 + 12)
+  Residual/iterations: [0.000235/ILU/30] [1.06e-08/4] [4.97e-09/conv.]
+  Error in pressure jump: -0.51939575 %
+  Size spurious currents, absolute: 0.00090036154
+
+Time step #3, advancing from t_n-1 = 0.1 to t = 0.15 (dt = 0.05). 
+  Concentration advance: advect [6.61e-05/8] and reinitialize (11 + 11)
+  Residual/iterations: [7.36e-05/26] [4.25e-09/conv.]
+  Error in pressure jump: -0.5262493 %
+  Size spurious currents, absolute: 0.00095537803
+
+Time step #4, advancing from t_n-1 = 0.15 to t = 0.2 (dt = 0.05). 
+  Concentration advance: advect [6.24e-05/7] and reinitialize (11 + 11)
+  Residual/iterations: [4.36e-05/28] [3.72e-09/conv.]
+  Error in pressure jump: -0.53246482 %
+  Size spurious currents, absolute: 0.00093348507
+
+Time step #5, advancing from t_n-1 = 0.2 to t = 0.25 (dt = 0.05). 
+  Concentration advance: advect [5.62e-05/7] and reinitialize (11 + 11)
+  Residual/iterations: [3.76e-05/28] [3.37e-09/conv.]
+  Error in pressure jump: -0.53820279 %
+  Size spurious currents, absolute: 0.00099662992
+
+Time step #6, advancing from t_n-1 = 0.25 to t = 0.3 (dt = 0.05). 
+  Concentration advance: advect [4.96e-05/6] and reinitialize (11 + 11)
+  Residual/iterations: [2.98e-05/27] [4.39e-09/conv.]
+  Error in pressure jump: -0.54357335 %
+  Size spurious currents, absolute: 0.0010417807
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      70.6s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| LS advance concentration.       |         6 |      1.64s |       2.3% |
+| LS compute Heaviside.           |         7 |      0.08s |      0.11% |
+| LS compute curvature.           |         6 |      2.25s |       3.2% |
+| LS compute force.               |         6 |     0.156s |      0.22% |
+| LS compute normal.              |        15 |      8.73s |        12% |
+| LS reinitialization step.       |        12 |      3.29s |       4.7% |
+| NS apply boundary conditions.   |        12 |     0.115s |      0.16% |
+| NS assemble nonlinear residual. |        15 |     0.332s |      0.47% |
+| NS assemble preconditioner.     |         2 |       3.1s |       4.4% |
+| NS build preconditioner.        |         2 |      3.75s |       5.3% |
+| NS distribute DoFs.             |         4 |      15.6s |        22% |
+| NS setup matrix and vectors.    |         4 |       3.5s |         5% |
+| NS solve system.                |         9 |      12.6s |        18% |
+| Probe grid refinement.          |         3 |     0.189s |      0.27% |
+| Refine grid.                    |         3 |      30.7s |        43% |
+| TP setup problem.               |         1 |      35.8s |        51% |
++---------------------------------+-----------+------------+------------+
+

@@ -1,0 +1,595 @@
+Running a 2D phase field channel flow problem using BDF-2, Q2/Q1 elements
+
+Number of active cells: 3072.
+Number of Navier-Stokes degrees of freedom: 28291 (25090 + 3201).
+Number of phase field degrees of freedom: 6402 (3201 + 3201).
+Mesh size (largest/smallest element length at finest level): 0.0625 / 0.0625
+  Interface location center pointwise:  2.5
+  Interface location lower wall/angle:  2.5 / 90
+  Interface location upper wall/angle:  2.5 / 90
+  Interface velocity:                   12.5
+  Concentration range: -1 / 1
+  Degree of circularity: 4.6894721
+  Mean bubble velocity: 0  0  
+  Position of the center of mass:  4.25  0  
+  Range of level set values: -1 / 1
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.156 (dt = 0.156). 
+  Advance Cahn-Hilliard: [0.101/24] [0.00914/12] [7.09e-05/13] [5.02e-09/17] [3.11e-14/conv.]
+  Residual/iterations: [0.145/AMGl/15] [0.000183/17] [1.52e-08/11] [4e-11/conv.]
+  Interface location center pointwise:  2.5
+  Interface location lower wall/angle:  2.561 / 122.8
+  Interface location upper wall/angle:  2.561 / 57.17
+  Interface velocity:                   0.3898
+  Concentration range: -1.04 / 1
+  Degree of circularity: 4.6161377
+  Mean bubble velocity: 0.0044291928  0  
+  Position of the center of mass:  4.2507266  0  
+  Range of level set values: -1.0388536 / 1.0024491
+
+Time step #2, advancing from t_n-1 = 0.156 to t = 0.31 (dt = 0.154). 
+  Advance Cahn-Hilliard: [0.117/24] [0.00331/12] [7.93e-06/14] [6.19e-11/14] [8.07e-14/conv.]
+  Residual/iterations: [0.0461/AMGl/15] [2.81e-05/17] [2.73e-09/8] [4.23e-11/conv.]
+  Interface location center pointwise:  2.498
+  Interface location lower wall/angle:  2.587 / 125.6
+  Interface location upper wall/angle:  2.587 / 54.45
+  Interface velocity:                   0.1706
+  Concentration range: -1.04 / 1.01
+  Degree of circularity: 4.5827707
+  Mean bubble velocity: 0.0082279235  0  
+  Position of the center of mass:  4.2514749  0  
+  Range of level set values: -1.0398696 / 1.0125963
+
+Time step #3, advancing from t_n-1 = 0.31 to t = 0.463 (dt = 0.152). 
+  Advance Cahn-Hilliard: [0.00408/28] [0.000307/13] [2.51e-08/16] [1.87e-13/10] [4.43e-14/conv.]
+  Residual/iterations: [0.0378/15] [2.75e-05/17] [2.16e-09/8] [3.78e-11/conv.]
+  Interface location center pointwise:  2.494
+  Interface location lower wall/angle:  2.607 / 125.8
+  Interface location upper wall/angle:  2.607 / 54.23
+  Interface velocity:                   0.1299
+  Concentration range: -1.04 / 1.02
+  Degree of circularity: 4.5673974
+  Mean bubble velocity: 0.011626631  0  
+  Position of the center of mass:  4.252544  0  
+  Range of level set values: -1.0397814 / 1.0227343
+
+Time step #4, advancing from t_n-1 = 0.463 to t = 0.613 (dt = 0.151). 
+  Advance Cahn-Hilliard: [0.00271/29] [5.99e-05/14] [1.38e-09/16] [3.84e-14/conv.]
+  Residual/iterations: [0.0111/14] [3.74e-06/17] [3.35e-10/4] [4.58e-11/conv.]
+  Interface location center pointwise:  2.489
+  Interface location lower wall/angle:  2.624 / 126.5
+  Interface location upper wall/angle:  2.624 / 53.54
+  Interface velocity:                   0.1161
+  Concentration range: -1.04 / 1.03
+  Degree of circularity: 4.5509146
+  Mean bubble velocity: 0.014856354  0  
+  Position of the center of mass:  4.2538426  0  
+  Range of level set values: -1.0397595 / 1.0304648
+
+Time step #5, advancing from t_n-1 = 0.613 to t = 0.763 (dt = 0.149). 
+  Advance Cahn-Hilliard: [0.00207/30] [2.84e-05/14] [3.75e-10/15] [6.81e-14/conv.]
+  Residual/iterations: [0.00471/14] [7.01e-07/17] [6.38e-11/conv.]
+  Interface location center pointwise:  2.485
+  Interface location lower wall/angle:  2.64 / 127
+  Interface location upper wall/angle:  2.64 / 53.02
+  Interface velocity:                   0.101
+  Concentration range: -1.04 / 1.04
+  Degree of circularity: 4.5355946
+  Mean bubble velocity: 0.017950305  0  
+  Position of the center of mass:  4.2553429  0  
+  Range of level set values: -1.0397591 / 1.0354444
+
+Time step #6, advancing from t_n-1 = 0.763 to t = 0.911 (dt = 0.148). 
+  Advance Cahn-Hilliard: [0.00164/30] [1.65e-05/14] [1.66e-10/15] [3.77e-14/conv.]
+  Residual/iterations: [0.00231/15] [1.55e-07/16] [2.84e-11/conv.]
+  Interface location center pointwise:  2.482
+  Interface location lower wall/angle:  2.653 / 127.3
+  Interface location upper wall/angle:  2.653 / 52.71
+  Interface velocity:                   0.09096
+  Concentration range: -1.04 / 1.04
+  Degree of circularity: 4.5212019
+  Mean bubble velocity: 0.020872008  0  
+  Position of the center of mass:  4.2570293  0  
+  Range of level set values: -1.0397623 / 1.0407469
+
+Time step #7, advancing from t_n-1 = 0.911 to t = 1.06 (dt = 0.147). 
+  Advance Cahn-Hilliard: [0.00137/31] [1.05e-05/14] [1.09e-10/14] [8.35e-14/conv.]
+  Residual/iterations: [0.00152/15] [9.68e-08/15] [3.05e-11/conv.]
+  Interface location center pointwise:  2.481
+  Interface location lower wall/angle:  2.665 / 127.5
+  Interface location upper wall/angle:  2.665 / 52.54
+  Interface velocity:                   0.08492
+  Concentration range: -1.04 / 1.04
+  Degree of circularity: 4.5072027
+  Mean bubble velocity: 0.023582481  0  
+  Position of the center of mass:  4.2588962  0  
+  Range of level set values: -1.0397653 / 1.0442581
+
+Time step #8, advancing from t_n-1 = 1.06 to t = 1.2 (dt = 0.146). 
+  Advance Cahn-Hilliard: [0.00118/30] [7.16e-06/15] [2.47e-11/14] [5.46e-14/conv.]
+  Residual/iterations: [0.00117/15] [7.81e-08/14] [4.52e-11/conv.]
+  Interface location center pointwise:  2.48
+  Interface location lower wall/angle:  2.677 / 127.6
+  Interface location upper wall/angle:  2.677 / 52.38
+  Interface velocity:                   0.08129
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4933729
+  Mean bubble velocity: 0.026058219  0  
+  Position of the center of mass:  4.2609306  0  
+  Range of level set values: -1.0397678 / 1.0462377
+
+Time step #9, advancing from t_n-1 = 1.2 to t = 1.35 (dt = 0.144). 
+  Advance Cahn-Hilliard: [0.00105/32] [5.15e-06/15] [1.8e-11/14] [3.76e-14/conv.]
+  Residual/iterations: [0.00094/15] [6.46e-08/14] [3.84e-11/conv.]
+  Interface location center pointwise:  2.48
+  Interface location lower wall/angle:  2.689 / 128.1
+  Interface location upper wall/angle:  2.689 / 51.95
+  Interface velocity:                   0.07894
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4793773
+  Mean bubble velocity: 0.028299846  0  
+  Position of the center of mass:  4.2631037  0  
+  Range of level set values: -1.0397697 / 1.0484807
+
+Time step #10, advancing from t_n-1 = 1.35 to t = 1.49 (dt = 0.144). 
+  Advance Cahn-Hilliard: [0.000948/32] [3.87e-06/15] [1.46e-11/13] [8.59e-14/conv.]
+  Residual/iterations: [0.000768/15] [5.23e-08/14] [3.22e-11/conv.]
+  Interface location center pointwise:  2.48
+  Interface location lower wall/angle:  2.699 / 128.3
+  Interface location upper wall/angle:  2.699 / 51.68
+  Interface velocity:                   0.0731
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4669955
+  Mean bubble velocity: 0.030319151  0  
+  Position of the center of mass:  4.2654038  0  
+  Range of level set values: -1.0397713 / 1.0506437
+
+Time step #11, advancing from t_n-1 = 1.49 to t = 1.63 (dt = 0.143). 
+  Advance Cahn-Hilliard: [0.000873/32] [3e-06/15] [1.25e-11/13] [6.31e-14/conv.]
+  Residual/iterations: [0.000639/15] [4.26e-08/13] [4.58e-11/conv.]
+  Interface location center pointwise:  2.482
+  Interface location lower wall/angle:  2.709 / 128.5
+  Interface location upper wall/angle:  2.709 / 51.48
+  Interface velocity:                   0.06953
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4555843
+  Mean bubble velocity: 0.032129513  0  
+  Position of the center of mass:  4.2678193  0  
+  Range of level set values: -1.0397726 / 1.0520005
+
+Time step #12, advancing from t_n-1 = 1.63 to t = 1.78 (dt = 0.142). 
+  Advance Cahn-Hilliard: [0.000816/32] [2.36e-06/15] [1.1e-11/13] [4.79e-14/conv.]
+  Residual/iterations: [0.000544/15] [3.62e-08/13] [3.73e-11/conv.]
+  Interface location center pointwise:  2.484
+  Interface location lower wall/angle:  2.719 / 128.7
+  Interface location upper wall/angle:  2.719 / 51.35
+  Interface velocity:                   0.06705
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4448276
+  Mean bubble velocity: 0.033749167  0  
+  Position of the center of mass:  4.2703367  0  
+  Range of level set values: -1.0397737 / 1.0526517
+
+Time step #13, advancing from t_n-1 = 1.78 to t = 1.92 (dt = 0.141). 
+  Advance Cahn-Hilliard: [0.000772/32] [1.89e-06/15] [9.82e-12/13] [3.74e-14/conv.]
+  Residual/iterations: [0.00047/15] [3.23e-08/13] [3.18e-11/conv.]
+  Interface location center pointwise:  2.486
+  Interface location lower wall/angle:  2.728 / 128.7
+  Interface location upper wall/angle:  2.728 / 51.27
+  Interface velocity:                   0.06543
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4344755
+  Mean bubble velocity: 0.035197989  0  
+  Position of the center of mass:  4.2729466  0  
+  Range of level set values: -1.0397746 / 1.0535286
+
+Time step #14, advancing from t_n-1 = 1.92 to t = 2.06 (dt = 0.141). 
+  Advance Cahn-Hilliard: [0.000739/32] [1.54e-06/15] [8.91e-12/13] [2.99e-14/conv.]
+  Residual/iterations: [0.00041/15] [2.92e-08/13] [2.8e-11/conv.]
+  Interface location center pointwise:  2.489
+  Interface location lower wall/angle:  2.737 / 128.8
+  Interface location upper wall/angle:  2.737 / 51.23
+  Interface velocity:                   0.06449
+  Concentration range: -1.04 / 1.05
+  Degree of circularity: 4.4243758
+  Mean bubble velocity: 0.036493361  0  
+  Position of the center of mass:  4.2756429  0  
+  Range of level set values: -1.0397753 / 1.054812
+
+Time step #15, advancing from t_n-1 = 2.06 to t = 2.2 (dt = 0.14). 
+  Advance Cahn-Hilliard: [0.000714/32] [1.29e-06/15] [8.19e-12/12] [8.32e-14/conv.]
+  Residual/iterations: [0.00036/15] [2.67e-08/12] [4.98e-11/conv.]
+  Interface location center pointwise:  2.492
+  Interface location lower wall/angle:  2.746 / 128.9
+  Interface location upper wall/angle:  2.746 / 51.05
+  Interface velocity:                   0.06413
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.4143049
+  Mean bubble velocity: 0.037650589  0  
+  Position of the center of mass:  4.2784121  0  
+  Range of level set values: -1.0397759 / 1.0556672
+
+Time step #16, advancing from t_n-1 = 2.2 to t = 2.34 (dt = 0.14). 
+  Advance Cahn-Hilliard: [0.000696/32] [1.1e-06/15] [7.6e-12/12] [6.89e-14/conv.]
+  Residual/iterations: [0.000319/AMGl/15] [2.58e-08/12] [4.15e-11/conv.]
+  Interface location center pointwise:  2.496
+  Interface location lower wall/angle:  2.755 / 129.2
+  Interface location upper wall/angle:  2.755 / 50.82
+  Interface velocity:                   0.06266
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.4047063
+  Mean bubble velocity: 0.038685638  0  
+  Position of the center of mass:  4.2812404  0  
+  Range of level set values: -1.0397764 / 1.056134
+
+Time step #17, advancing from t_n-1 = 2.34 to t = 2.48 (dt = 0.139). 
+  Advance Cahn-Hilliard: [0.000684/32] [9.56e-07/15] [7.12e-12/12] [5.81e-14/conv.]
+  Residual/iterations: [0.000283/15] [2.14e-08/12] [3.47e-11/conv.]
+  Interface location center pointwise:  2.5
+  Interface location lower wall/angle:  2.763 / 129.3
+  Interface location upper wall/angle:  2.763 / 50.68
+  Interface velocity:                   0.05994
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.396056
+  Mean bubble velocity: 0.039615044  0  
+  Position of the center of mass:  4.2841153  0  
+  Range of level set values: -1.0397767 / 1.0562457
+
+Time step #18, advancing from t_n-1 = 2.48 to t = 2.62 (dt = 0.139). 
+  Advance Cahn-Hilliard: [0.000676/32] [8.52e-07/15] [6.72e-12/12] [5.01e-14/conv.]
+  Residual/iterations: [0.000254/15] [1.88e-08/12] [3.03e-11/conv.]
+  Interface location center pointwise:  2.504
+  Interface location lower wall/angle:  2.771 / 129.4
+  Interface location upper wall/angle:  2.771 / 50.58
+  Interface velocity:                   0.05845
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3879731
+  Mean bubble velocity: 0.040449021  0  
+  Position of the center of mass:  4.2870312  0  
+  Range of level set values: -1.0397769 / 1.0566695
+
+Time step #19, advancing from t_n-1 = 2.62 to t = 2.76 (dt = 0.139). 
+  Advance Cahn-Hilliard: [0.000671/32] [7.73e-07/15] [6.37e-12/12] [4.4e-14/conv.]
+  Residual/iterations: [0.000229/15] [1.65e-08/11] [4.47e-11/conv.]
+  Interface location center pointwise:  2.509
+  Interface location lower wall/angle:  2.779 / 129.5
+  Interface location upper wall/angle:  2.779 / 50.51
+  Interface velocity:                   0.05742
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3803208
+  Mean bubble velocity: 0.041198461  0  
+  Position of the center of mass:  4.2899902  0  
+  Range of level set values: -1.039777 / 1.0574777
+
+Time step #20, advancing from t_n-1 = 2.76 to t = 2.89 (dt = 0.138). 
+  Advance Cahn-Hilliard: [0.00067/32] [7.14e-07/15] [6.08e-12/12] [3.94e-14/conv.]
+  Residual/iterations: [0.000208/15] [1.46e-08/11] [3.93e-11/conv.]
+  Interface location center pointwise:  2.514
+  Interface location lower wall/angle:  2.787 / 129.5
+  Interface location upper wall/angle:  2.787 / 50.47
+  Interface velocity:                   0.05679
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3728903
+  Mean bubble velocity: 0.041872844  0  
+  Position of the center of mass:  4.2929801  0  
+  Range of level set values: -1.039777 / 1.058051
+
+Time step #21, advancing from t_n-1 = 2.89 to t = 3.03 (dt = 0.138). 
+  Advance Cahn-Hilliard: [0.00067/32] [6.68e-07/15] [5.83e-12/12] [3.61e-14/conv.]
+  Residual/iterations: [0.000192/15] [1.34e-08/11] [3.5e-11/conv.]
+  Interface location center pointwise:  2.519
+  Interface location lower wall/angle:  2.795 / 129.5
+  Interface location upper wall/angle:  2.795 / 50.45
+  Interface velocity:                   0.05653
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.365567
+  Mean bubble velocity: 0.042482089  0  
+  Position of the center of mass:  4.2960069  0  
+  Range of level set values: -1.0397769 / 1.0584042
+
+Time step #22, advancing from t_n-1 = 3.03 to t = 3.17 (dt = 0.138). 
+  Advance Cahn-Hilliard: [0.000671/32] [6.33e-07/15] [5.62e-12/12] [3.37e-14/conv.]
+  Residual/iterations: [0.000177/15] [1.21e-08/11] [3.16e-11/conv.]
+  Interface location center pointwise:  2.524
+  Interface location lower wall/angle:  2.803 / 129.5
+  Interface location upper wall/angle:  2.803 / 50.45
+  Interface velocity:                   0.05659
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3582751
+  Mean bubble velocity: 0.043031733  0  
+  Position of the center of mass:  4.2990727  0  
+  Range of level set values: -1.0397767 / 1.0585492
+
+Time step #23, advancing from t_n-1 = 3.17 to t = 3.31 (dt = 0.138). 
+  Advance Cahn-Hilliard: [0.000674/32] [6.06e-07/15] [5.47e-12/12] [3.19e-14/conv.]
+  Residual/iterations: [0.000166/15] [1.11e-08/11] [2.89e-11/conv.]
+  Interface location center pointwise:  2.529
+  Interface location lower wall/angle:  2.811 / 129.7
+  Interface location upper wall/angle:  2.811 / 50.31
+  Interface velocity:                   0.05696
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3508463
+  Mean bubble velocity: 0.043530841  0  
+  Position of the center of mass:  4.3021668  0  
+  Range of level set values: -1.0397765 / 1.0584955
+
+Time step #24, advancing from t_n-1 = 3.31 to t = 3.44 (dt = 0.138). 
+  Advance Cahn-Hilliard: [0.000677/32] [5.86e-07/15] [5.36e-12/12] [3.06e-14/conv.]
+  Residual/iterations: [0.000156/15] [1.04e-08/11] [2.65e-11/conv.]
+  Interface location center pointwise:  2.534
+  Interface location lower wall/angle:  2.818 / 129.8
+  Interface location upper wall/angle:  2.818 / 50.18
+  Interface velocity:                   0.05569
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3439023
+  Mean bubble velocity: 0.043982101  0  
+  Position of the center of mass:  4.3052914  0  
+  Range of level set values: -1.0397761 / 1.0588808
+
+Time step #25, advancing from t_n-1 = 3.44 to t = 3.58 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000681/32] [5.7e-07/15] [5.28e-12/12] [2.97e-14/conv.]
+  Residual/iterations: [0.000149/15] [9.79e-09/10] [4.92e-11/conv.]
+  Interface location center pointwise:  2.54
+  Interface location lower wall/angle:  2.826 / 129.9
+  Interface location upper wall/angle:  2.826 / 50.11
+  Interface velocity:                   0.05419
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3375163
+  Mean bubble velocity: 0.044394432  0  
+  Position of the center of mass:  4.3084399  0  
+  Range of level set values: -1.0397757 / 1.0594719
+
+Time step #26, advancing from t_n-1 = 3.58 to t = 3.72 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000685/32] [5.58e-07/15] [5.22e-12/12] [2.91e-14/conv.]
+  Residual/iterations: [0.000141/15] [9.24e-09/10] [4.6e-11/conv.]
+  Interface location center pointwise:  2.545
+  Interface location lower wall/angle:  2.833 / 129.9
+  Interface location upper wall/angle:  2.833 / 50.05
+  Interface velocity:                   0.05339
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3314633
+  Mean bubble velocity: 0.044770537  0  
+  Position of the center of mass:  4.3116167  0  
+  Range of level set values: -1.0397752 / 1.0599243
+
+Time step #27, advancing from t_n-1 = 3.72 to t = 3.86 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000689/32] [5.5e-07/15] [5.19e-12/12] [2.87e-14/conv.]
+  Residual/iterations: [0.000136/15] [8.95e-09/10] [4.35e-11/conv.]
+  Interface location center pointwise:  2.551
+  Interface location lower wall/angle:  2.84 / 130
+  Interface location upper wall/angle:  2.84 / 50.02
+  Interface velocity:                   0.05287
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3256609
+  Mean bubble velocity: 0.045114253  0  
+  Position of the center of mass:  4.3148228  0  
+  Range of level set values: -1.0397747 / 1.0602422
+
+Time step #28, advancing from t_n-1 = 3.86 to t = 3.99 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000693/32] [5.45e-07/15] [5.16e-12/12] [2.84e-14/conv.]
+  Residual/iterations: [0.000132/15] [8.69e-09/10] [4.16e-11/conv.]
+  Interface location center pointwise:  2.557
+  Interface location lower wall/angle:  2.847 / 130
+  Interface location upper wall/angle:  2.847 / 50
+  Interface velocity:                   0.05262
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3200383
+  Mean bubble velocity: 0.045428452  0  
+  Position of the center of mass:  4.3180533  0  
+  Range of level set values: -1.0397741 / 1.0604283
+
+Time step #29, advancing from t_n-1 = 3.99 to t = 4.13 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000698/32] [5.42e-07/15] [5.13e-12/11] [9.94e-14/conv.]
+  Residual/iterations: [0.00013/15] [8.47e-09/10] [4.02e-11/conv.]
+  Interface location center pointwise:  2.563
+  Interface location lower wall/angle:  2.855 / 130
+  Interface location upper wall/angle:  2.855 / 50.01
+  Interface velocity:                   0.05263
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3144042
+  Mean bubble velocity: 0.045717656  0  
+  Position of the center of mass:  4.3212845  0  
+  Range of level set values: -1.0397735 / 1.0604841
+
+Time step #30, advancing from t_n-1 = 4.13 to t = 4.27 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000702/32] [5.41e-07/15] [5.11e-12/11] [9.87e-14/conv.]
+  Residual/iterations: [0.000127/15] [8.5e-09/10] [3.95e-11/conv.]
+  Interface location center pointwise:  2.569
+  Interface location lower wall/angle:  2.862 / 130
+  Interface location upper wall/angle:  2.862 / 50.04
+  Interface velocity:                   0.05287
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3086883
+  Mean bubble velocity: 0.045983688  0  
+  Position of the center of mass:  4.3245178  0  
+  Range of level set values: -1.0397729 / 1.0604104
+
+Time step #31, advancing from t_n-1 = 4.27 to t = 4.4 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.000706/32] [5.41e-07/15] [5.09e-12/11] [9.83e-14/conv.]
+  Residual/iterations: [0.000125/15] [8.65e-09/10] [3.9e-11/conv.]
+  Interface location center pointwise:  2.576
+  Interface location lower wall/angle:  2.869 / 130
+  Interface location upper wall/angle:  2.869 / 50.02
+  Interface velocity:                   0.05335
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.3028122
+  Mean bubble velocity: 0.046228082  0  
+  Position of the center of mass:  4.3277604  0  
+  Range of level set values: -1.0397722 / 1.0609559
+
+Time step #32, advancing from t_n-1 = 4.4 to t = 4.54 (dt = 0.137). 
+  Advance Cahn-Hilliard: [0.00071/32] [5.42e-07/15] [5.08e-12/11] [9.81e-14/conv.]
+  Residual/iterations: [0.000123/15] [8.65e-09/10] [4.01e-11/conv.]
+  Interface location center pointwise:  2.582
+  Interface location lower wall/angle:  2.876 / 130.1
+  Interface location upper wall/angle:  2.876 / 49.89
+  Interface velocity:                   0.05369
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2968087
+  Mean bubble velocity: 0.046453511  0  
+  Position of the center of mass:  4.3310133  0  
+  Range of level set values: -1.0397715 / 1.0614551
+
+Time step #33, advancing from t_n-1 = 4.54 to t = 4.68 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000714/32] [5.45e-07/15] [5.09e-12/11] [9.81e-14/conv.]
+  Residual/iterations: [0.000123/15] [8.9e-09/10] [4.15e-11/conv.]
+  Interface location center pointwise:  2.588
+  Interface location lower wall/angle:  2.884 / 130.2
+  Interface location upper wall/angle:  2.884 / 49.84
+  Interface velocity:                   0.05205
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2914007
+  Mean bubble velocity: 0.046663308  0  
+  Position of the center of mass:  4.3342756  0  
+  Range of level set values: -1.0397708 / 1.0618618
+
+Time step #34, advancing from t_n-1 = 4.68 to t = 4.81 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000717/32] [5.48e-07/15] [5.11e-12/11] [9.84e-14/conv.]
+  Residual/iterations: [0.000121/15] [9.37e-09/10] [3.97e-11/conv.]
+  Interface location center pointwise:  2.594
+  Interface location lower wall/angle:  2.891 / 130.2
+  Interface location upper wall/angle:  2.891 / 49.8
+  Interface velocity:                   0.05139
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.286232
+  Mean bubble velocity: 0.046858355  0  
+  Position of the center of mass:  4.3375497  0  
+  Range of level set values: -1.03977 / 1.0621753
+
+Time step #35, advancing from t_n-1 = 4.81 to t = 4.95 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000721/32] [5.51e-07/15] [5.15e-12/11] [9.88e-14/conv.]
+  Residual/iterations: [0.00012/15] [9.51e-09/10] [4.43e-11/conv.]
+  Interface location center pointwise:  2.6
+  Interface location lower wall/angle:  2.897 / 130.2
+  Interface location upper wall/angle:  2.897 / 49.78
+  Interface velocity:                   0.05095
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2812603
+  Mean bubble velocity: 0.047040019  0  
+  Position of the center of mass:  4.3408421  0  
+  Range of level set values: -1.0397692 / 1.0623947
+
+Time step #36, advancing from t_n-1 = 4.95 to t = 5.09 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000724/32] [5.55e-07/15] [5.2e-12/11] [9.92e-14/conv.]
+  Residual/iterations: [0.00012/15] [9.91e-09/10] [4.53e-11/conv.]
+  Interface location center pointwise:  2.606
+  Interface location lower wall/angle:  2.904 / 130.2
+  Interface location upper wall/angle:  2.904 / 49.77
+  Interface velocity:                   0.05073
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2764185
+  Mean bubble velocity: 0.047209426  0  
+  Position of the center of mass:  4.3441546  0  
+  Range of level set values: -1.0397684 / 1.0625183
+
+Time step #37, advancing from t_n-1 = 5.09 to t = 5.22 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000727/32] [5.59e-07/15] [5.26e-12/11] [9.96e-14/conv.]
+  Residual/iterations: [0.000121/15] [1.05e-08/10] [4.32e-11/conv.]
+  Interface location center pointwise:  2.613
+  Interface location lower wall/angle:  2.911 / 130.2
+  Interface location upper wall/angle:  2.911 / 49.78
+  Interface velocity:                   0.05072
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2716519
+  Mean bubble velocity: 0.047367192  0  
+  Position of the center of mass:  4.3474872  0  
+  Range of level set values: -1.0397676 / 1.062544
+
+Time step #38, advancing from t_n-1 = 5.22 to t = 5.36 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.00073/32] [5.63e-07/15] [5.31e-12/11] [9.98e-14/conv.]
+  Residual/iterations: [0.000119/15] [1.1e-08/10] [4.49e-11/conv.]
+  Interface location center pointwise:  2.619
+  Interface location lower wall/angle:  2.918 / 130.2
+  Interface location upper wall/angle:  2.918 / 49.8
+  Interface velocity:                   0.05092
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2668245
+  Mean bubble velocity: 0.047515598  0  
+  Position of the center of mass:  4.3508255  0  
+  Range of level set values: -1.0397668 / 1.0628083
+
+Time step #39, advancing from t_n-1 = 5.36 to t = 5.49 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000733/32] [5.67e-07/15] [5.36e-12/11] [9.98e-14/conv.]
+  Residual/iterations: [0.000121/15] [1.18e-08/10] [4.45e-11/conv.]
+  Interface location center pointwise:  2.626
+  Interface location lower wall/angle:  2.925 / 130.2
+  Interface location upper wall/angle:  2.925 / 49.85
+  Interface velocity:                   0.05133
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2618583
+  Mean bubble velocity: 0.047655076  0  
+  Position of the center of mass:  4.3541658  0  
+  Range of level set values: -1.039766 / 1.063323
+
+Time step #40, advancing from t_n-1 = 5.49 to t = 5.63 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000736/32] [5.71e-07/15] [5.39e-12/11] [9.96e-14/conv.]
+  Residual/iterations: [0.000119/16] [6.45e-09/9] [4.6e-11/conv.]
+  Interface location center pointwise:  2.633
+  Interface location lower wall/angle:  2.932 / 130.2
+  Interface location upper wall/angle:  2.932 / 49.84
+  Interface velocity:                   0.05195
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2566654
+  Mean bubble velocity: 0.047785295  0  
+  Position of the center of mass:  4.3574954  0  
+  Range of level set values: -1.0397651 / 1.0637676
+
+Time step #41, advancing from t_n-1 = 5.63 to t = 5.77 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000738/32] [5.75e-07/15] [5.4e-12/11] [9.91e-14/conv.]
+  Residual/iterations: [0.00012/16] [6.92e-09/9] [4.7e-11/conv.]
+  Interface location center pointwise:  2.639
+  Interface location lower wall/angle:  2.939 / 130.3
+  Interface location upper wall/angle:  2.939 / 49.74
+  Interface velocity:                   0.05227
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2513373
+  Mean bubble velocity: 0.04790765  0  
+  Position of the center of mass:  4.3608253  0  
+  Range of level set values: -1.0397643 / 1.0641402
+
+Time step #42, advancing from t_n-1 = 5.77 to t = 5.9 (dt = 0.136). 
+  Advance Cahn-Hilliard: [0.000741/32] [5.8e-07/15] [5.4e-12/11] [9.84e-14/conv.]
+  Residual/iterations: [0.000121/16] [7.53e-09/9] [4.89e-11/conv.]
+  Interface location center pointwise:  2.646
+  Interface location lower wall/angle:  2.946 / 130.3
+  Interface location upper wall/angle:  2.946 / 49.7
+  Interface velocity:                   0.05084
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.24651
+  Mean bubble velocity: 0.048024257  0  
+  Position of the center of mass:  4.3641571  0  
+  Range of level set values: -1.0397634 / 1.0644385
+
+Time step #43, advancing from t_n-1 = 5.9 to t = 6 (dt = 0.0984). 
+  Advance Cahn-Hilliard: [0.000464/32] [2.27e-07/16] [9.48e-13/11] [4.1e-14/conv.]
+  Residual/iterations: [7.71e-05/17] [4.1e-09/8] [4.82e-11/conv.]
+  Interface location center pointwise:  2.651
+  Interface location lower wall/angle:  2.951 / 130.3
+  Interface location upper wall/angle:  2.951 / 49.68
+  Interface velocity:                   0.05038
+  Concentration range: -1.04 / 1.06
+  Degree of circularity: 4.2431193
+  Mean bubble velocity: 0.048104966  0  
+  Position of the center of mass:  4.3665715  0  
+  Range of level set values: -1.0397628 / 1.0646071
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      9.14s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Cahn-Hilliard preconditioner.   |        43 |     0.436s |       4.8% |
+| Cahn-Hilliard residual.         |       175 |    0.0686s |      0.75% |
+| Cahn-Hilliard solve.            |       132 |       1.8s |        20% |
+| Compute force.                  |        43 |    0.0133s |      0.15% |
+| NS apply boundary conditions.   |        43 |    0.0583s |      0.64% |
+| NS assemble nonlinear residual. |       133 |     0.109s |       1.2% |
+| NS assemble preconditioner.     |         3 |    0.0881s |      0.96% |
+| NS build preconditioner.        |         3 |     0.192s |       2.1% |
+| NS distribute DoFs.             |         1 |    0.0157s |      0.17% |
+| NS setup matrix and vectors.    |         1 |    0.0376s |      0.41% |
+| NS solve system.                |        90 |      5.96s |        65% |
+| TP setup problem.               |         1 |    0.0948s |         1% |
++---------------------------------+-----------+------------+------------+
+

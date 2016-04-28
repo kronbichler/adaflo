@@ -1,0 +1,18 @@
+AUTHORS of ADAFLO
+
+Martin Kronbichler
+(2008-2012: Uppsala University)
+(2013-:     Technical University of Munich
+Main author, contributed Navier-Stokes solver, level set solver, phase field
+solver, matrix-free implementation of matrix-vector products in solvers,
+preconditioners
+
+Ababacar Diagne
+(2012-:     Uppsala University)
+Modular extension of level set framework (together with M. Kronbichler),
+MPI parallelization of program (together with M. Kronbichler),
+Adaptive time stepping based on bubble velocity
+
+Hanna Holmgren
+(2013-:     Uppsala University)
+Many bug fixes in level set part, initial support for moving contact lines

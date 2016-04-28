@@ -1,0 +1,430 @@
+
+Number of active cells: 3200.
+Number of Navier-Stokes degrees of freedom: 29403 (26082 + 3321).
+Number of phase field degrees of freedom: 6642 (3321 + 3321).
+Mesh size (largest/smallest element length at finest level): 0.025 / 0.025
+  Degree of circularity: 0.9996614
+  Mean bubble velocity: 0  0  
+  Position of the center of mass:  0.5  0.5  
+  Range of level set values: -1 / 0.9999092
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.02 (dt = 0.02). 
+  Advance Cahn-Hilliard: [0.0006/10] [4.04e-09/12] [4.4e-13/conv.]
+  Residual/iterations: [0.0188/ILU/16] [3.56e-06/16] [4.32e-10/conv.]
+  Degree of circularity: 0.99966625
+  Mean bubble velocity: 0  0.0094050871  
+  Position of the center of mass:  0.5  0.5  
+  Range of level set values: -1 / 0.99987663
+
+Time step #2, advancing from t_n-1 = 0.02 to t = 0.04 (dt = 0.02). 
+  Advance Cahn-Hilliard: [0.0006/10] [1.94e-08/12] [3.97e-13/conv.]
+  Residual/iterations: [0.00514/ILU/11] [3.01e-06/15] [3.02e-10/conv.]
+  Degree of circularity: 0.99966992
+  Mean bubble velocity: 0  0.01867432  
+  Position of the center of mass:  0.5  0.50012594  
+  Range of level set values: -1 / 0.99986664
+
+Time step #3, advancing from t_n-1 = 0.04 to t = 0.06 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.22e-05/12] [1.02e-07/12] [8.65e-13/conv.]
+  Residual/iterations: [0.00014/11] [1.11e-08/7] [3.44e-10/conv.]
+  Degree of circularity: 0.99967331
+  Mean bubble velocity: 0  0.027756335  
+  Position of the center of mass:  0.5  0.50054246  
+  Range of level set values: -1 / 0.99986338
+
+Time step #4, advancing from t_n-1 = 0.06 to t = 0.08 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.39e-05/12] [5.56e-08/12] [6.84e-13/conv.]
+  Residual/iterations: [0.000138/11] [1.14e-08/7] [4.54e-10/conv.]
+  Degree of circularity: 0.99967622
+  Mean bubble velocity: 0  0.036632608  
+  Position of the center of mass:  0.5  0.50117568  
+  Range of level set values: -1 / 0.99986053
+
+Time step #5, advancing from t_n-1 = 0.08 to t = 0.1 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.09e-05/12] [4.18e-08/12] [6.34e-13/conv.]
+  Residual/iterations: [0.000136/11] [1.19e-08/7] [4.81e-10/conv.]
+  Degree of circularity: 0.99967784
+  Mean bubble velocity: 0  0.045296204  
+  Position of the center of mass:  0.5  0.50199701  
+  Range of level set values: -1 / 0.9998581
+
+Time step #6, advancing from t_n-1 = 0.1 to t = 0.12 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.95e-05/12] [3.65e-08/12] [6.42e-13/conv.]
+  Residual/iterations: [0.000136/11] [1.25e-08/8] [2.51e-10/conv.]
+  Degree of circularity: 0.9996809
+  Mean bubble velocity: 0  0.053743845  
+  Position of the center of mass:  0.5  0.50299343  
+  Range of level set values: -1 / 0.99985799
+
+Time step #7, advancing from t_n-1 = 0.12 to t = 0.14 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.89e-05/12] [3.41e-08/12] [6.78e-13/conv.]
+  Residual/iterations: [0.000135/11] [1.39e-08/8] [3.01e-10/conv.]
+  Degree of circularity: 0.9996862
+  Mean bubble velocity: 0  0.061973856  
+  Position of the center of mass:  0.5  0.50415632  
+  Range of level set values: -1 / 0.99986121
+
+Time step #8, advancing from t_n-1 = 0.14 to t = 0.16 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.85e-05/12] [3.28e-08/12] [7.35e-13/conv.]
+  Residual/iterations: [0.000135/12] [1.05e-08/7] [4.96e-10/conv.]
+  Degree of circularity: 0.99968446
+  Mean bubble velocity: 0  0.069984562  
+  Position of the center of mass:  0.5  0.50547945  
+  Range of level set values: -1 / 0.9998667
+
+Time step #9, advancing from t_n-1 = 0.16 to t = 0.18 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.83e-05/12] [3.24e-08/12] [8.13e-13/conv.]
+  Residual/iterations: [0.000135/12] [1.32e-08/8] [3.7e-10/conv.]
+  Degree of circularity: 0.99967821
+  Mean bubble velocity: 0  0.077773903  
+  Position of the center of mass:  0.5  0.50695848  
+  Range of level set values: -1 / 0.99988357
+
+Time step #10, advancing from t_n-1 = 0.18 to t = 0.2 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.82e-05/13] [3.25e-08/12] [9.17e-13/conv.]
+  Residual/iterations: [0.000136/13] [9.65e-09/8] [3.56e-10/conv.]
+  Degree of circularity: 0.99966961
+  Mean bubble velocity: 0  0.085340299  
+  Position of the center of mass:  0.5  0.50858672  
+  Range of level set values: -1 / 0.99991096
+
+Time step #11, advancing from t_n-1 = 0.2 to t = 0.22 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.83e-05/13] [3.32e-08/13] [2.94e-13/conv.]
+  Residual/iterations: [0.000136/13] [1.29e-08/9] [2.77e-10/conv.]
+  Degree of circularity: 0.99965962
+  Mean bubble velocity: 0  0.09268138  
+  Position of the center of mass:  0.5  0.51036003  
+  Range of level set values: -1 / 0.99993592
+
+Time step #12, advancing from t_n-1 = 0.22 to t = 0.24 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.85e-05/13] [3.44e-08/13] [3.46e-13/conv.]
+  Residual/iterations: [0.000137/14] [1.19e-08/8] [4.79e-10/conv.]
+  Degree of circularity: 0.99964882
+  Mean bubble velocity: 0  0.099795084  
+  Position of the center of mass:  0.5  0.51227563  
+  Range of level set values: -1 / 0.99995595
+
+Time step #13, advancing from t_n-1 = 0.24 to t = 0.26 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.89e-05/13] [3.6e-08/13] [4.05e-13/conv.]
+  Residual/iterations: [0.000138/15] [1.09e-08/8] [4.15e-10/conv.]
+  Degree of circularity: 0.9996455
+  Mean bubble velocity: 0  0.10667929  
+  Position of the center of mass:  0.5  0.51432811  
+  Range of level set values: -1 / 0.99996882
+
+Time step #14, advancing from t_n-1 = 0.26 to t = 0.28 (dt = 0.02). 
+  Advance Cahn-Hilliard: [1.95e-05/13] [3.79e-08/13] [4.68e-13/conv.]
+  Residual/iterations: [0.000139/16] [9.14e-09/8] [3.52e-10/conv.]
+  Degree of circularity: 0.99964617
+  Mean bubble velocity: 0  0.11333027  
+  Position of the center of mass:  0.5  0.51651717  
+  Range of level set values: -1 / 0.99997278
+
+Time step #15, advancing from t_n-1 = 0.28 to t = 0.3 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.02e-05/13] [4.01e-08/13] [5.32e-13/conv.]
+  Residual/iterations: [0.00014/17] [9.31e-09/8] [3.47e-10/conv.]
+  Degree of circularity: 0.99964508
+  Mean bubble velocity: 0  0.11974832  
+  Position of the center of mass:  0.5  0.51884105  
+  Range of level set values: -1 / 0.99996668
+
+Time step #16, advancing from t_n-1 = 0.3 to t = 0.32 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.11e-05/13] [4.25e-08/13] [5.97e-13/conv.]
+  Residual/iterations: [0.000142/ILU/12] [8.1e-09/7] [3.36e-10/conv.]
+  Degree of circularity: 0.99963499
+  Mean bubble velocity: 0  0.12592842  
+  Position of the center of mass:  0.5  0.52129676  
+  Range of level set values: -1 / 0.99998275
+
+Time step #17, advancing from t_n-1 = 0.32 to t = 0.34 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.2e-05/13] [4.52e-08/13] [6.66e-13/conv.]
+  Residual/iterations: [0.000143/12] [9.73e-09/7] [3.46e-10/conv.]
+  Degree of circularity: 0.99961982
+  Mean bubble velocity: 0  0.13187107  
+  Position of the center of mass:  0.5  0.52388279  
+  Range of level set values: -1 / 0.99999978
+
+Time step #18, advancing from t_n-1 = 0.34 to t = 0.36 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.31e-05/13] [4.82e-08/13] [7.42e-13/conv.]
+  Residual/iterations: [0.000145/13] [7.29e-09/6] [4.25e-10/conv.]
+  Degree of circularity: 0.99960478
+  Mean bubble velocity: 0  0.13757458  
+  Position of the center of mass:  0.5  0.52658788  
+  Range of level set values: -1 / 1.0000083
+
+Time step #19, advancing from t_n-1 = 0.36 to t = 0.38 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.42e-05/13] [5.13e-08/13] [8.33e-13/conv.]
+  Residual/iterations: [0.000148/13] [1.35e-08/7] [3.38e-10/conv.]
+  Degree of circularity: 0.99958885
+  Mean bubble velocity: 0  0.14303686  
+  Position of the center of mass:  0.5  0.52939774  
+  Range of level set values: -1 / 1.0000084
+
+Time step #20, advancing from t_n-1 = 0.38 to t = 0.4 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.54e-05/13] [5.47e-08/13] [9.43e-13/conv.]
+  Residual/iterations: [0.00015/14] [1.33e-08/7] [3.68e-10/conv.]
+  Degree of circularity: 0.9995554
+  Mean bubble velocity: 0  0.14825878  
+  Position of the center of mass:  0.5  0.5323058  
+  Range of level set values: -1 / 0.99999996
+
+Time step #21, advancing from t_n-1 = 0.4 to t = 0.42 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.67e-05/13] [5.83e-08/14] [3.02e-13/conv.]
+  Residual/iterations: [0.000153/15] [1.17e-08/7] [4.24e-10/conv.]
+  Degree of circularity: 0.99952381
+  Mean bubble velocity: 0  0.1532394  
+  Position of the center of mass:  0.5  0.53530458  
+  Range of level set values: -1 / 0.99998236
+
+Time step #22, advancing from t_n-1 = 0.42 to t = 0.44 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.8e-05/13] [6.22e-08/14] [3.36e-13/conv.]
+  Residual/iterations: [0.000156/16] [1.25e-08/8] [2.84e-10/conv.]
+  Degree of circularity: 0.99948664
+  Mean bubble velocity: 0  0.15797908  
+  Position of the center of mass:  0.5  0.53839939  
+  Range of level set values: -1 / 0.99995348
+
+Time step #23, advancing from t_n-1 = 0.44 to t = 0.46 (dt = 0.02). 
+  Advance Cahn-Hilliard: [2.93e-05/13] [6.63e-08/14] [3.67e-13/conv.]
+  Residual/iterations: [0.00016/ILU/12] [1.43e-08/6] [2.72e-10/conv.]
+  Degree of circularity: 0.99945905
+  Mean bubble velocity: 0  0.16247916  
+  Position of the center of mass:  0.5  0.54158488  
+  Range of level set values: -1 / 1.000827
+
+Time step #24, advancing from t_n-1 = 0.46 to t = 0.48 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.06e-05/13] [7.08e-08/14] [3.99e-13/conv.]
+  Residual/iterations: [0.000164/13] [9.61e-09/5] [3.97e-10/conv.]
+  Degree of circularity: 0.99942637
+  Mean bubble velocity: 0  0.16673975  
+  Position of the center of mass:  0.5  0.54486366  
+  Range of level set values: -1 / 1.0018005
+
+Time step #25, advancing from t_n-1 = 0.48 to t = 0.5 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.19e-05/13] [7.56e-08/14] [4.32e-13/conv.]
+  Residual/iterations: [0.000168/13] [1.54e-08/6] [4.06e-10/conv.]
+  Degree of circularity: 0.99937973
+  Mean bubble velocity: 0  0.17076623  
+  Position of the center of mass:  0.5  0.54821692  
+  Range of level set values: -1.0000001 / 1.0044626
+
+Time step #26, advancing from t_n-1 = 0.5 to t = 0.52 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.32e-05/13] [8.07e-08/14] [4.7e-13/conv.]
+  Residual/iterations: [0.000173/14] [1.59e-08/7] [3.04e-10/conv.]
+  Degree of circularity: 0.99931342
+  Mean bubble velocity: 0  0.17456153  
+  Position of the center of mass:  0.5  0.55164894  
+  Range of level set values: -1.0000009 / 1.0066071
+
+Time step #27, advancing from t_n-1 = 0.52 to t = 0.54 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.45e-05/13] [8.59e-08/14] [5.1e-13/conv.]
+  Residual/iterations: [0.000179/15] [1.62e-08/7] [3.98e-10/conv.]
+  Degree of circularity: 0.99922478
+  Mean bubble velocity: 0  0.17812611  
+  Position of the center of mass:  0.5  0.55517099  
+  Range of level set values: -1.0000057 / 1.0080679
+
+Time step #28, advancing from t_n-1 = 0.54 to t = 0.56 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.58e-05/13] [9.12e-08/14] [5.53e-13/conv.]
+  Residual/iterations: [0.000185/ILU/13] [1.37e-08/6] [4.46e-10/conv.]
+  Degree of circularity: 0.99912646
+  Mean bubble velocity: 0  0.18146318  
+  Position of the center of mass:  0.5  0.55876193  
+  Range of level set values: -1.0000107 / 1.0092792
+
+Time step #29, advancing from t_n-1 = 0.56 to t = 0.58 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.7e-05/13] [9.67e-08/14] [5.94e-13/conv.]
+  Residual/iterations: [0.000192/13] [1.57e-08/7] [2.69e-10/conv.]
+  Degree of circularity: 0.99901351
+  Mean bubble velocity: 0  0.18457558  
+  Position of the center of mass:  0.5  0.56241544  
+  Range of level set values: -1.0000156 / 1.0106974
+
+Time step #30, advancing from t_n-1 = 0.58 to t = 0.6 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.82e-05/13] [1.02e-07/14] [6.27e-13/conv.]
+  Residual/iterations: [0.000198/14] [1.41e-08/6] [4.34e-10/conv.]
+  Degree of circularity: 0.99886749
+  Mean bubble velocity: 0  0.1874701  
+  Position of the center of mass:  0.5  0.5661213  
+  Range of level set values: -1.0000197 / 1.0145409
+
+Time step #31, advancing from t_n-1 = 0.6 to t = 0.62 (dt = 0.02). 
+  Advance Cahn-Hilliard: [3.93e-05/13] [1.08e-07/14] [6.52e-13/conv.]
+  Residual/iterations: [0.000204/15] [1.5e-08/7] [3.17e-10/conv.]
+  Degree of circularity: 0.99872274
+  Mean bubble velocity: 0  0.19015693  
+  Position of the center of mass:  0.5  0.56985226  
+  Range of level set values: -1.0003101 / 1.0172447
+
+Time step #32, advancing from t_n-1 = 0.62 to t = 0.64 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.05e-05/13] [1.14e-07/14] [6.73e-13/conv.]
+  Residual/iterations: [0.000211/16] [1.94e-08/8] [2.77e-10/conv.]
+  Degree of circularity: 0.99858112
+  Mean bubble velocity: 0  0.19264103  
+  Position of the center of mass:  0.5  0.57362344  
+  Range of level set values: -1.0011705 / 1.018897
+
+Time step #33, advancing from t_n-1 = 0.64 to t = 0.66 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.15e-05/13] [1.2e-07/14] [6.95e-13/conv.]
+  Residual/iterations: [0.000218/ILU/14] [1.22e-08/6] [3.17e-10/conv.]
+  Degree of circularity: 0.99838915
+  Mean bubble velocity: 0  0.19492532  
+  Position of the center of mass:  0.5  0.57746024  
+  Range of level set values: -1.0020818 / 1.0200691
+
+Time step #34, advancing from t_n-1 = 0.66 to t = 0.68 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.25e-05/13] [1.26e-07/14] [7.24e-13/conv.]
+  Residual/iterations: [0.000226/14] [1.38e-08/6] [3.56e-10/conv.]
+  Degree of circularity: 0.99815097
+  Mean bubble velocity: 0  0.19700952  
+  Position of the center of mass:  0.5  0.58137916  
+  Range of level set values: -1.0030334 / 1.0216412
+
+Time step #35, advancing from t_n-1 = 0.68 to t = 0.7 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.35e-05/13] [1.32e-07/14] [7.57e-13/conv.]
+  Residual/iterations: [0.000235/14] [1.96e-08/7] [3.36e-10/conv.]
+  Degree of circularity: 0.99789259
+  Mean bubble velocity: 0  0.19890105  
+  Position of the center of mass:  0.5  0.58535065  
+  Range of level set values: -1.0040016 / 1.024132
+
+Time step #36, advancing from t_n-1 = 0.7 to t = 0.72 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.44e-05/13] [1.37e-07/14] [7.8e-13/conv.]
+  Residual/iterations: [0.000242/15] [1.95e-08/7] [4.38e-10/conv.]
+  Degree of circularity: 0.99761015
+  Mean bubble velocity: 0  0.20061816  
+  Position of the center of mass:  0.5  0.58932135  
+  Range of level set values: -1.0050075 / 1.0280804
+
+Time step #37, advancing from t_n-1 = 0.72 to t = 0.74 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.53e-05/13] [1.43e-07/14] [7.87e-13/conv.]
+  Residual/iterations: [0.000249/16] [2.42e-08/8] [3.51e-10/conv.]
+  Degree of circularity: 0.99729929
+  Mean bubble velocity: 0  0.20216962  
+  Position of the center of mass:  0.5  0.59329657  
+  Range of level set values: -1.0060295 / 1.0305511
+
+Time step #38, advancing from t_n-1 = 0.74 to t = 0.76 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.61e-05/13] [1.48e-07/14] [7.81e-13/conv.]
+  Residual/iterations: [0.000255/18] [1.75e-08/8] [3.39e-10/conv.]
+  Degree of circularity: 0.99696702
+  Mean bubble velocity: 0  0.20355486  
+  Position of the center of mass:  0.5  0.59729654  
+  Range of level set values: -1.006962 / 1.0319222
+
+Time step #39, advancing from t_n-1 = 0.76 to t = 0.78 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.69e-05/13] [1.53e-07/14] [7.73e-13/conv.]
+  Residual/iterations: [0.000262/ILU/14] [1.76e-08/7] [2.59e-10/conv.]
+  Degree of circularity: 0.99659311
+  Mean bubble velocity: 0  0.20477813  
+  Position of the center of mass:  0.5  0.60133915  
+  Range of level set values: -1.0081078 / 1.0329306
+
+Time step #40, advancing from t_n-1 = 0.78 to t = 0.8 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.77e-05/13] [1.58e-07/14] [7.72e-13/conv.]
+  Residual/iterations: [0.000269/14] [1.74e-08/7] [2.7e-10/conv.]
+  Degree of circularity: 0.99615705
+  Mean bubble velocity: 0  0.20584856  
+  Position of the center of mass:  0.5  0.60541439  
+  Range of level set values: -1.0095915 / 1.0341446
+
+Time step #41, advancing from t_n-1 = 0.8 to t = 0.82 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.83e-05/13] [1.63e-07/14] [7.84e-13/conv.]
+  Residual/iterations: [0.000278/15] [1.37e-08/6] [4.98e-10/conv.]
+  Degree of circularity: 0.99571398
+  Mean bubble velocity: 0  0.20678137  
+  Position of the center of mass:  0.5  0.60950907  
+  Range of level set values: -1.0112535 / 1.0363122
+
+Time step #42, advancing from t_n-1 = 0.82 to t = 0.84 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.89e-05/13] [1.67e-07/14] [7.96e-13/conv.]
+  Residual/iterations: [0.000286/16] [1.61e-08/7] [4.1e-10/conv.]
+  Degree of circularity: 0.99524886
+  Mean bubble velocity: 0  0.20757696  
+  Position of the center of mass:  0.5  0.61362613  
+  Range of level set values: -1.0128138 / 1.0405536
+
+Time step #43, advancing from t_n-1 = 0.84 to t = 0.86 (dt = 0.02). 
+  Advance Cahn-Hilliard: [4.95e-05/13] [1.72e-07/14] [7.92e-13/conv.]
+  Residual/iterations: [0.000292/17] [1.76e-08/8] [3.17e-10/conv.]
+  Degree of circularity: 0.99473317
+  Mean bubble velocity: 0  0.20823799  
+  Position of the center of mass:  0.5  0.61775887  
+  Range of level set values: -1.0141468 / 1.0430919
+
+Time step #44, advancing from t_n-1 = 0.86 to t = 0.88 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.01e-05/13] [1.75e-07/14] [7.76e-13/conv.]
+  Residual/iterations: [0.000297/18] [2.14e-08/9] [3.08e-10/conv.]
+  Degree of circularity: 0.9941552
+  Mean bubble velocity: 0  0.20877279  
+  Position of the center of mass:  0.5  0.62190568  
+  Range of level set values: -1.0151515 / 1.0442778
+
+Time step #45, advancing from t_n-1 = 0.88 to t = 0.9 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.06e-05/13] [1.79e-07/14] [7.59e-13/conv.]
+  Residual/iterations: [0.000301/ILU/14] [2.32e-08/7] [3.82e-10/conv.]
+  Degree of circularity: 0.99357914
+  Mean bubble velocity: 0  0.20920224  
+  Position of the center of mass:  0.5  0.62602246  
+  Range of level set values: -1.0160915 / 1.044843
+
+Time step #46, advancing from t_n-1 = 0.9 to t = 0.92 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.11e-05/13] [1.83e-07/14] [7.53e-13/conv.]
+  Residual/iterations: [0.000306/14] [2.69e-08/7] [4.6e-10/conv.]
+  Degree of circularity: 0.99300366
+  Mean bubble velocity: 0  0.20953261  
+  Position of the center of mass:  0.5  0.63012587  
+  Range of level set values: -1.0170667 / 1.0459656
+
+Time step #47, advancing from t_n-1 = 0.92 to t = 0.94 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.15e-05/13] [1.86e-07/14] [7.64e-13/conv.]
+  Residual/iterations: [0.000312/15] [2.15e-08/7] [4.67e-10/conv.]
+  Degree of circularity: 0.99235797
+  Mean bubble velocity: 0  0.20975847  
+  Position of the center of mass:  0.5  0.63425725  
+  Range of level set values: -1.0177699 / 1.0460163
+
+Time step #48, advancing from t_n-1 = 0.94 to t = 0.96 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.18e-05/13] [1.89e-07/14] [7.78e-13/conv.]
+  Residual/iterations: [0.000319/16] [2.3e-08/8] [3.85e-10/conv.]
+  Degree of circularity: 0.99163157
+  Mean bubble velocity: 0  0.20987884  
+  Position of the center of mass:  0.5  0.63844433  
+  Range of level set values: -1.0189079 / 1.0509547
+
+Time step #49, advancing from t_n-1 = 0.96 to t = 0.98 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.21e-05/13] [1.91e-07/14] [7.79e-13/conv.]
+  Residual/iterations: [0.000325/17] [2.48e-08/8] [4.51e-10/conv.]
+  Degree of circularity: 0.99087571
+  Mean bubble velocity: 0  0.20990606  
+  Position of the center of mass:  0.5  0.64263959  
+  Range of level set values: -1.0203072 / 1.054017
+
+Time step #50, advancing from t_n-1 = 0.98 to t = 1 (dt = 0.02). 
+  Advance Cahn-Hilliard: [5.24e-05/13] [1.93e-07/14] [7.64e-13/conv.]
+  Residual/iterations: [0.000329/18] [2.68e-08/9] [3.79e-10/conv.]
+  Degree of circularity: 0.9901724
+  Mean bubble velocity: 0  0.20986145  
+  Position of the center of mass:  0.5  0.64678163  
+  Range of level set values: -1.0221692 / 1.0554858
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      3.46s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Cahn-Hilliard preconditioner.   |         2 |    0.0197s |      0.57% |
+| Cahn-Hilliard residual.         |       150 |    0.0445s |       1.3% |
+| Cahn-Hilliard solve.            |       100 |     0.792s |        23% |
+| Compute force.                  |        50 |   0.00954s |      0.28% |
+| NS apply boundary conditions.   |       100 |    0.0216s |      0.62% |
+| NS assemble nonlinear residual. |       150 |    0.0831s |       2.4% |
+| NS assemble preconditioner.     |         8 |     0.154s |       4.4% |
+| NS build preconditioner.        |         8 |      0.27s |       7.8% |
+| NS distribute DoFs.             |         1 |    0.0558s |       1.6% |
+| NS setup matrix and vectors.    |         1 |    0.0164s |      0.47% |
+| NS solve system.                |       100 |      1.77s |        51% |
+| TP setup problem.               |         1 |     0.104s |         3% |
++---------------------------------+-----------+------------+------------+
+

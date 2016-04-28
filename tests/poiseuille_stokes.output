@@ -1,0 +1,61 @@
+Running a 2D channel flow problem using BDF-2, Q2/Q1 elements
+ Number of active cells: 16384.
+ Number of degrees of freedom (velocity/pressure): 149059 (132354 + 16705).
+ Approximate size last cell: 0.015625
+  Maximum velocity now: 5
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   3.722e-01        AMGl       9.85e+02       33       2.30e-06
+   2.298e-06        ---        3.54e-03       33       2.06e-11
+   2.055e-11        ---        4.13e-08       11       3.91e-13
+   3.959e-13     converged.
+
+-- Statistics --                 min        avg       max     avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       252       252       252            0      0     
+-- Statistics -- mat-vec     :     0.994     0.994     0.994    0.0124  0      0     
+-- Statistics -- full prec   :      4.29      4.29      4.29    0.0536  0      0     
+-- Statistics -- velocity    :      3.94      3.94      3.94    0.0492  0      0     
+-- Statistics -- div-matrix  :     0.326     0.326     0.326   0.00408  0      0     
+-- Statistics -- pres mass   :    0.0241    0.0241    0.0241  0.000301  0      0     
+-- Statistics -- pres Poisson:         0         0         0         0  0      0     
+
+  L2-Errors: ||e_p||_L2 = 5.281e-12,   ||e_u||_L2 = 9.518e-12
+
+
++---------------------------------------------+------------+------------+
+| Total CPU time elapsed since start          |      9.32s |            |
+|                                             |            |            |
+| Section                         | no. calls |  CPU time  | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         1 |     0.237s |       2.5% |
+| NS apply boundary conditions.   |         1 |    0.0794s |      0.85% |
+| NS assemble nonlinear residual. |         4 |     0.051s |      0.55% |
+| NS assemble preconditioner.     |         1 |     0.525s |       5.6% |
+| NS build preconditioner.        |         1 |     0.384s |       4.1% |
+| NS distribute DoFs.             |         1 |     0.237s |       2.5% |
+| NS setup matrix and vectors.    |         1 |     0.316s |       3.4% |
+| NS solve system.                |         3 |      5.52s |        59% |
+| Setup grid and initial condition|         1 |   0.00118s |     0.013% |
++---------------------------------+-----------+------------+------------+
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      9.39s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Compute errors.                 |         1 |     0.238s |       2.5% |
+| NS apply boundary conditions.   |         1 |    0.0793s |      0.84% |
+| NS assemble nonlinear residual. |         4 |    0.0535s |      0.57% |
+| NS assemble preconditioner.     |         1 |     0.526s |       5.6% |
+| NS build preconditioner.        |         1 |     0.402s |       4.3% |
+| NS distribute DoFs.             |         1 |     0.237s |       2.5% |
+| NS setup matrix and vectors.    |         1 |      0.32s |       3.4% |
+| NS solve system.                |         3 |      5.55s |        59% |
+| Setup grid and initial condition|         1 |   0.00122s |     0.013% |
++---------------------------------+-----------+------------+------------+
+

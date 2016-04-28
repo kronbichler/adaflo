@@ -1,0 +1,57 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+# Listing of Parameters
+subsection Two phase
+  set density              = 1.
+  set density difference   = -0.2
+  set viscosity            = 0.3
+  set viscosity difference = 0.700 # oil viscosity: 0.00334 N/m^2, water: 0.001 N/m^2
+  set surface tension      = 1
+  set epsilon              = 2.88
+  set gravity              = 0.
+  set diffusion length     = 0.06
+  set contact angle        = 0.766
+  set pressure constraint  = 0
+  set Cahn-Hilliard do Newton = 1
+  set concentration subdivisions = 1
+end
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 6.
+  set step size        = 0.2
+end
+subsection Navier-Stokes
+  set physical type      = incompressible
+  set dimension          = 2
+  set global refinements = 5
+  set velocity degree    = 2
+  set viscosity          = 0.1
+  subsection Solver
+    set linearization scheme         = coupled implicit Newton
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-10
+    set lin max iterations           = 50
+    set lin tolerance                = 1.e-4
+    set lin relative tolerance       = 1
+    set lin velocity preconditioner  = amg linear
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename = output-phasefield_poiseuille/data
+  set output frequency = 0.1
+  set output verbosity = 1
+  set output vtk files = 0
+end

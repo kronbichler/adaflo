@@ -1,0 +1,42 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+#
+# Listing of Parameters
+subsection Time stepping
+  set end time   = 20
+  set step size  = 0.1
+end
+subsection Navier-Stokes
+  set physical type      = incompressible
+  set dimension          = 2
+  set global refinements = 4
+  set velocity degree    = 2
+  set viscosity          = 0.5
+  subsection Solver
+    set linearization scheme         = projection
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-12
+    set lin max iterations           = 50
+    set lin tolerance                = 1.e-5
+    set lin relative tolerance       = 1
+    set lin velocity preconditioner  = amg
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output verbosity = 2
+  set output vtk files = 1
+  set output filename = output-poiseuille_ns_proj/data
+end

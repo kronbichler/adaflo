@@ -1,0 +1,53 @@
+# $Id: static_bubble.prm -1   $
+#
+# Listing of Parameters
+# ---------------------
+#
+subsection Problem-specific
+  set two-phase method = level set okz
+end
+subsection Two phase
+  set density              = 30
+  set density difference   = 270
+  set viscosity            = 20
+  set viscosity difference = 380
+  set surface tension      = 100
+  set epsilon              = 2
+  set gravity              = 0.98
+  set concentration subdivisions = 3
+  set grad pressure compatible = 1
+  set localize surface tension = 1
+  set curvature correction = 1
+  set number reinit steps = 3
+  set number initial reinit steps = 0
+end
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 1.65
+  set step size        = 0.0001
+  set max step size    = 0.008
+  set min step size    = 0.0002
+  set CFL number       = 0.85
+  set CFL number capillary = 1
+end
+subsection Navier-Stokes
+  set dimension            = 3
+  set global refinements   = 1
+  set adaptive refinements = 2
+  set velocity degree      = 2
+  set augmented Taylor-Hood elements = 0
+  subsection Solver
+    set NL max iterations            = 25
+    set NL tolerance                 = 1.e-6
+    set lin max iterations           = 30
+    set lin tolerance                = 1.e-4
+    set lin velocity preconditioner  = ilu
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename  = output/micro_particle
+  set output verbosity = 1
+  set output frequency = 0.01
+  set output vtk files = 1
+end

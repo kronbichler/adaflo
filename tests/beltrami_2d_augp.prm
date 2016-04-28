@@ -1,0 +1,44 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+# Listing of Parameters
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 0.2
+  set step size        = 0.01
+end
+subsection Navier-Stokes
+  set dimension          = 2
+  set global refinements = 4
+  set velocity degree    = 4
+  set augmented Taylor-Hood elements = 1
+  set viscosity          = 1
+  subsection Solver
+    set linearization scheme         = coupled implicit Newton
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-9
+    set lin max iterations           = 30
+    set lin tolerance                = 1.e-5
+    set tau grad div                 = 0.0
+    set lin pressure mass preconditioner = ilu
+    set lin velocity preconditioner  = amg
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output verbosity = 1
+  set output filename = output-beltrami_2d_augp/data
+  set output vtk files = 0
+  set output frequency = 0.04
+end

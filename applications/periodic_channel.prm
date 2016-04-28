@@ -1,0 +1,33 @@
+# $Id: beltrami_3d.prm 283 2014-09-04 11:33:56Z martinkr $
+#
+# Listing of Parameters
+#
+subsection Time stepping
+  set step size = 0.1
+  set end time  = 1000
+end
+subsection Navier-Stokes
+  set physical type      = incompressible
+  set dimension          = 3
+  set global refinements = 32
+  set adaptive refinements = 0
+  set velocity degree    = 3
+  set viscosity          = 0.001472
+  subsection Solver
+    set linearization scheme         = coupled velocity semi-implicit
+    set NL max iterations            = 3
+    set NL tolerance                 = 1.e-4
+    set lin max iterations           = 50
+    set lin tolerance                = 1.e-5
+    set tau grad div                 = 1
+    set lin pressure mass preconditioner = diagonal
+    set lin velocity preconditioner  = amg linear
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename = output/channel
+  set output verbosity = 3
+  set output frequency = 10
+  set output vtk files = 1
+end

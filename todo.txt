@@ -1,0 +1,39 @@
+
+****
+Improving stability of level set OKZ algorithm: Our simulations often crash
+because the curvature gets very bad, which is in turn caused by the interface
+profile that gets some small oscillations.
+There are two things that we need to improve:
+
+- We need to introduce a mechanism to detect the bad curvature case. If
+necessary, we need a more rigorous reinitialization (this should only
+happen in the case when we have a bad profile).
+
+****
+
+
+- Include the possibility to re-try a time step in case something goes wrong. Need to use a slightly modified version of init_time_step for that.
+
+- Make algorithm more robust. Robustness is steered by time step size on the one hand but also various parameters
+  * capillary time step limit due to the splitting between level set and flow equations
+  * diffusion added to equations for normal computation (function local_compute_normal)
+  * diffusion added to equations for curvature computation
+  * wider interface (epsilon=2 instead of 1.5)
+We should have a setting which is more robust but less accurate due to too high diffusion and another one with less diffusion, which is done through the parameter file. In particular the normal and curvature computation are important.
+
+
+
+Longer-term plan:
+----------------
+
+- Need faster algorithms for the level set part in 3D. One limitation is that the conservative level set method needs a lot of resolution to represent the interface in a good way and that the interface shape can get distorted. Therefore, a standard level set method should be implement. It should be based on discontinuous Galerkin that only uses first derivatives and can make all evaluations in an explicit stepping scheme. We would need to explicitly compute CFL numbers. With this, one should easily be able to only compute the level set function in a narrow band on Q_-2 or Q_-3 elements and use 'dummy' values further away (either by manual data structures or hp::DoFHandler, when it finally works in parallel). To get good mass conservation, further measures in the reinitialization (and advection) step are required. One way would be to combine this with a DG0 element (like VOF) and use this as a constraint in the reinitialization. MK thinks that this should be doable without distorting the interface too much. Curvatures and normals can be computed as usual by two projection steps (without diffusion but by using DG flux functions).
+
+- Other time stepping, not only BDF-2: Possibilities implicit/explicit Runge-Kutta method (order 3?), generalized alpha
+
+- Navier-Stokes solver could get another preconditioner for the velocity where we use first a 'geometric' transfer from Q_p onto Q_1 elements.
+
+- Navier-Stokes smoothers based on matrix-free overlapping Schwarz tools
+
+- Block multigrid with overlapping Schwarz smoother as suggested in a paper by Kanschat and Mao (Journal of Numerical Mathematics, 2014).
+
+- XFEM discretization as an additional option
