@@ -10,7 +10,7 @@ on sum factorization, and state-of-the-art preconditioning techniques.
 
 #Getting started
 
-## Prerequisites
+### Prerequisites
 
 To use adaflo, a standard development environment with a relatively recent C++
 compiler, MPI, and cmake is assumed. Furthermore, the following external
@@ -73,7 +73,7 @@ bugs in deal.II and need to modify that code). Note that it is also possible
 to build adaflo against a build folder of deal.II.
 
 
-## Configuration of adaflo
+### Configuration of adaflo
 
 The adaflo configuration makes use of scripts from the deal.II library. For
 setting up adaflo, it is usually enough to run the two commands in the top
@@ -104,7 +104,7 @@ functionality of adaflo.
 Finally, somewhat larger configurations are included in the `applications`
 subfolder.
 
-## Setting up a new problem in adaflo
+### Setting up a new problem in adaflo
 
 Problems in adaflo are controlled on two levels:
 
