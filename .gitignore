@@ -1,7 +1,7 @@
 **/CMakeCache.txt
 **/CMakeFiles
 **/Makefile
-libadaflo.so
+libadaflo.*
 **/CTestTestfile.cmake
 **/cmake_install.cmake
 *~
