@@ -1,0 +1,16 @@
+**/CMakeCache.txt
+**/CMakeFiles
+**/Makefile
+libadaflo.so
+**/CTestTestfile.cmake
+**/cmake_install.cmake
+*~
+applications/drivencavity
+applications/micro_particle
+applications/periodic_channel
+tests/beltrami
+tests/flow_past_cylinder
+tests/phasefield_poiseuille
+tests/poiseuille
+tests/rising_bubble
+tests/spurious_currents
