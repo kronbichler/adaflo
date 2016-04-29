@@ -87,8 +87,8 @@ make -j8
 #Design of adaflo
 
 adaflo is based on core functionality in the folders `include/adaflo` and
-`source`. The core functionality consists of an interface to parameter files,
-an incompressible Navier-Solver, a level set two-phase flow solver based on
+`source`. It contains an interface to parameter files, an incompressible
+Navier-Stokes solver, a level set two-phase flow solver based on
 the conservative level set method by Olsson, Kreiss and Zahedi, and a phase
 field two-phase flow solver. This core functionality is collected in a library
 `libadaflo.so` (or `libadaflo.dylib`) against which actual applications can be
@@ -98,8 +98,8 @@ In addition, a set of tests are include in the subfolder `tests/`. These
 currently include single-fluid tests of a Beltrami(3D)/Taylor(2D) flow and
 Poiseuille flow, and two-phase flow tests for a rising bubble and spurious
 currents. While these are fully functional cases and can be used as a basis
-for developing new solvers, they also serve as unit tests for ensuring proper
-functionality of adaflo.
+for studying new problem cases, they also serve as unit tests for ensuring
+proper functionality of adaflo.
 
 Finally, somewhat larger configurations are included in the `applications`
 subfolder.
@@ -110,9 +110,10 @@ Problems in adaflo are controlled on two levels:
 
 * A user-written C++ file that specifies the computational domain (grid) and
   boundary conditions. This gives the user control over the (limited) deal.II
-  mesh generation capabilities, but also allows for reading meshes from mesh
-  generators such as the ucd format created by Cubit. In addition, curved
-  manifolds can be set this way.
+  mesh generation capabilities, or alternatively allows for reading meshes
+  from mesh generators such as the ucd format created by Cubit. In addition,
+  curved manifolds can be set this way to make the flow solver and grid
+  refinement align along these curves.
 
 * An input file with parameters for the fluids (density, viscosity), settings
   of the mesh (number of adaptive mesh levels), the time stepping, and solver
