@@ -1064,6 +1064,7 @@ compute_bubble_statistics(std::vector<Tensor<2,3> > *,
 
   set_adaptive_time_step (global_velocity.norm()/global_volume);
 
+  double pi = numbers::PI;
   if (parameters.output_verbosity > 0)
     {
       const std::size_t old_precision = std::cout.precision();
@@ -1080,6 +1081,9 @@ compute_bubble_statistics(std::vector<Tensor<2,3> > *,
       for (unsigned int d=0; d<dim; ++d)
         pcout << global_mass_center[d]/global_volume<< "  ";
       pcout<< std::endl;
+      pcout << "  Sphericity of the particle: " << (std::pow(pi, 1./3.)
+						    * std::pow(6*global_volume, 2./3.)) / (global_area)
+	    << std::endl;
 
       std::cout.precision(10);
       std::pair<double,double> concentration = get_concentration_range();
@@ -1097,6 +1101,8 @@ compute_bubble_statistics(std::vector<Tensor<2,3> > *,
     data[3+d] = global_velocity[d]/global_volume;
   for (unsigned int d=0; d<dim; ++d)
     data[3+dim+d] = global_mass_center[d]/global_volume;
+  data[3+dim+dim] = (std::pow(pi, 1./3.)
+		     * std::pow(6*global_volume, 2./3.)) / (global_area);
 
   return data;
 }
