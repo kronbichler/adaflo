@@ -829,7 +829,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
         }
     }
 
-  if (parameters.output_verbosity > 1 && time_stepping.step_no() % 10 == 1 ||
+  if ((parameters.output_verbosity > 1 && time_stepping.step_no() % 10 == 1) ||
       parameters.output_verbosity == 3)
     {
       std::ios_base::fmtflags flags = std::cout.flags();

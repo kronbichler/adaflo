@@ -14,3 +14,5 @@ tests/phasefield_poiseuille
 tests/poiseuille
 tests/rising_bubble
 tests/spurious_currents
+tests/output-*
+Testing/
