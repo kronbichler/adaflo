@@ -489,6 +489,7 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
                                                   solution_old.block(1), *timer);
 
   timer->enter_subsection ("NS solve system.");
+  Timer time;
 
   solution_update = 0;
   SolverControl solver_control_simple (std::min(parameters.iterations_before_inner_solvers,
@@ -557,7 +558,11 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
   constraints_u.distribute (solution_update.block(0));
   constraints_p.distribute (solution_update.block(1));
 
+  solver_timers[0].second += time.wall_time();
+  solver_timers[0].first++;
+
   timer->leave_subsection();
+
   return std::pair<unsigned int,double>(solver_control_simple.last_step()+
                                         solver_control_strong.last_step(),
                                         residual);
@@ -737,6 +742,7 @@ template <int dim>
 unsigned int
 NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
 {
+  Timer nl_timer;
   unsigned int step=0;
 
   // for projection, restore the actual value p^n here
@@ -827,53 +833,6 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
             std::printf(" converged.\n\n");
           break;
         }
-    }
-
-  if ((parameters.output_verbosity > 1 && time_stepping.step_no() % 10 == 1) ||
-      parameters.output_verbosity == 3)
-    {
-      std::ios_base::fmtflags flags = std::cout.flags();
-      pcout << "-- Statistics --                 min        avg       max     avg/call  p_min  p_max" << std::endl;
-      Utilities::System::MemoryStats stats;
-      Utilities::System::get_memory_stats(stats);
-      Utilities::MPI::MinMaxAvg memory =
-        Utilities::MPI::min_max_avg (stats.VmRSS/1024, triangulation.get_communicator());
-      pcout << "-- Statistics -- memory [MB] : " << std::fixed
-            << std::setprecision(0) << std::right << std::setw(9) << memory.min << " "
-            << std::setprecision(0) << std::right << std::setw(9) << memory.avg << " "
-            << std::setprecision(0) << std::right << std::setw(9) << memory.max << "            "
-            << std::setw(6) << std::left << memory.min_index << " "
-            << std::setw(6) << std::left << memory.max_index << std::endl;
-
-      std::cout.unsetf(std::ios_base::floatfield);
-
-      std::pair<Utilities::MPI::MinMaxAvg, unsigned int> matvec_time =
-        navier_stokes_matrix.get_matvec_statistics();
-      pcout << "-- Statistics -- mat-vec     : "
-            << std::setprecision(3) << std::right << std::setw(9) << matvec_time.first.min << " "
-            << std::setprecision(3) << std::right << std::setw(9) << matvec_time.first.avg << " "
-            << std::setprecision(3) << std::right << std::setw(9) << matvec_time.first.max << " "
-            << std::setprecision(3) << std::right << std::setw(9) << matvec_time.first.avg/matvec_time.second << "  "
-            << std::setw(6) << std::left << matvec_time.first.min_index << " "
-            << std::setw(6) << std::left << matvec_time.first.max_index << std::endl;
-
-      std::string names [5] = {"velocity", "div-matrix", "pres mass", "pres Poisson", "full prec"};
-      std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int> prec_time =
-        preconditioner.get_timer_statistics();
-      for (unsigned int i=0; i<5; ++i)
-        {
-          const unsigned int ind = (4+i)%5;
-          pcout << "-- Statistics -- " << std::setw(12) << names[ind] << ": "
-                << std::setprecision(3) << std::right << std::setw(9) << prec_time.first[ind].min << " "
-                << std::setprecision(3) << std::right << std::setw(9) << prec_time.first[ind].avg << " "
-                << std::setprecision(3) << std::right << std::setw(9) << prec_time.first[ind].max << " "
-                << std::setprecision(3) << std::right << std::setw(9)
-                << prec_time.first[ind].avg/prec_time.second << "  "
-                << std::setw(6) << std::left << prec_time.first[ind].min_index << " "
-                << std::setw(6) << std::left << prec_time.first[ind].max_index << std::endl;
-        }
-      pcout << std::endl;
-      std::cout.flags(flags);
     }
 
   // After the iteration, check whether the convergence of the linear solver
@@ -1014,6 +973,78 @@ end_loop:
       hanging_node_constraints_p.distribute(solution.block(1));
     }
 
+  solver_timers[1].second += nl_timer.wall_time();
+  solver_timers[1].first++;
+
+  if ((parameters.output_verbosity > 1 && time_stepping.step_no() % 10 == 1) ||
+      parameters.output_verbosity == 3)
+    {
+      std::ios_base::fmtflags flags = std::cout.flags();
+      pcout << "-- Statistics --                    min      avg      max avg/call  p_min  p_max" << std::endl;
+      Utilities::System::MemoryStats stats;
+      Utilities::System::get_memory_stats(stats);
+      Utilities::MPI::MinMaxAvg memory =
+        Utilities::MPI::min_max_avg (stats.VmRSS/1024, triangulation.get_communicator());
+      pcout << "-- Statistics -- memory [MB] : " << std::fixed
+            << std::setprecision(0) << std::right << std::setw(8) << memory.min << " "
+            << std::setprecision(0) << std::right << std::setw(8) << memory.avg << " "
+            << std::setprecision(0) << std::right << std::setw(8) << memory.max
+            << "           "
+            << std::setw(6) << std::left << memory.min_index << " "
+            << std::setw(6) << std::left << memory.max_index << std::endl;
+
+      std::cout.unsetf(std::ios_base::floatfield);
+
+      memory = Utilities::MPI::min_max_avg (solver_timers[1].second,
+                                            triangulation.get_communicator());
+      pcout << "-- Statistics -- nln solver  : "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.min << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.avg << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.max << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.avg/solver_timers[1].first << "  "
+            << std::setw(6) << std::left << memory.min_index << " "
+            << std::setw(6) << std::left << memory.max_index << std::endl;
+      solver_timers[1] = std::pair<unsigned int,double>();
+
+      memory = Utilities::MPI::min_max_avg (solver_timers[0].second,
+                                            triangulation.get_communicator());
+      pcout << "-- Statistics --  lin solver : "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.min << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.avg << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.max << " "
+            << std::setprecision(3) << std::right << std::setw(8) << memory.avg/solver_timers[0].first << "  "
+            << std::setw(6) << std::left << memory.min_index << " "
+            << std::setw(6) << std::left << memory.max_index << std::endl;
+      solver_timers[0] = std::pair<unsigned int,double>();
+
+      std::pair<Utilities::MPI::MinMaxAvg, unsigned int> matvec_time =
+        navier_stokes_matrix.get_matvec_statistics();
+      pcout << "-- Statistics --   mat-vec   : "
+            << std::setprecision(3) << std::right << std::setw(8) << matvec_time.first.min << " "
+            << std::setprecision(3) << std::right << std::setw(8) << matvec_time.first.avg << " "
+            << std::setprecision(3) << std::right << std::setw(8) << matvec_time.first.max << " "
+            << std::setprecision(3) << std::right << std::setw(8) << matvec_time.first.avg/matvec_time.second << "  "
+            << std::setw(6) << std::left << matvec_time.first.min_index << " "
+            << std::setw(6) << std::left << matvec_time.first.max_index << std::endl;
+
+      std::string names [5] = {"velocity", "div matrix", "pres mass", "pres Poiss", "full prec"};
+      std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int> prec_time =
+        preconditioner.get_timer_statistics();
+      for (unsigned int i=0; i<5; ++i)
+        {
+          const unsigned int ind = (4+i)%5;
+          pcout << "-- Statistics --   " << std::setw(10) << names[ind] << ": "
+                << std::setprecision(3) << std::right << std::setw(8) << prec_time.first[ind].min << " "
+                << std::setprecision(3) << std::right << std::setw(8) << prec_time.first[ind].avg << " "
+                << std::setprecision(3) << std::right << std::setw(8) << prec_time.first[ind].max << " "
+                << std::setprecision(3) << std::right << std::setw(8)
+                << prec_time.first[ind].avg/prec_time.second << "  "
+                << std::setw(6) << std::left << prec_time.first[ind].min_index << " "
+                << std::setw(6) << std::left << prec_time.first[ind].max_index << std::endl;
+        }
+      pcout << std::endl;
+      std::cout.flags(flags);
+    }
 
   return step;
 }

@@ -216,6 +216,7 @@ private:
   unsigned int        update_preconditioner_frequency;
 
   std_cxx11::shared_ptr<TimerOutput> timer;
+  std::pair<unsigned int,double> solver_timers[2];
 };
 
 
