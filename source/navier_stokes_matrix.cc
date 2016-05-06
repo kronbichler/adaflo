@@ -67,7 +67,7 @@ NavierStokesMatrix<dim>::NavierStokesMatrix (const FlowParameters &parameters,
     OPERATION(5);                                                       \
   else                                                                  \
     AssertThrow (false, ExcNotImplemented());                           \
-   
+
 
 template <int dim>
 void
@@ -309,6 +309,16 @@ NavierStokesMatrix<dim>::velocity_vmult (parallel::distributed::Vector<double> &
   Assert (matrix_free != 0, ExcNotInitialized());
   dst = 0;
 
+  // in case we use an AMG preconditioner, the velocity multiplication needs
+  // to be on the same matrix that the preconditioner is based upon ->
+  // temporarily exchange those data fields
+  if (linearized_velocities_preconditioner.size() > 0)
+    {
+      linearized_velocities.swap(linearized_velocities_preconditioner);
+      variable_densities.swap(variable_densities_preconditioner);
+      variable_viscosities.swap(variable_viscosities_preconditioner);
+    }
+
 #define OPERATION(degree_p)                                             \
   matrix_free->cell_loop (&NavierStokesMatrix<dim>::template            \
                           local_operation<degree_p, parallel::distributed::Vector<double>, \
@@ -317,6 +327,13 @@ NavierStokesMatrix<dim>::velocity_vmult (parallel::distributed::Vector<double> &
 
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
+
+  if (linearized_velocities.size() > 0)
+    {
+      linearized_velocities.swap(linearized_velocities_preconditioner);
+      variable_densities.swap(variable_densities_preconditioner);
+      variable_viscosities.swap(variable_viscosities_preconditioner);
+    }
 
   // diagonal values of constrained degrees of freedom set to 1
   const std::vector<unsigned int> &constrained_dofs =
@@ -336,6 +353,12 @@ NavierStokesMatrix<dim>::pressure_poisson_vmult (parallel::distributed::Vector<d
   Assert (matrix_free != 0, ExcNotInitialized());
   dst = 0;
 
+  // in case we use an AMG preconditioner, we need to make sure the
+  // multiplication is done on the correct matrix -> temporarily use the field
+  // for the variable densities
+  if (variable_densities_preconditioner.size() > 0)
+    variable_densities.swap(variable_densities_preconditioner);
+
 #define OPERATION(degree_p)                                             \
   matrix_free->cell_loop (&NavierStokesMatrix<dim>::template            \
                           local_pressure_poisson<degree_p>,             \
@@ -344,6 +367,9 @@ NavierStokesMatrix<dim>::pressure_poisson_vmult (parallel::distributed::Vector<d
   EXPAND_OPERATIONS(OPERATION);
 
 #undef OPERATION
+
+  if (variable_densities.size() > 0)
+    variable_densities.swap(variable_densities_preconditioner);
 
   // diagonal values of constrained degrees of freedom set to 1
   const std::vector<unsigned int> &constrained_dofs =
@@ -362,6 +388,9 @@ NavierStokesMatrix<dim>::pressure_mass_vmult (parallel::distributed::Vector<doub
   Assert (matrix_free != 0, ExcNotInitialized());
   dst = 0;
 
+  if (variable_viscosities_preconditioner.size() > 0)
+    variable_viscosities.swap(variable_viscosities_preconditioner);
+
 #define OPERATION(degree_p)                                             \
   matrix_free->cell_loop (&NavierStokesMatrix<dim>::template            \
                           local_pressure_mass<degree_p>,                \
@@ -370,6 +399,9 @@ NavierStokesMatrix<dim>::pressure_mass_vmult (parallel::distributed::Vector<doub
   EXPAND_OPERATIONS(OPERATION);
 
 #undef OPERATION
+
+  if (variable_viscosities.size() > 0)
+    variable_viscosities.swap(variable_viscosities_preconditioner);
 
   const std::vector<unsigned int> &constrained_dofs =
     matrix_free->get_constrained_dofs(1);
@@ -1005,12 +1037,26 @@ local_pressure_convdiff (const MatrixFree<dim> &data,
 
 
 template <int dim>
+void
+NavierStokesMatrix<dim>::fix_linearization_point() const
+{
+  linearized_velocities_preconditioner = linearized_velocities;
+  variable_densities_preconditioner = variable_densities;
+  variable_viscosities_preconditioner = variable_viscosities;
+}
+
+
+
+template <int dim>
 std::size_t
 NavierStokesMatrix<dim>::memory_consumption() const
 {
   std::size_t memory = linearized_velocities.memory_consumption();
   memory += variable_densities.size();
   memory += variable_viscosities.size();
+  memory += linearized_velocities_preconditioner.size();
+  memory += variable_densities_preconditioner.size();
+  memory += variable_viscosities_preconditioner.size();
   return memory;
 }
 
@@ -1022,12 +1068,15 @@ NavierStokesMatrix<dim>::
 print_memory_consumption(std::ostream &stream) const
 {
   stream << "| Linearized velocities: "
-         << 1e-6*double(linearized_velocities.memory_consumption())
+         << 1e-6*double(linearized_velocities.memory_consumption()+
+                        linearized_velocities_preconditioner.memory_consumption())
          << " MB\n";
   if (variable_viscosities.size() > 0)
     stream << "| Variable densities & viscosities: "
            << 1e-6*double(variable_densities.memory_consumption()+
-                          variable_viscosities.memory_consumption())
+                          variable_viscosities.memory_consumption()+
+                          variable_densities_preconditioner.memory_consumption()+
+                          variable_viscosities_preconditioner.memory_consumption())
            << " MB\n";
 }
 

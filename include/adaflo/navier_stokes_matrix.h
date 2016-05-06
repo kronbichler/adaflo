@@ -127,6 +127,11 @@ public:
   void pressure_convdiff_vmult (parallel::distributed::Vector<double> &dst,
                                 const parallel::distributed::Vector<double> &src) const;
 
+  // fix the linearization point in additional data points (used for AMG
+  // preconditioners that should not get out of sync with the matrix they are
+  // based upon)
+  void fix_linearization_point() const;
+
   // access to density and viscosity fields
   const VectorizedArray<double> *begin_densities (const unsigned int macro_cell) const;
   VectorizedArray<double> *begin_densities (const unsigned int macro_cell);
@@ -201,9 +206,13 @@ private:
   const MatrixFree<dim> *matrix_free;
   const TimeStepping    *time_stepping;
   const FlowParameters  &parameters;
-  AlignedVector<VectorizedArray<double> > variable_densities;
-  AlignedVector<VectorizedArray<double> > variable_viscosities;
+  mutable AlignedVector<VectorizedArray<double> > variable_densities;
+  mutable AlignedVector<VectorizedArray<double> > variable_viscosities;
   mutable AlignedVector<velocity_stored> linearized_velocities;
+
+  mutable AlignedVector<VectorizedArray<double> > variable_densities_preconditioner;
+  mutable AlignedVector<VectorizedArray<double> > variable_viscosities_preconditioner;
+  mutable AlignedVector<velocity_stored> linearized_velocities_preconditioner;
 
   const parallel::distributed::BlockVector<double> &solution_old;
   const parallel::distributed::BlockVector<double> &solution_old_old;

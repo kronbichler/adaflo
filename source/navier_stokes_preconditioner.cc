@@ -425,7 +425,8 @@ public:
 
   void initialize (const MatrixFreeWrapper &matrix,
                    const std::vector<std::vector<bool> > &constant_modes,
-                   const bool is_velocity)
+                   const bool is_velocity,
+                   const std::vector<std::vector<double> > &coordinates)
   {
     preconditioner.reset();
     Teuchos::ParameterList parameter_list;
@@ -440,13 +441,20 @@ public:
     parameter_list.set("coarse: max size", 2000);
 
     const unsigned int dim = constant_modes.size();
-    /*
     parameter_list.set("repartition: enable",1);
     parameter_list.set("repartition: max min ratio",1.3);
-    parameter_list.set("repartition: min per proc",500);
+    parameter_list.set("repartition: min per proc",300);
     parameter_list.set("repartition: partitioner","Zoltan");
-    parameter_list.set("repartition: Zoltan dimensions",dim>0?(int)dim:3);
-    */
+    parameter_list.set("repartition: Zoltan dimensions",coordinates.size()>0?
+                       (int)coordinates.size():3);
+    if (coordinates.size() > 0 && coordinates[0].size() > 0)
+      {
+        parameter_list.set("x-coordinates", const_cast<double*>(&coordinates[0][0]));
+        parameter_list.set("y-coordinates", const_cast<double*>(&coordinates[1][0]));
+        if (coordinates.size() > 2)
+          parameter_list.set("z-coordinates", const_cast<double*>(&coordinates[2][0]));
+      }
+
     parameter_list.set("ML output", 0);
     const Epetra_Map &domain_map = matrix.OperatorDomainMap();
     Epetra_MultiVector distributed_constant_modes (domain_map, dim>0?dim:1);
@@ -559,6 +567,17 @@ NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<doubl
         {
           Assert (uu_ilu_scalar.get() != 0, ExcNotInitialized());
           uu_ilu_scalar->multiply (dst.block(0), src.block(0));
+
+          // need to fix the degrees of freedom on outflow boundaries that are
+          // Dirichlet constrained only in some directios (which cannot be
+          // captured by the scalar ILU). By assumption, the matrix entries
+          // become 1 in those entries, so the correct way to apply the
+          // preconditioner is to also apply the one here.
+          const std::vector<unsigned int> &ns_constrained_dofs =
+            matrix->get_matrix_free().get_constrained_dofs(0);
+          for (unsigned int i=0; i<ns_constrained_dofs.size(); ++i)
+            dst.block(0).local_element(ns_constrained_dofs[i]) =
+              src.block(0).local_element(ns_constrained_dofs[i]);
         }
       else
         {
@@ -782,6 +801,39 @@ std::pair<unsigned int,double> NavierStokesPreconditioner<dim>
 
 
 
+namespace
+{
+  // ML needs the coordinates of the points for re-partitioning
+  template <int dim>
+  std::vector<std::vector<double> >
+  get_nodal_points(const DoFHandler<dim> &dof_handler)
+  {
+    const IndexSet locally_owned = dof_handler.locally_owned_dofs();
+    std::vector<std::vector<double> > coordinates(dim, std::vector<double>(locally_owned.n_elements()));
+    Quadrature<dim> quad(dof_handler.get_fe().get_unit_support_points());
+    FEValues<dim> fe_values(dof_handler.get_fe(), quad, update_quadrature_points);
+    std::vector<types::global_dof_index> local_dof_indices(dof_handler.get_fe().dofs_per_cell);
+    typename DoFHandler<dim>::active_cell_iterator cell=dof_handler.begin(),
+        endc = dof_handler.end();
+    for ( ; cell != endc; ++cell)
+      if (cell->is_locally_owned())
+        {
+          fe_values.reinit(cell);
+          cell->get_dof_indices(local_dof_indices);
+          for (unsigned int i=0; i<local_dof_indices.size(); ++i)
+            if (locally_owned.is_element(local_dof_indices[i]))
+              {
+                const unsigned int index = locally_owned.index_within_set(local_dof_indices[i]);
+                for (unsigned int d=0; d<dim; ++d)
+                  coordinates[d][index] = fe_values.quadrature_point(i)[d];
+              }
+        }
+    return coordinates;
+  }
+}
+
+
+
 template <int dim>
 void
 NavierStokesPreconditioner<dim>::compute ()
@@ -805,7 +857,8 @@ NavierStokesPreconditioner<dim>::compute ()
   else
     {
       uu_amg.reset (new Precondition_LinML);
-      uu_amg->initialize(*uu_amg_mat, constant_modes_u, true);
+      uu_amg->initialize(*uu_amg_mat, constant_modes_u, true,
+                         get_nodal_points(matrix->get_matrix_free().get_dof_handler(0)));
     }
 
   if (parameters.density > 0)
@@ -815,7 +868,9 @@ NavierStokesPreconditioner<dim>::compute ()
                                                            matrix->pressure_degree()==1,
                                                            constraints_schur_complement_only));
       pp_poisson.reset (new Precondition_LinML);
-      pp_poisson->initialize(*pp_poisson_mat, constant_modes_p, false);
+
+      pp_poisson->initialize(*pp_poisson_mat, constant_modes_p, false,
+                             get_nodal_points(matrix->get_matrix_free().get_dof_handler(1)));
     }
 
   // Augmented Taylor-Hood always needs AMG on the pressure mass matrix
@@ -2097,6 +2152,14 @@ NavierStokesPreconditioner<dim>
   if (parameters.precondition_pressure == FlowParameters::p_mass_ilu ||
       parameters.augmented_taylor_hood)
     mass_matrix_p = 0;
+
+  // Make sure to remember the current values of the velocity, density, and
+  // viscosity, for retrieving them in the matrix-vector products that are
+  // underlying the AMG preconditioners (without this measure, AMG will need
+  // to be rebuilt way too often for variable coefficient problems).
+  if (parameters.precondition_velocity == FlowParameters::u_amg ||
+      parameters.precondition_velocity == FlowParameters::u_amg_linear)
+    matrix->fix_linearization_point();
 
   AssemblyData::Preconditioner<dim> scratch_data(*this, flow_algorithm.mapping,
                                                  matrix->get_matrix_free().get_dof_handler(0).get_fe(),
