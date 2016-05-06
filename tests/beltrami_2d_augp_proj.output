@@ -12,14 +12,16 @@ Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01).
    __________________________________________________________________________________
    2.092e-01   0.000e+00        AMG        3.26e-01   4.58e-02      14       1.59e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       105       108       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      101      103           0      1     
+-- Statistics -- nln solver  :   0.0887   0.0887   0.0887   0.0887  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01). 
@@ -28,14 +30,16 @@ Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01).
    __________________________________________________________________________________
    2.162e-01   0.000e+00        AMG        3.32e-01   4.02e+00      13       1.79e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0856   0.0856   0.0856   0.0856  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01). 
@@ -44,14 +48,16 @@ Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01).
    __________________________________________________________________________________
    3.006e-02   0.000e+00        ---        1.41e-01   1.01e+00      12       3.09e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01). 
@@ -60,18 +66,20 @@ Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01).
    __________________________________________________________________________________
    1.219e-02   0.000e+00        ---        5.77e-02   1.39e-01      12       1.39e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0248   0.0248   0.0248   0.0248  0      2     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
   L2-Errors absolute: ||e_p||_L2 = 0.04803,   ||e_u||_L2 = 0.0001281
   L2-Errors relative: ||e_p||_L2 = 0.145,   ||e_u||_L2 = 0.0001571
-  Cell divergence:    |div(u)|_cells = 4.208e-05
+  Cell divergence:    |div(u)|_cells = 4.207e-05
 
 Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01). 
 
@@ -79,30 +87,34 @@ Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01).
    __________________________________________________________________________________
    3.788e-03   0.000e+00        ---        1.12e-02   8.16e-02      11       1.59e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0219   0.0219   0.0219   0.0219  0      2     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.674e-03   0.000e+00        ---        4.67e-03   9.89e-02      10       2.88e-10
+   2.675e-03   0.000e+00        ---        4.67e-03   9.89e-02      10       2.88e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0174   0.0174   0.0174   0.0174  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01). 
@@ -111,14 +123,16 @@ Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01).
    __________________________________________________________________________________
    2.521e-03   0.000e+00        ---        3.84e-03   9.55e-02      10       2.22e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01). 
@@ -127,17 +141,19 @@ Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01).
    __________________________________________________________________________________
    2.483e-03   0.000e+00        ---        3.74e-03   9.34e-02      10       1.88e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0176   0.0176   0.0176   0.0176  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.02662,   ||e_u||_L2 = 6.003e-05
-  L2-Errors relative: ||e_p||_L2 = 0.08433,   ||e_u||_L2 = 7.735e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.02662,   ||e_u||_L2 = 6.004e-05
+  L2-Errors relative: ||e_p||_L2 = 0.08432,   ||e_u||_L2 = 7.736e-05
   Cell divergence:    |div(u)|_cells = 1.659e-05
 
 Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01). 
@@ -146,71 +162,75 @@ Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01).
    __________________________________________________________________________________
    2.453e-03   0.000e+00        ---        3.69e-03   9.26e-02      10       1.84e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.423e-03   0.000e+00        ---        3.64e-03   9.15e-02      10       1.82e-10
+   2.423e-03   0.000e+00        ---        3.64e-03   9.15e-02      10       1.83e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0174   0.0174   0.0174   0.0174  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |     0.372s |            |
+| Total CPU time elapsed since start          |      0.42s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |      0.02s |       5.4% |
-| NS apply boundary conditions.   |        20 |     0.004s |       1.1% |
+| Compute errors.                 |         3 |     0.028s |       6.7% |
+| NS apply boundary conditions.   |        20 |     0.012s |       2.9% |
 | NS assemble nonlinear residual. |        10 |         0s |         0% |
-| NS assemble preconditioner.     |         2 |      0.02s |       5.4% |
-| NS build preconditioner.        |         2 |     0.068s |        18% |
-| NS distribute DoFs.             |         1 |     0.004s |       1.1% |
-| NS setup matrix and vectors.    |         1 |     0.008s |       2.2% |
-| NS solve pressure               |        10 |      0.06s |        16% |
-| NS solve velocity               |        10 |     0.096s |        26% |
-| Output solution.                |         3 |     0.072s |        19% |
-| Setup grid.                     |         1 |     0.008s |       2.2% |
-| Setup initial condition.        |         1 |         0s |         0% |
+| NS assemble preconditioner.     |         2 |     0.016s |       3.8% |
+| NS build preconditioner.        |         2 |     0.076s |        18% |
+| NS distribute DoFs.             |         1 |     0.004s |      0.95% |
+| NS setup matrix and vectors.    |         1 |     0.012s |       2.9% |
+| NS solve pressure               |        10 |     0.072s |        17% |
+| NS solve velocity               |        10 |     0.108s |        26% |
+| Output solution.                |         3 |     0.072s |        17% |
+| Setup grid.                     |         1 |     0.008s |       1.9% |
+| Setup initial condition.        |         1 |     0.004s |      0.95% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |     0.458s |            |
+| Total wallclock time elapsed since start    |     0.519s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |    0.0261s |       5.7% |
-| NS apply boundary conditions.   |        20 |    0.0143s |       3.1% |
-| NS assemble nonlinear residual. |        10 |   0.00243s |      0.53% |
-| NS assemble preconditioner.     |         2 |    0.0262s |       5.7% |
-| NS build preconditioner.        |         2 |    0.0881s |        19% |
-| NS distribute DoFs.             |         1 |   0.00352s |      0.77% |
-| NS setup matrix and vectors.    |         1 |     0.015s |       3.3% |
-| NS solve pressure               |        10 |    0.0825s |        18% |
-| NS solve velocity               |        10 |     0.104s |        23% |
-| Output solution.                |         3 |    0.0784s |        17% |
-| Setup grid.                     |         1 |   0.00698s |       1.5% |
-| Setup initial condition.        |         1 |   0.00255s |      0.56% |
+| Compute errors.                 |         3 |    0.0307s |       5.9% |
+| NS apply boundary conditions.   |        20 |     0.021s |         4% |
+| NS assemble nonlinear residual. |        10 |   0.00252s |      0.49% |
+| NS assemble preconditioner.     |         2 |    0.0279s |       5.4% |
+| NS build preconditioner.        |         2 |    0.0983s |        19% |
+| NS distribute DoFs.             |         1 |   0.00549s |       1.1% |
+| NS setup matrix and vectors.    |         1 |    0.0167s |       3.2% |
+| NS solve pressure               |        10 |    0.0865s |        17% |
+| NS solve velocity               |        10 |     0.116s |        22% |
+| Output solution.                |         3 |    0.0835s |        16% |
+| Setup grid.                     |         1 |    0.0127s |       2.5% |
+| Setup initial condition.        |         1 |   0.00277s |      0.53% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -220,14 +240,16 @@ Time step #11, advancing from t_n-1 = 0.1 to t = 0.11 (dt = 0.01).
    __________________________________________________________________________________
    2.394e-03   0.000e+00        ---        3.59e-03   8.98e-02      10       1.79e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :    0.021    0.021    0.021    0.021  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01). 
@@ -236,33 +258,37 @@ Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01).
    __________________________________________________________________________________
    2.364e-03   0.000e+00        ---        3.55e-03   8.79e-02      10       1.75e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0194   0.0194   0.0194   0.0194  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
   L2-Errors absolute: ||e_p||_L2 = 0.01745,   ||e_u||_L2 = 5.394e-05
-  L2-Errors relative: ||e_p||_L2 = 0.0597,   ||e_u||_L2 = 7.302e-05
+  L2-Errors relative: ||e_p||_L2 = 0.05968,   ||e_u||_L2 = 7.302e-05
   Cell divergence:    |div(u)|_cells = 1.4e-05
 
 Time step #13, advancing from t_n-1 = 0.12 to t = 0.13 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.335e-03   0.000e+00        ---        3.51e-03   8.59e-02      10       1.71e-10
+   2.335e-03   0.000e+00        ---        3.51e-03   8.59e-02      10       1.72e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0213   0.0213   0.0213   0.0213  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01). 
@@ -271,50 +297,56 @@ Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01).
    __________________________________________________________________________________
    2.307e-03   0.000e+00        ---        3.46e-03   8.39e-02      10       1.69e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0181   0.0181   0.0182   0.0181  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #15, advancing from t_n-1 = 0.14 to t = 0.15 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.279e-03   0.000e+00        ---        3.42e-03   8.21e-02      10       1.66e-10
+   2.279e-03   0.000e+00        ---        3.42e-03   8.21e-02      10       1.67e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0184   0.0184   0.0184   0.0184  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #16, advancing from t_n-1 = 0.15 to t = 0.16 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.251e-03   0.000e+00        AMG        3.38e-03   8.03e-02      10       1.64e-10
+   2.251e-03   0.000e+00        AMG        3.38e-03   8.04e-02      10       1.64e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0845   0.0845   0.0845   0.0845  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.01221,   ||e_u||_L2 = 4.868e-05
-  L2-Errors relative: ||e_p||_L2 = 0.04553,   ||e_u||_L2 = 6.923e-05
-  Cell divergence:    |div(u)|_cells = 1.25e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.01221,   ||e_u||_L2 = 4.872e-05
+  L2-Errors relative: ||e_p||_L2 = 0.04553,   ||e_u||_L2 = 6.929e-05
+  Cell divergence:    |div(u)|_cells = 1.251e-05
 
 Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01). 
 
@@ -322,14 +354,16 @@ Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01).
    __________________________________________________________________________________
    2.223e-03   0.000e+00        ---        3.34e-03   7.87e-02      10       1.62e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0183   0.0183   0.0183   0.0183  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01). 
@@ -338,14 +372,16 @@ Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01).
    __________________________________________________________________________________
    2.196e-03   0.000e+00        ---        3.30e-03   7.71e-02      10       1.60e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :    0.019    0.019    0.019    0.019  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01). 
@@ -354,14 +390,16 @@ Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01).
    __________________________________________________________________________________
    2.169e-03   0.000e+00        ---        3.25e-03   7.56e-02      10       1.58e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0214   0.0214   0.0214   0.0214  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
 
 Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01). 
@@ -370,50 +408,52 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
    __________________________________________________________________________________
    2.142e-03   0.000e+00        ---        3.21e-03   7.41e-02      10       1.56e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       106       109       110            0      1     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0178   0.0178   0.0178   0.0178  0      1     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.008469,   ||e_u||_L2 = 4.4e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.008468,   ||e_u||_L2 = 4.4e-05
   L2-Errors relative: ||e_p||_L2 = 0.0345,   ||e_u||_L2 = 6.574e-05
   Cell divergence:    |div(u)|_cells = 1.127e-05
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |      0.36s |            |
+| Total CPU time elapsed since start          |      0.38s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |     0.028s |       7.8% |
-| NS apply boundary conditions.   |        20 |     0.004s |       1.1% |
-| NS assemble nonlinear residual. |        10 |         0s |         0% |
-| NS assemble preconditioner.     |         1 |     0.016s |       4.4% |
-| NS build preconditioner.        |         1 |      0.04s |        11% |
-| NS solve pressure               |        10 |      0.08s |        22% |
-| NS solve velocity               |        10 |     0.096s |        27% |
-| Output solution.                |         3 |     0.092s |        26% |
+| Compute errors.                 |         3 |     0.028s |       7.4% |
+| NS apply boundary conditions.   |        20 |     0.008s |       2.1% |
+| NS assemble nonlinear residual. |        10 |     0.004s |       1.1% |
+| NS assemble preconditioner.     |         1 |     0.016s |       4.2% |
+| NS build preconditioner.        |         1 |     0.048s |        13% |
+| NS solve pressure               |        10 |     0.088s |        23% |
+| NS solve velocity               |        10 |     0.088s |        23% |
+| Output solution.                |         3 |     0.092s |        24% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |      0.37s |            |
+| Total wallclock time elapsed since start    |     0.398s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |    0.0273s |       7.4% |
-| NS apply boundary conditions.   |        20 |   0.00701s |       1.9% |
-| NS assemble nonlinear residual. |        10 |   0.00212s |      0.57% |
-| NS assemble preconditioner.     |         1 |    0.0129s |       3.5% |
-| NS build preconditioner.        |         1 |    0.0456s |        12% |
-| NS solve pressure               |        10 |    0.0805s |        22% |
-| NS solve velocity               |        10 |       0.1s |        27% |
-| Output solution.                |         3 |    0.0878s |        24% |
+| Compute errors.                 |         3 |    0.0299s |       7.5% |
+| NS apply boundary conditions.   |        20 |   0.00901s |       2.3% |
+| NS assemble nonlinear residual. |        10 |   0.00316s |      0.79% |
+| NS assemble preconditioner.     |         1 |    0.0163s |       4.1% |
+| NS build preconditioner.        |         1 |    0.0506s |        13% |
+| NS solve pressure               |        10 |    0.0835s |        21% |
+| NS solve velocity               |        10 |     0.104s |        26% |
+| Output solution.                |         3 |    0.0928s |        23% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -421,7 +461,7 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
 | DoFHandler: 0.08393 MB
 | Matrix-free objects: 0.0642 MB
 | Constraints: 0.02755 MB
-| Linearized velocities: 0.1469 MB
+| Linearized velocities: 0.2938 MB
 | Preconditioner matrices: 0.7642 MB
 | AMG preconditioner for uu block: 0.001568 MB
 | AMG preconditioner for pp block: 0.001568 MB
@@ -441,7 +481,7 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |  0.000816s |            |
+| Total wallclock time elapsed since start    |    0.0008s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+

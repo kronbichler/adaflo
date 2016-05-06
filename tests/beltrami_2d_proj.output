@@ -12,14 +12,16 @@ Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01).
    __________________________________________________________________________________
    4.264e-03   0.000e+00        AMGl       5.09e-02   1.32e-02      11       4.17e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       115       115       115            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      110      110      110           0      0     
+-- Statistics -- nln solver  :    0.134    0.134    0.134    0.134  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
   L2-Errors absolute: ||e_p||_L2 = 0.4002,   ||e_u||_L2 = 5.429e-06
   L2-Errors relative: ||e_p||_L2 = 27.21,   ||e_u||_L2 = 6.346e-06
@@ -31,14 +33,16 @@ Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01).
    __________________________________________________________________________________
    1.240e-02   0.000e+00        AMGl       1.55e-01   1.11e+01      11       3.41e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :    0.134    0.134    0.134    0.134  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
   L2-Errors absolute: ||e_p||_L2 = 0.05101,   ||e_u||_L2 = 0.00297
   L2-Errors relative: ||e_p||_L2 = 0.1402,   ||e_u||_L2 = 0.003476
@@ -48,58 +52,64 @@ Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.180e-02   0.000e+00        ---        2.84e-01   1.45e+00      12       1.21e-10
+   2.180e-02   0.000e+00        ---        2.84e-01   1.45e+00      12       1.22e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0501   0.0501   0.0501   0.0501  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.003032,   ||e_u||_L2 = 0.0003081
-  L2-Errors relative: ||e_p||_L2 = 0.007392,   ||e_u||_L2 = 0.000361
-  Cell divergence:    |div(u)|_cells = 0.0001417
+  L2-Errors absolute: ||e_p||_L2 = 0.003017,   ||e_u||_L2 = 0.0003082
+  L2-Errors relative: ||e_p||_L2 = 0.007356,   ||e_u||_L2 = 0.0003611
+  Cell divergence:    |div(u)|_cells = 0.0001419
 
 Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   1.016e-02   0.000e+00        ---        1.32e-01   5.55e-02      11       1.90e-10
+   1.016e-02   0.000e+00        ---        1.32e-01   5.53e-02      11       1.90e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0493   0.0493   0.0493   0.0493  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001063,   ||e_u||_L2 = 0.000113
-  L2-Errors relative: ||e_p||_L2 = 0.002582,   ||e_u||_L2 = 0.0001326
-  Cell divergence:    |div(u)|_cells = 3.659e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001067,   ||e_u||_L2 = 0.0001129
+  L2-Errors relative: ||e_p||_L2 = 0.002592,   ||e_u||_L2 = 0.0001325
+  Cell divergence:    |div(u)|_cells = 3.651e-05
 
 Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   1.274e-03   0.000e+00        ---        1.41e-02   6.18e-02      10       2.78e-10
+   1.275e-03   0.000e+00        ---        1.41e-02   6.20e-02      10       2.79e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0452   0.0452   0.0452   0.0452  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0002731,   ||e_u||_L2 = 7.521e-05
-  L2-Errors relative: ||e_p||_L2 = 0.0006661,   ||e_u||_L2 = 8.835e-05
-  Cell divergence:    |div(u)|_cells = 1.524e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0002728,   ||e_u||_L2 = 7.513e-05
+  L2-Errors relative: ||e_p||_L2 = 0.0006654,   ||e_u||_L2 = 8.825e-05
+  Cell divergence:    |div(u)|_cells = 1.523e-05
 
 Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01). 
 
@@ -107,134 +117,144 @@ Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01).
    __________________________________________________________________________________
    3.633e-04   0.000e+00        ---        2.20e-03   1.72e-02       9       3.90e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0393   0.0393   0.0393   0.0393  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.000416,   ||e_u||_L2 = 5.704e-05
-  L2-Errors relative: ||e_p||_L2 = 0.001016,   ||e_u||_L2 = 6.709e-05
-  Cell divergence:    |div(u)|_cells = 7.331e-06
+  L2-Errors absolute: ||e_p||_L2 = 0.0004155,   ||e_u||_L2 = 5.697e-05
+  L2-Errors relative: ||e_p||_L2 = 0.001015,   ||e_u||_L2 = 6.701e-05
+  Cell divergence:    |div(u)|_cells = 7.329e-06
 
 Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   1.273e-04   0.000e+00        ---        8.75e-04   1.21e-02       9       1.74e-10
+   1.272e-04   0.000e+00        ---        8.75e-04   1.21e-02       9       1.74e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0421   0.0421   0.0421   0.0421  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0008495,   ||e_u||_L2 = 4.844e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002079,   ||e_u||_L2 = 5.704e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0008493,   ||e_u||_L2 = 4.839e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002078,   ||e_u||_L2 = 5.698e-05
   Cell divergence:    |div(u)|_cells = 4.272e-06
 
 Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   4.857e-05   0.000e+00        ---        3.72e-04   1.17e-02       8       2.90e-10
+   4.852e-05   0.000e+00        ---        3.72e-04   1.17e-02       8       2.90e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0363   0.0363   0.0363   0.0363  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.00115,   ||e_u||_L2 = 4.343e-05
-  L2-Errors relative: ||e_p||_L2 = 0.00282,   ||e_u||_L2 = 5.121e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.00115,   ||e_u||_L2 = 4.339e-05
+  L2-Errors relative: ||e_p||_L2 = 0.00282,   ||e_u||_L2 = 5.116e-05
   Cell divergence:    |div(u)|_cells = 3.191e-06
 
 Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.206e-05   0.000e+00        ---        1.82e-04   1.15e-02       8       1.25e-10
+   2.204e-05   0.000e+00        ---        1.82e-04   1.15e-02       8       1.25e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0371   0.0371   0.0371   0.0371  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.00131,   ||e_u||_L2 = 4.009e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003218,   ||e_u||_L2 = 4.733e-05
-  Cell divergence:    |div(u)|_cells = 2.793e-06
+  L2-Errors absolute: ||e_p||_L2 = 0.00131,   ||e_u||_L2 = 4.006e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003218,   ||e_u||_L2 = 4.729e-05
+  Cell divergence:    |div(u)|_cells = 2.792e-06
 
 Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   1.269e-05   0.000e+00        ---        1.12e-04   1.19e-02       7       3.05e-10
+   1.268e-05   0.000e+00        ---        1.12e-04   1.19e-02       7       3.05e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0361   0.0361   0.0361   0.0361  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001382,   ||e_u||_L2 = 3.769e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003403,   ||e_u||_L2 = 4.455e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001382,   ||e_u||_L2 = 3.766e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003403,   ||e_u||_L2 = 4.451e-05
   Cell divergence:    |div(u)|_cells = 2.656e-06
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |      2.24s |            |
+| Total CPU time elapsed since start          |      2.32s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        11 |     0.212s |       9.4% |
-| NS apply boundary conditions.   |        20 |     0.016s |      0.71% |
-| NS assemble nonlinear residual. |        10 |     0.012s |      0.53% |
-| NS assemble preconditioner.     |         2 |     0.088s |       3.9% |
-| NS build preconditioner.        |         2 |     0.108s |       4.8% |
-| NS distribute DoFs.             |         1 |     0.008s |      0.36% |
-| NS setup matrix and vectors.    |         1 |     0.036s |       1.6% |
-| NS solve pressure               |        10 |     0.216s |       9.6% |
-| NS solve velocity               |        10 |     0.492s |        22% |
-| Output solution.                |        11 |      1.02s |        45% |
-| Setup grid.                     |         1 |     0.012s |      0.53% |
-| Setup initial condition.        |         1 |     0.004s |      0.18% |
+| Compute errors.                 |        11 |      0.22s |       9.5% |
+| NS apply boundary conditions.   |        20 |     0.016s |      0.69% |
+| NS assemble nonlinear residual. |        10 |     0.016s |      0.69% |
+| NS assemble preconditioner.     |         2 |     0.088s |       3.8% |
+| NS build preconditioner.        |         2 |     0.128s |       5.5% |
+| NS distribute DoFs.             |         1 |     0.008s |      0.34% |
+| NS setup matrix and vectors.    |         1 |     0.048s |       2.1% |
+| NS solve pressure               |        10 |     0.184s |       7.9% |
+| NS solve velocity               |        10 |     0.512s |        22% |
+| Output solution.                |        11 |      1.06s |        46% |
+| Setup grid.                     |         1 |     0.008s |      0.34% |
+| Setup initial condition.        |         1 |     0.004s |      0.17% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |      1.85s |            |
+| Total wallclock time elapsed since start    |      1.93s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        11 |     0.218s |        12% |
-| NS apply boundary conditions.   |        20 |   0.00733s |       0.4% |
-| NS assemble nonlinear residual. |        10 |   0.00658s |      0.36% |
-| NS assemble preconditioner.     |         2 |    0.0443s |       2.4% |
-| NS build preconditioner.        |         2 |    0.0946s |       5.1% |
-| NS distribute DoFs.             |         1 |   0.00593s |      0.32% |
-| NS setup matrix and vectors.    |         1 |    0.0409s |       2.2% |
-| NS solve pressure               |        10 |     0.112s |       6.1% |
-| NS solve velocity               |        10 |     0.291s |        16% |
-| Output solution.                |        11 |     0.984s |        53% |
-| Setup grid.                     |         1 |    0.0151s |      0.82% |
-| Setup initial condition.        |         1 |   0.00365s |       0.2% |
+| Compute errors.                 |        11 |     0.224s |        12% |
+| NS apply boundary conditions.   |        20 |   0.00846s |      0.44% |
+| NS assemble nonlinear residual. |        10 |   0.00786s |      0.41% |
+| NS assemble preconditioner.     |         2 |    0.0458s |       2.4% |
+| NS build preconditioner.        |         2 |     0.123s |       6.4% |
+| NS distribute DoFs.             |         1 |   0.00731s |      0.38% |
+| NS setup matrix and vectors.    |         1 |    0.0429s |       2.2% |
+| NS solve pressure               |        10 |     0.116s |         6% |
+| NS solve velocity               |        10 |     0.317s |        16% |
+| Output solution.                |        11 |         1s |        52% |
+| Setup grid.                     |         1 |   0.00794s |      0.41% |
+| Setup initial condition.        |         1 |   0.00379s |       0.2% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -242,57 +262,63 @@ Time step #11, advancing from t_n-1 = 0.1 to t = 0.11 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   9.080e-06   0.000e+00        ---        8.43e-05   1.23e-02       7       1.74e-10
+   9.075e-06   0.000e+00        ---        8.43e-05   1.23e-02       7       1.74e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0356   0.0356   0.0356   0.0356  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001406,   ||e_u||_L2 = 3.585e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003469,   ||e_u||_L2 = 4.243e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001406,   ||e_u||_L2 = 3.582e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003468,   ||e_u||_L2 = 4.24e-05
   Cell divergence:    |div(u)|_cells = 2.612e-06
 
 Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   7.621e-06   0.000e+00        ---        7.22e-05   1.27e-02       6       4.43e-10
+   7.619e-06   0.000e+00        ---        7.22e-05   1.27e-02       6       4.43e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0334   0.0334   0.0334   0.0334  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001401,   ||e_u||_L2 = 3.439e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003467,   ||e_u||_L2 = 4.075e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001401,   ||e_u||_L2 = 3.436e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003467,   ||e_u||_L2 = 4.072e-05
   Cell divergence:    |div(u)|_cells = 2.598e-06
 
 Time step #13, advancing from t_n-1 = 0.12 to t = 0.13 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.986e-06   0.000e+00        ---        6.66e-05   1.31e-02       6       3.20e-10
+   6.985e-06   0.000e+00        ---        6.66e-05   1.31e-02       6       3.20e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0331   0.0331   0.0331   0.0331  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001381,   ||e_u||_L2 = 3.317e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003426,   ||e_u||_L2 = 3.936e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001381,   ||e_u||_L2 = 3.315e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003426,   ||e_u||_L2 = 3.933e-05
   Cell divergence:    |div(u)|_cells = 2.591e-06
 
 Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01). 
@@ -301,55 +327,61 @@ Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01).
    __________________________________________________________________________________
    6.681e-06   0.000e+00        ---        6.39e-05   1.35e-02       6       2.61e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0308   0.0308   0.0308   0.0308  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001353,   ||e_u||_L2 = 3.214e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003363,   ||e_u||_L2 = 3.818e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001353,   ||e_u||_L2 = 3.212e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003363,   ||e_u||_L2 = 3.815e-05
   Cell divergence:    |div(u)|_cells = 2.586e-06
 
 Time step #15, advancing from t_n-1 = 0.14 to t = 0.15 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.521e-06   0.000e+00        ---        6.25e-05   1.39e-02       6       2.17e-10
+   6.521e-06   0.000e+00        ---        6.25e-05   1.39e-02       6       2.18e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       117       117       117            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      114      114      114           0      0     
+-- Statistics -- nln solver  :   0.0301   0.0301   0.0301   0.0301  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001319,   ||e_u||_L2 = 3.124e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003288,   ||e_u||_L2 = 3.715e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001319,   ||e_u||_L2 = 3.121e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003288,   ||e_u||_L2 = 3.712e-05
   Cell divergence:    |div(u)|_cells = 2.581e-06
 
 Time step #16, advancing from t_n-1 = 0.15 to t = 0.16 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.431e-06   0.000e+00        AMGl       6.18e-05   1.42e-02       6       1.85e-10
+   6.430e-06   0.000e+00        AMGl       6.18e-05   1.42e-02       6       1.85e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :    0.116    0.116    0.116    0.116  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001283,   ||e_u||_L2 = 3.043e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003207,   ||e_u||_L2 = 3.623e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001283,   ||e_u||_L2 = 3.041e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003207,   ||e_u||_L2 = 3.621e-05
   Cell divergence:    |div(u)|_cells = 2.576e-06
 
 Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01). 
@@ -358,17 +390,19 @@ Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01).
    __________________________________________________________________________________
    6.375e-06   0.000e+00        ---        6.14e-05   1.46e-02       6       1.59e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0338   0.0338   0.0338   0.0338  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001246,   ||e_u||_L2 = 2.97e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003122,   ||e_u||_L2 = 3.54e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001246,   ||e_u||_L2 = 2.968e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003122,   ||e_u||_L2 = 3.538e-05
   Cell divergence:    |div(u)|_cells = 2.57e-06
 
 Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01). 
@@ -377,17 +411,19 @@ Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01).
    __________________________________________________________________________________
    6.340e-06   0.000e+00        ---        6.11e-05   1.50e-02       6       1.44e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0312   0.0312   0.0312   0.0312  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001209,   ||e_u||_L2 = 2.902e-05
-  L2-Errors relative: ||e_p||_L2 = 0.003037,   ||e_u||_L2 = 3.464e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001209,   ||e_u||_L2 = 2.901e-05
+  L2-Errors relative: ||e_p||_L2 = 0.003037,   ||e_u||_L2 = 3.462e-05
   Cell divergence:    |div(u)|_cells = 2.564e-06
 
 Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01). 
@@ -396,17 +432,19 @@ Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01).
    __________________________________________________________________________________
    6.315e-06   0.000e+00        ---        6.09e-05   1.53e-02       6       1.38e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0312   0.0312   0.0312   0.0312  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001172,   ||e_u||_L2 = 2.84e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002952,   ||e_u||_L2 = 3.394e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001172,   ||e_u||_L2 = 2.838e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002952,   ||e_u||_L2 = 3.392e-05
   Cell divergence:    |div(u)|_cells = 2.558e-06
 
 Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01). 
@@ -415,50 +453,52 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
    __________________________________________________________________________________
    6.297e-06   0.000e+00        ---        6.08e-05   1.56e-02       6       1.38e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :    0.033    0.033    0.033    0.033  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001136,   ||e_u||_L2 = 2.781e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002868,   ||e_u||_L2 = 3.328e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001136,   ||e_u||_L2 = 2.78e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002868,   ||e_u||_L2 = 3.326e-05
   Cell divergence:    |div(u)|_cells = 2.552e-06
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |      1.85s |            |
+| Total CPU time elapsed since start          |      1.92s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        10 |       0.2s |        11% |
-| NS apply boundary conditions.   |        20 |     0.008s |      0.43% |
-| NS assemble nonlinear residual. |        10 |     0.012s |      0.65% |
-| NS assemble preconditioner.     |         1 |     0.048s |       2.6% |
-| NS build preconditioner.        |         1 |     0.048s |       2.6% |
-| NS solve pressure               |        10 |     0.204s |        11% |
-| NS solve velocity               |        10 |     0.332s |        18% |
-| Output solution.                |        10 |     0.988s |        53% |
+| Compute errors.                 |        10 |      0.22s |        11% |
+| NS apply boundary conditions.   |        20 |      0.02s |         1% |
+| NS assemble nonlinear residual. |        10 |      0.02s |         1% |
+| NS assemble preconditioner.     |         1 |     0.044s |       2.3% |
+| NS build preconditioner.        |         1 |      0.06s |       3.1% |
+| NS solve pressure               |        10 |     0.196s |        10% |
+| NS solve velocity               |        10 |     0.352s |        18% |
+| Output solution.                |        10 |     0.996s |        52% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |      1.53s |            |
+| Total wallclock time elapsed since start    |       1.6s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        10 |       0.2s |        13% |
-| NS apply boundary conditions.   |        20 |   0.00747s |      0.49% |
-| NS assemble nonlinear residual. |        10 |   0.00716s |      0.47% |
-| NS assemble preconditioner.     |         1 |    0.0233s |       1.5% |
-| NS build preconditioner.        |         1 |    0.0449s |       2.9% |
-| NS solve pressure               |        10 |     0.105s |       6.9% |
-| NS solve velocity               |        10 |     0.187s |        12% |
-| Output solution.                |        10 |     0.949s |        62% |
+| Compute errors.                 |        10 |     0.206s |        13% |
+| NS apply boundary conditions.   |        20 |   0.00848s |      0.53% |
+| NS assemble nonlinear residual. |        10 |   0.00832s |      0.52% |
+| NS assemble preconditioner.     |         1 |     0.024s |       1.5% |
+| NS build preconditioner.        |         1 |    0.0586s |       3.7% |
+| NS solve pressure               |        10 |     0.109s |       6.8% |
+| NS solve velocity               |        10 |     0.215s |        13% |
+| Output solution.                |        10 |     0.964s |        60% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -468,17 +508,19 @@ Time step #21, advancing from t_n-1 = 0.2 to t = 0.21 (dt = 0.01).
    __________________________________________________________________________________
    6.283e-06   0.000e+00        ---        6.07e-05   1.60e-02       6       1.39e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0334   0.0334   0.0334   0.0334  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001101,   ||e_u||_L2 = 2.726e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002786,   ||e_u||_L2 = 3.266e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001101,   ||e_u||_L2 = 2.724e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002786,   ||e_u||_L2 = 3.264e-05
   Cell divergence:    |div(u)|_cells = 2.546e-06
 
 Time step #22, advancing from t_n-1 = 0.21 to t = 0.22 (dt = 0.01). 
@@ -487,17 +529,19 @@ Time step #22, advancing from t_n-1 = 0.21 to t = 0.22 (dt = 0.01).
    __________________________________________________________________________________
    6.272e-06   0.000e+00        ---        6.06e-05   1.63e-02       6       1.42e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0324   0.0324   0.0324   0.0324  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001067,   ||e_u||_L2 = 2.673e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002706,   ||e_u||_L2 = 3.207e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001067,   ||e_u||_L2 = 2.672e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002706,   ||e_u||_L2 = 3.205e-05
   Cell divergence:    |div(u)|_cells = 2.539e-06
 
 Time step #23, advancing from t_n-1 = 0.22 to t = 0.23 (dt = 0.01). 
@@ -506,17 +550,19 @@ Time step #23, advancing from t_n-1 = 0.22 to t = 0.23 (dt = 0.01).
    __________________________________________________________________________________
    6.262e-06   0.000e+00        ---        6.06e-05   1.66e-02       6       1.44e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0311   0.0311   0.0311   0.0311  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001033,   ||e_u||_L2 = 2.623e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002628,   ||e_u||_L2 = 3.15e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001033,   ||e_u||_L2 = 2.621e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002628,   ||e_u||_L2 = 3.149e-05
   Cell divergence:    |div(u)|_cells = 2.533e-06
 
 Time step #24, advancing from t_n-1 = 0.23 to t = 0.24 (dt = 0.01). 
@@ -525,36 +571,40 @@ Time step #24, advancing from t_n-1 = 0.23 to t = 0.24 (dt = 0.01).
    __________________________________________________________________________________
    6.254e-06   0.000e+00        ---        6.05e-05   1.70e-02       6       1.47e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0337   0.0337   0.0337   0.0337  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.001001,   ||e_u||_L2 = 2.575e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002553,   ||e_u||_L2 = 3.096e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.001001,   ||e_u||_L2 = 2.573e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002553,   ||e_u||_L2 = 3.095e-05
   Cell divergence:    |div(u)|_cells = 2.527e-06
 
 Time step #25, advancing from t_n-1 = 0.24 to t = 0.25 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.246e-06   0.000e+00        ---        6.05e-05   1.73e-02       6       1.48e-10
+   6.246e-06   0.000e+00        ---        6.05e-05   1.73e-02       6       1.49e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :    0.033    0.033    0.033    0.033  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0009695,   ||e_u||_L2 = 2.528e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002479,   ||e_u||_L2 = 3.044e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0009695,   ||e_u||_L2 = 2.527e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002479,   ||e_u||_L2 = 3.043e-05
   Cell divergence:    |div(u)|_cells = 2.521e-06
 
 Time step #26, advancing from t_n-1 = 0.25 to t = 0.26 (dt = 0.01). 
@@ -563,36 +613,40 @@ Time step #26, advancing from t_n-1 = 0.25 to t = 0.26 (dt = 0.01).
    __________________________________________________________________________________
    6.238e-06   0.000e+00        ---        6.04e-05   1.76e-02       6       1.50e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0311   0.0311   0.0311   0.0311  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0009392,   ||e_u||_L2 = 2.484e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002408,   ||e_u||_L2 = 2.994e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0009392,   ||e_u||_L2 = 2.482e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002408,   ||e_u||_L2 = 2.992e-05
   Cell divergence:    |div(u)|_cells = 2.515e-06
 
 Time step #27, advancing from t_n-1 = 0.26 to t = 0.27 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.230e-06   0.000e+00        ---        6.03e-05   1.79e-02       6       1.51e-10
+   6.230e-06   0.000e+00        ---        6.03e-05   1.79e-02       6       1.52e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0323   0.0323   0.0323   0.0323  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0009098,   ||e_u||_L2 = 2.44e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002338,   ||e_u||_L2 = 2.945e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0009098,   ||e_u||_L2 = 2.439e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002338,   ||e_u||_L2 = 2.944e-05
   Cell divergence:    |div(u)|_cells = 2.508e-06
 
 Time step #28, advancing from t_n-1 = 0.27 to t = 0.28 (dt = 0.01). 
@@ -601,36 +655,40 @@ Time step #28, advancing from t_n-1 = 0.27 to t = 0.28 (dt = 0.01).
    __________________________________________________________________________________
    6.223e-06   0.000e+00        ---        6.03e-05   1.82e-02       6       1.53e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :    0.033    0.033    0.033    0.033  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0008814,   ||e_u||_L2 = 2.398e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002271,   ||e_u||_L2 = 2.898e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0008814,   ||e_u||_L2 = 2.397e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002271,   ||e_u||_L2 = 2.897e-05
   Cell divergence:    |div(u)|_cells = 2.502e-06
 
 Time step #29, advancing from t_n-1 = 0.28 to t = 0.29 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   6.216e-06   0.000e+00        ---        6.02e-05   1.85e-02       6       1.53e-10
+   6.216e-06   0.000e+00        ---        6.02e-05   1.85e-02       6       1.54e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0333   0.0333   0.0333   0.0333  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0008539,   ||e_u||_L2 = 2.357e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002206,   ||e_u||_L2 = 2.852e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0008539,   ||e_u||_L2 = 2.356e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002206,   ||e_u||_L2 = 2.851e-05
   Cell divergence:    |div(u)|_cells = 2.496e-06
 
 Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01). 
@@ -639,46 +697,48 @@ Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01).
    __________________________________________________________________________________
    6.209e-06   0.000e+00        ---        6.02e-05   1.88e-02       6       1.54e-10
 
--- Statistics --                 min        avg       max     avg/call  p_min  p_max
--- Statistics -- memory [MB] :       118       118       118            0      0     
--- Statistics -- mat-vec     :         0         0         0      -nan  0      0     
--- Statistics -- full prec   :         0         0         0      -nan  0      0     
--- Statistics -- velocity    :         0         0         0      -nan  0      0     
--- Statistics -- div-matrix  :         0         0         0      -nan  0      0     
--- Statistics -- pres mass   :         0         0         0      -nan  0      0     
--- Statistics -- pres Poisson:         0         0         0      -nan  0      0     
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      115      115      115           0      0     
+-- Statistics -- nln solver  :   0.0305   0.0305   0.0305   0.0305  0      0     
+-- Statistics --  lin solver :        0        0        0     -nan  0      0     
+-- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
+-- Statistics --   full prec :        0        0        0     -nan  0      0     
+-- Statistics --   velocity  :        0        0        0     -nan  0      0     
+-- Statistics --   div matrix:        0        0        0     -nan  0      0     
+-- Statistics --   pres mass :        0        0        0     -nan  0      0     
+-- Statistics --   pres Poiss:        0        0        0     -nan  0      0     
 
-  L2-Errors absolute: ||e_p||_L2 = 0.0008272,   ||e_u||_L2 = 2.318e-05
-  L2-Errors relative: ||e_p||_L2 = 0.002142,   ||e_u||_L2 = 2.808e-05
+  L2-Errors absolute: ||e_p||_L2 = 0.0008272,   ||e_u||_L2 = 2.316e-05
+  L2-Errors relative: ||e_p||_L2 = 0.002142,   ||e_u||_L2 = 2.806e-05
   Cell divergence:    |div(u)|_cells = 2.49e-06
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |      1.69s |            |
+| Total CPU time elapsed since start          |      1.78s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        10 |       0.2s |        12% |
-| NS apply boundary conditions.   |        20 |     0.012s |      0.71% |
-| NS assemble nonlinear residual. |        10 |     0.016s |      0.95% |
-| NS solve pressure               |        10 |     0.172s |        10% |
-| NS solve velocity               |        10 |     0.328s |        19% |
-| Output solution.                |        10 |     0.944s |        56% |
+| Compute errors.                 |        10 |     0.196s |        11% |
+| NS apply boundary conditions.   |        20 |     0.012s |      0.67% |
+| NS assemble nonlinear residual. |        10 |     0.008s |      0.45% |
+| NS solve pressure               |        10 |     0.204s |        11% |
+| NS solve velocity               |        10 |     0.364s |        20% |
+| Output solution.                |        10 |     0.984s |        55% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |      1.43s |            |
+| Total wallclock time elapsed since start    |      1.49s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |        10 |     0.198s |        14% |
-| NS apply boundary conditions.   |        20 |   0.00746s |      0.52% |
-| NS assemble nonlinear residual. |        10 |   0.00703s |      0.49% |
-| NS solve pressure               |        10 |     0.105s |       7.3% |
-| NS solve velocity               |        10 |     0.186s |        13% |
-| Output solution.                |        10 |     0.922s |        64% |
+| Compute errors.                 |        10 |     0.204s |        14% |
+| NS apply boundary conditions.   |        20 |   0.00787s |      0.53% |
+| NS assemble nonlinear residual. |        10 |   0.00687s |      0.46% |
+| NS solve pressure               |        10 |     0.111s |       7.5% |
+| NS solve velocity               |        10 |      0.21s |        14% |
+| Output solution.                |        10 |      0.94s |        63% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -686,7 +746,7 @@ Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01).
 | DoFHandler: 0.3517 MB
 | Matrix-free objects: 0.2544 MB
 | Constraints: 0.4223 MB
-| Linearized velocities: 0.8049 MB
+| Linearized velocities: 1.61 MB
 | Preconditioner matrices: 2.573 MB
 | AMG preconditioner for uu block: 0.001568 MB
 | AMG preconditioner for pp block: 0.001568 MB
@@ -706,7 +766,7 @@ Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01).
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |  0.000841s |            |
+| Total wallclock time elapsed since start    |  0.000729s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+

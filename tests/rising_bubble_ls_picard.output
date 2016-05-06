@@ -11,15 +11,15 @@ Mesh size (largest/smallest element length at finest level): 0.025 / 0.025
 
 Time step #1, advancing from t_n-1 = 0 to t = 0.02 (dt = 0.02). 
   Concentration advance: advect [0/0] and reinitialize (7 + 7)
-  Residual/iterations: [0.0198/ILU/11] [1.81e-05/14] [2.19e-08/8] [3.17e-10/conv.]
+  Residual/iterations: [0.0198/ILU/11] [1.72e-05/14] [1.68e-08/7] [3.79e-10/conv.]
   Degree of circularity: 0.99997028
-  Mean bubble velocity: 0  0.010285253  
+  Mean bubble velocity: 0  0.010285252  
   Position of the center of mass:  0.5  0.5  
   Range of level set values: -1 / 1
 
 Time step #2, advancing from t_n-1 = 0.02 to t = 0.04 (dt = 0.02). 
   Concentration advance: advect [0.000546/10] and reinitialize (10 + 10)
-  Residual/iterations: [0.0058/ILU/8] [8.52e-06/12] [1.26e-08/7] [4.12e-10/conv.]
+  Residual/iterations: [0.0058/ILU/8] [8.52e-06/11] [1.2e-08/6] [4.97e-10/conv.]
   Degree of circularity: 0.99997042
   Mean bubble velocity: 0  0.020359068  
   Position of the center of mass:  0.5  0.50013512  
@@ -27,7 +27,7 @@ Time step #2, advancing from t_n-1 = 0.02 to t = 0.04 (dt = 0.02).
 
 Time step #3, advancing from t_n-1 = 0.04 to t = 0.06 (dt = 0.02). 
   Concentration advance: advect [0.00125/11] and reinitialize (11 + 11)
-  Residual/iterations: [0.000244/8] [5.42e-07/11] [1.04e-09/2] [3.42e-10/conv.]
+  Residual/iterations: [0.000244/8] [5.42e-07/10] [9.99e-10/conv.]
   Degree of circularity: 0.99997097
   Mean bubble velocity: 0  0.030195708  
   Position of the center of mass:  0.5  0.50058304  
@@ -35,7 +35,7 @@ Time step #3, advancing from t_n-1 = 0.04 to t = 0.06 (dt = 0.02).
 
 Time step #4, advancing from t_n-1 = 0.06 to t = 0.08 (dt = 0.02). 
   Concentration advance: advect [0.000938/10] and reinitialize (11 + 11)
-  Residual/iterations: [0.000205/8] [6.1e-07/10] [1.39e-09/2] [3.56e-10/conv.]
+  Residual/iterations: [0.000205/8] [6.1e-07/10] [1.38e-09/2] [3.19e-10/conv.]
   Degree of circularity: 0.99997117
   Mean bubble velocity: 0  0.03980314  
   Position of the center of mass:  0.5  0.5012625  
@@ -51,7 +51,7 @@ Time step #5, advancing from t_n-1 = 0.08 to t = 0.1 (dt = 0.02).
 
 Time step #6, advancing from t_n-1 = 0.1 to t = 0.12 (dt = 0.02). 
   Concentration advance: advect [0.000797/9] and reinitialize (11 + 10)
-  Residual/iterations: [0.000166/9] [7.32e-07/9] [2.14e-09/3] [3.51e-10/conv.]
+  Residual/iterations: [0.000166/9] [7.32e-07/9] [2.14e-09/3] [3.45e-10/conv.]
   Degree of circularity: 0.99996951
   Mean bubble velocity: 0  0.058382597  
   Position of the center of mass:  0.5  0.50320889  
@@ -59,7 +59,7 @@ Time step #6, advancing from t_n-1 = 0.1 to t = 0.12 (dt = 0.02).
 
 Time step #7, advancing from t_n-1 = 0.12 to t = 0.14 (dt = 0.02). 
   Concentration advance: advect [0.000792/10] and reinitialize (10 + 10)
-  Residual/iterations: [0.000157/10] [7.89e-07/10] [2.5e-09/3] [3.19e-10/conv.]
+  Residual/iterations: [0.000157/10] [7.89e-07/10] [2.5e-09/3] [3.02e-10/conv.]
   Degree of circularity: 0.99997129
   Mean bubble velocity: 0  0.067375689  
   Position of the center of mass:  0.5  0.5044546  
@@ -67,7 +67,7 @@ Time step #7, advancing from t_n-1 = 0.12 to t = 0.14 (dt = 0.02).
 
 Time step #8, advancing from t_n-1 = 0.14 to t = 0.16 (dt = 0.02). 
   Concentration advance: advect [0.000802/10] and reinitialize (10 + 10)
-  Residual/iterations: [0.000151/11] [8.36e-07/11] [2.93e-09/3] [3.64e-10/conv.]
+  Residual/iterations: [0.000151/11] [8.35e-07/11] [2.92e-09/3] [3.37e-10/conv.]
   Degree of circularity: 0.99996947
   Mean bubble velocity: 0  0.076179055  
   Position of the center of mass:  0.5  0.50587708  
@@ -75,7 +75,7 @@ Time step #8, advancing from t_n-1 = 0.14 to t = 0.16 (dt = 0.02).
 
 Time step #9, advancing from t_n-1 = 0.16 to t = 0.18 (dt = 0.02). 
   Concentration advance: advect [0.000823/10] and reinitialize (10 + 10)
-  Residual/iterations: [0.00015/12] [8.9e-07/12] [3.52e-09/4] [3.31e-10/conv.]
+  Residual/iterations: [0.00015/12] [8.9e-07/12] [3.51e-09/4] [2.98e-10/conv.]
   Degree of circularity: 0.99996697
   Mean bubble velocity: 0  0.084797794  
   Position of the center of mass:  0.5  0.50747368  
@@ -83,15 +83,15 @@ Time step #9, advancing from t_n-1 = 0.16 to t = 0.18 (dt = 0.02).
 
 Time step #10, advancing from t_n-1 = 0.18 to t = 0.2 (dt = 0.02). 
   Concentration advance: advect [0.000853/11] and reinitialize (10 + 10)
-  Residual/iterations: [0.000154/14] [9.32e-07/14] [4.02e-09/4] [4.34e-10/conv.]
+  Residual/iterations: [0.000154/14] [9.32e-07/14] [4.01e-09/4] [4.21e-10/conv.]
   Degree of circularity: 0.9999656
-  Mean bubble velocity: 0  0.093234162  
+  Mean bubble velocity: 0  0.093234161  
   Position of the center of mass:  0.5  0.50924019  
   Range of level set values: -1 / 1
 
 Time step #11, advancing from t_n-1 = 0.2 to t = 0.22 (dt = 0.02). 
   Concentration advance: advect [0.000892/11] and reinitialize (10 + 10)
-  Residual/iterations: [0.000162/16] [9.96e-07/15] [4.53e-09/4] [4.81e-10/conv.]
+  Residual/iterations: [0.000162/ILU/8] [9.79e-07/10] [4.59e-09/4] [2.09e-10/conv.]
   Degree of circularity: 0.99996424
   Mean bubble velocity: 0  0.1014891  
   Position of the center of mass:  0.5  0.51116792  
@@ -99,7 +99,7 @@ Time step #11, advancing from t_n-1 = 0.2 to t = 0.22 (dt = 0.02).
 
 Time step #12, advancing from t_n-1 = 0.22 to t = 0.24 (dt = 0.02). 
   Concentration advance: advect [0.000939/11] and reinitialize (10 + 10)
-  Residual/iterations: [0.000175/ILU/8] [1.04e-06/10] [5.27e-09/4] [2.75e-10/conv.]
+  Residual/iterations: [0.000175/9] [1.05e-06/10] [5.26e-09/4] [2.61e-10/conv.]
   Degree of circularity: 0.9999618
   Mean bubble velocity: 0  0.10956092  
   Position of the center of mass:  0.5  0.51325521  
@@ -107,7 +107,7 @@ Time step #12, advancing from t_n-1 = 0.22 to t = 0.24 (dt = 0.02).
 
 Time step #13, advancing from t_n-1 = 0.24 to t = 0.26 (dt = 0.02). 
   Concentration advance: advect [0.000995/12] and reinitialize (10 + 10)
-  Residual/iterations: [0.000191/9] [1.12e-06/10] [6.13e-09/4] [3.54e-10/conv.]
+  Residual/iterations: [0.000191/10] [1.13e-06/11] [6.05e-09/4] [4.07e-10/conv.]
   Degree of circularity: 0.99995787
   Mean bubble velocity: 0  0.11744549  
   Position of the center of mass:  0.5  0.5155009  
@@ -115,7 +115,7 @@ Time step #13, advancing from t_n-1 = 0.24 to t = 0.26 (dt = 0.02).
 
 Time step #14, advancing from t_n-1 = 0.26 to t = 0.28 (dt = 0.02). 
   Concentration advance: advect [0.00106/12] and reinitialize (10 + 10)
-  Residual/iterations: [0.000203/11] [1.22e-06/11] [7.18e-09/5] [1.96e-10/conv.]
+  Residual/iterations: [0.000203/12] [1.22e-06/12] [7.36e-09/5] [3.22e-10/conv.]
   Degree of circularity: 0.99995116
   Mean bubble velocity: 0  0.12514242  
   Position of the center of mass:  0.5  0.51790193  
@@ -123,7 +123,7 @@ Time step #14, advancing from t_n-1 = 0.26 to t = 0.28 (dt = 0.02).
 
 Time step #15, advancing from t_n-1 = 0.28 to t = 0.3 (dt = 0.02). 
   Concentration advance: advect [0.00113/12] and reinitialize (10 + 10)
-  Residual/iterations: [0.000213/ILU/8] [1.35e-06/10] [9.29e-09/4] [4.28e-10/conv.]
+  Residual/iterations: [0.000213/ILU/8] [1.35e-06/10] [9.28e-09/4] [4.25e-10/conv.]
   Degree of circularity: 0.99994574
   Mean bubble velocity: 0  0.13264625  
   Position of the center of mass:  0.5  0.52044932  
@@ -131,7 +131,7 @@ Time step #15, advancing from t_n-1 = 0.28 to t = 0.3 (dt = 0.02).
 
 Time step #16, advancing from t_n-1 = 0.3 to t = 0.32 (dt = 0.02). 
   Concentration advance: advect [0.00121/13] and reinitialize (10 + 10)
-  Residual/iterations: [0.000219/10] [1.57e-06/10] [1.19e-08/5] [1.92e-10/conv.]
+  Residual/iterations: [0.000219/10] [1.57e-06/10] [1.19e-08/5] [1.91e-10/conv.]
   Degree of circularity: 0.9999345
   Mean bubble velocity: 0  0.1399488  
   Position of the center of mass:  0.5  0.52314364  
@@ -139,7 +139,7 @@ Time step #16, advancing from t_n-1 = 0.3 to t = 0.32 (dt = 0.02).
 
 Time step #17, advancing from t_n-1 = 0.32 to t = 0.34 (dt = 0.02). 
   Concentration advance: advect [0.0013/13] and reinitialize (10 + 10)
-  Residual/iterations: [0.000235/11] [1.85e-06/11] [1.61e-08/5] [4.59e-10/conv.]
+  Residual/iterations: [0.000235/11] [1.85e-06/11] [1.61e-08/5] [4.58e-10/conv.]
   Degree of circularity: 0.99992084
   Mean bubble velocity: 0  0.14704216  
   Position of the center of mass:  0.5  0.52598072  
@@ -147,7 +147,7 @@ Time step #17, advancing from t_n-1 = 0.32 to t = 0.34 (dt = 0.02).
 
 Time step #18, advancing from t_n-1 = 0.34 to t = 0.36 (dt = 0.02). 
   Concentration advance: advect [0.00139/14] and reinitialize (10 + 10)
-  Residual/iterations: [0.000248/ILU/8] [2.1e-06/10] [1.94e-08/5] [3.2e-10/conv.]
+  Residual/iterations: [0.000248/ILU/8] [2.1e-06/10] [1.94e-08/5] [2.88e-10/conv.]
   Degree of circularity: 0.99990068
   Mean bubble velocity: 0  0.15391647  
   Position of the center of mass:  0.5  0.52895716  
@@ -163,7 +163,7 @@ Time step #19, advancing from t_n-1 = 0.36 to t = 0.38 (dt = 0.02).
 
 Time step #20, advancing from t_n-1 = 0.38 to t = 0.4 (dt = 0.02). 
   Concentration advance: advect [0.00159/15] and reinitialize (10 + 9)
-  Residual/iterations: [0.000295/12] [2.29e-06/12] [2.12e-08/6] [4.26e-10/conv.]
+  Residual/iterations: [0.000295/12] [2.29e-06/12] [2.12e-08/6] [4.24e-10/conv.]
   Degree of circularity: 0.99983822
   Mean bubble velocity: 0  0.1669922  
   Position of the center of mass:  0.5  0.53530172  
@@ -171,7 +171,7 @@ Time step #20, advancing from t_n-1 = 0.38 to t = 0.4 (dt = 0.02).
 
 Time step #21, advancing from t_n-1 = 0.4 to t = 0.42 (dt = 0.02). 
   Concentration advance: advect [0.0017/15] and reinitialize (10 + 9)
-  Residual/iterations: [0.000319/ILU/9] [2.59e-06/10] [2.73e-08/5] [4.46e-10/conv.]
+  Residual/iterations: [0.000319/ILU/9] [2.59e-06/10] [2.73e-08/5] [4.32e-10/conv.]
   Degree of circularity: 0.99978901
   Mean bubble velocity: 0  0.17317954  
   Position of the center of mass:  0.5  0.53866487  
@@ -179,7 +179,7 @@ Time step #21, advancing from t_n-1 = 0.4 to t = 0.42 (dt = 0.02).
 
 Time step #22, advancing from t_n-1 = 0.42 to t = 0.44 (dt = 0.02). 
   Concentration advance: advect [0.0018/15] and reinitialize (10 + 9)
-  Residual/iterations: [0.000346/10] [3.19e-06/11] [3.77e-08/6] [5.29e-10/conv.]
+  Residual/iterations: [0.000346/10] [3.19e-06/11] [3.78e-08/6] [5.29e-10/conv.]
   Degree of circularity: 0.99972602
   Mean bubble velocity: 0  0.17912389  
   Position of the center of mass:  0.5  0.54214016  
@@ -195,7 +195,7 @@ Time step #23, advancing from t_n-1 = 0.44 to t = 0.46 (dt = 0.02).
 
 Time step #24, advancing from t_n-1 = 0.46 to t = 0.48 (dt = 0.02). 
   Concentration advance: advect [0.00203/17] and reinitialize (10 + 10)
-  Residual/iterations: [0.000388/ILU/9] [4.31e-06/9] [5.76e-08/6] [7.64e-10/conv.]
+  Residual/iterations: [0.000388/ILU/9] [4.31e-06/9] [5.76e-08/6] [7.6e-10/conv.]
   Degree of circularity: 0.99953986
   Mean bubble velocity: 0  0.19024154  
   Position of the center of mass:  0.5  0.54944113  
@@ -203,7 +203,7 @@ Time step #24, advancing from t_n-1 = 0.46 to t = 0.48 (dt = 0.02).
 
 Time step #25, advancing from t_n-1 = 0.48 to t = 0.5 (dt = 0.02). 
   Concentration advance: advect [0.00214/16] and reinitialize (10 + 10)
-  Residual/iterations: [0.000399/11] [4e-06/11] [4.8e-08/7] [6.38e-10/conv.]
+  Residual/iterations: [0.000399/11] [4e-06/11] [4.8e-08/7] [6.35e-10/conv.]
   Degree of circularity: 0.99940311
   Mean bubble velocity: 0  0.19539293  
   Position of the center of mass:  0.5  0.55324935  
@@ -211,7 +211,7 @@ Time step #25, advancing from t_n-1 = 0.48 to t = 0.5 (dt = 0.02).
 
 Time step #26, advancing from t_n-1 = 0.5 to t = 0.52 (dt = 0.02). 
   Concentration advance: advect [0.00226/17] and reinitialize (10 + 9)
-  Residual/iterations: [0.000393/ILU/9] [4.12e-06/10] [5.44e-08/6] [7.37e-10/conv.]
+  Residual/iterations: [0.000393/ILU/9] [4.12e-06/10] [5.44e-08/6] [7.25e-10/conv.]
   Degree of circularity: 0.99923778
   Mean bubble velocity: 0  0.20026586  
   Position of the center of mass:  0.5  0.55715944  
@@ -219,7 +219,7 @@ Time step #26, advancing from t_n-1 = 0.5 to t = 0.52 (dt = 0.02).
 
 Time step #27, advancing from t_n-1 = 0.52 to t = 0.54 (dt = 0.02). 
   Concentration advance: advect [0.00238/18] and reinitialize (10 + 9)
-  Residual/iterations: [0.000385/11] [5.38e-06/11] [8.08e-08/7] [1.11e-09/2] [4.01e-10/conv.]
+  Residual/iterations: [0.000385/11] [5.38e-06/11] [8.08e-08/7] [1.1e-09/2] [3.96e-10/conv.]
   Degree of circularity: 0.99903094
   Mean bubble velocity: 0  0.20486737  
   Position of the center of mass:  0.5  0.56115576  
@@ -227,7 +227,7 @@ Time step #27, advancing from t_n-1 = 0.52 to t = 0.54 (dt = 0.02).
 
 Time step #28, advancing from t_n-1 = 0.54 to t = 0.56 (dt = 0.02). 
   Concentration advance: advect [0.00249/17] and reinitialize (10 + 9)
-  Residual/iterations: [0.000421/ILU/9] [6.67e-06/9] [1.07e-07/7] [1.43e-09/2] [3.32e-10/conv.]
+  Residual/iterations: [0.000421/ILU/9] [6.67e-06/9] [1.07e-07/7] [1.41e-09/2] [3.05e-10/conv.]
   Degree of circularity: 0.99877734
   Mean bubble velocity: 0  0.20918746  
   Position of the center of mass:  0.5  0.56524894  
@@ -235,7 +235,7 @@ Time step #28, advancing from t_n-1 = 0.54 to t = 0.56 (dt = 0.02).
 
 Time step #29, advancing from t_n-1 = 0.56 to t = 0.58 (dt = 0.02). 
   Concentration advance: advect [0.00261/18] and reinitialize (10 + 9)
-  Residual/iterations: [0.000485/11] [6.84e-06/11] [1.06e-07/8] [1.53e-09/3] [1.88e-10/conv.]
+  Residual/iterations: [0.000485/11] [6.84e-06/11] [1.06e-07/8] [1.53e-09/3] [1.81e-10/conv.]
   Degree of circularity: 0.99847208
   Mean bubble velocity: 0  0.21322142  
   Position of the center of mass:  0.5  0.56941777  
@@ -243,7 +243,7 @@ Time step #29, advancing from t_n-1 = 0.56 to t = 0.58 (dt = 0.02).
 
 Time step #30, advancing from t_n-1 = 0.58 to t = 0.6 (dt = 0.02). 
   Concentration advance: advect [0.00272/18] and reinitialize (10 + 9)
-  Residual/iterations: [0.000513/ILU/10] [5.49e-06/10] [7.58e-08/7] [1.01e-09/2] [2.75e-10/conv.]
+  Residual/iterations: [0.000513/ILU/10] [5.49e-06/9] [7.57e-08/6] [1.06e-09/2] [3.03e-10/conv.]
   Degree of circularity: 0.99810545
   Mean bubble velocity: 0  0.21696258  
   Position of the center of mass:  0.5  0.57366635  
@@ -251,7 +251,7 @@ Time step #30, advancing from t_n-1 = 0.58 to t = 0.6 (dt = 0.02).
 
 Time step #31, advancing from t_n-1 = 0.6 to t = 0.62 (dt = 0.02). 
   Concentration advance: advect [0.00283/18] and reinitialize (10 + 10)
-  Residual/iterations: [0.000494/11] [6.47e-06/11] [1.08e-07/8] [1.6e-09/3] [2.13e-10/conv.]
+  Residual/iterations: [0.000494/11] [6.47e-06/11] [1.08e-07/8] [1.59e-09/3] [2.02e-10/conv.]
   Degree of circularity: 0.9976719
   Mean bubble velocity: 0  0.22042171  
   Position of the center of mass:  0.5  0.57798555  
@@ -259,7 +259,7 @@ Time step #31, advancing from t_n-1 = 0.6 to t = 0.62 (dt = 0.02).
 
 Time step #32, advancing from t_n-1 = 0.62 to t = 0.64 (dt = 0.02). 
   Concentration advance: advect [0.00294/20] and reinitialize (10 + 10)
-  Residual/iterations: [0.000475/15] [8.68e-06/14] [1.56e-07/12] [2.41e-09/4] [2.8e-10/conv.]
+  Residual/iterations: [0.000475/ILU/10] [8.72e-06/9] [1.56e-07/8] [2.31e-09/2] [4.85e-10/conv.]
   Degree of circularity: 0.99716286
   Mean bubble velocity: 0  0.22360009  
   Position of the center of mass:  0.5  0.58236865  
@@ -267,7 +267,7 @@ Time step #32, advancing from t_n-1 = 0.62 to t = 0.64 (dt = 0.02).
 
 Time step #33, advancing from t_n-1 = 0.64 to t = 0.66 (dt = 0.02). 
   Concentration advance: advect [0.00305/22] and reinitialize (10 + 9)
-  Residual/iterations: [0.000485/ILU/10] [9.16e-06/9] [1.61e-07/8] [2.42e-09/3] [2.6e-10/conv.]
+  Residual/iterations: [0.000485/12] [9.2e-06/11] [1.61e-07/9] [2.47e-09/3] [3.07e-10/conv.]
   Degree of circularity: 0.99657569
   Mean bubble velocity: 0  0.22649858  
   Position of the center of mass:  0.5  0.58681412  
@@ -275,7 +275,7 @@ Time step #33, advancing from t_n-1 = 0.64 to t = 0.66 (dt = 0.02).
 
 Time step #34, advancing from t_n-1 = 0.66 to t = 0.68 (dt = 0.02). 
   Concentration advance: advect [0.00315/20] and reinitialize (10 + 9)
-  Residual/iterations: [0.000488/12] [6.92e-06/12] [1.03e-07/9] [1.47e-09/3] [2.26e-10/conv.]
+  Residual/iterations: [0.000488/ILU/10] [6.91e-06/9] [1.03e-07/8] [1.42e-09/2] [3.71e-10/conv.]
   Degree of circularity: 0.99589663
   Mean bubble velocity: 0  0.22912265  
   Position of the center of mass:  0.5  0.59131295  
@@ -283,7 +283,7 @@ Time step #34, advancing from t_n-1 = 0.66 to t = 0.68 (dt = 0.02).
 
 Time step #35, advancing from t_n-1 = 0.68 to t = 0.7 (dt = 0.02). 
   Concentration advance: advect [0.00324/20] and reinitialize (10 + 9)
-  Residual/iterations: [0.000515/15] [7.85e-06/15] [1.46e-07/13] [2.25e-09/4] [2.62e-10/conv.]
+  Residual/iterations: [0.000515/12] [7.88e-06/11] [1.45e-07/9] [2.33e-09/3] [3.11e-10/conv.]
   Degree of circularity: 0.9951255
   Mean bubble velocity: 0  0.23149277  
   Position of the center of mass:  0.5  0.59586514  
@@ -291,7 +291,7 @@ Time step #35, advancing from t_n-1 = 0.68 to t = 0.7 (dt = 0.02).
 
 Time step #36, advancing from t_n-1 = 0.7 to t = 0.72 (dt = 0.02). 
   Concentration advance: advect [0.00334/19] and reinitialize (10 + 10)
-  Residual/iterations: [0.000556/ILU/10] [1.06e-05/9] [2.05e-07/9] [3.28e-09/3] [2.88e-10/conv.]
+  Residual/iterations: [0.000556/ILU/10] [1.06e-05/9] [2.05e-07/8] [3.28e-09/3] [2.87e-10/conv.]
   Degree of circularity: 0.99424972
   Mean bubble velocity: 0  0.23361324  
   Position of the center of mass:  0.5  0.60045792  
@@ -299,7 +299,7 @@ Time step #36, advancing from t_n-1 = 0.7 to t = 0.72 (dt = 0.02).
 
 Time step #37, advancing from t_n-1 = 0.72 to t = 0.74 (dt = 0.02). 
   Concentration advance: advect [0.00343/22] and reinitialize (10 + 10)
-  Residual/iterations: [0.000579/13] [1.01e-05/11] [1.8e-07/10] [2.97e-09/3] [3.43e-10/conv.]
+  Residual/iterations: [0.000579/13] [1.01e-05/11] [1.8e-07/10] [2.97e-09/3] [3.41e-10/conv.]
   Degree of circularity: 0.99327031
   Mean bubble velocity: 0  0.23547331  
   Position of the center of mass:  0.5  0.60509535  
@@ -307,7 +307,7 @@ Time step #37, advancing from t_n-1 = 0.72 to t = 0.74 (dt = 0.02).
 
 Time step #38, advancing from t_n-1 = 0.74 to t = 0.76 (dt = 0.02). 
   Concentration advance: advect [0.00351/21] and reinitialize (10 + 10)
-  Residual/iterations: [0.00054/17] [7.12e-06/16] [1.15e-07/12] [1.76e-09/3] [4.17e-10/conv.]
+  Residual/iterations: [0.00054/ILU/11] [7.08e-06/9] [1.14e-07/8] [1.62e-09/2] [3.71e-10/conv.]
   Degree of circularity: 0.99218212
   Mean bubble velocity: 0  0.23708565  
   Position of the center of mass:  0.5  0.60976103  
@@ -315,7 +315,7 @@ Time step #38, advancing from t_n-1 = 0.74 to t = 0.76 (dt = 0.02).
 
 Time step #39, advancing from t_n-1 = 0.76 to t = 0.78 (dt = 0.02). 
   Concentration advance: advect [0.00359/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000514/ILU/11] [9.49e-06/9] [1.9e-07/8] [3.12e-09/3] [3.08e-10/conv.]
+  Residual/iterations: [0.000514/13] [9.46e-06/12] [1.89e-07/10] [3.19e-09/3] [4.18e-10/conv.]
   Degree of circularity: 0.99098975
   Mean bubble velocity: 0  0.2384851  
   Position of the center of mass:  0.5  0.61446  
@@ -323,7 +323,7 @@ Time step #39, advancing from t_n-1 = 0.76 to t = 0.78 (dt = 0.02).
 
 Time step #40, advancing from t_n-1 = 0.78 to t = 0.8 (dt = 0.02). 
   Concentration advance: advect [0.00367/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000536/13] [1.18e-05/11] [2.33e-07/10] [4.01e-09/4] [3.26e-10/conv.]
+  Residual/iterations: [0.000536/ILU/11] [1.18e-05/8] [2.34e-07/8] [3.84e-09/3] [3.28e-10/conv.]
   Degree of circularity: 0.98967427
   Mean bubble velocity: 0  0.23967147  
   Position of the center of mass:  0.5  0.61918641  
@@ -331,7 +331,7 @@ Time step #40, advancing from t_n-1 = 0.78 to t = 0.8 (dt = 0.02).
 
 Time step #41, advancing from t_n-1 = 0.8 to t = 0.82 (dt = 0.02). 
   Concentration advance: advect [0.00373/21] and reinitialize (10 + 10)
-  Residual/iterations: [0.000558/ILU/10] [9.2e-06/10] [1.51e-07/8] [2.5e-09/3] [2.61e-10/conv.]
+  Residual/iterations: [0.000558/13] [9.21e-06/12] [1.51e-07/9] [2.64e-09/3] [3.62e-10/conv.]
   Degree of circularity: 0.98824963
   Mean bubble velocity: 0  0.24065329  
   Position of the center of mass:  0.5  0.62393733  
@@ -339,7 +339,7 @@ Time step #41, advancing from t_n-1 = 0.8 to t = 0.82 (dt = 0.02).
 
 Time step #42, advancing from t_n-1 = 0.82 to t = 0.84 (dt = 0.02). 
   Concentration advance: advect [0.00379/20] and reinitialize (10 + 10)
-  Residual/iterations: [0.000552/12] [7.55e-06/12] [1.37e-07/9] [2.11e-09/3] [2.76e-10/conv.]
+  Residual/iterations: [0.000552/ILU/10] [7.56e-06/10] [1.37e-07/7] [2.07e-09/2] [3.56e-10/conv.]
   Degree of circularity: 0.98670583
   Mean bubble velocity: 0  0.24145321  
   Position of the center of mass:  0.5  0.62870612  
@@ -347,7 +347,7 @@ Time step #42, advancing from t_n-1 = 0.82 to t = 0.84 (dt = 0.02).
 
 Time step #43, advancing from t_n-1 = 0.84 to t = 0.86 (dt = 0.02). 
   Concentration advance: advect [0.00385/22] and reinitialize (10 + 10)
-  Residual/iterations: [0.000604/17] [1.1e-05/16] [2.23e-07/14] [3.94e-09/ILU/3] [3.48e-10/conv.]
+  Residual/iterations: [0.000604/12] [1.1e-05/12] [2.22e-07/9] [3.86e-09/4] [2.5e-10/conv.]
   Degree of circularity: 0.98506035
   Mean bubble velocity: 0  0.24208253  
   Position of the center of mass:  0.5  0.6334896  
@@ -355,7 +355,7 @@ Time step #43, advancing from t_n-1 = 0.84 to t = 0.86 (dt = 0.02).
 
 Time step #44, advancing from t_n-1 = 0.86 to t = 0.88 (dt = 0.02). 
   Concentration advance: advect [0.0039/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000619/ILU/11] [1.13e-05/9] [2.15e-07/8] [3.59e-09/3] [3.37e-10/conv.]
+  Residual/iterations: [0.000619/ILU/11] [1.13e-05/9] [2.15e-07/8] [3.57e-09/3] [2.95e-10/conv.]
   Degree of circularity: 0.98330533
   Mean bubble velocity: 0  0.24253599  
   Position of the center of mass:  0.5  0.63828237  
@@ -363,7 +363,7 @@ Time step #44, advancing from t_n-1 = 0.86 to t = 0.88 (dt = 0.02).
 
 Time step #45, advancing from t_n-1 = 0.88 to t = 0.9 (dt = 0.02). 
   Concentration advance: advect [0.00395/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000559/12] [7.45e-06/13] [1.1e-07/8] [1.67e-09/3] [2.5e-10/conv.]
+  Residual/iterations: [0.000559/12] [7.45e-06/12] [1.1e-07/8] [1.71e-09/3] [2.6e-10/conv.]
   Degree of circularity: 0.98144667
   Mean bubble velocity: 0  0.24281917  
   Position of the center of mass:  0.5  0.64308556  
@@ -371,7 +371,7 @@ Time step #45, advancing from t_n-1 = 0.88 to t = 0.9 (dt = 0.02).
 
 Time step #46, advancing from t_n-1 = 0.9 to t = 0.92 (dt = 0.02). 
   Concentration advance: advect [0.00399/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000526/ILU/11] [8.82e-06/9] [1.7e-07/8] [2.71e-09/3] [3.02e-10/conv.]
+  Residual/iterations: [0.000526/17] [8.82e-06/16] [1.71e-07/14] [2.83e-09/ILU/3] [2.76e-10/conv.]
   Degree of circularity: 0.97950736
   Mean bubble velocity: 0  0.24298734  
   Position of the center of mass:  0.5  0.64788512  
@@ -379,7 +379,7 @@ Time step #46, advancing from t_n-1 = 0.9 to t = 0.92 (dt = 0.02).
 
 Time step #47, advancing from t_n-1 = 0.92 to t = 0.94 (dt = 0.02). 
   Concentration advance: advect [0.00402/22] and reinitialize (10 + 10)
-  Residual/iterations: [0.000589/12] [1.17e-05/12] [2.29e-07/9] [3.91e-09/4] [2.95e-10/conv.]
+  Residual/iterations: [0.000589/ILU/11] [1.16e-05/9] [2.3e-07/8] [3.67e-09/3] [3.21e-10/conv.]
   Degree of circularity: 0.9774551
   Mean bubble velocity: 0  0.24303974  
   Position of the center of mass:  0.5  0.65270537  
@@ -387,7 +387,7 @@ Time step #47, advancing from t_n-1 = 0.92 to t = 0.94 (dt = 0.02).
 
 Time step #48, advancing from t_n-1 = 0.94 to t = 0.96 (dt = 0.02). 
   Concentration advance: advect [0.00405/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000626/ILU/11] [9.95e-06/9] [1.64e-07/8] [2.7e-09/3] [3.19e-10/conv.]
+  Residual/iterations: [0.000626/13] [9.95e-06/12] [1.64e-07/9] [2.83e-09/3] [3.63e-10/conv.]
   Degree of circularity: 0.97531509
   Mean bubble velocity: 0  0.24295827  
   Position of the center of mass:  0.5  0.65751977  
@@ -395,7 +395,7 @@ Time step #48, advancing from t_n-1 = 0.94 to t = 0.96 (dt = 0.02).
 
 Time step #49, advancing from t_n-1 = 0.96 to t = 0.98 (dt = 0.02). 
   Concentration advance: advect [0.00407/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000621/13] [7.02e-06/12] [1.02e-07/9] [1.35e-09/2] [4.32e-10/conv.]
+  Residual/iterations: [0.000621/ILU/11] [7.03e-06/10] [1.01e-07/8] [1.34e-09/2] [2.67e-10/conv.]
   Degree of circularity: 0.97310168
   Mean bubble velocity: 0  0.24277136  
   Position of the center of mass:  0.5  0.66233732  
@@ -403,7 +403,7 @@ Time step #49, advancing from t_n-1 = 0.96 to t = 0.98 (dt = 0.02).
 
 Time step #50, advancing from t_n-1 = 0.98 to t = 1 (dt = 0.02). 
   Concentration advance: advect [0.00409/23] and reinitialize (10 + 10)
-  Residual/iterations: [0.000618/ILU/11] [9.53e-06/9] [1.79e-07/8] [2.8e-09/3] [3.26e-10/conv.]
+  Residual/iterations: [0.000618/13] [9.52e-06/12] [1.79e-07/9] [2.91e-09/3] [4.13e-10/conv.]
   Degree of circularity: 0.9708304
   Mean bubble velocity: 0  0.24250595  
   Position of the center of mass:  0.5  0.6671396  
@@ -411,23 +411,23 @@ Time step #50, advancing from t_n-1 = 0.98 to t = 1 (dt = 0.02).
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |      18.1s |            |
+| Total wallclock time elapsed since start    |      9.26s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| LS advance concentration.       |        50 |      3.08s |        17% |
-| LS compute Heaviside.           |        51 |     0.082s |      0.45% |
-| LS compute curvature.           |        50 |     0.491s |       2.7% |
-| LS compute force.               |        50 |    0.0601s |      0.33% |
-| LS compute normal.              |       101 |      1.18s |       6.5% |
-| LS reinitialization step.       |       102 |      2.22s |        12% |
-| NS apply boundary conditions.   |       100 |     0.394s |       2.2% |
-| NS assemble nonlinear residual. |       224 |     0.596s |       3.3% |
-| NS assemble preconditioner.     |        19 |      1.89s |        10% |
-| NS build preconditioner.        |        19 |     0.577s |       3.2% |
-| NS distribute DoFs.             |         1 |     0.107s |      0.59% |
-| NS setup matrix and vectors.    |         1 |    0.0414s |      0.23% |
-| NS solve system.                |       174 |      6.05s |        33% |
-| TP setup problem.               |         1 |     0.464s |       2.6% |
+| LS advance concentration.       |        50 |     0.967s |        10% |
+| LS compute Heaviside.           |        51 |     0.036s |      0.39% |
+| LS compute curvature.           |        50 |     0.763s |       8.2% |
+| LS compute force.               |        50 |    0.0179s |      0.19% |
+| LS compute normal.              |       101 |      1.83s |        20% |
+| LS reinitialization step.       |       102 |     0.631s |       6.8% |
+| NS apply boundary conditions.   |       100 |    0.0259s |      0.28% |
+| NS assemble nonlinear residual. |       223 |     0.163s |       1.8% |
+| NS assemble preconditioner.     |        20 |     0.475s |       5.1% |
+| NS build preconditioner.        |        20 |     0.791s |       8.5% |
+| NS distribute DoFs.             |         1 |    0.0584s |      0.63% |
+| NS setup matrix and vectors.    |         1 |    0.0232s |      0.25% |
+| NS solve system.                |       173 |      3.12s |        34% |
+| TP setup problem.               |         1 |     0.164s |       1.8% |
 +---------------------------------+-----------+------------+------------+
 
