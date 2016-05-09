@@ -856,7 +856,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
   if (n_tot_iterations > 1.2 * n_iterations_last_prec_update)
     {
       if (premature_update == true ||
-          n_tot_iterations > 1.6 * n_iterations_last_prec_update)
+          n_tot_iterations > 2 * n_iterations_last_prec_update)
         update_preconditioner_frequency =
           time_stepping.step_no() - time_step_last_prec_update;
       update_preconditioner = true;
