@@ -500,8 +500,8 @@ namespace MicroFluidic
 
             std::ostringstream filename3;
             filename3 << parameters.output_filename << "-"
-                      << Utilities::int_to_string((int)parameters.adaptive_refinements, 1) << "-"
-                      << Utilities::int_to_string(parameters.global_refinements, 3) << "-"
+                      << Utilities::int_to_string((int)parameters.adaptive_refinements) << "-"
+                      << Utilities::int_to_string(parameters.global_refinements) << "-"
                       << Utilities::int_to_string(time_step, 4)
                       << ".txt";
 
