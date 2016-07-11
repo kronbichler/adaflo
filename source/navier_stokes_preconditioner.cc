@@ -813,7 +813,7 @@ namespace
     Quadrature<dim> quad(dof_handler.get_fe().get_unit_support_points());
     FEValues<dim> fe_values(dof_handler.get_fe(), quad, update_quadrature_points);
     std::vector<types::global_dof_index> local_dof_indices(dof_handler.get_fe().dofs_per_cell);
-    typename DoFHandler<dim>::active_cell_iterator cell=dof_handler.begin(),
+    typename DoFHandler<dim>::active_cell_iterator cell=dof_handler.begin_active(),
         endc = dof_handler.end();
     for ( ; cell != endc; ++cell)
       if (cell->is_locally_owned())

@@ -287,8 +287,8 @@ LevelSetOKZSolver<dim>::local_projection_matrix(const MatrixFree<dim> &data,
           phi.integrate(true,true);
           for (unsigned int v=0; v<data.n_components_filled(cell); ++v)
             for (unsigned int j=0; j<phi.dofs_per_cell; ++j)
-              scratch.matrices[v](data.get_shape_info(4,2).lexicographic_numbering[j],
-                                  data.get_shape_info(4,2).lexicographic_numbering[i])
+              scratch.matrices[v](phi.get_shape_info().lexicographic_numbering[j],
+                                  phi.get_shape_info().lexicographic_numbering[i])
                 = phi.begin_dof_values()[j][v];
         }
       for (unsigned int v=0; v<data.n_components_filled(cell); ++v)
