@@ -162,6 +162,9 @@ NavierStokesMatrix<dim>::clear()
   variable_densities.clear();
   variable_viscosities.clear();
   linearized_velocities.clear();
+  variable_densities_preconditioner.clear();
+  variable_viscosities_preconditioner.clear();
+  linearized_velocities_preconditioner.clear();
 }
 
 
@@ -368,7 +371,7 @@ NavierStokesMatrix<dim>::pressure_poisson_vmult (parallel::distributed::Vector<d
 
 #undef OPERATION
 
-  if (variable_densities.size() > 0)
+  if (variable_densities_preconditioner.size() > 0)
     variable_densities.swap(variable_densities_preconditioner);
 
   // diagonal values of constrained degrees of freedom set to 1
