@@ -7,6 +7,32 @@ finite library, github.com/dealii/dealii, and makes use of advanced
 technologies such as parallel adaptive mesh refinement, fast integration based
 on sum factorization, and state-of-the-art preconditioning techniques.
 
+#Algorithms
+
+The algorithms used in adaflo are described in the following publication:
+[Journal link](http://hpc.sagepub.com/content/early/2016/10/05/1094342016671790)
+[DOI](http://dx.doi.org/10.1177/1094342016671790)
+```
+@article{KronbichlerDiagneHolmgren2016,
+        author = {Kronbichler, Martin and Diagne, Ababacar and Holmgren, Hanna},
+        title = {A fast massively parallel two-phase flow solver for microfluidic chip simulation},
+        year = {2016},
+        doi = {10.1177/1094342016671790},
+        abstract ={This work presents a parallel finite element solver of incompressible
+        two-phase flow targeting large-scale simulations of three-dimensional dynamics in
+        high-throughput microfluidic separation devices. The method relies on a conservative
+        level set formulation for representing the fluid-fluid interface and uses adaptive
+        mesh refinement on forests of octrees. An implicit time stepping with efficient
+        block solvers for the incompressible Navier–Stokes equations discretized with
+        Taylor-Hood and augmented Taylor-Hood finite elements is presented. A matrix-free
+        implementation is used that reduces the solution time for the Navier-Stokes system
+        by a factor of approximately three compared to the best matrix-based algorithms.
+        Scalability of the chosen algorithms up to 32,768 cores and a billion degrees of
+        freedom is shown.},
+        journal = {International Journal of High Performance Computing Applications}
+        }
+```
+
 
 #Getting started
 
