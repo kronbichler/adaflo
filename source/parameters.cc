@@ -13,6 +13,7 @@
 //
 // --------------------------------------------------------------------------
 
+#include <deal.II/base/mpi.h>
 #include <adaflo/parameters.h>
 
 
@@ -300,8 +301,16 @@ void FlowParameters::declare_parameters (ParameterHandler &prm)
 void FlowParameters::parse_parameters (const std::string parameter_file,
                                        ParameterHandler &prm)
 {
-  const bool success = prm.read_input (parameter_file);
-  AssertThrow (success, ExcMessage ("Invalid input parameter file."));
+  try
+    {
+      prm.parse_input (parameter_file);
+    }
+  catch (...)
+    {
+      if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+        prm.print_parameters(std::cout, ParameterHandler::Text);
+      AssertThrow (false, ExcMessage ("Invalid input parameter file."));
+    }
 
   prm.enter_subsection("Navier-Stokes");
 

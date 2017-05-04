@@ -223,7 +223,6 @@ void TwoPhaseBaseAlgorithm<dim>::initialize_data_structures ()
   data.tasks_parallel_scheme =
     MatrixFree<dim>::AdditionalData::partition_partition;
   data.store_plain_indices = true;
-  data.mpi_communicator = triangulation.get_communicator();
   std::vector<const DoFHandler<dim>*> dof_handlers;
   dof_handlers.push_back (&navier_stokes.get_dof_handler_u());
   dof_handlers.push_back (&navier_stokes.get_dof_handler_p());

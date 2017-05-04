@@ -348,13 +348,12 @@ initialize_matrix_free (MatrixFree<dim> *external_matrix_free)
       matrix_free.reset (new MatrixFree<dim>(),
                          helpers::DummyDeleter<MatrixFree<dim> >(true));
       typename MatrixFree<dim>::AdditionalData data;
-      data.mpi_communicator = triangulation.get_communicator();
 
       // writing into an Epetra_FECrsMatrix is not thread-safe (non-local
       // data), so do not allow parallelism in case we use more than one
       // processor
       data.tasks_parallel_scheme =
-        Utilities::MPI::n_mpi_processes(data.mpi_communicator) > 1 ?
+        Utilities::MPI::n_mpi_processes(triangulation.get_communicator()) > 1 ?
         MatrixFree<dim>::AdditionalData::none :
         MatrixFree<dim>::AdditionalData::partition_color;
       if (parameters.velocity_degree == 2)
