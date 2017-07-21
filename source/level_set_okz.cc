@@ -1225,7 +1225,7 @@ LevelSetOKZSolver<dim>::advance_concentration ()
 
     for (typename std::map<types::global_dof_index, double>::const_iterator
          it = boundary_values.begin(); it != boundary_values.end(); ++it)
-      if (this->solution.block(0).in_local_range(it->first))
+      if (this->solution.block(0).locally_owned_elements().is_element(it->first))
         this->solution.block(0)(it->first) = it->second;
     this->solution.block(0).update_ghost_values();
   }

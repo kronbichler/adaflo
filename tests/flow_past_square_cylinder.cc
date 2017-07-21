@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2014 - 2016 by the adaflo authors
+// Copyright (C) 2014 - 2017 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -92,6 +92,8 @@ InflowVelocity<dim>::vector_value (const Point<dim> &p,
   values(0) = coefficient * p[1] * (H-p[1]);
   if (dim == 3)
     values(0) *= p[2] * (H-p[2]);
+  if (fluctuating)
+    values(0) *= std::sin(this->get_time()*numbers::PI/8.);
   for (unsigned int d=1; d<dim; ++d)
     values(d) = 0;
 }
@@ -114,32 +116,9 @@ private:
 
   mutable TimerOutput timer;
 
-  std_cxx11::shared_ptr<Manifold<dim> > cylinder_manifold;
   parallel::distributed::Triangulation<dim>   triangulation;
   NavierStokes<dim>    navier_stokes;
 };
-
-
-
-namespace
-{
-  template <int dim>
-  Point<dim> get_direction()
-  {
-    Point<dim> direction;
-    direction[dim-1] = 1.;
-    return direction;
-  }
-
-  template <int dim>
-  Point<dim> get_center()
-  {
-    Point<dim> center;
-    center[0] = 0.5;
-    center[1] = 0.2;
-    return center;
-  }
-}
 
 
 
@@ -150,9 +129,6 @@ FlowPastCylinder<dim>::FlowPastCylinder (const FlowParameters &parameters)
          (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)),
   timer (pcout, TimerOutput::summary,
          TimerOutput::cpu_and_wall_times),
-  cylinder_manifold(dim == 2 ?
-                    static_cast<Manifold<dim>*>(new PolarManifold<dim>(get_center<dim>())) :
-                    reinterpret_cast<Manifold<dim>*>(new CylindricalManifold<3>(get_direction<3>(), get_center<3>()))),
   triangulation(MPI_COMM_WORLD),
   navier_stokes (parameters, triangulation,
                  &timer)
@@ -182,81 +158,29 @@ void FlowPastCylinder<dim>::output_results () const
 
 
 
-void create_triangulation(Triangulation<2> &tria,
-                          const bool compute_in_2d = true)
+void create_triangulation(Triangulation<2> &tria)
 {
-  HyperBallBoundary<2> boundary(Point<2>(0.5,0.2), 0.05);
-  Triangulation<2> left, middle, right, tmp, tmp2;
-  GridGenerator::subdivided_hyper_rectangle(left, std::vector<unsigned int>({3U, 4U}),
-                                            Point<2>(), Point<2>(0.3, 0.41), false);
-  GridGenerator::subdivided_hyper_rectangle(right, std::vector<unsigned int>({18U, 4U}),
-                                            Point<2>(0.7, 0), Point<2>(2.5, 0.41), false);
+  // create mesh with hole
+  Point<2> p1(0,0);
+  Point<2> p2(2.5, 0.4);
+  std::vector<unsigned int> refinements({50, 8});
+  Triangulation<2> tmp;
+  GridGenerator::subdivided_hyper_rectangle(tmp, refinements, p1, p2);
+  std::set<Triangulation<2>::active_cell_iterator> cells_in_void;
+  for (Triangulation<2>::active_cell_iterator cell = tmp.begin();
+       cell != tmp.end(); ++cell)
+    if (cell->center()[0] > 0.45 && cell->center()[0]<0.55 &&
+        cell->center()[1] > 0.15 && cell->center()[1]<0.25)
+      cells_in_void.insert(cell);
+  GridGenerator::create_triangulation_with_removed_cells(tmp, cells_in_void, tria);
 
-  // create middle part first as a hyper shell
-  GridGenerator::hyper_shell(middle, Point<2>(0.5, 0.2), 0.05, 0.2, 4, true);
-  middle.set_manifold(0, boundary);
-  middle.refine_global(1);
-
-  // then move the vertices to the points where we want them to be to create a
-  // slightly asymmetric cube with a hole
-  for (Triangulation<2>::cell_iterator cell = middle.begin();
-       cell != middle.end(); ++cell)
-    for (unsigned int v=0; v < GeometryInfo<2>::vertices_per_cell; ++v)
-      {
-        Point<2> &vertex = cell->vertex(v);
-        if (std::abs(vertex[0] - 0.7) < 1e-10 &&
-            std::abs(vertex[1] - 0.2) < 1e-10)
-          vertex = Point<2>(0.7, 0.205);
-        else if (std::abs(vertex[0] - 0.6) < 1e-10 &&
-                 std::abs(vertex[1] - 0.3) < 1e-10)
-          vertex = Point<2>(0.7, 0.41);
-        else if (std::abs(vertex[0] - 0.6) < 1e-10 &&
-                 std::abs(vertex[1] - 0.1) < 1e-10)
-          vertex = Point<2>(0.7, 0);
-        else if (std::abs(vertex[0] - 0.5) < 1e-10 &&
-                 std::abs(vertex[1] - 0.4) < 1e-10)
-          vertex = Point<2>(0.5, 0.41);
-        else if (std::abs(vertex[0] - 0.5) < 1e-10 &&
-                 std::abs(vertex[1] - 0.0) < 1e-10)
-          vertex = Point<2>(0.5, 0.0);
-        else if (std::abs(vertex[0] - 0.4) < 1e-10 &&
-                 std::abs(vertex[1] - 0.3) < 1e-10)
-          vertex = Point<2>(0.3, 0.41);
-        else if (std::abs(vertex[0] - 0.4) < 1e-10 &&
-                 std::abs(vertex[1] - 0.1) < 1e-10)
-          vertex = Point<2>(0.3, 0);
-        else if (std::abs(vertex[0] - 0.3) < 1e-10 &&
-                 std::abs(vertex[1] - 0.2) < 1e-10)
-          vertex = Point<2>(0.3, 0.205);
-        else if (std::abs(vertex[0] - 0.56379) < 1e-4 &&
-                 std::abs(vertex[1] - 0.13621) < 1e-4)
-          vertex = Point<2>(0.59, 0.11);
-        else if (std::abs(vertex[0] - 0.56379) < 1e-4 &&
-                 std::abs(vertex[1] - 0.26379) < 1e-4)
-          vertex = Point<2>(0.59, 0.29);
-        else if (std::abs(vertex[0] - 0.43621) < 1e-4 &&
-                 std::abs(vertex[1] - 0.13621) < 1e-4)
-          vertex = Point<2>(0.41, 0.11);
-        else if (std::abs(vertex[0] - 0.43621) < 1e-4 &&
-                 std::abs(vertex[1] - 0.26379) < 1e-4)
-          vertex = Point<2>(0.41, 0.29);
-      }
-
-  // refine once to create the same level of refinement as in the
-  // neighboring domains
-  middle.refine_global(1);
-
-  // must copy the triangulation because we cannot merge triangulations with
-  // refinement...
-  GridGenerator::flatten_triangulation(middle, tmp2);
-
-  if (compute_in_2d)
-    GridGenerator::merge_triangulations (tmp2, right, tria);
-  else
-    {
-      GridGenerator::merge_triangulations (left, tmp2, tmp);
-      GridGenerator::merge_triangulations (tmp, right, tria);
-    }
+  // shift cells at the upper end of the domain from 0.40 to 0.41. It
+  // corresponds to faces with id 3
+  for (Triangulation<2>::cell_iterator cell = tria.begin();
+       cell != tria.end(); ++cell)
+    if (cell->at_boundary(3) && cell->face(3)->center()[1] > 0.39999999999)
+      for (unsigned int v=0; v<GeometryInfo<2>::vertices_per_face; ++v)
+        cell->face(3)->vertex(v)[1] = 0.41;
 
   // Set the left boundary (inflow) to 1, the right to 2, the rest to 0.
   for (Triangulation<2>::active_cell_iterator cell=tria.begin() ;
@@ -264,15 +188,10 @@ void create_triangulation(Triangulation<2> &tria,
     for (unsigned int f=0; f<GeometryInfo<2>::faces_per_cell; ++f)
       if (cell->face(f)->at_boundary())
         {
-          if (std::abs(cell->face(f)->center()[0] - (compute_in_2d ? 0.3 : 0)) < 1e-12)
+          if (std::abs(cell->face(f)->center()[0]) < 1e-12)
             cell->face(f)->set_all_boundary_ids(1);
           else if (std::abs(cell->face(f)->center()[0]-2.5) < 1e-12)
             cell->face(f)->set_all_boundary_ids(2);
-          else if (Point<2>(0.5,0.2).distance(cell->face(f)->center())<=0.05)
-            {
-              cell->face(f)->set_all_manifold_ids(10);
-              cell->face(f)->set_all_boundary_ids(0);
-            }
           else
             cell->face(f)->set_all_boundary_ids(0);
         }
@@ -283,8 +202,8 @@ void create_triangulation(Triangulation<2> &tria,
 void create_triangulation(Triangulation<3> &tria)
 {
   Triangulation<2> tria_2d;
-  create_triangulation(tria_2d, false);
-  GridGenerator::extrude_triangulation(tria_2d, 5, 0.41, tria);
+  create_triangulation(tria_2d);
+  GridGenerator::extrude_triangulation(tria_2d, 9, 0.41, tria);
 
   // set boundary indicators correctly
   for (Triangulation<3>::active_cell_iterator cell=tria.begin() ;
@@ -296,11 +215,6 @@ void create_triangulation(Triangulation<3> &tria)
             cell->face(f)->set_all_boundary_ids(1);
           else if (std::abs(cell->face(f)->center()[0]-2.5) < 1e-12)
             cell->face(f)->set_all_boundary_ids(2);
-          else if (Point<3>(0.5,0.2,cell->face(f)->center()[2]).distance(cell->face(f)->center())<=0.05)
-            {
-              cell->face(f)->set_all_manifold_ids(10);
-              cell->face(f)->set_all_boundary_ids(0);
-            }
           else
             cell->face(f)->set_all_boundary_ids(0);
         }
@@ -312,22 +226,21 @@ template <int dim>
 void FlowPastCylinder<dim>::run ()
 {
   timer.enter_subsection ("Setup grid and initial condition.");
-  pcout << "Running a " << dim << "D flow past a cylinder "
+  pcout << "Running a " << dim << "D flow past a square cylinder "
         << "using " << navier_stokes.time_stepping.name()
         << ", Q"  << navier_stokes.get_fe_u().degree
         << "/Q" << navier_stokes.get_fe_p().degree
         << " elements" << std::endl;
 
   create_triangulation(triangulation);
-  triangulation.set_manifold(10, *cylinder_manifold);
 
   navier_stokes.set_no_slip_boundary(0);
-  navier_stokes.set_velocity_dirichlet_boundary(1, std_cxx11::shared_ptr<Function<dim> >(new InflowVelocity<dim>(0., false)));
+  navier_stokes.set_velocity_dirichlet_boundary(1, std::shared_ptr<Function<dim> >(new InflowVelocity<dim>(0., true)));
 
-  navier_stokes.set_open_boundary(2, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>(1)));
+  navier_stokes.set_open_boundary_with_normal_flux(2, std::shared_ptr<Function<dim> > (new ZeroFunction<dim>(1)));
   timer.leave_subsection();
 
-  navier_stokes.setup_problem(InflowVelocity<dim>(0., false));
+  navier_stokes.setup_problem(InflowVelocity<dim>(0., true));
   navier_stokes.print_n_dofs();
   output_results ();
 
@@ -363,15 +276,14 @@ int main (int argc, char **argv)
     {
       using namespace dealii;
 
-      Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv,
-                                                          numbers::invalid_unsigned_int);
+      Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
       deallog.depth_console (0);
 
       std::string paramfile;
       if (argc>1)
         paramfile = argv[1];
       else
-        paramfile = "flow_past_cylinder.prm";
+        paramfile = "flow_past_square_cylinder.prm";
 
       FlowParameters parameters (paramfile);
       if (parameters.dimension == 2)

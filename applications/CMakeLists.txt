@@ -22,8 +22,10 @@ INCLUDE_DIRECTORIES(
 
 SET( SOURCE_FILES
      micro_particle.cc
+     micro_solver_phase_field.cc
      drivencavity.cc
      periodic_channel.cc
+     rising_bubble_parallelpaper.cc
      )
 
 FOREACH ( sourcefile ${SOURCE_FILES} )
