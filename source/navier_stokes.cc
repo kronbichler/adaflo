@@ -183,8 +183,6 @@ void NavierStokes<dim>::initialize_data_structures ()
     return;
 
   timer->enter_subsection ("NS setup matrix and vectors.");
-  Assert (&dof_handler_u.get_fe() == &fe_u, ExcInternalError());
-  Assert (&dof_handler_p.get_fe() == &fe_p, ExcInternalError());
   Assert (dofs_distributed == true, ExcInternalError());
 
   // Now, the constraint matrix for hanging nodes and boundary conditions. We

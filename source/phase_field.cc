@@ -435,7 +435,6 @@ void PhaseFieldSolver<dim>::solve_cahn_hilliard ()
 
   SolverControl solver_control (this->parameters.max_lin_iteration, tolerance);
   SolverGMRES<parallel::distributed::BlockVector<double> >::AdditionalData data(50,true);
-  //data.compute_eigenvalues = true;
   SolverGMRES<parallel::distributed::BlockVector<double> >
   solver (solver_control, mem, data);
   try

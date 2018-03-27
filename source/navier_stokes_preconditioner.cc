@@ -24,6 +24,7 @@
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/solver_bicgstab.h>
 #include <deal.II/lac/solver_gmres.h>
+#include <deal.II/lac/vector_view.h>
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
 #include <deal.II/fe/fe_tools.h>
