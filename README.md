@@ -7,7 +7,7 @@ finite library, github.com/dealii/dealii, and makes use of advanced
 technologies such as parallel adaptive mesh refinement, fast integration based
 on sum factorization, and state-of-the-art preconditioning techniques.
 
-#Algorithms
+# Algorithms
 
 The algorithms used in adaflo are described in the following publication:
 [Journal link](http://hpc.sagepub.com/content/early/2016/10/05/1094342016671790)
@@ -16,7 +16,10 @@ The algorithms used in adaflo are described in the following publication:
 @article{KronbichlerDiagneHolmgren2016,
         author = {Kronbichler, Martin and Diagne, Ababacar and Holmgren, Hanna},
         title = {A fast massively parallel two-phase flow solver for microfluidic chip simulation},
-        year = {2016},
+        volume = {32},
+        number = {2},
+        pages = {266--287},
+        year = {2018},
         doi = {10.1177/1094342016671790},
         abstract ={This work presents a parallel finite element solver of incompressible
         two-phase flow targeting large-scale simulations of three-dimensional dynamics in
@@ -34,7 +37,7 @@ The algorithms used in adaflo are described in the following publication:
 ```
 
 
-#Getting started
+# Getting started
 
 ### Prerequisites
 
@@ -110,7 +113,7 @@ cmake -D DEAL_II_DIR=/path/to/dealii/install .
 make -j8
 ```
 
-#Design of adaflo
+# Design of adaflo
 
 adaflo is based on core functionality in the folders `include/adaflo` and
 `source`. It contains an interface to parameter files, an incompressible
