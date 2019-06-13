@@ -22,7 +22,7 @@ using namespace dealii;
 
 template<typename Number>
 DiagonalPreconditioner<Number>
-::DiagonalPreconditioner (const parallel::distributed::Vector<Number> &diagonal_vector_in)
+::DiagonalPreconditioner (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in)
 {
   reinit (diagonal_vector_in);
 }
@@ -31,7 +31,7 @@ DiagonalPreconditioner<Number>
 
 template<typename Number>
 DiagonalPreconditioner<Number>
-::DiagonalPreconditioner (const parallel::distributed::BlockVector<Number> &diagonal_vector_in)
+::DiagonalPreconditioner (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in)
 {
   reinit(diagonal_vector_in);
 }
@@ -41,7 +41,7 @@ DiagonalPreconditioner<Number>
 template<typename Number>
 void
 DiagonalPreconditioner<Number>
-::reinit (const parallel::distributed::Vector<Number> &diagonal_vector_in)
+::reinit (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in)
 {
   inverse_diagonal_block_vector.reinit(0);
   diagonal_vector = diagonal_vector_in;
@@ -61,7 +61,7 @@ DiagonalPreconditioner<Number>
 template<typename Number>
 void
 DiagonalPreconditioner<Number>
-::reinit (const parallel::distributed::BlockVector<Number> &diagonal_vector_in)
+::reinit (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in)
 {
   diagonal_vector.reinit(0);
   inverse_diagonal_vector.reinit(0);
@@ -82,8 +82,8 @@ DiagonalPreconditioner<Number>
 template<typename Number>
 void
 DiagonalPreconditioner<Number>
-::vmult (parallel::distributed::Vector<Number> &dst,
-         const parallel::distributed::Vector<Number> &src) const
+::vmult (LinearAlgebra::distributed::Vector<Number> &dst,
+         const LinearAlgebra::distributed::Vector<Number> &src) const
 {
   AssertDimension(diagonal_vector.size(), src.size());
   AssertDimension(inverse_diagonal_block_vector.size(), 0);
@@ -99,8 +99,8 @@ DiagonalPreconditioner<Number>
 template<typename Number>
 void
 DiagonalPreconditioner<Number>
-::vmult (parallel::distributed::BlockVector<Number> &dst,
-         const parallel::distributed::BlockVector<Number> &src) const
+::vmult (LinearAlgebra::distributed::BlockVector<Number> &dst,
+         const LinearAlgebra::distributed::BlockVector<Number> &src) const
 {
   if (inverse_diagonal_block_vector.n_blocks() > 0)
     {

@@ -102,7 +102,7 @@ public:
   // A derived class can transform the initial signed distance function
   // prescribed by the input distance function in setup_problem, e.g. to have
   // a tanh shape like for the LevelSetOKZ or phase field solver
-  virtual void transform_distance_function (parallel::distributed::Vector<double> &) const
+  virtual void transform_distance_function (LinearAlgebra::distributed::Vector<double> &) const
   {}
 
   const DoFHandler<dim> &get_dof_handler() const
@@ -155,8 +155,8 @@ public:
     return navier_stokes;
   }
 
-  parallel::distributed::BlockVector<double>  solution_update;
-  parallel::distributed::BlockVector<double>  solution, solution_old, solution_old_old;
+  LinearAlgebra::distributed::BlockVector<double>  solution_update;
+  LinearAlgebra::distributed::BlockVector<double>  solution, solution_old, solution_old_old;
 
 protected:
   virtual void evaluate_heaviside_function(FEValues<dim> &, std::vector<double> &,
@@ -186,7 +186,7 @@ protected:
   ConstraintMatrix     constraints_curvature;
   ConstraintMatrix     constraints_normals;
 
-  parallel::distributed::BlockVector<double>  system_rhs;
+  LinearAlgebra::distributed::BlockVector<double>  system_rhs;
 
   TimeStepping   &time_stepping;
   const FlowParameters &parameters;

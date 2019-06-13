@@ -22,7 +22,7 @@
 
 #include <deal.II/lac/trilinos_sparse_matrix.h>
 #include <deal.II/lac/constraint_matrix.h>
-#include <deal.II/lac/parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
 
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/fe/fe_system.h>
@@ -94,7 +94,7 @@ public:
    * sense, this class provides a seperate function for it.
    */
   void interpolate_pressure_field (const Function<dim> &pressure_function,
-                                   parallel::distributed::Vector<double> &pressure_vector) const;
+                                   LinearAlgebra::distributed::Vector<double> &pressure_vector) const;
 
   void assemble_preconditioner ();
 
@@ -102,8 +102,8 @@ public:
 
   std::pair<unsigned int,double> solve_system (const double linear_tolerance);
 
-  void vmult(parallel::distributed::BlockVector<double>       &dst,
-             const parallel::distributed::BlockVector<double> &src) const;
+  void vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
+             const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
   void refine_grid_pressure_based (const unsigned int max_grid_level,
                                    const double refine_fraction_of_cells = 0.3,
@@ -145,8 +145,8 @@ public:
   void print_memory_consumption (std::ostream &stream = std::cout) const;
 
   // vectors that are visible to the user
-  parallel::distributed::BlockVector<double> user_rhs;
-  parallel::distributed::BlockVector<double> solution, solution_old, solution_old_old, solution_update;
+  LinearAlgebra::distributed::BlockVector<double> user_rhs;
+  LinearAlgebra::distributed::BlockVector<double> solution, solution_old, solution_old_old, solution_update;
 
   TimeStepping        time_stepping;
 
@@ -187,14 +187,14 @@ private:
   ConstraintMatrix          constraints_p;
 
   NavierStokesMatrix<dim>   navier_stokes_matrix;
-  parallel::distributed::BlockVector<double> system_rhs, const_rhs;
+  LinearAlgebra::distributed::BlockVector<double> system_rhs, const_rhs;
 
-  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,parallel::distributed::Vector<double> > > sol_trans_u;
-  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,parallel::distributed::Vector<double> > > sol_trans_p;
+  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_u;
+  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_p;
 
   NavierStokesPreconditioner<dim>  preconditioner;
 
-  GrowingVectorMemory<parallel::distributed::BlockVector<double> > solver_memory;
+  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<double> > solver_memory;
 
   // here we store the MatrixFree that we
   // use for most of the vector assembly

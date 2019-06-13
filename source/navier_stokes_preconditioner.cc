@@ -19,12 +19,11 @@
 #include <deal.II/base/index_set.h>
 #include <deal.II/base/utilities.h>
 #include <deal.II/base/conditional_ostream.h>
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/trilinos_sparsity_pattern.h>
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/solver_bicgstab.h>
 #include <deal.II/lac/solver_gmres.h>
-#include <deal.II/lac/vector_view.h>
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
 #include <deal.II/fe/fe_tools.h>
@@ -70,8 +69,8 @@ public:
   virtual int Multiply (bool TransA,
                         const Epetra_MultiVector &X,
                         Epetra_MultiVector &Y) const = 0;
-  virtual void vmult (parallel::distributed::Vector<double> &,
-                      const parallel::distributed::Vector<double> &) const = 0;
+  virtual void vmult (LinearAlgebra::distributed::Vector<double> &,
+                      const LinearAlgebra::distributed::Vector<double> &) const = 0;
 
   // implement all sorts of functions in Epetra_RowMatrix
 
@@ -273,8 +272,8 @@ public:
     AssertDimension (tri_mat.m(), ns_matrix.n_dofs_u());
   }
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     ns_matrix.velocity_vmult (dst, src);
   }
@@ -285,22 +284,18 @@ public:
   {
     Assert (X.NumVectors() == 1, ExcNotImplemented());
     AssertDimension(src.local_size(), static_cast<unsigned int>(X.MyLength()));
-    VectorView<double> my_src(src.local_size(), src.begin());
-    VectorView<double> my_x(src.local_size(), X[0]);
-    VectorView<double> my_dst(src.local_size(), dst.begin());
-    VectorView<double> my_y(src.local_size(), Y[0]);
 
-    my_src = my_x;
+    std::memcpy(src.begin(), X[0], src.local_size() * sizeof(double));
     vmult (dst, src);
-    my_y = my_dst;
+    std::memcpy(Y[0], dst.begin(), dst.local_size() * sizeof(double));
 
     return 0;
   }
 
 private:
   const NavierStokesMatrix<dim> &ns_matrix;
-  mutable parallel::distributed::Vector<double> dst;
-  parallel::distributed::Vector<double> src;
+  mutable LinearAlgebra::distributed::Vector<double> dst;
+  mutable LinearAlgebra::distributed::Vector<double> src;
 };
 
 
@@ -335,8 +330,8 @@ public:
       }
   }
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     if (use_trilinos_matrix)
       sparse_matrix.vmult(dst, src);
@@ -348,7 +343,7 @@ public:
         for (unsigned int i=0; i<n_constraints; ++i)
           {
             schur_complement_tmp_values[i] = src.local_element(constraints_schur_complement_only[i]);
-            const_cast<parallel::distributed::Vector<double> &>(src).
+            const_cast<LinearAlgebra::distributed::Vector<double> &>(src).
               local_element(constraints_schur_complement_only[i]) = 0;
           }
 
@@ -356,7 +351,7 @@ public:
 
         for (unsigned int i=0; i<n_constraints; ++i)
           {
-            const_cast<parallel::distributed::Vector<double> &>(src).
+            const_cast<LinearAlgebra::distributed::Vector<double> &>(src).
               local_element(constraints_schur_complement_only[i]) = schur_complement_tmp_values[i];
             dst.local_element(constraints_schur_complement_only[i]) =
               constrained_diagonal_values[i] * schur_complement_tmp_values[i];
@@ -373,14 +368,9 @@ public:
       sparse_matrix.trilinos_matrix().Multiply(false, X, Y);
     else
       {
-        VectorView<double> my_src(src.local_size(), src.begin());
-        VectorView<double> my_x(src.local_size(), X[0]);
-        VectorView<double> my_dst(src.local_size(), dst.begin());
-        VectorView<double> my_y(src.local_size(), Y[0]);
-
-        my_src = my_x;
+        std::memcpy(src.begin(), X[0], src.local_size() * sizeof(double));
         vmult (dst, src);
-        my_y = my_dst;
+        std::memcpy(Y[0], dst.begin(), dst.local_size() * sizeof(double));
       }
     return 0;
   }
@@ -388,8 +378,8 @@ public:
 private:
   const NavierStokesMatrix<dim> &ns_matrix;
   const bool use_trilinos_matrix;
-  mutable parallel::distributed::Vector<double> dst;
-  parallel::distributed::Vector<double> src;
+  mutable LinearAlgebra::distributed::Vector<double> dst;
+  mutable LinearAlgebra::distributed::Vector<double> src;
   const std::vector<unsigned int> &constraints_schur_complement_only;
   std::vector<double> constrained_diagonal_values;
   mutable std::vector<double> schur_complement_tmp_values;
@@ -407,8 +397,8 @@ public:
   {
   }
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     ns_matrix.pressure_mass_vmult (dst, src);
   }
@@ -491,8 +481,8 @@ public:
                           (matrix, parameter_list));
   }
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     AssertDimension (static_cast<int>(dst.local_size()),
                      preconditioner->OperatorDomainMap().NumMyElements());
@@ -534,8 +524,8 @@ namespace helper
       ns_matrix (ns_matrix)
     {};
 
-    void vmult (parallel::distributed::Vector<double> &dst,
-                const parallel::distributed::Vector<double> &src) const
+    void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+                const LinearAlgebra::distributed::Vector<double> &src) const
     {
       ns_matrix.velocity_vmult (dst, src);
     }
@@ -548,8 +538,8 @@ namespace helper
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<double> &dst,
-                                        const parallel::distributed::BlockVector<double> &src) const
+NavierStokesPreconditioner<dim>::vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+                                        const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   Assert (initialized == true, ExcNotInitialized());
   precond_timer.first++;
@@ -589,9 +579,9 @@ NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<doubl
   else
     {
       SolverControl solver_control (100, 3e-2*src.block(0).l2_norm());
-      SolverBicgstab<parallel::distributed::Vector<double> >::AdditionalData bicg_data;
+      SolverBicgstab<LinearAlgebra::distributed::Vector<double> >::AdditionalData bicg_data;
       bicg_data.exact_residual = false;
-      SolverBicgstab<parallel::distributed::Vector<double> > solver (solver_control,
+      SolverBicgstab<LinearAlgebra::distributed::Vector<double> > solver (solver_control,
           bicg_data);
       const helper::NavierStokesVelocityMatrix<dim> uu_mat (*matrix);
       try
@@ -634,7 +624,7 @@ NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<doubl
       try
         {
           SolverControl solver_control (30, 1e-2*temp_vector.l2_norm());
-          SolverCG<parallel::distributed::Vector<double> > solver (solver_control);
+          SolverCG<LinearAlgebra::distributed::Vector<double> > solver (solver_control);
           dst.block(1) = 0;
           solver.solve (matrix_p, dst.block(1), temp_vector, *pp_poisson);
         }
@@ -676,7 +666,7 @@ NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<doubl
           try
             {
               SolverControl solver_control (30, 3e-2*temp_vector.l2_norm());
-              SolverCG<parallel::distributed::Vector<double> > solver (solver_control);
+              SolverCG<LinearAlgebra::distributed::Vector<double> > solver (solver_control);
               temp_vector2 = 0;
               solver.solve (matrix_p, temp_vector2, temp_vector, *pp_poisson);
             }
@@ -695,8 +685,8 @@ NavierStokesPreconditioner<dim>::vmult (parallel::distributed::BlockVector<doubl
 template <int dim>
 void
 NavierStokesPreconditioner<dim>
-::solve_pressure_mass(parallel::distributed::Vector<double> &dst,
-                      const parallel::distributed::Vector<double> &src) const
+::solve_pressure_mass(LinearAlgebra::distributed::Vector<double> &dst,
+                      const LinearAlgebra::distributed::Vector<double> &src) const
 {
   if (pp_mass.get() == 0)
     {
@@ -712,7 +702,7 @@ NavierStokesPreconditioner<dim>
               PressureMassMatrix<dim> p_mat(*matrix);
               dst = 0;
               ReductionControl solver_control (100, 1e-50, 1e-2);
-              SolverCG<parallel::distributed::Vector<double> > solver (solver_control);
+              SolverCG<LinearAlgebra::distributed::Vector<double> > solver (solver_control);
               solver.solve (p_mat, dst, src, pressure_diagonal_preconditioner);
             }
           catch (...)
@@ -730,22 +720,22 @@ NavierStokesPreconditioner<dim>
 
 template <int dim>
 std::pair<unsigned int,double> NavierStokesPreconditioner<dim>
-::solve_projection_system(const parallel::distributed::BlockVector<double> &solution,
-                          parallel::distributed::BlockVector<double> &solution_update,
-                          parallel::distributed::BlockVector<double> &system_rhs,
-                          parallel::distributed::Vector<double> &projection_update,
+::solve_projection_system(const LinearAlgebra::distributed::BlockVector<double> &solution,
+                          LinearAlgebra::distributed::BlockVector<double> &solution_update,
+                          LinearAlgebra::distributed::BlockVector<double> &system_rhs,
+                          LinearAlgebra::distributed::Vector<double> &projection_update,
                           TimerOutput &timer) const
 {
   SolverControl solver_control (parameters.max_lin_iteration,
                                 0.5 * parameters.tol_nl_iteration);
-  parallel::distributed::Vector<double> solution_u_copy;
+  LinearAlgebra::distributed::Vector<double> solution_u_copy;
   {
     TimerOutput::Scope scope(timer, "NS solve velocity");
     solution_u_copy = solution.block(0);
     solution_update = 0;
-    SolverGMRES<parallel::distributed::Vector<double> >
+    SolverGMRES<LinearAlgebra::distributed::Vector<double> >
     solver (solver_control,
-            SolverGMRES<parallel::distributed::Vector<double> >::AdditionalData(50, true));
+            SolverGMRES<LinearAlgebra::distributed::Vector<double> >::AdditionalData(50, true));
 
     if (parameters.precondition_velocity == FlowParameters::u_ilu)
       solver.solve (*uu_amg_mat, solution_update.block(0), system_rhs.block(0), *uu_ilu);
@@ -767,7 +757,7 @@ std::pair<unsigned int,double> NavierStokesPreconditioner<dim>
                                   std::min(parameters.density, parameters.density +
                                            parameters.density_diff) *
                                   parameters.tol_nl_iteration);
-    SolverCG<parallel::distributed::Vector<double> >  solver (solver_control);
+    SolverCG<LinearAlgebra::distributed::Vector<double> >  solver (solver_control);
 
     projection_update = 0;
     solver.solve (*pp_poisson_mat, projection_update, system_rhs.block(1), *pp_poisson);
@@ -777,7 +767,7 @@ std::pair<unsigned int,double> NavierStokesPreconditioner<dim>
     system_rhs.block(1) = 0;
     matrix->divergence_vmult_add (system_rhs.block(1), solution_u_copy, true);
     ReductionControl solver_control_mass (1000, 1e-50, 0.1 * parameters.tol_lin_iteration);
-    SolverCG<parallel::distributed::Vector<double> > solver2 (solver_control_mass);
+    SolverCG<LinearAlgebra::distributed::Vector<double> > solver2 (solver_control_mass);
     PressureMassMatrix<dim> pressure_mass (*matrix);
     solution_update.block(1) = 0;
 
@@ -1566,14 +1556,11 @@ namespace
 template <int dim>
 void NavierStokesPreconditioner<dim>::local_assemble_preconditioner
 (const MatrixFree<dim> &matrix_free,
- Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > &in_data,
+ std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > > &in_data,
  const unsigned int &,
  const std::pair<unsigned int,unsigned int> &cell_range)
 {
-  // Assume that in_data is
-  // ThreadLocalStorage<Assembly::Preconditioner<dim>>
-
-  AssemblyData::Preconditioner<dim> &data = in_data.get();
+  AssemblyData::Preconditioner<dim> &data = in_data->get();
   const unsigned int dofs_per_u_component =
     integration_helper.local_ordering_u[0].size();
   const unsigned int dofs_per_cell_p = data.local_dof_indices_p.size();
@@ -2165,7 +2152,7 @@ NavierStokesPreconditioner<dim>
   AssemblyData::Preconditioner<dim> scratch_data(*this, flow_algorithm.mapping,
                                                  matrix->get_matrix_free().get_dof_handler(0).get_fe(),
                                                  matrix->get_matrix_free().get_dof_handler(1).get_fe());
-  Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > scratch_local (scratch_data);
+  std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > > scratch_local(new Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> >(scratch_data));
 
   unsigned int dummy = 0;
   matrix->get_matrix_free().cell_loop (&NavierStokesPreconditioner<dim>::local_assemble_preconditioner,

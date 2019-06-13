@@ -29,8 +29,8 @@ class BlockMatrixExtension : public TrilinosWrappers::SparseMatrix
 public:
   using TrilinosWrappers::SparseMatrix::vmult;
 
-  void vmult (parallel::distributed::BlockVector<double> &dst,
-              const parallel::distributed::BlockVector<double> &src) const
+  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const
   {
     const Epetra_CrsMatrix &matrix = this->trilinos_matrix();
     AssertDimension (size_type(dst.block(0).end() - dst.block(0).begin()),
@@ -62,8 +62,8 @@ class BlockILUExtension : public TrilinosWrappers::PreconditionILU
 public:
   using TrilinosWrappers::PreconditionBase::vmult;
 
-  void vmult (parallel::distributed::BlockVector<double> &dst,
-              const parallel::distributed::BlockVector<double> &src) const
+  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const
   {
     Assert(preconditioner.get() != 0, ExcNotInitialized());
     const Epetra_Operator &prec = *this->preconditioner;
@@ -110,8 +110,8 @@ public:
 
   // Application to a vector src, stored in dst (do not call the method vmult
   // in order to avoid overloading a virtual function in deal.II)
-  void multiply (parallel::distributed::Vector<double> &dst,
-                 const parallel::distributed::Vector<double> &src) const
+  void multiply (LinearAlgebra::distributed::Vector<double> &dst,
+                 const LinearAlgebra::distributed::Vector<double> &src) const
   {
     Assert(preconditioner.get() != 0, ExcNotInitialized());
     const Epetra_Operator &prec = *this->preconditioner;

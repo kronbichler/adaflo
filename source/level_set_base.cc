@@ -21,8 +21,8 @@
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/solver_bicgstab.h>
-#include <deal.II/lac/parallel_block_vector.h>
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/sparsity_tools.h>
 
 #include <deal.II/grid/tria.h>
@@ -162,7 +162,7 @@ unsigned int LevelSetBaseAlgorithm<dim>::advance_time_step()
 
       this->pcout << "  Iterations/residual: ";
 
-      std::vector<parallel::distributed::BlockVector<double>*> old_vectors;
+      std::vector<LinearAlgebra::distributed::BlockVector<double>*> old_vectors;
       old_vectors.push_back (&this->navier_stokes.solution_old);
       old_vectors.push_back (&this->navier_stokes.solution_old_old);
       this->navier_stokes.user_rhs = 0;
@@ -419,7 +419,7 @@ void LevelSetBaseAlgorithm<dim>::output_solution (const std::string output_name,
           (4+dim) * this->dof_handler.n_dofs(),
           ExcInternalError());
 
-  parallel::distributed::Vector<double> joint_solution;
+  LinearAlgebra::distributed::Vector<double> joint_solution;
   {
     IndexSet  locally_relevant_joint_dofs(joint_dof_handler.n_dofs());
     DoFTools::extract_locally_relevant_dofs (joint_dof_handler, locally_relevant_joint_dofs);

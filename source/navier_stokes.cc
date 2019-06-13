@@ -35,7 +35,7 @@
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
 
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/trilinos_sparsity_pattern.h>
 
 #include <fstream>
@@ -98,9 +98,9 @@ NavierStokes<dim>::~NavierStokes()
   if (matrix_free != 0)
     matrix_free->clear();
   solver_memory.release_unused_memory();
-  GrowingVectorMemory<parallel::distributed::Vector<double> >
+  GrowingVectorMemory<LinearAlgebra::distributed::Vector<double> >
   ::release_unused_memory ();
-  GrowingVectorMemory<parallel::distributed::BlockVector<double> >
+  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<double> >
   ::release_unused_memory ();
 }
 
@@ -393,7 +393,7 @@ initialize_matrix_free (MatrixFree<dim> *external_matrix_free)
     {
       Assert (sol_trans_p.get() != 0, ExcInternalError());
 
-      std::vector<parallel::distributed::Vector<double> *> new_grid_solutions (2);
+      std::vector<LinearAlgebra::distributed::Vector<double> *> new_grid_solutions (2);
 
       new_grid_solutions[0] = &solution.block(0);
       new_grid_solutions[1] = &solution_old.block(0);
@@ -508,18 +508,18 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
       preconditioner.do_inner_solves = false;
       if (preconditioner.is_variable())
         {
-          SolverFGMRES<parallel::distributed::BlockVector<double> >
+          SolverFGMRES<LinearAlgebra::distributed::BlockVector<double> >
           solver (solver_control_simple, solver_memory,
-                  SolverFGMRES<parallel::distributed::BlockVector<double> >::AdditionalData(50));
+                  SolverFGMRES<LinearAlgebra::distributed::BlockVector<double> >::AdditionalData(50));
 
           solver.solve (navier_stokes_matrix, solution_update, system_rhs,
                         preconditioner);
         }
       else
         {
-          SolverGMRES<parallel::distributed::BlockVector<double> >
+          SolverGMRES<LinearAlgebra::distributed::BlockVector<double> >
           solver (solver_control_simple, solver_memory,
-                  SolverGMRES<parallel::distributed::BlockVector<double> >::AdditionalData(50, true));
+                  SolverGMRES<LinearAlgebra::distributed::BlockVector<double> >::AdditionalData(50, true));
 
           solver.solve (navier_stokes_matrix, solution_update, system_rhs,
                         preconditioner);
@@ -532,9 +532,9 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
           parameters.max_lin_iteration)
         {
           preconditioner.do_inner_solves = true;
-          SolverFGMRES<parallel::distributed::BlockVector<double> >
+          SolverFGMRES<LinearAlgebra::distributed::BlockVector<double> >
           solver (solver_control_strong, solver_memory,
-                  SolverFGMRES<parallel::distributed::BlockVector<double> >::AdditionalData(50));
+                  SolverFGMRES<LinearAlgebra::distributed::BlockVector<double> >::AdditionalData(50));
 
           // if also the expensive solver fails, still catch the assertion
           // since we do not want to fail because of the linear solver
@@ -1152,7 +1152,7 @@ void NavierStokes<dim>::apply_boundary_conditions()
                                    update_quadrature_points | update_normal_vectors);
 
       std::vector<double> boundary_values(face_quadrature.size());
-      parallel::distributed::Vector<double> cell_rhs(fe_u.dofs_per_cell);
+      LinearAlgebra::distributed::Vector<double> cell_rhs(fe_u.dofs_per_cell);
       std::vector<types::global_dof_index> dof_indices(fe_u.dofs_per_cell);
       const FEValuesExtractors::Vector velocities(0);
 
@@ -1200,7 +1200,7 @@ void NavierStokes<dim>::refine_grid_pressure_based (const unsigned int max_grid_
   // because it computes the jumps of gradients over faces. The solution
   // vector does not have all these degrees of freedom imported locally, so
   // need to get a vector with extended ghosting.
-  parallel::distributed::Vector<double>
+  LinearAlgebra::distributed::Vector<double>
   pressure_extended(dof_handler_p.locally_owned_dofs(),
                     constraints_p.get_local_lines(),
                     triangulation.get_communicator());
@@ -1240,8 +1240,8 @@ void NavierStokes<dim>::refine_grid_pressure_based (const unsigned int max_grid_
 template <int dim>
 void NavierStokes<dim>::prepare_coarsening_and_refinement ()
 {
-  sol_trans_u.reset(new parallel::distributed::SolutionTransfer<dim,parallel::distributed::Vector<double> > (dof_handler_u));
-  sol_trans_p.reset(new parallel::distributed::SolutionTransfer<dim,parallel::distributed::Vector<double> > (dof_handler_p));
+  sol_trans_u.reset(new parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > (dof_handler_u));
+  sol_trans_p.reset(new parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > (dof_handler_p));
 
   hanging_node_constraints_u.distribute(solution.block(0));
   hanging_node_constraints_u.distribute(solution_old.block(0));
@@ -1252,7 +1252,7 @@ void NavierStokes<dim>::prepare_coarsening_and_refinement ()
 
   triangulation.prepare_coarsening_and_refinement();
 
-  std::vector<const parallel::distributed::Vector<double> *> old_grid_solutions(2);
+  std::vector<const LinearAlgebra::distributed::Vector<double> *> old_grid_solutions(2);
   old_grid_solutions[0] = &solution.block(0);
   old_grid_solutions[1] = &solution_old.block(0);
   sol_trans_u->prepare_for_coarsening_and_refinement(old_grid_solutions);
@@ -1274,7 +1274,7 @@ void NavierStokes<dim>::prepare_coarsening_and_refinement ()
 template <int dim>
 void NavierStokes<dim>
 ::interpolate_pressure_field (const Function<dim> &pressure_function,
-                              parallel::distributed::Vector<double> &pressure_vector) const
+                              LinearAlgebra::distributed::Vector<double> &pressure_vector) const
 {
   VectorTools::interpolate(dof_handler_p, pressure_function, pressure_vector);
   if (parameters.augmented_taylor_hood)

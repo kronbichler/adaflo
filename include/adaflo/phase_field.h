@@ -55,14 +55,14 @@ public:
   virtual void initialize_data_structures ();
   virtual unsigned int advance_time_step ();
 
-  void vmult (parallel::distributed::BlockVector<double> &dst,
-              const parallel::distributed::BlockVector<double> &src) const;
-  void mass_vmult (parallel::distributed::Vector<double> &dst,
-                   const parallel::distributed::Vector<double> &src) const;
+  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const;
+  void mass_vmult (LinearAlgebra::distributed::Vector<double> &dst,
+                   const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  const parallel::distributed::Vector<double> *velocity_vector;
+  const LinearAlgebra::distributed::Vector<double> *velocity_vector;
 
-  virtual void transform_distance_function (parallel::distributed::Vector<double> &vector) const;
+  virtual void transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const;
 
 protected:
   virtual void compute_force ();
@@ -84,31 +84,31 @@ protected:
   // matrix-free worker operations for various operations
   template <int ls_degree, int velocity_degree>
   void local_compute_force (const MatrixFree<dim,double> &data,
-                            parallel::distributed::Vector<double> &dst,
-                            const parallel::distributed::Vector<double> &src,
+                            LinearAlgebra::distributed::Vector<double> &dst,
+                            const LinearAlgebra::distributed::Vector<double> &src,
                             const std::pair<unsigned int,unsigned int> &cell_range);
 
   template <int ls_degree, int velocity_degree>
   void local_residual (const MatrixFree<dim,double> &data,
-                       parallel::distributed::BlockVector<double> &dst,
-                       const parallel::distributed::BlockVector<double> &src,
+                       LinearAlgebra::distributed::BlockVector<double> &dst,
+                       const LinearAlgebra::distributed::BlockVector<double> &src,
                        const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int ls_degree>
   void local_vmult (const MatrixFree<dim,double> &data,
-                    parallel::distributed::BlockVector<double> &dst,
-                    const parallel::distributed::BlockVector<double> &src,
+                    LinearAlgebra::distributed::BlockVector<double> &dst,
+                    const LinearAlgebra::distributed::BlockVector<double> &src,
                     const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int ls_degree>
   void local_mass (const MatrixFree<dim,double> &data,
-                   parallel::distributed::Vector<double> &dst,
-                   const parallel::distributed::Vector<double> &src,
+                   LinearAlgebra::distributed::Vector<double> &dst,
+                   const LinearAlgebra::distributed::Vector<double> &src,
                    const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int operation>
-  void apply_contact_bc (parallel::distributed::BlockVector<double> &dst,
-                         const parallel::distributed::BlockVector<double> &src) const;
+  void apply_contact_bc (LinearAlgebra::distributed::BlockVector<double> &dst,
+                         const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
   const FlowParameters &parameters;
 

@@ -38,7 +38,7 @@ public:
 
   virtual void initialize_data_structures ();
 
-  virtual void transform_distance_function (parallel::distributed::Vector<double> &vector) const;
+  virtual void transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const;
 
 private:
 

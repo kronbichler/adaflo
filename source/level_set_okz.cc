@@ -23,8 +23,8 @@
 #include <deal.II/lac/solver_bicgstab.h>
 #include <deal.II/lac/solver_gmres.h>
 #include <deal.II/lac/precondition.h>
-#include <deal.II/lac/parallel_block_vector.h>
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/trilinos_sparsity_pattern.h>
 
 #include <deal.II/grid/tria.h>
@@ -63,7 +63,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver (const FlowParameters &parameters_in,
 
 
 template <int dim>
-void LevelSetOKZSolver<dim>::transform_distance_function (parallel::distributed::Vector<double> &vector) const
+void LevelSetOKZSolver<dim>::transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const
 {
   Assert (this->epsilon_used > 0, ExcInternalError());
   for (unsigned int i=0; i<vector.local_size(); i++)
@@ -109,7 +109,7 @@ void LevelSetOKZSolver<dim>::initialize_data_structures ()
                               this->matrix_free.get_n_q_points(2));
 
   // create diagonal preconditioner vector by assembly of mass matrix diagonal
-  parallel::distributed::Vector<double> diagonal(this->solution_update.block(0));
+  LinearAlgebra::distributed::Vector<double> diagonal(this->solution_update.block(0));
   {
     diagonal = 0;
     QIterated<dim> quadrature(QGauss<1>(2), this->parameters.concentration_subdivisions);
@@ -166,7 +166,7 @@ void LevelSetOKZSolver<dim>::initialize_data_structures ()
   //       diameters[std::make_pair(matrix_free_float.get_cell_iterator(c,v)->level(),
   //                                matrix_free_float.get_cell_iterator(c,v)->index())];
 
-  // parallel::distributed::Vector<float> diagonal_f;
+  // LinearAlgebra::distributed::Vector<float> diagonal_f;
   // diagonal_f = this->solution_update.block(0);
   // preconditioner_float.reinit(diagonal_f);
 
@@ -217,7 +217,7 @@ void LevelSetOKZSolver<dim>::initialize_data_structures ()
   }
   {
     AssemblyData::Data scratch_data (this->fe->dofs_per_cell);
-    Threads::ThreadLocalStorage<AssemblyData::Data> scratch_local (scratch_data);
+    std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> scratch_local (new Threads::ThreadLocalStorage<AssemblyData::Data>(scratch_data));
     unsigned int dummy = 0;
     this->matrix_free.cell_loop(&LevelSetOKZSolver<dim>::local_projection_matrix,
                                 this,
@@ -233,7 +233,7 @@ void LevelSetOKZSolver<dim>::initialize_data_structures ()
 template <int dim>
 void
 LevelSetOKZSolver<dim>::local_projection_matrix(const MatrixFree<dim> &data,
-                                                Threads::ThreadLocalStorage<AssemblyData::Data> &scratch,
+                                                std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
                                                 const unsigned int &,
                                                 const std::pair<unsigned int, unsigned int> &cell_range)
 {
@@ -256,11 +256,11 @@ template <int dim>
 template <int ls_degree>
 void
 LevelSetOKZSolver<dim>::local_projection_matrix(const MatrixFree<dim> &data,
-                                                Threads::ThreadLocalStorage<AssemblyData::Data> &scratch_data,
+                                                std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch_data,
                                                 const std::pair<unsigned int, unsigned int> &cell_range)
 {
   FEEvaluation<dim,ls_degree,2*ls_degree,1,double> phi(data, 4, 2);
-  AssemblyData::Data &scratch = scratch_data.get();
+  AssemblyData::Data &scratch = scratch_data->get();
 
   const VectorizedArray<double> min_diameter =
     make_vectorized_array(this->epsilon_used/this->parameters.epsilon);
@@ -308,8 +308,8 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 LevelSetOKZSolver<dim>::local_compute_force (const MatrixFree<dim,double> &data,
-                                             parallel::distributed::Vector<double> &dst,
-                                             const parallel::distributed::Vector<double> &,
+                                             LinearAlgebra::distributed::Vector<double> &dst,
+                                             const LinearAlgebra::distributed::Vector<double> &,
                                              const std::pair<unsigned int,unsigned int> &cell_range)
 {
   //The second input argument below refers to which constrains should be used, 2 means constraints (for LS-function),
@@ -397,8 +397,8 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 LevelSetOKZSolver<dim>::local_advance_concentration (const MatrixFree<dim,double> &data,
-                                                     parallel::distributed::Vector<double> &dst,
-                                                     const parallel::distributed::Vector<double> &src,
+                                                     LinearAlgebra::distributed::Vector<double> &dst,
+                                                     const LinearAlgebra::distributed::Vector<double> &src,
                                                      const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   //The second input argument below refers to which constrains should be used, 2 means constraints (for LS-function)
@@ -432,8 +432,8 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 LevelSetOKZSolver<dim>::local_advance_concentration_rhs (const MatrixFree<dim,double> &data,
-                                                         parallel::distributed::Vector<double> &dst,
-                                                         const parallel::distributed::Vector<double> &,
+                                                         LinearAlgebra::distributed::Vector<double> &dst,
+                                                         const LinearAlgebra::distributed::Vector<double> &,
                                                          const std::pair<unsigned int,unsigned int> &cell_range)
 {
   //The second input argument below refers to which constrains should be used, 2 means constraints (for LS-function)
@@ -526,8 +526,8 @@ template <int dim>
 template <int ls_degree, typename Number>
 void
 LevelSetOKZSolver<dim>::local_compute_normal (const MatrixFree<dim,Number> &data,
-                                              parallel::distributed::BlockVector<Number> &dst,
-                                              const parallel::distributed::BlockVector<Number> &src,
+                                              LinearAlgebra::distributed::BlockVector<Number> &dst,
+                                              const LinearAlgebra::distributed::BlockVector<Number> &src,
                                               const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   bool do_float = types_are_equal<Number,float>::value;
@@ -568,8 +568,8 @@ template <int dim>
 template <int ls_degree>
 void
 LevelSetOKZSolver<dim>::local_compute_normal_rhs (const MatrixFree<dim,double> &data,
-                                                  parallel::distributed::BlockVector<double> &dst,
-                                                  const parallel::distributed::Vector<double> &,
+                                                  LinearAlgebra::distributed::BlockVector<double> &dst,
+                                                  const LinearAlgebra::distributed::Vector<double> &,
                                                   const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   //The second input argument below refers to which constrains should be used, 4 means constraints_normals
@@ -600,8 +600,8 @@ template <int dim>
 template <int ls_degree, int diffusion_setting>
 void
 LevelSetOKZSolver<dim>::local_compute_curvature (const MatrixFree<dim,double> &data,
-                                                 parallel::distributed::Vector<double> &dst,
-                                                 const parallel::distributed::Vector<double> &src,
+                                                 LinearAlgebra::distributed::Vector<double> &dst,
+                                                 const LinearAlgebra::distributed::Vector<double> &src,
                                                  const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   //The second input argument below refers to which constrains should be used, 3 means constraints_curvature
@@ -641,8 +641,8 @@ template <int dim>
 template <int ls_degree>
 void
 LevelSetOKZSolver<dim>::local_compute_curvature_rhs (const MatrixFree<dim,double> &data,
-                                                     parallel::distributed::Vector<double> &dst,
-                                                     const parallel::distributed::Vector<double> &,
+                                                     LinearAlgebra::distributed::Vector<double> &dst,
+                                                     const LinearAlgebra::distributed::Vector<double> &,
                                                      const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   //The second input argument below refers to which constrains should be used, 4 means constraints_normals
@@ -696,8 +696,8 @@ template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
 LevelSetOKZSolver<dim>::local_reinitialize (const MatrixFree<dim,double> &data,
-                                            parallel::distributed::Vector<double> &dst,
-                                            const parallel::distributed::Vector<double> &src,
+                                            LinearAlgebra::distributed::Vector<double> &dst,
+                                            const LinearAlgebra::distributed::Vector<double> &src,
                                             const std::pair<unsigned int,unsigned int> &cell_range) const
 {
 
@@ -744,8 +744,8 @@ template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
 LevelSetOKZSolver<dim>::local_reinitialize_rhs (const MatrixFree<dim,double> &data,
-                                                parallel::distributed::Vector<double> &dst,
-                                                const parallel::distributed::Vector<double> &,
+                                                LinearAlgebra::distributed::Vector<double> &dst,
+                                                const LinearAlgebra::distributed::Vector<double> &,
                                                 const std::pair<unsigned int,unsigned int> &cell_range)
 {
   //The second input argument below refers to which constrains should be used, 2 means constraints (for LS-function)
@@ -874,8 +874,8 @@ void LevelSetOKZSolver<dim>::compute_force ()
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::advance_concentration_vmult(parallel::distributed::Vector<double> &dst,
-                                                    const parallel::distributed::Vector<double> &src) const
+LevelSetOKZSolver<dim>::advance_concentration_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                                                    const LinearAlgebra::distributed::Vector<double> &src) const
 {
   dst = 0.;
 #define OPERATION(c_degree,u_degree)                                    \
@@ -953,8 +953,8 @@ struct AdvanceConcentrationMatrix
     problem(problem)
   {}
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     problem.advance_concentration_vmult(dst, src);
   }
@@ -966,8 +966,8 @@ struct AdvanceConcentrationMatrix
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_normal_vmult(parallel::distributed::BlockVector<double> &dst,
-                                             const parallel::distributed::BlockVector<double> &src) const
+LevelSetOKZSolver<dim>::compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &dst,
+                                             const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   dst = 0.;
 #define OPERATION(c_degree,u_degree)                                    \
@@ -990,8 +990,8 @@ LevelSetOKZSolver<dim>::compute_normal_vmult(parallel::distributed::BlockVector<
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_normal_vmult(parallel::distributed::BlockVector<float> &dst,
-                                             const parallel::distributed::BlockVector<float> &src) const
+LevelSetOKZSolver<dim>::compute_normal_vmult(LinearAlgebra::distributed::BlockVector<float> &dst,
+                                             const LinearAlgebra::distributed::BlockVector<float> &src) const
 {
   dst = 0.;
 #define OPERATION(c_degree,u_degree)                                    \
@@ -1021,8 +1021,8 @@ struct ComputeNormalMatrix
   {}
 
   template <typename Number>
-  void vmult (parallel::distributed::BlockVector<Number> &dst,
-              const parallel::distributed::BlockVector<Number> &src) const
+  void vmult (LinearAlgebra::distributed::BlockVector<Number> &dst,
+              const LinearAlgebra::distributed::BlockVector<Number> &src) const
   {
     problem.compute_normal_vmult(dst, src);
   }
@@ -1036,7 +1036,7 @@ template <int dim>
 class InverseNormalMatrix
 {
 public:
-  InverseNormalMatrix(GrowingVectorMemory<parallel::distributed::BlockVector<float> > &mem,
+  InverseNormalMatrix(GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> > &mem,
                       const ComputeNormalMatrix<dim> &matrix,
                       const DiagonalPreconditioner<float> &preconditioner)
     :
@@ -1046,11 +1046,11 @@ public:
   {}
 
   void
-  vmult(parallel::distributed::BlockVector<double> &dst,
-        const parallel::distributed::BlockVector<double> &src) const
+  vmult(LinearAlgebra::distributed::BlockVector<double> &dst,
+        const LinearAlgebra::distributed::BlockVector<double> &src) const
   {
-    parallel::distributed::BlockVector<float> *src_f = memory.alloc();
-    parallel::distributed::BlockVector<float> *dst_f = memory.alloc();
+    LinearAlgebra::distributed::BlockVector<float> *src_f = memory.alloc();
+    LinearAlgebra::distributed::BlockVector<float> *dst_f = memory.alloc();
 
     src_f->reinit(src);
     dst_f->reinit(dst);
@@ -1058,7 +1058,7 @@ public:
     *dst_f = 0;
     *src_f = src;
     ReductionControl control(10000, 1e-30, 1e-1);
-    SolverCG<parallel::distributed::BlockVector<float> > solver(control, memory);
+    SolverCG<LinearAlgebra::distributed::BlockVector<float> > solver(control, memory);
     try
       {
         solver.solve(matrix, *dst_f, *src_f, preconditioner);
@@ -1074,7 +1074,7 @@ public:
   }
 
 private:
-  GrowingVectorMemory<parallel::distributed::BlockVector<float> > &memory;
+  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> > &memory;
   const ComputeNormalMatrix<dim> &matrix;
   const DiagonalPreconditioner<float> &preconditioner;
 };
@@ -1082,8 +1082,8 @@ private:
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_curvature_vmult(parallel::distributed::Vector<double> &dst,
-                                                const parallel::distributed::Vector<double> &src,
+LevelSetOKZSolver<dim>::compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                                                const LinearAlgebra::distributed::Vector<double> &src,
                                                 const bool apply_diffusion) const
 {
   dst = 0.;
@@ -1127,8 +1127,8 @@ struct ComputeCurvatureMatrix
     problem(problem)
   {}
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     problem.compute_curvature_vmult(dst, src, true);
   }
@@ -1140,8 +1140,8 @@ struct ComputeCurvatureMatrix
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::reinitialization_vmult(parallel::distributed::Vector<double> &dst,
-                                               const parallel::distributed::Vector<double> &src,
+LevelSetOKZSolver<dim>::reinitialization_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                                               const LinearAlgebra::distributed::Vector<double> &src,
                                                const bool diffuse_only) const
 {
   dst = 0.;
@@ -1184,8 +1184,8 @@ struct ReinitializationMatrix
     diffuse_only(diffuse_only)
   {}
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     problem.reinitialization_vmult(dst, src, diffuse_only);
   }
@@ -1232,8 +1232,8 @@ LevelSetOKZSolver<dim>::advance_concentration ()
 
   // compute right hand side
   global_max_velocity = this->get_maximal_velocity();
-  parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-  parallel::distributed::Vector<double> &increment = this->solution_update.block(0);
+  LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+  LinearAlgebra::distributed::Vector<double> &increment = this->solution_update.block(0);
   rhs = 0;
 
 #define OPERATION(c_degree,u_degree)                                    \
@@ -1305,9 +1305,9 @@ LevelSetOKZSolver<dim>::advance_concentration ()
     {
       ReductionControl control (30, 0.05 * this->parameters.tol_nl_iteration,
                                 1e-8);
-      SolverBicgstab<parallel::distributed::Vector<double> >::AdditionalData bicg_data;
+      SolverBicgstab<LinearAlgebra::distributed::Vector<double> >::AdditionalData bicg_data;
       bicg_data.exact_residual = false;
-      SolverBicgstab<parallel::distributed::Vector<double> > solver (control, bicg_data);
+      SolverBicgstab<LinearAlgebra::distributed::Vector<double> > solver (control, bicg_data);
       increment = 0;
       solver.solve (matrix, increment, rhs, preconditioner);
       n_iterations = control.last_step();
@@ -1318,7 +1318,7 @@ LevelSetOKZSolver<dim>::advance_concentration ()
       // GMRES is typically slower but much more robust
       ReductionControl control (3000, 0.05 * this->parameters.tol_nl_iteration,
                                 1e-8);
-      SolverGMRES<parallel::distributed::Vector<double> > solver (control);
+      SolverGMRES<LinearAlgebra::distributed::Vector<double> > solver (control);
       solver.solve (matrix, increment, rhs, preconditioner);
       n_iterations = 30 + control.last_step();
     }
@@ -1384,7 +1384,7 @@ LevelSetOKZSolver<dim>::compute_normal (const bool fast_computation)
       // ... in case we can somehow come up with a better combination of
       // float/double solvers
       // InverseNormalMatrix<dim> inverse(vectors_normal, matrix, preconditioner_float);
-      SolverCG<parallel::distributed::BlockVector<double> > solver (solver_control);
+      SolverCG<LinearAlgebra::distributed::BlockVector<double> > solver (solver_control);
       //solver.solve (matrix, this->normal_vector_field, this->normal_vector_rhs,
       //              preconditioner);
       solver.solve (*projection_matrix, this->normal_vector_field,
@@ -1415,7 +1415,7 @@ LevelSetOKZSolver<dim>::compute_curvature (const bool )
   TimerOutput::Scope timer (*this->timer, "LS compute curvature.");
 
   // compute right hand side
-  parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+  LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
   rhs = 0;
 
 #define OPERATION(c_degree,u_degree)                                    \
@@ -1434,7 +1434,7 @@ LevelSetOKZSolver<dim>::compute_curvature (const bool )
       ComputeCurvatureMatrix<dim> matrix(*this);
 
       ReductionControl solver_control (2000, 1e-50, 1e-8);
-      SolverCG<parallel::distributed::Vector<double> > cg (solver_control);
+      SolverCG<LinearAlgebra::distributed::Vector<double> > cg (solver_control);
       //cg.solve (matrix, this->solution.block(1), rhs, preconditioner);
       cg.solve(*projection_matrix, this->solution.block(1), rhs, *ilu_projection_matrix);
       //this->pcout << "N its curv: " << solver_control.last_step() << std::endl;
@@ -1569,8 +1569,8 @@ void LevelSetOKZSolver<dim>::reinitialize (const unsigned int stab_steps,
       TimerOutput::Scope timer (*this->timer, "LS reinitialization step.");
 
       // compute right hand side
-      parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-      parallel::distributed::Vector<double> &increment = this->solution_update.block(0);
+      LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+      LinearAlgebra::distributed::Vector<double> &increment = this->solution_update.block(0);
       rhs = 0;
 
       if (tau < actual_diff_steps)
@@ -1604,7 +1604,7 @@ void LevelSetOKZSolver<dim>::reinitialize (const unsigned int stab_steps,
         // (ReductionControl steered solver, last argument determines the
         // solver)
         ReductionControl solver_control (2000, 1e-50, 1e-6);
-        SolverCG<parallel::distributed::Vector<double> > cg (solver_control);
+        SolverCG<LinearAlgebra::distributed::Vector<double> > cg (solver_control);
         cg.solve (matrix, increment, rhs, preconditioner);
         this->constraints.distribute(increment);
         if (!this->parameters.do_iteration)

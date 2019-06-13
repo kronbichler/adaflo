@@ -95,7 +95,7 @@ void PhaseFieldSolver<dim>::distribute_dofs ()
 
 
 template <int dim>
-void PhaseFieldSolver<dim>::transform_distance_function (parallel::distributed::Vector<double> &vector) const
+void PhaseFieldSolver<dim>::transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const
 {
   for (unsigned int i=0; i<vector.local_size(); i++)
     vector.local_element(i) =
@@ -317,8 +317,8 @@ struct MassMatrix
     two_phase (two_phase_in)
   {}
 
-  void vmult (parallel::distributed::Vector<double> &dst,
-              const parallel::distributed::Vector<double> &src) const
+  void vmult (LinearAlgebra::distributed::Vector<double> &dst,
+              const LinearAlgebra::distributed::Vector<double> &src) const
   {
     two_phase.mass_vmult(dst,src);
   }
@@ -381,8 +381,8 @@ public:
     factor         (factor)
   {}
 
-  void vmult (parallel::distributed::BlockVector<double> &dst,
-              const parallel::distributed::BlockVector<double> &src) const
+  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const
   {
     AssertDimension (src.n_blocks(), 2);
     AssertDimension (dst.n_blocks(), 2);
@@ -402,7 +402,7 @@ private:
   const Preconditioner &preconditioner;
   const MassMatrix<dim> mass_matrix;
   const double factor;
-  mutable parallel::distributed::Vector<double> temp1;
+  mutable LinearAlgebra::distributed::Vector<double> temp1;
 };
 
 
@@ -422,7 +422,7 @@ void PhaseFieldSolver<dim>::solve_cahn_hilliard ()
                                   this->time_stepping.weight());
   const double delta_eps = std::sqrt(factor_mobility / factor_4);
 
-  PrimitiveVectorMemory< parallel::distributed::BlockVector<double> > mem;
+  PrimitiveVectorMemory< LinearAlgebra::distributed::BlockVector<double> > mem;
   BlockPreconditionerSimple<TrilinosWrappers::PreconditionAMG, dim>
   preconditioner (*amg_preconditioner,
                   MassMatrix<dim>(*this),
@@ -434,8 +434,8 @@ void PhaseFieldSolver<dim>::solve_cahn_hilliard ()
                            : 0.01 * this->parameters.tol_nl_iteration;
 
   SolverControl solver_control (this->parameters.max_lin_iteration, tolerance);
-  SolverGMRES<parallel::distributed::BlockVector<double> >::AdditionalData data(50,true);
-  SolverGMRES<parallel::distributed::BlockVector<double> >
+  SolverGMRES<LinearAlgebra::distributed::BlockVector<double> >::AdditionalData data(50,true);
+  SolverGMRES<LinearAlgebra::distributed::BlockVector<double> >
   solver (solver_control, mem, data);
   try
     {

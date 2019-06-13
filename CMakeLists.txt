@@ -21,9 +21,9 @@ MESSAGE("====================================================")
 
 # this is the standard deal.II search mechanism, including check for Trilinos and p4est
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 
-FIND_PACKAGE(deal.II 8.3 QUIET
+FIND_PACKAGE(deal.II 9.0 QUIET
   HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR}
   )
 IF(NOT ${deal.II_FOUND})

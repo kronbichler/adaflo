@@ -20,8 +20,8 @@
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/solver_bicgstab.h>
-#include <deal.II/lac/parallel_block_vector.h>
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
 #include <deal.II/lac/trilinos_precondition.h>
@@ -58,7 +58,7 @@ LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver (const FlowParameters &par
 
 
 template <int dim>
-void LevelSetOKZMatrixSolver<dim>::transform_distance_function (parallel::distributed::Vector<double> &vector) const
+void LevelSetOKZMatrixSolver<dim>::transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const
 {
   Assert (this->epsilon_used > 0, ExcInternalError());
   for (unsigned int i=0; i<vector.local_size(); i++)
@@ -396,8 +396,8 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration ()
   global_max_velocity = this->get_maximal_velocity();
 
   system_matrix = 0;
-  parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-  parallel::distributed::Vector<double> &increment = this->solution_update.block(0);
+  LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+  LinearAlgebra::distributed::Vector<double> &increment = this->solution_update.block(0);
   rhs = 0;
 
   const double step_size_old = this->time_stepping.old_step_size ();
@@ -589,9 +589,9 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration ()
   // solve linear system with Bicgstab (non-symmetric system!)
   SolverControl solver_control (6000, std::max(1e-11*rhs.l2_norm(),
                                                0.02*this->parameters.tol_nl_iteration));
-  SolverBicgstab<parallel::distributed::Vector<double> >::AdditionalData bicg_data;
+  SolverBicgstab<LinearAlgebra::distributed::Vector<double> >::AdditionalData bicg_data;
   bicg_data.exact_residual = false;
-  SolverBicgstab<parallel::distributed::Vector<double> > solver (solver_control, bicg_data);
+  SolverBicgstab<LinearAlgebra::distributed::Vector<double> > solver (solver_control, bicg_data);
   increment = 0;
   solver.solve (system_matrix, increment, rhs, preconditioner);
   if (!this->parameters.do_iteration)
@@ -701,7 +701,7 @@ LevelSetOKZMatrixSolver<dim>::compute_normal (const bool fast_computation)
       // solve linear system
       SolverControl solver_control (4000, 1e-10*this->normal_vector_rhs.block(d).l2_norm());
 
-      SolverCG<parallel::distributed::Vector<double> > cg (solver_control);
+      SolverCG<LinearAlgebra::distributed::Vector<double> > cg (solver_control);
       cg.solve (system_matrix, this->normal_vector_field.block(d),
                 this->normal_vector_rhs.block(d), preconditioner);
 
@@ -724,7 +724,7 @@ LevelSetOKZMatrixSolver<dim>::compute_curvature (const bool )
   TimerOutput::Scope timer (*this->timer, "Compute curvature.");
 
   // compute right hand side
-  parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+  LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
   system_matrix = 0;
   rhs = 0;
 
@@ -811,7 +811,7 @@ LevelSetOKZMatrixSolver<dim>::compute_curvature (const bool )
   TrilinosWrappers::PreconditionSSOR preconditioner;
   preconditioner.initialize(system_matrix);
   SolverControl solver_control (1000, 1e-6*rhs.l2_norm());
-  SolverCG<parallel::distributed::Vector<double> > cg (solver_control);
+  SolverCG<LinearAlgebra::distributed::Vector<double> > cg (solver_control);
   cg.solve (system_matrix, this->solution.block(1), rhs, preconditioner);
 
   this->constraints.distribute(this->solution.block(1));
@@ -933,8 +933,8 @@ void LevelSetOKZMatrixSolver<dim>::reinitialize (const unsigned int stab_steps,
         diffuse_only = true;
 
       // compute right hand side
-      parallel::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-      parallel::distributed::Vector<double> &increment = this->solution_update.block(0);
+      LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
+      LinearAlgebra::distributed::Vector<double> &increment = this->solution_update.block(0);
       rhs = 0;
       system_matrix = 0;
 
@@ -1077,7 +1077,7 @@ void LevelSetOKZMatrixSolver<dim>::reinitialize (const unsigned int stab_steps,
       increment = 0;
       SolverControl solver_control (1000, std::max(0.02*this->parameters.tol_nl_iteration,
                                                    1e-6*rhs.l2_norm()));
-      SolverCG<parallel::distributed::Vector<double> > cg (solver_control);
+      SolverCG<LinearAlgebra::distributed::Vector<double> > cg (solver_control);
       cg.solve (system_matrix, increment, rhs, preconditioner);
 
       this->constraints.distribute(increment);

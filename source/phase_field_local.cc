@@ -48,8 +48,8 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 PhaseFieldSolver<dim>::local_compute_force (const MatrixFree<dim,double> &data,
-                                            parallel::distributed::Vector<double> &dst,
-                                            const parallel::distributed::Vector<double> &,
+                                            LinearAlgebra::distributed::Vector<double> &dst,
+                                            const LinearAlgebra::distributed::Vector<double> &,
                                             const std::pair<unsigned int,unsigned int> &cell_range)
 {
   FEEvaluation<dim,ls_degree,velocity_degree+1,1> ls_values(data,2,0);
@@ -133,8 +133,8 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 PhaseFieldSolver<dim>::local_residual (const MatrixFree<dim,double> &data,
-                                       parallel::distributed::BlockVector<double> &dst,
-                                       const parallel::distributed::BlockVector<double> &src,
+                                       LinearAlgebra::distributed::BlockVector<double> &dst,
+                                       const LinearAlgebra::distributed::BlockVector<double> &src,
                                        const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   FEEvaluation<dim,ls_degree,2*ls_degree,1> c_values(data,2,2);
@@ -220,8 +220,8 @@ template <int dim>
 template <int ls_degree>
 void
 PhaseFieldSolver<dim>::local_vmult (const MatrixFree<dim,double> &data,
-                                    parallel::distributed::BlockVector<double> &dst,
-                                    const parallel::distributed::BlockVector<double> &src,
+                                    LinearAlgebra::distributed::BlockVector<double> &dst,
+                                    const LinearAlgebra::distributed::BlockVector<double> &src,
                                     const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   FEEvaluation<dim,ls_degree,2*ls_degree,1> c_values(data,2,2);
@@ -282,8 +282,8 @@ template <int dim>
 template <int ls_degree>
 void
 PhaseFieldSolver<dim>::local_mass (const MatrixFree<dim,double> &data,
-                                   parallel::distributed::Vector<double> &dst,
-                                   const parallel::distributed::Vector<double> &src,
+                                   LinearAlgebra::distributed::Vector<double> &dst,
+                                   const LinearAlgebra::distributed::Vector<double> &src,
                                    const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   FEEvaluation<dim,ls_degree,2*ls_degree,1> c_values(data,2,2);
@@ -304,8 +304,8 @@ PhaseFieldSolver<dim>::local_mass (const MatrixFree<dim,double> &data,
 template <int dim>
 template <int operation>
 void
-PhaseFieldSolver<dim>::apply_contact_bc (parallel::distributed::BlockVector<double> &dst,
-                                         const parallel::distributed::BlockVector<double> &src) const
+PhaseFieldSolver<dim>::apply_contact_bc (LinearAlgebra::distributed::BlockVector<double> &dst,
+                                         const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   if (this->parameters.contact_angle == 0.)
     return;
@@ -353,7 +353,7 @@ PhaseFieldSolver<dim>::apply_contact_bc (parallel::distributed::BlockVector<doub
       JxW += n_face_q_points;
     }
   if (!have_ghost_values)
-    const_cast<parallel::distributed::BlockVector<double>&>(src).zero_out_ghosts();
+    const_cast<LinearAlgebra::distributed::BlockVector<double>&>(src).zero_out_ghosts();
 }
 
 
@@ -458,8 +458,8 @@ PhaseFieldSolver<dim>::compute_residual()
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::vmult(parallel::distributed::BlockVector<double> &dst,
-                             const parallel::distributed::BlockVector<double> &src) const
+PhaseFieldSolver<dim>::vmult(LinearAlgebra::distributed::BlockVector<double> &dst,
+                             const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   const unsigned int ls_degree = this->fe->degree;
 
@@ -496,8 +496,8 @@ PhaseFieldSolver<dim>::vmult(parallel::distributed::BlockVector<double> &dst,
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::mass_vmult(parallel::distributed::Vector<double> &dst,
-                                  const parallel::distributed::Vector<double> &src) const
+PhaseFieldSolver<dim>::mass_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                                  const LinearAlgebra::distributed::Vector<double> &src) const
 {
   dst = 0.;
 

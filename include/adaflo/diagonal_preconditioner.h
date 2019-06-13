@@ -19,8 +19,8 @@
 #include <fstream>
 #include <iostream>
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
 
 using namespace dealii;
 
@@ -31,27 +31,27 @@ class DiagonalPreconditioner
 public:
   DiagonalPreconditioner () {}
 
-  DiagonalPreconditioner (const parallel::distributed::Vector<Number> &diagonal_vector_in);
-  DiagonalPreconditioner (const parallel::distributed::BlockVector<Number> &diagonal_vector_in);
-  void reinit (const parallel::distributed::Vector<Number> &diagonal_vector_in);
-  void reinit (const parallel::distributed::BlockVector<Number> &diagonal_vector_in);
-  void vmult (parallel::distributed::Vector<Number> &dst,
-              const parallel::distributed::Vector<Number> &src) const;
-  void vmult (parallel::distributed::BlockVector<Number> &dst,
-              const parallel::distributed::BlockVector<Number> &src) const;
-  const parallel::distributed::Vector<Number> &get_inverse_vector() const
+  DiagonalPreconditioner (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+  DiagonalPreconditioner (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+  void reinit (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+  void reinit (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+  void vmult (LinearAlgebra::distributed::Vector<Number> &dst,
+              const LinearAlgebra::distributed::Vector<Number> &src) const;
+  void vmult (LinearAlgebra::distributed::BlockVector<Number> &dst,
+              const LinearAlgebra::distributed::BlockVector<Number> &src) const;
+  const LinearAlgebra::distributed::Vector<Number> &get_inverse_vector() const
   {
     return inverse_diagonal_vector;
   }
-  const parallel::distributed::Vector<Number> &get_vector() const
+  const LinearAlgebra::distributed::Vector<Number> &get_vector() const
   {
     return diagonal_vector;
   }
 
 private:
-  parallel::distributed::Vector<Number>      diagonal_vector;
-  parallel::distributed::Vector<Number>      inverse_diagonal_vector;
-  parallel::distributed::BlockVector<Number> inverse_diagonal_block_vector;
+  LinearAlgebra::distributed::Vector<Number>      diagonal_vector;
+  LinearAlgebra::distributed::Vector<Number>      inverse_diagonal_vector;
+  LinearAlgebra::distributed::BlockVector<Number> inverse_diagonal_block_vector;
 };
 
 

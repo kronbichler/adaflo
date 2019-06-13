@@ -185,7 +185,6 @@ void FlowPastCylinder<dim>::output_results () const
 void create_triangulation(Triangulation<2> &tria,
                           const bool compute_in_2d = true)
 {
-  HyperBallBoundary<2> boundary(Point<2>(0.5,0.2), 0.05);
   Triangulation<2> left, middle, right, tmp, tmp2;
   GridGenerator::subdivided_hyper_rectangle(left, std::vector<unsigned int>({3U, 4U}),
                                             Point<2>(), Point<2>(0.3, 0.41), false);
@@ -194,7 +193,14 @@ void create_triangulation(Triangulation<2> &tria,
 
   // create middle part first as a hyper shell
   GridGenerator::hyper_shell(middle, Point<2>(0.5, 0.2), 0.05, 0.2, 4, true);
-  middle.set_manifold(0, boundary);
+  middle.reset_all_manifolds();
+  for (const auto &cell : middle.active_cell_iterators())
+    for (unsigned int f=0; f<GeometryInfo<2>::faces_per_cell; ++f)
+      if (cell->face(f)->at_boundary() &&
+          Point<2>(0.5,0.2).distance(cell->face(f)->center())<=0.05)
+        cell->face(f)->set_manifold_id(0);
+
+  middle.set_manifold(0, PolarManifold<2>(Point<2>(0.5, 0.2)));
   middle.refine_global(1);
 
   // then move the vertices to the points where we want them to be to create a
@@ -276,6 +282,7 @@ void create_triangulation(Triangulation<2> &tria,
           else
             cell->face(f)->set_all_boundary_ids(0);
         }
+  tria.set_manifold(10, PolarManifold<2>(Point<2>(0.5,0.2)));
 }
 
 
@@ -304,6 +311,7 @@ void create_triangulation(Triangulation<3> &tria)
           else
             cell->face(f)->set_all_boundary_ids(0);
         }
+  tria.set_manifold(10, CylindricalManifold<3>(Point<3>(0,0,1),Point<3>(0.5,0.2,0)));
 }
 
 

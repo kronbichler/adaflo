@@ -22,8 +22,8 @@
 #include <deal.II/base/index_set.h>
 #include <deal.II/base/utilities.h>
 #include <deal.II/base/timer.h>
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
 #include <deal.II/distributed/tria.h>
 
 #include <adaflo/navier_stokes_matrix.h>
@@ -65,18 +65,18 @@ public:
 
   void compute ();
 
-  void vmult (parallel::distributed::BlockVector<double>       &dst,
-              const parallel::distributed::BlockVector<double> &src) const;
+  void vmult (LinearAlgebra::distributed::BlockVector<double>       &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
   std::pair<unsigned int,double>
-  solve_projection_system (const parallel::distributed::BlockVector<double> &solution,
-                           parallel::distributed::BlockVector<double> &solution_update,
-                           parallel::distributed::BlockVector<double> &system_rhs,
-                           parallel::distributed::Vector<double> &projection_update,
+  solve_projection_system (const LinearAlgebra::distributed::BlockVector<double> &solution,
+                           LinearAlgebra::distributed::BlockVector<double> &solution_update,
+                           LinearAlgebra::distributed::BlockVector<double> &system_rhs,
+                           LinearAlgebra::distributed::Vector<double> &projection_update,
                            TimerOutput &timer) const;
 
-  void solve_pressure_mass (parallel::distributed::Vector<double> &dst,
-                            const parallel::distributed::Vector<double> &src) const;
+  void solve_pressure_mass (LinearAlgebra::distributed::Vector<double> &dst,
+                            const LinearAlgebra::distributed::Vector<double> &src) const;
 
   void initialize_matrices (const DoFHandler<dim>  &dof_handler_u,
                             const DoFHandler<dim>  &dof_handler_p,
@@ -130,7 +130,7 @@ private:
   ConstraintMatrix               constraints_schur_complement;
   std::vector<unsigned int>      constraints_schur_complement_only;
 
-  mutable parallel::distributed::Vector<double> temp_vector, temp_vector2;
+  mutable LinearAlgebra::distributed::Vector<double> temp_vector, temp_vector2;
 
   TrilinosWrappers::SparseMatrix matrix_u;
   TrilinosWrappers::SparseMatrix matrix_p;
@@ -200,7 +200,7 @@ private:
   mutable std::pair<unsigned int,double[5]> precond_timer;
 
   void local_assemble_preconditioner (const MatrixFree<dim,double> &matrix_free,
-                                      Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > &data,
+                                      std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim> > > &in_data,
                                       const unsigned int &,
                                       const std::pair<unsigned int,unsigned int> &cell_range);
 

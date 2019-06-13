@@ -31,7 +31,7 @@
 #include <deal.II/grid/grid_in.h>
 #include <deal.II/grid/grid_out.h>
 #include <deal.II/grid/grid_tools.h>
-#include <deal.II/grid/tria_boundary_lib.h>
+#include <deal.II/grid/manifold_lib.h>
 
 
 using namespace dealii;
@@ -276,28 +276,28 @@ namespace MicroFluidic
                 &&
                 (face_center[0] <= 0    && face_center[0] >= -1 )
               )
-                cell->face(face)->set_all_boundary_ids(12);
+                cell->face(face)->set_all_manifold_ids(12);
 
               if (
                 (face_center[1] <= 1.5  && face_center[1] >= 0.5 )
                 &&
                 (face_center[0] <= 2   && face_center[0] >= 1)
               )
-                cell->face(face)->set_all_boundary_ids(23);
+                cell->face(face)->set_all_manifold_ids(23);
 
               if (
                 (face_center[1] <= 4.5  && face_center[1] >= 3.5 )
                 &&
                 (face_center[0] <= 2   && face_center[0] >= 1)
               )
-                cell->face(face)->set_all_boundary_ids(34);
+                cell->face(face)->set_all_manifold_ids(34);
 
               if (
                 (face_center[1] <= 4.5  && face_center[1] >= 3.5 )
                 &&
                 (face_center[0] <= 0   && face_center[0] >= -1 )
               )
-                cell->face(face)->set_all_boundary_ids(41);
+                cell->face(face)->set_all_manifold_ids(41);
             }
 
           if (dim == 3)
@@ -324,21 +324,18 @@ namespace MicroFluidic
     AssertThrow (file, ExcFileNotOpen (filename.c_str()));
     grid_in.read_msh (file);
 
-    triangulation.set_boundary (0);
+    const PolarManifold<2> boundary_description_12(Point<2>(-1,0.5));  //Point 20
+    triangulation.set_manifold (12, boundary_description_12);
+
+    const PolarManifold<2> boundary_description_23(Point<2>(2,0.5));  //Point 17
+    triangulation.set_manifold (23, boundary_description_23);
 
 
-    static const HyperBallBoundary<2> boundary_description_12(Point<2>(-1,0.5), 1);  //Point 20
-    triangulation.set_boundary (12, boundary_description_12);
+    const PolarManifold<2> boundary_description_34(Point<2>(2,4.5));  //Point 18
+    triangulation.set_manifold (34, boundary_description_34);
 
-    static const HyperBallBoundary<2> boundary_description_23(Point<2>(2,0.5), 1);  //Point 17
-    triangulation.set_boundary (23, boundary_description_23);
-
-
-    static const HyperBallBoundary<2> boundary_description_34(Point<2>(2,4.5), 1);  //Point 18
-    triangulation.set_boundary (34, boundary_description_34);
-
-    static const HyperBallBoundary<2> boundary_description_41(Point<2>(-1,4.5), 1); //Point 19
-    triangulation.set_boundary (41, boundary_description_41);
+    const PolarManifold<2> boundary_description_41(Point<2>(-1,4.5)); //Point 19
+    triangulation.set_manifold (41, boundary_description_41);
     set_boundary_indicators(triangulation);
   }
 
@@ -351,18 +348,18 @@ namespace MicroFluidic
     GridGenerator::extrude_triangulation(tria_2d, 9, 1., triangulation);
 
     set_boundary_indicators(triangulation);
-    static const CylinderBoundary<3> boundary_description_12(1, Point<3>(0,0,1),Point<3>(-1,0.5,0));  //Point 20
-    triangulation.set_boundary (12, boundary_description_12);
+    const CylindricalManifold<3> boundary_description_12(Point<3>(0,0,1),Point<3>(-1,0.5,0));  //Point 20
+    triangulation.set_manifold (12, boundary_description_12);
 
-    static const CylinderBoundary<3> boundary_description_23(1, Point<3>(0,0,1),Point<3>(2,0.5,0));  //Point 17
-    triangulation.set_boundary (23, boundary_description_23);
+    const CylindricalManifold<3> boundary_description_23(Point<3>(0,0,1),Point<3>(2,0.5,0));  //Point 17
+    triangulation.set_manifold (23, boundary_description_23);
 
 
-    static const CylinderBoundary<3> boundary_description_34(1, Point<3>(0,0,1),Point<3>(2,4.5,0));  //Point 18
-    triangulation.set_boundary (34, boundary_description_34);
+    const CylindricalManifold<3> boundary_description_34(Point<3>(0,0,1),Point<3>(2,4.5,0));  //Point 18
+    triangulation.set_manifold (34, boundary_description_34);
 
-    static const CylinderBoundary<3> boundary_description_41(1, Point<3>(0,0,1),Point<3>(-1,4.5,0)); //Point 19
-    triangulation.set_boundary (41, boundary_description_41);
+    const CylindricalManifold<3> boundary_description_41(Point<3>(0,0,1),Point<3>(-1,4.5,0)); //Point 19
+    triangulation.set_manifold (41, boundary_description_41);
 
   }
 

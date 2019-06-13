@@ -89,10 +89,10 @@ protected:
 
   virtual void compute_heaviside () = 0;
 
-  parallel::distributed::Vector<double>       heaviside;
+  LinearAlgebra::distributed::Vector<double>       heaviside;
 
-  parallel::distributed::BlockVector<double>  normal_vector_field;
-  parallel::distributed::BlockVector<double>  normal_vector_rhs;
+  LinearAlgebra::distributed::BlockVector<double>  normal_vector_field;
+  LinearAlgebra::distributed::BlockVector<double>  normal_vector_rhs;
 
   FullMatrix<double>   interpolation_concentration_pressure;
 

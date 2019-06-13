@@ -16,8 +16,8 @@
 #ifndef __adaflo_navier_stokes_matrix_h
 #define __adaflo_navier_stokes_matrix_h
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
 
 #include <deal.II/matrix_free/matrix_free.h>
 
@@ -52,8 +52,8 @@ class NavierStokesMatrix
 public:
   typedef std::pair<Tensor<1,dim,VectorizedArray<double> >,Tensor<2,dim,VectorizedArray<double> > > velocity_stored;
   NavierStokesMatrix (const FlowParameters                             &parameters,
-                      const parallel::distributed::BlockVector<double> &solution_old,
-                      const parallel::distributed::BlockVector<double> &solution_old_old);
+                      const LinearAlgebra::distributed::BlockVector<double> &solution_old,
+                      const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
 
   void initialize (const MatrixFree<dim> &matrix_free_in,
                    const TimeStepping    &time_stepping_in,
@@ -66,12 +66,12 @@ public:
     return matrix_free->get_dof_handler(1).n_dofs();
   }
 
-  void initialize_u_vector(parallel::distributed::Vector<double> &vec) const
+  void initialize_u_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
     matrix_free->initialize_dof_vector(vec, 0);
   }
 
-  void initialize_p_vector(parallel::distributed::Vector<double> &vec) const
+  void initialize_p_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
     matrix_free->initialize_dof_vector(vec, 1);
   }
@@ -99,33 +99,33 @@ public:
   // while solving the linear system. Since we might be using FE_Q_DG0
   // elements which have two zero modes, need two such vectors, each
   // corresponding to the mass weights for the respective zero mode.
-  void apply_pressure_average_projection(parallel::distributed::Vector<double> &vector) const;
+  void apply_pressure_average_projection(LinearAlgebra::distributed::Vector<double> &vector) const;
 
   void apply_pressure_shift (const double shift,
-                             parallel::distributed::Vector<double> &pressure) const;
+                             LinearAlgebra::distributed::Vector<double> &pressure) const;
 
-  void vmult (parallel::distributed::BlockVector<double> &dst,
-              const parallel::distributed::BlockVector<double> &src) const;
+  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
+              const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
-  void residual (parallel::distributed::BlockVector<double> &residual_vector,
-                 const parallel::distributed::BlockVector<double> &src,
-                 const parallel::distributed::BlockVector<double> &user_rhs) const;
+  void residual (LinearAlgebra::distributed::BlockVector<double> &residual_vector,
+                 const LinearAlgebra::distributed::BlockVector<double> &src,
+                 const LinearAlgebra::distributed::BlockVector<double> &user_rhs) const;
 
-  void divergence_vmult_add (parallel::distributed::Vector<double> &dst,
-                             const parallel::distributed::Vector<double>  &src,
+  void divergence_vmult_add (LinearAlgebra::distributed::Vector<double> &dst,
+                             const LinearAlgebra::distributed::Vector<double>  &src,
                              const bool weight_by_viscosity = false) const;
 
-  void velocity_vmult (parallel::distributed::Vector<double>  &dst,
-                       const parallel::distributed::Vector<double> &src) const;
+  void velocity_vmult (LinearAlgebra::distributed::Vector<double>  &dst,
+                       const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_poisson_vmult (parallel::distributed::Vector<double> &dst,
-                               const parallel::distributed::Vector<double> &src) const;
+  void pressure_poisson_vmult (LinearAlgebra::distributed::Vector<double> &dst,
+                               const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_mass_vmult (parallel::distributed::Vector<double> &dst,
-                            const parallel::distributed::Vector<double> &src) const;
+  void pressure_mass_vmult (LinearAlgebra::distributed::Vector<double> &dst,
+                            const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_convdiff_vmult (parallel::distributed::Vector<double> &dst,
-                                const parallel::distributed::Vector<double> &src) const;
+  void pressure_convdiff_vmult (LinearAlgebra::distributed::Vector<double> &dst,
+                                const LinearAlgebra::distributed::Vector<double> &src) const;
 
   // fix the linearization point in additional data points (used for AMG
   // preconditioners that should not get out of sync with the matrix they are
@@ -176,30 +176,30 @@ private:
 
   template <int degree_p, bool weight_by_viscosity>
   void local_divergence (const MatrixFree<dim> &data,
-                         parallel::distributed::Vector<double>       &dst,
-                         const parallel::distributed::Vector<double> &src,
+                         LinearAlgebra::distributed::Vector<double>       &dst,
+                         const LinearAlgebra::distributed::Vector<double> &src,
                          const std::pair<unsigned int,unsigned int>  &cell_range) const;
 
   template <int degree_p>
   void local_pressure_poisson (const MatrixFree<dim> &data,
-                               parallel::distributed::Vector<double> &dst,
-                               const parallel::distributed::Vector<double> &src,
+                               LinearAlgebra::distributed::Vector<double> &dst,
+                               const LinearAlgebra::distributed::Vector<double> &src,
                                const std::pair<unsigned int,unsigned int> &cell_range) const;
   template <int degree_p>
   void local_pressure_mass (const MatrixFree<dim> &data,
-                            parallel::distributed::Vector<double> &dst,
-                            const parallel::distributed::Vector<double> &src,
+                            LinearAlgebra::distributed::Vector<double> &dst,
+                            const LinearAlgebra::distributed::Vector<double> &src,
                             const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int degree_p>
   void local_pressure_convdiff (const MatrixFree<dim> &data,
-                                parallel::distributed::Vector<double> &dst,
-                                const parallel::distributed::Vector<double> &src,
+                                LinearAlgebra::distributed::Vector<double> &dst,
+                                const LinearAlgebra::distributed::Vector<double> &src,
                                 const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int degree_p>
   void local_pressure_mass_weight (const MatrixFree<dim> &data,
-                                   parallel::distributed::Vector<double> &dst,
+                                   LinearAlgebra::distributed::Vector<double> &dst,
                                    const unsigned int &,
                                    const std::pair<unsigned int,unsigned int> &cell_range) const;
 
@@ -214,11 +214,11 @@ private:
   mutable AlignedVector<VectorizedArray<double> > variable_viscosities_preconditioner;
   mutable AlignedVector<velocity_stored> linearized_velocities_preconditioner;
 
-  const parallel::distributed::BlockVector<double> &solution_old;
-  const parallel::distributed::BlockVector<double> &solution_old_old;
+  const LinearAlgebra::distributed::BlockVector<double> &solution_old;
+  const LinearAlgebra::distributed::BlockVector<double> &solution_old_old;
 
-  parallel::distributed::Vector<double> pressure_constant_modes[2];
-  parallel::distributed::Vector<double> pressure_constant_mode_weights[2];
+  LinearAlgebra::distributed::Vector<double> pressure_constant_modes[2];
+  LinearAlgebra::distributed::Vector<double> pressure_constant_mode_weights[2];
   double inverse_pressure_average_weights[2];
 
   mutable std::pair<unsigned int,double> matvec_timer;

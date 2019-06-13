@@ -42,26 +42,26 @@ public:
                      parallel::distributed::Triangulation<dim> &triangulation);
   virtual ~LevelSetOKZSolver() {}
 
-  void advance_concentration_vmult(parallel::distributed::Vector<double> &dst,
-                                   const parallel::distributed::Vector<double> &src) const;
+  void advance_concentration_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                                   const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void compute_normal_vmult(parallel::distributed::BlockVector<double> &dst,
-                            const parallel::distributed::BlockVector<double> &sr) const;
+  void compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &dst,
+                            const LinearAlgebra::distributed::BlockVector<double> &sr) const;
 
-  void compute_normal_vmult(parallel::distributed::BlockVector<float> &dst,
-                            const parallel::distributed::BlockVector<float> &sr) const;
+  void compute_normal_vmult(LinearAlgebra::distributed::BlockVector<float> &dst,
+                            const LinearAlgebra::distributed::BlockVector<float> &sr) const;
 
-  void compute_curvature_vmult(parallel::distributed::Vector<double> &dst,
-                               const parallel::distributed::Vector<double> &srcc,
+  void compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                               const LinearAlgebra::distributed::Vector<double> &srcc,
                                const bool apply_diffusion) const;
 
-  void reinitialization_vmult(parallel::distributed::Vector<double> &dst,
-                              const parallel::distributed::Vector<double> &src,
+  void reinitialization_vmult(LinearAlgebra::distributed::Vector<double> &dst,
+                              const LinearAlgebra::distributed::Vector<double> &src,
                               const bool diffuse_only) const;
 
   virtual void initialize_data_structures ();
 
-  virtual void transform_distance_function (parallel::distributed::Vector<double> &vector) const;
+  virtual void transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const;
 
 private:
 
@@ -90,64 +90,64 @@ private:
   // matrix-free worker operations for various operations
   template <int ls_degree, int velocity_degree>
   void local_compute_force (const MatrixFree<dim,double> &data,
-                            parallel::distributed::Vector<double> &dst,
-                            const parallel::distributed::Vector<double> &src,
+                            LinearAlgebra::distributed::Vector<double> &dst,
+                            const LinearAlgebra::distributed::Vector<double> &src,
                             const std::pair<unsigned int,unsigned int> &cell_range);
 
   template <int ls_degree, int velocity_degree>
   void local_advance_concentration (const MatrixFree<dim,double> &data,
-                                    parallel::distributed::Vector<double> &dst,
-                                    const parallel::distributed::Vector<double> &src,
+                                    LinearAlgebra::distributed::Vector<double> &dst,
+                                    const LinearAlgebra::distributed::Vector<double> &src,
                                     const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int ls_degree, int velocity_degree>
   void local_advance_concentration_rhs (const MatrixFree<dim,double> &data,
-                                        parallel::distributed::Vector<double> &dst,
-                                        const parallel::distributed::Vector<double> &src,
+                                        LinearAlgebra::distributed::Vector<double> &dst,
+                                        const LinearAlgebra::distributed::Vector<double> &src,
                                         const std::pair<unsigned int,unsigned int> &cell_range);
   template <int ls_degree, typename Number>
   void local_compute_normal (const MatrixFree<dim,Number> &data,
-                             parallel::distributed::BlockVector<Number> &dst,
-                             const parallel::distributed::BlockVector<Number> &src,
+                             LinearAlgebra::distributed::BlockVector<Number> &dst,
+                             const LinearAlgebra::distributed::BlockVector<Number> &src,
                              const std::pair<unsigned int,unsigned int> &cell_range) const;
   template <int ls_degree>
   void local_compute_normal_rhs (const MatrixFree<dim,double> &data,
-                                 parallel::distributed::BlockVector<double> &dst,
-                                 const parallel::distributed::Vector<double> &src,
+                                 LinearAlgebra::distributed::BlockVector<double> &dst,
+                                 const LinearAlgebra::distributed::Vector<double> &src,
                                  const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   // diffusion_setting: 0: both terms, 1: only mass, 2: only diffusion
   template <int ls_degree, int diffusion_setting>
   void local_compute_curvature (const MatrixFree<dim,double> &data,
-                                parallel::distributed::Vector<double> &dst,
-                                const parallel::distributed::Vector<double> &src,
+                                LinearAlgebra::distributed::Vector<double> &dst,
+                                const LinearAlgebra::distributed::Vector<double> &src,
                                 const std::pair<unsigned int,unsigned int> &cell_range) const;
   template <int ls_degree>
   void local_compute_curvature_rhs (const MatrixFree<dim,double> &data,
-                                    parallel::distributed::Vector<double> &dst,
-                                    const parallel::distributed::Vector<double> &src,
+                                    LinearAlgebra::distributed::Vector<double> &dst,
+                                    const LinearAlgebra::distributed::Vector<double> &src,
                                     const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int ls_degree, bool diffuse_only>
   void local_reinitialize (const MatrixFree<dim,double> &data,
-                           parallel::distributed::Vector<double> &dst,
-                           const parallel::distributed::Vector<double> &src,
+                           LinearAlgebra::distributed::Vector<double> &dst,
+                           const LinearAlgebra::distributed::Vector<double> &src,
                            const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   template <int ls_degree, bool diffuse_only>
   void local_reinitialize_rhs (const MatrixFree<dim,double> &data,
-                               parallel::distributed::Vector<double> &dst,
-                               const parallel::distributed::Vector<double> &src,
+                               LinearAlgebra::distributed::Vector<double> &dst,
+                               const LinearAlgebra::distributed::Vector<double> &src,
                                const std::pair<unsigned int,unsigned int> &cell_range);
 
   void local_projection_matrix (const MatrixFree<dim,double> &data,
-                                Threads::ThreadLocalStorage<AssemblyData::Data> &scratch,
+                                std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
                                 const unsigned int &,
                                 const std::pair<unsigned int,unsigned int> &cell_range);
 
   template <int ls_degree>
   void local_projection_matrix (const MatrixFree<dim,double> &data,
-                                Threads::ThreadLocalStorage<AssemblyData::Data> &scratch,
+                                std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
                                 const std::pair<unsigned int,unsigned int> &cell_range);
 
   AlignedVector<VectorizedArray<double> > artificial_viscosities;
@@ -159,7 +159,7 @@ private:
   // In case we can better combine float/double solvers at some point...
   MatrixFree<dim,float> matrix_free_float;
   AlignedVector<VectorizedArray<float> > cell_diameters_float;
-  //GrowingVectorMemory<parallel::distributed::BlockVector<float> > vectors_normal;
+  //GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> > vectors_normal;
   //DiagonalPreconditioner<float> preconditioner_float;
 
   std_cxx11::shared_ptr<BlockMatrixExtension> projection_matrix;

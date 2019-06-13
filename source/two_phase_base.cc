@@ -360,7 +360,7 @@ bool TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
     return false;
 
   timer->enter_subsection("Probe grid refinement.");
-  parallel::distributed::Vector<double> error_estimate (solution.block(0));
+  LinearAlgebra::distributed::Vector<double> error_estimate (solution.block(0));
   Vector<float>  error_per_cell (triangulation.n_active_cells());
 
   {
@@ -426,7 +426,7 @@ void TwoPhaseBaseAlgorithm<dim>::refine_grid ()
 
   timer->enter_subsection("Refine grid.");
 
-  std::vector<const parallel::distributed::Vector<double> *> old_grid_solutions;
+  std::vector<const LinearAlgebra::distributed::Vector<double> *> old_grid_solutions;
   solution_old.update_ghost_values();
   solution.update_ghost_values();
   old_grid_solutions.push_back(&solution_old.block(0));
@@ -436,7 +436,7 @@ void TwoPhaseBaseAlgorithm<dim>::refine_grid ()
 
   navier_stokes.prepare_coarsening_and_refinement();
 
-  parallel::distributed::SolutionTransfer<dim, parallel::distributed::Vector<double> > soltrans(dof_handler);
+  parallel::distributed::SolutionTransfer<dim, LinearAlgebra::distributed::Vector<double> > soltrans(dof_handler);
   soltrans.prepare_for_coarsening_and_refinement(old_grid_solutions);
 
   triangulation.execute_coarsening_and_refinement ();
@@ -445,7 +445,7 @@ void TwoPhaseBaseAlgorithm<dim>::refine_grid ()
   distribute_dofs();
   initialize_data_structures();
 
-  std::vector<parallel::distributed::Vector<double> *> new_grid_solutions;
+  std::vector<LinearAlgebra::distributed::Vector<double> *> new_grid_solutions;
   new_grid_solutions.push_back(&solution_old.block(0));
   new_grid_solutions.push_back(&solution.block(0));
   new_grid_solutions.push_back(&solution_old.block(1));

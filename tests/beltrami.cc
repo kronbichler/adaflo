@@ -26,14 +26,12 @@
 #include <deal.II/grid/grid_in.h>
 #include <deal.II/grid/tria.h>
 #include <deal.II/grid/tria_accessor.h>
-#include <deal.II/grid/tria_boundary_lib.h>
 #include <deal.II/grid/tria_iterator.h>
 
 #include <deal.II/fe/fe_q.h>
 
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/numerics/data_out.h>
-
 
 #include <deal.II/lac/parallel_vector.h>
 #include <deal.II/lac/constraint_matrix.h>
@@ -199,7 +197,7 @@ private:
   NavierStokes<dim>    navier_stokes;
   const double         nu;
 
-  mutable parallel::distributed::BlockVector<double>  exact;
+  mutable LinearAlgebra::distributed::BlockVector<double>  exact;
 };
 
 
@@ -380,7 +378,6 @@ void BeltramiProblem<dim>::run ()
         << std::endl;
 
   const bool use_ball = false;
-  static const HyperBallBoundary<dim> boundary;
   {
     if (use_ball == false)
       {
@@ -400,10 +397,7 @@ void BeltramiProblem<dim>::run ()
                                                    top_right);
       }
     else
-      {
-        GridGenerator::hyper_ball (triangulation);
-        triangulation.set_boundary (0, boundary);
-      }
+      GridGenerator::hyper_ball (triangulation);
   }
   if (navier_stokes.get_parameters().global_refinements >= 2)
     triangulation.refine_global (navier_stokes.get_parameters().
