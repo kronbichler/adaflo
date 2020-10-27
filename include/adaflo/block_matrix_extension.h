@@ -137,7 +137,7 @@ public:
 
 private:
   std::vector<unsigned int> index_by_component;
-  mutable std_cxx11::shared_ptr<Epetra_MultiVector> src_cpy, dst_cpy;
+  mutable std::shared_ptr<Epetra_MultiVector> src_cpy, dst_cpy;
 };
 
 

@@ -31,6 +31,7 @@
 #include <deal.II/dofs/dof_tools.h>
 #include <deal.II/dofs/dof_renumbering.h>
 #include <deal.II/numerics/vector_tools.h>
+#include <deal.II/fe/mapping_q_generic.h>
 
 #include <ml_epetra_utils.h>
 #include <ml_struct.h>
@@ -503,7 +504,7 @@ public:
   }
 
 private:
-  std_cxx11::shared_ptr<ML_Epetra::MultiLevelPreconditioner> preconditioner;
+  std::shared_ptr<ML_Epetra::MultiLevelPreconditioner> preconditioner;
 };
 
 
@@ -898,7 +899,7 @@ NavierStokesPreconditioner<dim>
 ::NavierStokesPreconditioner (const FlowParameters         &parameters,
                               const FlowBaseAlgorithm<dim> &flow_algorithm,
                               const parallel::distributed::Triangulation<dim> &tria,
-                              const ConstraintMatrix       &constraints_u)
+                              const AffineConstraints<double>       &constraints_u)
   :
   do_inner_solves  (false),
   initialized (false),
@@ -937,7 +938,7 @@ void
 NavierStokesPreconditioner<dim>
 ::initialize_matrices (const DoFHandler<dim>  &dof_handler_u,
                        const DoFHandler<dim>  &dof_handler_p,
-                       const ConstraintMatrix &constraints_p)
+                       const AffineConstraints<double> &constraints_p)
 {
   const FiniteElement<dim> &fe_u = dof_handler_u.get_fe();
   const FiniteElement<dim> &fe_p = dof_handler_p.get_fe();
@@ -970,10 +971,10 @@ NavierStokesPreconditioner<dim>
                                                     constraints_u_scalar);
           }
 
-      ZeroFunction<dim> zero_func(1);
-      typename FunctionMap<dim>::type homogeneous_dirichlet;
+      Functions::ZeroFunction<dim> zero_func(1);
+      std::map< types::boundary_id, const Function< dim > *> homogeneous_dirichlet;
       for (typename std::map<types::boundary_id,
-           std_cxx11::shared_ptr<Function<dim> > >::
+           std::shared_ptr<Function<dim> > >::
            const_iterator it = flow_algorithm.boundary->dirichlet_conditions_u.begin();
            it != flow_algorithm.boundary->dirichlet_conditions_u.end(); ++it)
         homogeneous_dirichlet[it->first] = &zero_func;
@@ -1000,10 +1001,10 @@ NavierStokesPreconditioner<dim>
   if (!flow_algorithm.boundary->open_conditions_p.empty() &&
       !parameters.augmented_taylor_hood)
     {
-      ZeroFunction<dim> zero_func(1);
-      typename FunctionMap<dim>::type homogeneous_dirichlet;
+      Functions::ZeroFunction<dim> zero_func(1);
+      std::map< types::boundary_id, const Function< dim > *> homogeneous_dirichlet;
       for (typename std::map<types::boundary_id,
-           std_cxx11::shared_ptr<Function<dim> > >::
+           std::shared_ptr<Function<dim> > >::
            const_iterator it = flow_algorithm.boundary->open_conditions_p.begin();
            it != flow_algorithm.boundary->open_conditions_p.end(); ++it)
         {
@@ -1017,10 +1018,10 @@ NavierStokesPreconditioner<dim>
   // Fix the pressure constant if requested
   if (!flow_algorithm.boundary->pressure_fix.empty())
     {
-      typename FunctionMap<dim>::type dirichlet_p;
-      ZeroFunction<dim> zero_function;
+      std::map< types::boundary_id, const Function< dim > *> dirichlet_p;
+      Functions::ZeroFunction<dim> zero_function;
       for (typename std::map<types::boundary_id,
-           std_cxx11::shared_ptr<Function<dim> > >::
+           std::shared_ptr<Function<dim> > >::
            iterator it = flow_algorithm.boundary->pressure_fix.begin();
            it != flow_algorithm.boundary->pressure_fix.end(); ++it)
         {
@@ -1327,6 +1328,29 @@ namespace AssemblyData
                     const FiniteElement<dim> &fe_p);
 
     Preconditioner (const Preconditioner &data);
+    
+   Preconditioner ()
+    :
+    fe_u        (FE_Q<dim>(1)),
+    fe_values_u (MappingQGeneric<dim>(1), fe_u.base_element(0), QGauss<dim>(fe_u.degree+1),
+                 update_values | update_gradients | update_JxW_values),
+    fe_values_p (MappingQGeneric<dim>(1), FE_Q<dim>(1), fe_values_u.get_quadrature(),
+                 update_values | update_gradients | update_JxW_values),
+    fe_face_values_p (MappingQGeneric<dim>(1), FE_Q<dim>(1), QGauss<dim-1>(FE_Q<dim>(1).degree+1),
+                      update_values | update_gradients | update_JxW_values |
+                      update_normal_vectors),
+    fe_subface_values_p (MappingQGeneric<dim>(1), FE_Q<dim>(1), fe_face_values_p.get_quadrature(),
+                         update_values | update_gradients | update_JxW_values |
+                         update_normal_vectors),
+    fe_values_lin_u (fe_values_u.get_mapping(),
+                     fe_values_u.get_fe(),
+                     fe_values_u.get_quadrature(),
+                     fe_values_u.get_update_flags()),
+    fe_values_lin_p (fe_values_p.get_mapping(),
+                     fe_values_p.get_fe(),
+                     fe_values_p.get_quadrature(),
+                     fe_values_p.get_update_flags())
+   {} 
 
     const FiniteElement<dim> &fe_u;
     FEValues<dim> fe_values_u;

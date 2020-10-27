@@ -778,6 +778,7 @@ local_operation (const MatrixFree<dim> &data,
           vector_t sym;
           switch (dim)
             {
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
             case 3:
               sym = tmu * (grad_u[0][2]+grad_u[2][0]);
               grad_u[0][2] = sym;
@@ -793,6 +794,7 @@ local_operation (const MatrixFree<dim> &data,
               break;
             default:
               Assert (false, ExcNotImplemented());
+#pragma GCC diagnostic push
             }
           // add pressure
           for (unsigned int d=0; d<dim; ++d)

@@ -77,9 +77,11 @@ namespace AssemblyData
 {
   struct Data
   {
+    Data(){} // TODO?
+      
     Data(const unsigned int size)
       :
-      matrices (VectorizedArray<double>::n_array_elements,
+      matrices (VectorizedArray<double>::size(),
                 FullMatrix<double>(size, size)),
       dof_indices(size)
     {}
@@ -530,7 +532,7 @@ LevelSetOKZSolver<dim>::local_compute_normal (const MatrixFree<dim,Number> &data
                                               const LinearAlgebra::distributed::BlockVector<Number> &src,
                                               const std::pair<unsigned int,unsigned int> &cell_range) const
 {
-  bool do_float = types_are_equal<Number,float>::value;
+  bool do_float = std::is_same<Number,float>::value;
   //The second input argument below refers to which constrains should be used, 4 means constraints_normals
   FEEvaluation<dim,ls_degree,2*ls_degree,dim,Number> phi(data, do_float ? 0 : 4,
                                                          do_float ? 0 : 2);
@@ -666,7 +668,7 @@ LevelSetOKZSolver<dim>::local_compute_curvature_rhs (const MatrixFree<dim,double
         {
           Tensor<1,dim,VectorizedArray<double> > normal = normal_values.get_dof_value(i);
           const VectorizedArray<double> normal_norm = normal.norm();
-          for (unsigned int d=0; d<VectorizedArray<double>::n_array_elements; ++d)
+          for (unsigned int d=0; d<VectorizedArray<double>::size(); ++d)
             if (normal_norm[d] > 1e-2)
               {
                 all_zero = false;
@@ -1206,13 +1208,13 @@ LevelSetOKZSolver<dim>::advance_concentration ()
 
   // apply boundary values
   {
-    typename FunctionMap<dim>::type dirichlet;
-    ConstantFunction<dim> plus_func(1., 1);
+    std::map< types::boundary_id, const Function< dim > *> dirichlet;
+    Functions::ConstantFunction<dim> plus_func(1., 1);
     for (typename std::set<types::boundary_id>::const_iterator
          it = this->boundary->fluid_type_plus.begin();
          it != this->boundary->fluid_type_plus.end(); ++it)
       dirichlet[*it] = &plus_func;
-    ConstantFunction<dim> minus_func(-1., 1);
+    Functions::ConstantFunction<dim> minus_func(-1., 1);
     for (typename std::set<types::boundary_id>::const_iterator
          it = this->boundary->fluid_type_minus.begin();
          it != this->boundary->fluid_type_minus.end(); ++it)
@@ -1313,7 +1315,7 @@ LevelSetOKZSolver<dim>::advance_concentration ()
       n_iterations = control.last_step();
       initial_residual = control.initial_value();
     }
-  catch (SolverControl::NoConvergence)
+  catch (const SolverControl::NoConvergence &)
     {
       // GMRES is typically slower but much more robust
       ReductionControl control (3000, 0.05 * this->parameters.tol_nl_iteration,

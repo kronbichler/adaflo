@@ -369,13 +369,13 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration ()
 
   // apply boundary values
   {
-    typename FunctionMap<dim>::type dirichlet;
-    ConstantFunction<dim> plus_func(1., 1);
+    std::map< types::boundary_id, const Function< dim > *> dirichlet;
+    Functions::ConstantFunction<dim> plus_func(1., 1);
     for (typename std::set<types::boundary_id>::const_iterator
          it = this->boundary->fluid_type_plus.begin();
          it != this->boundary->fluid_type_plus.end(); ++it)
       dirichlet[*it] = &plus_func;
-    ConstantFunction<dim> minus_func(-1., 1);
+    Functions::ConstantFunction<dim> minus_func(-1., 1);
     for (typename std::set<types::boundary_id>::const_iterator
          it = this->boundary->fluid_type_minus.begin();
          it != this->boundary->fluid_type_minus.end(); ++it)

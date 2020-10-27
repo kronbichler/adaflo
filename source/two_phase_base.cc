@@ -61,7 +61,7 @@ namespace
 template <int dim>
 TwoPhaseBaseAlgorithm<dim>::
 TwoPhaseBaseAlgorithm (const FlowParameters &parameters_in,
-                       const std_cxx11::shared_ptr<FiniteElement<dim> > fe_in,
+                       const std::shared_ptr<FiniteElement<dim> > fe_in,
                        parallel::distributed::Triangulation<dim> &tria_in,
                        TimerOutput *timer_in)
   :
@@ -230,7 +230,7 @@ void TwoPhaseBaseAlgorithm<dim>::initialize_data_structures ()
   dof_handlers.push_back (&dof_handler);
   dof_handlers.push_back (&dof_handler);
 
-  std::vector<const ConstraintMatrix *> constraint;
+  std::vector<const AffineConstraints<double> *> constraint;
   constraint.push_back (&navier_stokes.get_constraints_u());
   constraint.push_back (&navier_stokes.get_constraints_p());
   constraint.push_back (&constraints);
@@ -372,7 +372,7 @@ bool TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
 
   VectorTools::integrate_difference(dof_handler,
                                     error_estimate,
-                                    ZeroFunction<dim>(2),
+                                    Functions::ZeroFunction<dim>(2),
                                     error_per_cell,
                                     QGauss<dim>(fe->degree+1),
                                     VectorTools::L2_norm);

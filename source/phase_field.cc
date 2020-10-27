@@ -49,7 +49,7 @@ PhaseFieldSolver<dim>::PhaseFieldSolver (const FlowParameters &parameters_in,
                                          parallel::distributed::Triangulation<dim> &tria_in)
   :
   TwoPhaseBaseAlgorithm<dim> (parameters_in,
-                              std_cxx11::shared_ptr<FiniteElement<dim> >(new FE_Q_iso_Q1<dim>(parameters_in.concentration_subdivisions)),
+                              std::shared_ptr<FiniteElement<dim> >(new FE_Q_iso_Q1<dim>(parameters_in.concentration_subdivisions)),
                               tria_in),
   parameters (this->TwoPhaseBaseAlgorithm<dim>::parameters)
 {
@@ -109,8 +109,8 @@ void PhaseFieldSolver<dim>::initialize_data_structures ()
 {
   // now to the boundary conditions: the matrix system gets zero boundary
   // conditions on open boundaries
-  ZeroFunction<dim> zero_func(1);
-  typename FunctionMap<dim>::type homogeneous_dirichlet;
+  Functions::ZeroFunction<dim> zero_func(1);
+  std::map< types::boundary_id, const Function< dim > *> homogeneous_dirichlet;
   for (typename std::set<types::boundary_id>::const_iterator
        it = this->boundary->fluid_type_plus.begin();
        it != this->boundary->fluid_type_plus.end(); ++it)
@@ -441,7 +441,7 @@ void PhaseFieldSolver<dim>::solve_cahn_hilliard ()
     {
       solver.solve (*this, this->solution_update, this->system_rhs, preconditioner);
     }
-  catch (SolverControl::NoConvergence)
+  catch (const SolverControl::NoConvergence &)
     {
     }
 

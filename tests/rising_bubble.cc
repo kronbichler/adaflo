@@ -89,7 +89,7 @@ private:
   TwoPhaseParameters        parameters;
   parallel::distributed::Triangulation<dim>   triangulation;
 
-  std_cxx11::shared_ptr<TwoPhaseBaseAlgorithm<dim> > solver;
+  std::shared_ptr<TwoPhaseBaseAlgorithm<dim> > solver;
 };
 
 
@@ -148,7 +148,7 @@ void MicroFluidicProblem<dim>::run ()
   solver->fix_pressure_constant(0);
   solver->set_symmetry_boundary(2);
 
-  solver->setup_problem(ZeroFunction<dim>(dim), InitialValuesLS<dim>());
+  solver->setup_problem(Functions::ZeroFunction<dim>(dim), InitialValuesLS<dim>());
   solver->output_solution(parameters.output_filename);
 
   std::vector<std::vector<double> > solution_data;

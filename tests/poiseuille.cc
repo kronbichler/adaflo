@@ -34,8 +34,8 @@
 #include <deal.II/numerics/data_out.h>
 
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/distributed/tria.h>
@@ -265,11 +265,11 @@ void ChannelProblem<dim>::run ()
   navier_stokes.set_no_slip_boundary(0);
   navier_stokes.set_symmetry_boundary(3);
 
-  navier_stokes.set_open_boundary_with_normal_flux(1, std_cxx11::shared_ptr<Function<dim> > (new ExactSolutionP<dim>()));
-  navier_stokes.set_open_boundary_with_normal_flux(2, std_cxx11::shared_ptr<Function<dim> > (new ExactSolutionP<dim>()));
+  navier_stokes.set_open_boundary_with_normal_flux(1, std::shared_ptr<Function<dim> > (new ExactSolutionP<dim>()));
+  navier_stokes.set_open_boundary_with_normal_flux(2, std::shared_ptr<Function<dim> > (new ExactSolutionP<dim>()));
   timer.leave_subsection();
 
-  navier_stokes.setup_problem(ZeroFunction<dim>(dim));
+  navier_stokes.setup_problem(Functions::ZeroFunction<dim>(dim));
   navier_stokes.print_n_dofs();
   output_results ();
 

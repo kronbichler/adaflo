@@ -36,8 +36,8 @@
 #include <deal.II/numerics/data_out.h>
 
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/distributed/tria.h>
@@ -113,7 +113,7 @@ private:
 
   mutable TimerOutput timer;
 
-  std_cxx11::shared_ptr<Manifold<dim> > cylinder_manifold;
+  std::shared_ptr<Manifold<dim> > cylinder_manifold;
   parallel::distributed::Triangulation<dim>   triangulation;
   NavierStokes<dim>    navier_stokes;
 };
@@ -329,9 +329,9 @@ void FlowPastCylinder<dim>::run ()
   triangulation.set_manifold(10, *cylinder_manifold);
 
   navier_stokes.set_no_slip_boundary(0);
-  navier_stokes.set_velocity_dirichlet_boundary(1, std_cxx11::shared_ptr<Function<dim> >(new InflowVelocity<dim>(0., false)));
+  navier_stokes.set_velocity_dirichlet_boundary(1, std::shared_ptr<Function<dim> >(new InflowVelocity<dim>(0., false)));
 
-  navier_stokes.set_open_boundary(2, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>(1)));
+  navier_stokes.set_open_boundary(2, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>(1)));
   timer.leave_subsection();
 
   navier_stokes.setup_problem(InflowVelocity<dim>(0., false));

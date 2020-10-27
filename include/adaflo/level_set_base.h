@@ -35,7 +35,7 @@ public:
   virtual ~LevelSetBaseAlgorithm() {}
 
   virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = ZeroFunction<dim>());
+                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
   virtual void initialize_data_structures ();
 
   virtual unsigned int advance_time_step (); // perform one time step

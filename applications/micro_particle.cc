@@ -201,7 +201,7 @@ namespace MicroFluidic
     ConditionalOStream  pcout;
     TwoPhaseParameters        parameters;
     parallel::distributed::Triangulation<dim>   triangulation;
-    std_cxx11::shared_ptr<TwoPhaseBaseAlgorithm<dim> > solver;
+    std::shared_ptr<TwoPhaseBaseAlgorithm<dim> > solver;
 
     void set_all_boundary_conditions (const TwoPhaseParameters &parameters);
 
@@ -377,11 +377,11 @@ namespace MicroFluidic
     //using the velocity
 
     solver->set_velocity_dirichlet_boundary(1,
-                                            std_cxx11::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(1)), -1);
+                                            std::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(1)), -1);
     solver->set_velocity_dirichlet_boundary(2,
-                                            std_cxx11::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(2)), -1);
+                                            std::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(2)), -1);
     solver->set_velocity_dirichlet_boundary(3,
-                                            std_cxx11::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(3)), -1);
+                                            std::shared_ptr<Function<dim> > (new BoundaryValuesVelocity<dim>(3)), -1);
 
 
     //Boundary flagged by the indicator 0, 12, 23, 34 and  41
@@ -408,7 +408,7 @@ namespace MicroFluidic
     */
     //set_open_boundary_with_normal_flux is defined in boundary_description.h (cf Navier-Stokes file)
     solver->set_open_boundary_with_normal_flux (4,
-                                                std_cxx11::shared_ptr<Function<dim> > (new ConstantFunction<dim>(50,1)));
+                                                std::shared_ptr<Function<dim> > (new Functions::ConstantFunction<dim>(50,1)));
   }
 
 
@@ -452,7 +452,7 @@ namespace MicroFluidic
     pcout<<"Setup problem "<<std::endl;
 
 
-    solver->setup_problem(ConstantFunction<dim>(0., dim), InitialValuesLS<dim>());
+    solver->setup_problem(Functions::ConstantFunction<dim>(0., dim), InitialValuesLS<dim>());
 
     /* We  compute divergence-free velocity field in case we start from zero
      * velocity but the boundary condition says something else. It reads as:
