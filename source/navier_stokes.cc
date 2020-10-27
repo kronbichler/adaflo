@@ -1300,6 +1300,8 @@ void NavierStokes<dim>::output_solution (const std::string output_name,
   std::vector<DataComponentInterpretation::DataComponentInterpretation>
   vector_component_interpretation
   (dim, DataComponentInterpretation::component_is_part_of_vector);
+  
+  solution.update_ghost_values();
 
   data_out.add_data_vector (get_dof_handler_u(),
                             solution.block(0),

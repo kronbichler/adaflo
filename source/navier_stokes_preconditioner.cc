@@ -1350,7 +1350,9 @@ namespace AssemblyData
                      fe_values_p.get_fe(),
                      fe_values_p.get_quadrature(),
                      fe_values_p.get_update_flags())
-   {} 
+   {
+ AssertThrow(false, ExcNotImplemented ());
+} 
 
     const FiniteElement<dim> &fe_u;
     FEValues<dim> fe_values_u;

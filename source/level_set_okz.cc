@@ -77,7 +77,9 @@ namespace AssemblyData
 {
   struct Data
   {
-    Data(){} // TODO?
+    Data(){
+     AssertThrow(false, ExcNotImplemented ());
+}
       
     Data(const unsigned int size)
       :
@@ -664,7 +666,7 @@ LevelSetOKZSolver<dim>::local_compute_curvature_rhs (const MatrixFree<dim,double
       // and be done before we apply the derivatives, which is done in the
       // code below.
       bool all_zero = true;
-      for (unsigned int i=0; i<normal_values.dofs_per_cell; ++i)
+      for (unsigned int i=0; i<normal_values.dofs_per_component; ++i)
         {
           Tensor<1,dim,VectorizedArray<double> > normal = normal_values.get_dof_value(i);
           const VectorizedArray<double> normal_norm = normal.norm();
