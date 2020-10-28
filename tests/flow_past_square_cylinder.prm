@@ -16,12 +16,12 @@
 subsection Time stepping
   set scheme           = bdf_2
   set end time         = 8.
-  set step size        = 0.02
+  set step size        = 0.05
 end
 subsection Navier-Stokes
   set physical type      = incompressible
   set dimension          = 3
-  set global refinements = 2
+  set global refinements = 0
   set velocity degree    = 2
   set viscosity          = 0.001
   subsection Solver
@@ -38,7 +38,7 @@ subsection Navier-Stokes
 end
 subsection Output options
   set output verbosity = 2
-  set output frequency = 0.4
+  set output frequency = 1
   set output filename  = output-flow_past_square_cylinder/data
   set output vtk files = 1
 end
