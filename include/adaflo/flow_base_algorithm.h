@@ -18,15 +18,18 @@
 
 #include <deal.II/base/function.h>
 #include <deal.II/base/utilities.h>
+
 #include <deal.II/fe/mapping_q.h>
+
 #include <deal.II/numerics/data_out.h>
+
 #include <adaflo/time_stepping.h>
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <set>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
 
 
 using namespace dealii;
@@ -45,9 +48,9 @@ namespace helpers
   {
     BoundaryDescriptor();
 
-    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > dirichlet_conditions_u;
-    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > open_conditions_p;
-    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > pressure_fix;
+    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> dirichlet_conditions_u;
+    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> open_conditions_p;
+    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> pressure_fix;
 
     std::set<types::boundary_id> normal_flux;
     std::set<types::boundary_id> symmetry;
@@ -56,9 +59,9 @@ namespace helpers
     std::set<types::boundary_id> fluid_type_plus;
     std::set<types::boundary_id> fluid_type_minus;
 
-    std::pair<types::boundary_id,types::boundary_id> periodic_boundaries[dim];
+    std::pair<types::boundary_id, types::boundary_id> periodic_boundaries[dim];
   };
-}
+} // namespace helpers
 
 
 /**
@@ -103,15 +106,18 @@ struct FlowBaseAlgorithm
    * Setup of problem. Initializes the degrees of freedom and solver-related
    * variables (vectors, matrices, etc.)
    */
-  virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>()) = 0;
+  virtual void
+  setup_problem(
+    const Function<dim> &initial_velocity_field,
+    const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>()) = 0;
 
   /**
    * Performs one complete time step of the problem, including the solution of
    * each associated field. Returns the number of accumulated linear
    * iterations during the time step.
    */
-  virtual unsigned int advance_time_step () = 0;
+  virtual unsigned int
+  advance_time_step() = 0;
 
   /**
    * Generic output interface. Allows to write the complete solution field to
@@ -124,13 +130,15 @@ struct FlowBaseAlgorithm
    * degree in level set) the sub-refinement used for representing higher
    * order solutions.
    */
-  virtual void output_solution (const std::string output_base_name,
-                                const unsigned int n_subdivisions = 0) const = 0;
+  virtual void
+  output_solution(const std::string  output_base_name,
+                  const unsigned int n_subdivisions = 0) const = 0;
 
   /**
    * Deletes all stored boundary descriptions.
    */
-  void clear_all_boundary_conditions();
+  void
+  clear_all_boundary_conditions();
 
   /*
    * Sets a Dirichlet condition for the fluid velocity on the boundary of the
@@ -148,9 +156,10 @@ struct FlowBaseAlgorithm
    *
    * Prerequisite: The given function must consist of dim components.
    */
-  void set_velocity_dirichlet_boundary (const types::boundary_id  boundary_id,
-                                        const std::shared_ptr<Function<dim> > &velocity_function,
-                                        const int inflow_fluid_type = 0);
+  void
+  set_velocity_dirichlet_boundary(const types::boundary_id              boundary_id,
+                                  const std::shared_ptr<Function<dim>> &velocity_function,
+                                  const int inflow_fluid_type = 0);
 
   /*
    * Sets a pressure condition on the boundary of the domain with the given
@@ -170,10 +179,11 @@ struct FlowBaseAlgorithm
    *
    * Prerequisite: The given function(s) must be scalar.
    */
-  void set_open_boundary (const types::boundary_id  boundary_id,
-                          const std::shared_ptr<Function<dim> > &pressure_function
-                          = std::shared_ptr<Function<dim> >(),
-                          const int inflow_fluid_type = 0);
+  void
+  set_open_boundary(const types::boundary_id              boundary_id,
+                    const std::shared_ptr<Function<dim>> &pressure_function =
+                      std::shared_ptr<Function<dim>>(),
+                    const int inflow_fluid_type = 0);
 
   /*
    * Sets a pressure condition on the boundary of the domain with the given
@@ -195,10 +205,12 @@ struct FlowBaseAlgorithm
    *
    * Prerequisite: The given function(s) must be scalar.
    */
-  void set_open_boundary_with_normal_flux (const types::boundary_id  boundary_id,
-                                           const std::shared_ptr<Function<dim> > &pressure_function
-                                           = std::shared_ptr<Function<dim> >(),
-                                           const int inflow_fluid_type = 0);
+  void
+  set_open_boundary_with_normal_flux(
+    const types::boundary_id              boundary_id,
+    const std::shared_ptr<Function<dim>> &pressure_function =
+      std::shared_ptr<Function<dim>>(),
+    const int inflow_fluid_type = 0);
 
   /*
    * Fix one boundary node to a value specified by the given function,
@@ -210,9 +222,10 @@ struct FlowBaseAlgorithm
    *
    * Prerequisite: The given function(s) must be scalar.
    */
-  void fix_pressure_constant (const types::boundary_id  boundary_id,
-                              const std::shared_ptr<Function<dim> > &pressure_function
-                              = std::shared_ptr<Function<dim> >());
+  void
+  fix_pressure_constant(const types::boundary_id              boundary_id,
+                        const std::shared_ptr<Function<dim>> &pressure_function =
+                          std::shared_ptr<Function<dim>>());
 
   /*
    * Sets symmetry boundary conditions on the given boundaries. A symmetry
@@ -220,14 +233,16 @@ struct FlowBaseAlgorithm
    * tangential velocities. Symmetry boundary conditions can be set on both
    * straight boundaries and curved boundaries.
    */
-  void set_symmetry_boundary (const types::boundary_id boundary_id);
+  void
+  set_symmetry_boundary(const types::boundary_id boundary_id);
 
   /*
    * Sets no-slip boundary conditions on the given side. This function sets
    * the velocity to zero along the boundary that corresponds to the given
    * boundary indicator.
    */
-  void set_no_slip_boundary (const types::boundary_id boundary_id);
+  void
+  set_no_slip_boundary(const types::boundary_id boundary_id);
 
   /**
    * Sets a direction of the flow to be periodic in the given coordinate
@@ -240,17 +255,19 @@ struct FlowBaseAlgorithm
    * to perform the following steps on the triangulation:
    *
    * @code
-   * std::vector<GridTools::PeriodicFacePair<typename Triangulation<dim>::cell_iterator> >
-   *     periodic_faces;
+   * std::vector<GridTools::PeriodicFacePair<typename
+   * Triangulation<dim>::cell_iterator> > periodic_faces;
    * GridTools::collect_periodic_faces(triangulation, incoming_boundary_id,
-   *                                   outgoing_boundary_id, direction, periodic_faces);
+   *                                   outgoing_boundary_id, direction,
+   * periodic_faces);
    * // possibly other directions you might want to be periodic
    * triangulation.add_periodicity(periodic_faces);
    * @endcode
    */
-  void set_periodic_direction (const unsigned int direction,
-                               const types::boundary_id incoming_boundary_id,
-                               const types::boundary_id outgoing_boundary_id);
+  void
+  set_periodic_direction(const unsigned int       direction,
+                         const types::boundary_id incoming_boundary_id,
+                         const types::boundary_id outgoing_boundary_id);
 
   /*
    * Writes the data output, assuming that the user already has set up a
@@ -258,12 +275,13 @@ struct FlowBaseAlgorithm
    * but can be useful to user programs in case one wants to output additional
    * vectors that are not done by the standard solvers.
    */
-  void write_data_output (const std::string  &output_base_name,
-                          const TimeStepping &time_stepping,
-                          const double        output_frequency,
-                          DataOut<dim>       &data_out) const;
+  void
+  write_data_output(const std::string & output_base_name,
+                    const TimeStepping &time_stepping,
+                    const double        output_frequency,
+                    DataOut<dim> &      data_out) const;
 
-  std::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary;
+  std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary;
 
   MappingQ<dim> mapping;
 };

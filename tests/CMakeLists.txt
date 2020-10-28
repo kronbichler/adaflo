@@ -130,11 +130,11 @@ FOREACH(_testexe ${_testexes})
           fi \;
         done
       COMMAND mpirun -np ${_mpi_count} ${CMAKE_CURRENT_BINARY_DIR}/${_testexe}
-              ${CMAKE_CURRENT_BINARY_DIR}/${_test}.prm
+              ${CMAKE_CURRENT_SOURCE_DIR}/${_test}.prm
               > ${CMAKE_CURRENT_BINARY_DIR}/output-${_test}/screen-output.tmp
       COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/output-${_test}/screen-output.tmp
                  ${CMAKE_CURRENT_BINARY_DIR}/output-${_test}/screen-output
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_test}.prm ${_testdepends} ${_testexe}
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_test}.prm ${_testdepends} ${_testexe}
       )
 
     # The final target for this test

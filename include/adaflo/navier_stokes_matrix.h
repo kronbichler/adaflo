@@ -16,13 +16,13 @@
 #ifndef __adaflo_navier_stokes_matrix_h
 #define __adaflo_navier_stokes_matrix_h
 
-#include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 
 #include <deal.II/matrix_free/matrix_free.h>
 
-#include <adaflo/time_stepping.h>
 #include <adaflo/parameters.h>
+#include <adaflo/time_stepping.h>
 
 
 using namespace dealii;
@@ -34,10 +34,10 @@ using namespace dealii;
 // just a vmult on the velocity subsystem
 namespace NavierStokesOps
 {
-  const int vmult = 0;
-  const int residual = 1;
+  const int vmult          = 0;
+  const int residual       = 1;
   const int vmult_velocity = 2;
-}
+} // namespace NavierStokesOps
 
 
 
@@ -50,38 +50,48 @@ template <int dim>
 class NavierStokesMatrix
 {
 public:
-  typedef std::pair<Tensor<1,dim,VectorizedArray<double> >,Tensor<2,dim,VectorizedArray<double> > > velocity_stored;
-  NavierStokesMatrix (const FlowParameters                             &parameters,
-                      const LinearAlgebra::distributed::BlockVector<double> &solution_old,
-                      const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
+  typedef std::pair<Tensor<1, dim, VectorizedArray<double>>,
+                    Tensor<2, dim, VectorizedArray<double>>>
+    velocity_stored;
+  NavierStokesMatrix(
+    const FlowParameters &                                 parameters,
+    const LinearAlgebra::distributed::BlockVector<double> &solution_old,
+    const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
 
-  void initialize (const MatrixFree<dim> &matrix_free_in,
-                   const TimeStepping    &time_stepping_in,
-                   const bool             pressure_average_fix);
+  void
+  initialize(const MatrixFree<dim> &matrix_free_in,
+             const TimeStepping &   time_stepping_in,
+             const bool             pressure_average_fix);
 
-  void clear();
+  void
+  clear();
 
-  unsigned int n_dofs_p() const
+  unsigned int
+  n_dofs_p() const
   {
     return matrix_free->get_dof_handler(1).n_dofs();
   }
 
-  void initialize_u_vector(LinearAlgebra::distributed::Vector<double> &vec) const
+  void
+  initialize_u_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
     matrix_free->initialize_dof_vector(vec, 0);
   }
 
-  void initialize_p_vector(LinearAlgebra::distributed::Vector<double> &vec) const
+  void
+  initialize_p_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
     matrix_free->initialize_dof_vector(vec, 1);
   }
 
-  unsigned int n_dofs_u() const
+  unsigned int
+  n_dofs_u() const
   {
     return matrix_free->get_dof_handler(0).n_dofs();
   }
 
-  unsigned int pressure_degree() const
+  unsigned int
+  pressure_degree() const
   {
     return matrix_free->get_dof_handler(1).get_fe().degree;
   }
@@ -99,51 +109,70 @@ public:
   // while solving the linear system. Since we might be using FE_Q_DG0
   // elements which have two zero modes, need two such vectors, each
   // corresponding to the mass weights for the respective zero mode.
-  void apply_pressure_average_projection(LinearAlgebra::distributed::Vector<double> &vector) const;
+  void
+  apply_pressure_average_projection(
+    LinearAlgebra::distributed::Vector<double> &vector) const;
 
-  void apply_pressure_shift (const double shift,
-                             LinearAlgebra::distributed::Vector<double> &pressure) const;
+  void
+  apply_pressure_shift(const double                                shift,
+                       LinearAlgebra::distributed::Vector<double> &pressure) const;
 
-  void vmult (LinearAlgebra::distributed::BlockVector<double> &dst,
-              const LinearAlgebra::distributed::BlockVector<double> &src) const;
+  void
+  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+        const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
-  void residual (LinearAlgebra::distributed::BlockVector<double> &residual_vector,
-                 const LinearAlgebra::distributed::BlockVector<double> &src,
-                 const LinearAlgebra::distributed::BlockVector<double> &user_rhs) const;
+  void
+  residual(LinearAlgebra::distributed::BlockVector<double> &      residual_vector,
+           const LinearAlgebra::distributed::BlockVector<double> &src,
+           const LinearAlgebra::distributed::BlockVector<double> &user_rhs) const;
 
-  void divergence_vmult_add (LinearAlgebra::distributed::Vector<double> &dst,
-                             const LinearAlgebra::distributed::Vector<double>  &src,
-                             const bool weight_by_viscosity = false) const;
+  void
+  divergence_vmult_add(LinearAlgebra::distributed::Vector<double> &      dst,
+                       const LinearAlgebra::distributed::Vector<double> &src,
+                       const bool weight_by_viscosity = false) const;
 
-  void velocity_vmult (LinearAlgebra::distributed::Vector<double>  &dst,
-                       const LinearAlgebra::distributed::Vector<double> &src) const;
+  void
+  velocity_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+                 const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_poisson_vmult (LinearAlgebra::distributed::Vector<double> &dst,
-                               const LinearAlgebra::distributed::Vector<double> &src) const;
+  void
+  pressure_poisson_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+                         const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_mass_vmult (LinearAlgebra::distributed::Vector<double> &dst,
-                            const LinearAlgebra::distributed::Vector<double> &src) const;
+  void
+  pressure_mass_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+                      const LinearAlgebra::distributed::Vector<double> &src) const;
 
-  void pressure_convdiff_vmult (LinearAlgebra::distributed::Vector<double> &dst,
-                                const LinearAlgebra::distributed::Vector<double> &src) const;
+  void
+  pressure_convdiff_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+                          const LinearAlgebra::distributed::Vector<double> &src) const;
 
   // fix the linearization point in additional data points (used for AMG
   // preconditioners that should not get out of sync with the matrix they are
   // based upon)
-  void fix_linearization_point() const;
+  void
+  fix_linearization_point() const;
 
   // access to density and viscosity fields
-  const VectorizedArray<double> *begin_densities (const unsigned int macro_cell) const;
-  VectorizedArray<double> *begin_densities (const unsigned int macro_cell);
+  const VectorizedArray<double> *
+  begin_densities(const unsigned int macro_cell) const;
+  VectorizedArray<double> *
+  begin_densities(const unsigned int macro_cell);
 
-  const VectorizedArray<double> *begin_viscosities (const unsigned int macro_cell) const;
-  VectorizedArray<double> *begin_viscosities (const unsigned int macro_cell);
+  const VectorizedArray<double> *
+  begin_viscosities(const unsigned int macro_cell) const;
+  VectorizedArray<double> *
+  begin_viscosities(const unsigned int macro_cell);
 
-  const velocity_stored *begin_linearized_velocities (const unsigned int macro_cell) const;
-  bool use_variable_coefficients () const;
+  const velocity_stored *
+  begin_linearized_velocities(const unsigned int macro_cell) const;
+  bool
+  use_variable_coefficients() const;
 
-  std::size_t memory_consumption() const;
-  void print_memory_consumption(std::ostream &stream) const;
+  std::size_t
+  memory_consumption() const;
+  void
+  print_memory_consumption(std::ostream &stream) const;
 
   // Returns statistics of the sum of all matrix-vector product since the last
   // call to this function in terms of minimum, average, and maximum of times
@@ -154,76 +183,82 @@ public:
   //
   // Note: This is a collective call and must be invoked on all processors.
   std::pair<Utilities::MPI::MinMaxAvg, unsigned int>
-  get_matvec_statistics () const;
+  get_matvec_statistics() const;
 
   // Return the underlying time stepping structure for querying the current
   // time and other information
-  const TimeStepping &get_time_stepping() const
+  const TimeStepping &
+  get_time_stepping() const
   {
     return *time_stepping;
   }
 
 private:
-
   // residual and vmult computations use the same function to minimize risk
   // for errors when changing the terms. Template argument LocalOp
   // distinguishes them (see above for the various values).
   template <int degree_p, typename VectorType, int LocalOp>
-  void local_operation (const MatrixFree<dim> &data,
-                        VectorType &dst,
-                        const VectorType &src,
-                        const std::pair<unsigned int,unsigned int> &cell_range) const;
+  void
+  local_operation(const MatrixFree<dim> &                      data,
+                  VectorType &                                 dst,
+                  const VectorType &                           src,
+                  const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   template <int degree_p, bool weight_by_viscosity>
-  void local_divergence (const MatrixFree<dim> &data,
-                         LinearAlgebra::distributed::Vector<double>       &dst,
+  void
+  local_divergence(const MatrixFree<dim> &                           data,
+                   LinearAlgebra::distributed::Vector<double> &      dst,
+                   const LinearAlgebra::distributed::Vector<double> &src,
+                   const std::pair<unsigned int, unsigned int> &     cell_range) const;
+
+  template <int degree_p>
+  void
+  local_pressure_poisson(const MatrixFree<dim> &                           data,
+                         LinearAlgebra::distributed::Vector<double> &      dst,
                          const LinearAlgebra::distributed::Vector<double> &src,
-                         const std::pair<unsigned int,unsigned int>  &cell_range) const;
+                         const std::pair<unsigned int, unsigned int> &cell_range) const;
+  template <int degree_p>
+  void
+  local_pressure_mass(const MatrixFree<dim> &                           data,
+                      LinearAlgebra::distributed::Vector<double> &      dst,
+                      const LinearAlgebra::distributed::Vector<double> &src,
+                      const std::pair<unsigned int, unsigned int> &     cell_range) const;
 
   template <int degree_p>
-  void local_pressure_poisson (const MatrixFree<dim> &data,
-                               LinearAlgebra::distributed::Vector<double> &dst,
-                               const LinearAlgebra::distributed::Vector<double> &src,
-                               const std::pair<unsigned int,unsigned int> &cell_range) const;
-  template <int degree_p>
-  void local_pressure_mass (const MatrixFree<dim> &data,
-                            LinearAlgebra::distributed::Vector<double> &dst,
-                            const LinearAlgebra::distributed::Vector<double> &src,
-                            const std::pair<unsigned int,unsigned int> &cell_range) const;
+  void
+  local_pressure_convdiff(const MatrixFree<dim> &                           data,
+                          LinearAlgebra::distributed::Vector<double> &      dst,
+                          const LinearAlgebra::distributed::Vector<double> &src,
+                          const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   template <int degree_p>
-  void local_pressure_convdiff (const MatrixFree<dim> &data,
-                                LinearAlgebra::distributed::Vector<double> &dst,
-                                const LinearAlgebra::distributed::Vector<double> &src,
-                                const std::pair<unsigned int,unsigned int> &cell_range) const;
+  void
+  local_pressure_mass_weight(
+    const MatrixFree<dim> &                     data,
+    LinearAlgebra::distributed::Vector<double> &dst,
+    const unsigned int &,
+    const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  template <int degree_p>
-  void local_pressure_mass_weight (const MatrixFree<dim> &data,
-                                   LinearAlgebra::distributed::Vector<double> &dst,
-                                   const unsigned int &,
-                                   const std::pair<unsigned int,unsigned int> &cell_range) const;
+  const MatrixFree<dim> *                        matrix_free;
+  const TimeStepping *                           time_stepping;
+  const FlowParameters &                         parameters;
+  mutable AlignedVector<VectorizedArray<double>> variable_densities;
+  mutable AlignedVector<VectorizedArray<double>> variable_viscosities;
+  mutable AlignedVector<velocity_stored>         linearized_velocities;
 
-  const MatrixFree<dim> *matrix_free;
-  const TimeStepping    *time_stepping;
-  const FlowParameters  &parameters;
-  mutable AlignedVector<VectorizedArray<double> > variable_densities;
-  mutable AlignedVector<VectorizedArray<double> > variable_viscosities;
-  mutable AlignedVector<velocity_stored> linearized_velocities;
-
-  mutable AlignedVector<VectorizedArray<double> > variable_densities_preconditioner;
-  mutable AlignedVector<VectorizedArray<double> > variable_viscosities_preconditioner;
-  mutable AlignedVector<velocity_stored> linearized_velocities_preconditioner;
+  mutable AlignedVector<VectorizedArray<double>> variable_densities_preconditioner;
+  mutable AlignedVector<VectorizedArray<double>> variable_viscosities_preconditioner;
+  mutable AlignedVector<velocity_stored>         linearized_velocities_preconditioner;
 
   const LinearAlgebra::distributed::BlockVector<double> &solution_old;
   const LinearAlgebra::distributed::BlockVector<double> &solution_old_old;
 
   LinearAlgebra::distributed::Vector<double> pressure_constant_modes[2];
   LinearAlgebra::distributed::Vector<double> pressure_constant_mode_weights[2];
-  double inverse_pressure_average_weights[2];
+  double                                     inverse_pressure_average_weights[2];
 
-  mutable std::pair<unsigned int,double> matvec_timer;
+  mutable std::pair<unsigned int, double> matvec_timer;
 };
-
 
 
 
@@ -233,83 +268,72 @@ private:
 
 // access to density and viscosity fields
 template <int dim>
-inline
-const VectorizedArray<double> *
-NavierStokesMatrix<dim>::begin_densities (const unsigned int macro_cell) const
+inline const VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell) const
 {
-  AssertIndexRange (macro_cell, matrix_free->n_macro_cells());
-  AssertDimension (variable_densities.size(),
-                   matrix_free->n_macro_cells()*
-                   matrix_free->get_n_q_points(0));
+  AssertIndexRange(macro_cell, matrix_free->n_macro_cells());
+  AssertDimension(variable_densities.size(),
+                  matrix_free->n_macro_cells() * matrix_free->get_n_q_points(0));
   return &variable_densities[matrix_free->get_n_q_points(0) * macro_cell];
 }
 
 
 
 template <int dim>
-inline
-VectorizedArray<double> *
-NavierStokesMatrix<dim>::begin_densities (const unsigned int macro_cell)
+inline VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell)
 {
-  AssertIndexRange (macro_cell, matrix_free->n_macro_cells());
-  AssertDimension (variable_densities.size(),
-                   matrix_free->n_macro_cells()*
-                   matrix_free->get_n_q_points(0));
+  AssertIndexRange(macro_cell, matrix_free->n_macro_cells());
+  AssertDimension(variable_densities.size(),
+                  matrix_free->n_macro_cells() * matrix_free->get_n_q_points(0));
   return &variable_densities[matrix_free->get_n_q_points(0) * macro_cell];
 }
 
 
 
 template <int dim>
-inline
-const VectorizedArray<double> *
-NavierStokesMatrix<dim>::begin_viscosities (const unsigned int macro_cell) const
+inline const VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell) const
 {
-  AssertIndexRange (macro_cell, matrix_free->n_macro_cells());
-  AssertDimension (variable_viscosities.size(),
-                   matrix_free->n_macro_cells()*
-                   matrix_free->get_n_q_points(0));
+  AssertIndexRange(macro_cell, matrix_free->n_macro_cells());
+  AssertDimension(variable_viscosities.size(),
+                  matrix_free->n_macro_cells() * matrix_free->get_n_q_points(0));
   return &variable_viscosities[matrix_free->get_n_q_points(0) * macro_cell];
 }
 
 
 
 template <int dim>
-inline
-VectorizedArray<double> *
-NavierStokesMatrix<dim>::begin_viscosities (const unsigned int macro_cell)
+inline VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell)
 {
-  AssertIndexRange (macro_cell, matrix_free->n_macro_cells());
-  AssertDimension (variable_viscosities.size(),
-                   matrix_free->n_macro_cells()*
-                   matrix_free->get_n_q_points(0));
+  AssertIndexRange(macro_cell, matrix_free->n_macro_cells());
+  AssertDimension(variable_viscosities.size(),
+                  matrix_free->n_macro_cells() * matrix_free->get_n_q_points(0));
   return &variable_viscosities[matrix_free->get_n_q_points(0) * macro_cell];
 }
 
 
 
 template <int dim>
-inline
-bool
-NavierStokesMatrix<dim>::use_variable_coefficients () const
+inline bool
+NavierStokesMatrix<dim>::use_variable_coefficients() const
 {
-  return variable_viscosities.size()>0;
+  return variable_viscosities.size() > 0;
 }
 
 
 
 template <int dim>
-inline
-const typename NavierStokesMatrix<dim>::velocity_stored *
-NavierStokesMatrix<dim>::begin_linearized_velocities (const unsigned int macro_cell) const
+inline const typename NavierStokesMatrix<dim>::velocity_stored *
+NavierStokesMatrix<dim>::begin_linearized_velocities(const unsigned int macro_cell) const
 {
   if (linearized_velocities.size() == 0)
     return 0;
 
-  AssertIndexRange (macro_cell, matrix_free->n_macro_cells());
-  AssertDimension (linearized_velocities.size(),
-                   matrix_free->n_macro_cells()*
-                   matrix_free->get_n_q_points(0));
+  AssertIndexRange(macro_cell, matrix_free->n_macro_cells());
+  AssertDimension(linearized_velocities.size(),
+                  matrix_free->n_macro_cells() * matrix_free->get_n_q_points(0));
   return &linearized_velocities[matrix_free->get_n_q_points(0) * macro_cell];
 }
 

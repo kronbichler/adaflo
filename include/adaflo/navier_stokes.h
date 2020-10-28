@@ -16,27 +16,29 @@
 #ifndef __adaflo_navier_stokes_h
 #define __adaflo_navier_stokes_h
 
-#include <deal.II/base/timer.h>
 #include <deal.II/base/conditional_ostream.h>
 #include <deal.II/base/thread_local_storage.h>
+#include <deal.II/base/timer.h>
 
-#include <deal.II/lac/trilinos_sparse_matrix.h>
-#include <deal.II/lac/affine_constraints.h>
-#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/distributed/solution_transfer.h>
 
 #include <deal.II/dofs/dof_handler.h>
+
 #include <deal.II/fe/fe_system.h>
-#include <deal.II/distributed/solution_transfer.h>
+
+#include <deal.II/lac/affine_constraints.h>
+#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/trilinos_sparse_matrix.h>
+
 #include <deal.II/matrix_free/matrix_free.h>
 
+#include <adaflo/flow_base_algorithm.h>
 #include <adaflo/navier_stokes_matrix.h>
 #include <adaflo/navier_stokes_preconditioner.h>
-#include <adaflo/time_stepping.h>
 #include <adaflo/parameters.h>
-#include <adaflo/flow_base_algorithm.h>
+#include <adaflo/time_stepping.h>
 
 using namespace dealii;
-
 
 
 
@@ -44,40 +46,59 @@ template <int dim>
 class NavierStokes : public FlowBaseAlgorithm<dim>
 {
 public:
-  NavierStokes (const FlowParameters &parameters,
-                parallel::distributed::Triangulation<dim> &triangulation,
-                TimerOutput                  *external_timer = 0,
-                std::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary_descriptor =
-                  std::shared_ptr<helpers::BoundaryDescriptor<dim> >());
+  NavierStokes(const FlowParameters &                            parameters,
+               parallel::distributed::Triangulation<dim> &       triangulation,
+               TimerOutput *                                     external_timer = 0,
+               std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor =
+                 std::shared_ptr<helpers::BoundaryDescriptor<dim>>());
 
   virtual ~NavierStokes();
 
-  std::pair<unsigned int,unsigned int> n_dofs () const;
-  void print_n_dofs () const;
+  std::pair<unsigned int, unsigned int>
+  n_dofs() const;
+  void
+  print_n_dofs() const;
 
-  const FiniteElement<dim> &get_fe_u () const;
-  const FiniteElement<dim> &get_fe_p () const;
+  const FiniteElement<dim> &
+  get_fe_u() const;
+  const FiniteElement<dim> &
+  get_fe_p() const;
 
-  const DoFHandler<dim>     &get_dof_handler_u () const;
-  const AffineConstraints<double>    &get_constraints_u () const;
-  const DoFHandler<dim>     &get_dof_handler_p () const;
-  const AffineConstraints<double>    &get_constraints_p () const;
+  const DoFHandler<dim> &
+  get_dof_handler_u() const;
+  const AffineConstraints<double> &
+  get_constraints_u() const;
+  const DoFHandler<dim> &
+  get_dof_handler_p() const;
+  const AffineConstraints<double> &
+  get_constraints_p() const;
 
-  AffineConstraints<double>          &modify_constraints_u ();
-  AffineConstraints<double>          &modify_constraints_p ();
+  AffineConstraints<double> &
+  modify_constraints_u();
+  AffineConstraints<double> &
+  modify_constraints_p();
 
-  void distribute_dofs ();
-  void initialize_data_structures ();
-  virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
-  void initialize_matrix_free (MatrixFree<dim> *external_matrix_free = 0);
+  void
+  distribute_dofs();
+  void
+  initialize_data_structures();
+  virtual void
+  setup_problem(
+    const Function<dim> &initial_velocity_field,
+    const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
+  void
+  initialize_matrix_free(MatrixFree<dim> *external_matrix_free = 0);
 
-  void init_time_advance (const bool   print_time_info = true);
-  unsigned int evaluate_time_step();
-  virtual unsigned int advance_time_step ();
+  void
+  init_time_advance(const bool print_time_info = true);
+  unsigned int
+  evaluate_time_step();
+  virtual unsigned int
+  advance_time_step();
 
-  virtual void output_solution (const std::string output_base_name,
-                                const unsigned int n_subdivisions = 0) const;
+  virtual void
+  output_solution(const std::string  output_base_name,
+                  const unsigned int n_subdivisions = 0) const;
 
   /**
    * When solving a problem with boundary conditions that start at a non-zero
@@ -86,78 +107,103 @@ public:
    * divergence-free velocity field by solving the stokes equations with the
    * given boundary values but without any external forces.
    */
-  void compute_initial_stokes_field ();
+  void
+  compute_initial_stokes_field();
 
   /**
    * Calls VectorTools::interpolate for the pressure field. Since we might be
    * using FE_Q_DG0 elements where the usual interpolation does not make
    * sense, this class provides a seperate function for it.
    */
-  void interpolate_pressure_field (const Function<dim> &pressure_function,
-                                   LinearAlgebra::distributed::Vector<double> &pressure_vector) const;
+  void
+  interpolate_pressure_field(
+    const Function<dim> &                       pressure_function,
+    LinearAlgebra::distributed::Vector<double> &pressure_vector) const;
 
-  void assemble_preconditioner ();
+  void
+  assemble_preconditioner();
 
-  void build_preconditioner ();
+  void
+  build_preconditioner();
 
-  std::pair<unsigned int,double> solve_system (const double linear_tolerance);
+  std::pair<unsigned int, double>
+  solve_system(const double linear_tolerance);
 
-  void vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
-             const LinearAlgebra::distributed::BlockVector<double> &src) const;
+  void
+  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+        const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
-  void refine_grid_pressure_based (const unsigned int max_grid_level,
-                                   const double refine_fraction_of_cells = 0.3,
-                                   const double coarsen_fraction_of_cells = 0.05);
+  void
+  refine_grid_pressure_based(const unsigned int max_grid_level,
+                             const double       refine_fraction_of_cells  = 0.3,
+                             const double       coarsen_fraction_of_cells = 0.05);
 
   // internally calls triangulation.prepare_coarsening_and_refinement
-  void prepare_coarsening_and_refinement ();
+  void
+  prepare_coarsening_and_refinement();
 
-  void set_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
-                                const unsigned int face,
-                                const double density);
+  void
+  set_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
+                           const unsigned int                                face,
+                           const double                                      density);
 
-  const FlowParameters   &get_parameters () const;
-  const NavierStokesMatrix<dim> &get_matrix() const
+  const FlowParameters &
+  get_parameters() const;
+
+  const NavierStokesMatrix<dim> &
+  get_matrix() const
   {
     return navier_stokes_matrix;
   }
-  NavierStokesMatrix<dim> &get_matrix()
+
+  NavierStokesMatrix<dim> &
+  get_matrix()
   {
     return navier_stokes_matrix;
   }
 
-  bool get_update_preconditioner() const
+  bool
+  get_update_preconditioner() const
   {
     return update_preconditioner;
   }
 
   // Computes the initial residual of the fluid field, including the part of
   // the residual that does not depend on the time step
-  double compute_initial_residual (const bool usual_time_step = true);
+  double
+  compute_initial_residual(const bool usual_time_step = true);
 
   // Solves the nonlinear Navier-Stokes system by a Newton or Newton-like
   // iteration. This function expects that the initial residual is passed into
   // the function as an argument
-  unsigned int solve_nonlinear_system (const double initial_residual);
+  unsigned int
+  solve_nonlinear_system(const double initial_residual);
 
   // return an estimate of the total memory consumption
-  std::size_t memory_consumption() const;
-  void print_memory_consumption (std::ostream &stream = std::cout) const;
+  std::size_t
+  memory_consumption() const;
+
+  void
+  print_memory_consumption(std::ostream &stream = std::cout) const;
 
   // vectors that are visible to the user
   LinearAlgebra::distributed::BlockVector<double> user_rhs;
-  LinearAlgebra::distributed::BlockVector<double> solution, solution_old, solution_old_old, solution_update;
+  LinearAlgebra::distributed::BlockVector<double> solution, solution_old,
+    solution_old_old, solution_update;
 
-  TimeStepping        time_stepping;
+  TimeStepping time_stepping;
 
   // it is important to have most of the variables private so that all the
   // changes to internal data structures like the constraint matrix are
   // followed by the correct actions in assembly etc.
 
 private:
-  void set_time_step_weight (const double new_weight);
-  void apply_boundary_conditions();
-  double compute_residual();
+  void
+  set_time_step_weight(const double new_weight);
+  void
+  apply_boundary_conditions();
+  double
+  compute_residual();
 
   FlowParameters parameters;
 
@@ -170,31 +216,35 @@ private:
   const unsigned int n_mpi_processes;
   const unsigned int this_mpi_process;
 
-  ConditionalOStream  pcout;
+  ConditionalOStream pcout;
 
   parallel::distributed::Triangulation<dim> &triangulation;
 
 
-  const FESystem<dim>       fe_u;
-  const FESystem<dim>       fe_p;
+  const FESystem<dim> fe_u;
+  const FESystem<dim> fe_p;
 
-  DoFHandler<dim>           dof_handler_u;
-  DoFHandler<dim>           dof_handler_p;
+  DoFHandler<dim> dof_handler_u;
+  DoFHandler<dim> dof_handler_p;
 
-  AffineConstraints<double>          hanging_node_constraints_u;
-  AffineConstraints<double>          hanging_node_constraints_p;
-  AffineConstraints<double>          constraints_u;
-  AffineConstraints<double>          constraints_p;
+  AffineConstraints<double> hanging_node_constraints_u;
+  AffineConstraints<double> hanging_node_constraints_p;
+  AffineConstraints<double> constraints_u;
+  AffineConstraints<double> constraints_p;
 
-  NavierStokesMatrix<dim>   navier_stokes_matrix;
+  NavierStokesMatrix<dim>                         navier_stokes_matrix;
   LinearAlgebra::distributed::BlockVector<double> system_rhs, const_rhs;
 
-  std::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_u;
-  std::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_p;
+  std::shared_ptr<parallel::distributed::
+                    SolutionTransfer<dim, LinearAlgebra::distributed::Vector<double>>>
+    sol_trans_u;
+  std::shared_ptr<parallel::distributed::
+                    SolutionTransfer<dim, LinearAlgebra::distributed::Vector<double>>>
+    sol_trans_p;
 
-  NavierStokesPreconditioner<dim>  preconditioner;
+  NavierStokesPreconditioner<dim> preconditioner;
 
-  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<double> > solver_memory;
+  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<double>> solver_memory;
 
   // here we store the MatrixFree that we
   // use for most of the vector assembly
@@ -205,18 +255,18 @@ private:
   // ourselves (when calling the function
   // setup()) without argument, or we get it
   // from outside and share it.
-  std::shared_ptr<MatrixFree<dim> > matrix_free;
+  std::shared_ptr<MatrixFree<dim>> matrix_free;
 
-  bool                dofs_distributed;
-  bool                system_is_setup;
+  bool dofs_distributed;
+  bool system_is_setup;
 
-  unsigned int        n_iterations_last_prec_update;
-  unsigned int        time_step_last_prec_update;
-  bool                update_preconditioner;
-  unsigned int        update_preconditioner_frequency;
+  unsigned int n_iterations_last_prec_update;
+  unsigned int time_step_last_prec_update;
+  bool         update_preconditioner;
+  unsigned int update_preconditioner_frequency;
 
-  std::shared_ptr<TimerOutput> timer;
-  std::pair<unsigned int,double> solver_timers[2];
+  std::shared_ptr<TimerOutput>    timer;
+  std::pair<unsigned int, double> solver_timers[2];
 };
 
 
@@ -228,12 +278,12 @@ namespace helpers
   template <typename CLASS>
   struct DummyDeleter
   {
-    DummyDeleter (const bool do_delete = false)
-      :
-      do_delete(do_delete)
+    DummyDeleter(const bool do_delete = false)
+      : do_delete(do_delete)
     {}
 
-    void operator () (CLASS *pointer)
+    void
+    operator()(CLASS *pointer)
     {
       if (do_delete)
         delete pointer;
@@ -241,7 +291,7 @@ namespace helpers
 
     const bool do_delete;
   };
-}
+} // namespace helpers
 
 
 /* ---------------------------- Inline functions ------------------------- */
@@ -249,8 +299,8 @@ namespace helpers
 
 
 template <int dim>
-inline
-const FiniteElement<dim> &NavierStokes<dim>::get_fe_u () const
+inline const FiniteElement<dim> &
+NavierStokes<dim>::get_fe_u() const
 {
   return fe_u;
 }
@@ -258,8 +308,8 @@ const FiniteElement<dim> &NavierStokes<dim>::get_fe_u () const
 
 
 template <int dim>
-inline
-const FiniteElement<dim> &NavierStokes<dim>::get_fe_p () const
+inline const FiniteElement<dim> &
+NavierStokes<dim>::get_fe_p() const
 {
   // We get simpler code by using FESystem, but we want to pretend we have a
   // usual element.
@@ -269,8 +319,8 @@ const FiniteElement<dim> &NavierStokes<dim>::get_fe_p () const
 
 
 template <int dim>
-inline
-const DoFHandler<dim> &NavierStokes<dim>::get_dof_handler_u () const
+inline const DoFHandler<dim> &
+NavierStokes<dim>::get_dof_handler_u() const
 {
   return dof_handler_u;
 }
@@ -278,8 +328,8 @@ const DoFHandler<dim> &NavierStokes<dim>::get_dof_handler_u () const
 
 
 template <int dim>
-inline
-const DoFHandler<dim> &NavierStokes<dim>::get_dof_handler_p () const
+inline const DoFHandler<dim> &
+NavierStokes<dim>::get_dof_handler_p() const
 {
   return dof_handler_p;
 }
@@ -287,8 +337,8 @@ const DoFHandler<dim> &NavierStokes<dim>::get_dof_handler_p () const
 
 
 template <int dim>
-inline
-const AffineConstraints<double> &NavierStokes<dim>::get_constraints_u() const
+inline const AffineConstraints<double> &
+NavierStokes<dim>::get_constraints_u() const
 {
   return constraints_u;
 }
@@ -296,8 +346,8 @@ const AffineConstraints<double> &NavierStokes<dim>::get_constraints_u() const
 
 
 template <int dim>
-inline
-AffineConstraints<double> &NavierStokes<dim>::modify_constraints_u()
+inline AffineConstraints<double> &
+NavierStokes<dim>::modify_constraints_u()
 {
   return constraints_u;
 }
@@ -305,8 +355,8 @@ AffineConstraints<double> &NavierStokes<dim>::modify_constraints_u()
 
 
 template <int dim>
-inline
-const AffineConstraints<double> &NavierStokes<dim>::get_constraints_p() const
+inline const AffineConstraints<double> &
+NavierStokes<dim>::get_constraints_p() const
 {
   return constraints_p;
 }
@@ -314,8 +364,8 @@ const AffineConstraints<double> &NavierStokes<dim>::get_constraints_p() const
 
 
 template <int dim>
-inline
-AffineConstraints<double> &NavierStokes<dim>::modify_constraints_p()
+inline AffineConstraints<double> &
+NavierStokes<dim>::modify_constraints_p()
 {
   return constraints_p;
 }
@@ -323,9 +373,8 @@ AffineConstraints<double> &NavierStokes<dim>::modify_constraints_p()
 
 
 template <int dim>
-inline
-const FlowParameters &
-NavierStokes<dim>::get_parameters () const
+inline const FlowParameters &
+NavierStokes<dim>::get_parameters() const
 {
   return parameters;
 }
@@ -333,11 +382,11 @@ NavierStokes<dim>::get_parameters () const
 
 
 template <int dim>
-inline
-void
-NavierStokes<dim>::set_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
-                                            const unsigned int face,
-                                            const double density)
+inline void
+NavierStokes<dim>::set_face_average_density(
+  const typename Triangulation<dim>::cell_iterator &cell,
+  const unsigned int                                face,
+  const double                                      density)
 {
   preconditioner.set_face_average_density(cell, face, density);
 }

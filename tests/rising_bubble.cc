@@ -17,13 +17,14 @@
 // zero but where we actually get some velocities which are due to
 // inaccuracies in the scheme
 
-#include <adaflo/parameters.h>
+#include <deal.II/distributed/tria.h>
+
+#include <deal.II/grid/grid_generator.h>
+
 #include <adaflo/level_set_okz.h>
 #include <adaflo/level_set_okz_matrix.h>
+#include <adaflo/parameters.h>
 #include <adaflo/phase_field.h>
-
-#include <deal.II/distributed/tria.h>
-#include <deal.II/grid/grid_generator.h>
 
 
 using namespace dealii;
@@ -31,18 +32,20 @@ using namespace dealii;
 
 struct TwoPhaseParameters : public FlowParameters
 {
-  TwoPhaseParameters (const std::string &parameter_filename)
+  TwoPhaseParameters(const std::string &parameter_filename)
   {
     ParameterHandler prm;
-    FlowParameters::declare_parameters (prm);
-    prm.enter_subsection ("Problem-specific");
-    prm.declare_entry ("two-phase method","level set okz",
-                       Patterns::Selection("level set okz|level set okz matrix|phase field"),
-                       "Defines the two-phase method to be used");
+    FlowParameters::declare_parameters(prm);
+    prm.enter_subsection("Problem-specific");
+    prm.declare_entry("two-phase method",
+                      "level set okz",
+                      Patterns::Selection(
+                        "level set okz|level set okz matrix|phase field"),
+                      "Defines the two-phase method to be used");
     prm.leave_subsection();
     check_for_file(parameter_filename, prm);
-    parse_parameters (parameter_filename, prm);
-    prm.enter_subsection ("Problem-specific");
+    parse_parameters(parameter_filename, prm);
+    prm.enter_subsection("Problem-specific");
     solver_method = prm.get("two-phase method");
     prm.leave_subsection();
   }
@@ -55,17 +58,16 @@ template <int dim>
 class InitialValuesLS : public Function<dim>
 {
 public:
-  InitialValuesLS ()
-    :
-    Function<dim>(1, 0)
+  InitialValuesLS()
+    : Function<dim>(1, 0)
   {}
 
-  double value (const Point<dim> &p,
-                const unsigned int /*component*/) const
+  double
+  value(const Point<dim> &p, const unsigned int /*component*/) const
   {
-    const double radius = 0.25;
-    Point<dim> distance_from_origin = p;
-    for (unsigned int i=0; i<dim; ++i)
+    const double radius               = 0.25;
+    Point<dim>   distance_from_origin = p;
+    for (unsigned int i = 0; i < dim; ++i)
       distance_from_origin[i] = 0.5;
     return p.distance(distance_from_origin) - radius;
   }
@@ -78,36 +80,36 @@ template <int dim>
 class MicroFluidicProblem
 {
 public:
-  MicroFluidicProblem (const TwoPhaseParameters &parameters);
-  void run ();
+  MicroFluidicProblem(const TwoPhaseParameters &parameters);
+  void
+  run();
 
 private:
+  MPI_Comm           mpi_communicator;
+  ConditionalOStream pcout;
 
-  MPI_Comm mpi_communicator;
-  ConditionalOStream  pcout;
+  TwoPhaseParameters                        parameters;
+  parallel::distributed::Triangulation<dim> triangulation;
 
-  TwoPhaseParameters        parameters;
-  parallel::distributed::Triangulation<dim>   triangulation;
-
-  std::shared_ptr<TwoPhaseBaseAlgorithm<dim> > solver;
+  std::unique_ptr<TwoPhaseBaseAlgorithm<dim>> solver;
 };
 
 
 template <int dim>
-MicroFluidicProblem<dim>::MicroFluidicProblem (const TwoPhaseParameters &parameters)
-  :
-  mpi_communicator(MPI_COMM_WORLD),
-  pcout (std::cout, Utilities::MPI::this_mpi_process(mpi_communicator) == 0),
+MicroFluidicProblem<dim>::MicroFluidicProblem(const TwoPhaseParameters &parameters)
+  : mpi_communicator(MPI_COMM_WORLD)
+  , pcout(std::cout, Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+  ,
 
-  parameters (parameters),
-  triangulation (mpi_communicator)
+  parameters(parameters)
+  , triangulation(mpi_communicator)
 {
   if (parameters.solver_method == "level set okz")
-    solver.reset(new LevelSetOKZSolver<dim>(parameters, triangulation));
+    solver = std::make_unique<LevelSetOKZSolver<dim>>(parameters, triangulation);
   else if (parameters.solver_method == "level set okz matrix")
-    solver.reset(new LevelSetOKZMatrixSolver<dim>(parameters, triangulation));
+    solver = std::make_unique<LevelSetOKZMatrixSolver<dim>>(parameters, triangulation);
   else if (parameters.solver_method == "phase field")
-    solver.reset(new PhaseFieldSolver<dim>(parameters, triangulation));
+    solver = std::make_unique<PhaseFieldSolver<dim>>(parameters, triangulation);
   else
     AssertThrow(false, ExcMessage("Unknown solver selected in parameter file"));
 }
@@ -115,34 +117,33 @@ MicroFluidicProblem<dim>::MicroFluidicProblem (const TwoPhaseParameters &paramet
 
 
 template <int dim>
-void MicroFluidicProblem<dim>::run ()
+void
+MicroFluidicProblem<dim>::run()
 {
   // create mesh
-  std::vector<unsigned int> subdivisions (dim, 5);
-  subdivisions[dim-1] = 10;
+  std::vector<unsigned int> subdivisions(dim, 5);
+  subdivisions[dim - 1] = 10;
 
   const Point<dim> bottom_left;
-  const Point<dim> top_right   = (dim == 2 ?
-                                  Point<dim>(1,2) :
-                                  Point<dim>(1,1,2));
-  GridGenerator::subdivided_hyper_rectangle (triangulation,
-                                             subdivisions,
-                                             bottom_left,
-                                             top_right);
+  const Point<dim> top_right = (dim == 2 ? Point<dim>(1, 2) : Point<dim>(1, 1, 2));
+  GridGenerator::subdivided_hyper_rectangle(triangulation,
+                                            subdivisions,
+                                            bottom_left,
+                                            top_right);
 
   // set boundary indicator to 2 on left and right face -> symmetry boundary
   typename parallel::distributed::Triangulation<dim>::active_cell_iterator
-  cell = triangulation.begin(),
-  endc = triangulation.end();
+    cell = triangulation.begin(),
+    endc = triangulation.end();
 
-  for ( ; cell!=endc; ++cell)
-    for (unsigned int face=0; face<GeometryInfo<dim>::faces_per_cell; ++face)
+  for (; cell != endc; ++cell)
+    for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
       if (cell->face(face)->at_boundary() &&
-          (std::fabs(cell->face(face)->center()[0]-1)<1e-14 ||
-           std::fabs(cell->face(face)->center()[0])<1e-14))
+          (std::fabs(cell->face(face)->center()[0] - 1) < 1e-14 ||
+           std::fabs(cell->face(face)->center()[0]) < 1e-14))
         cell->face(face)->set_boundary_id(2);
 
-  AssertThrow (parameters.global_refinements < 12, ExcInternalError());
+  AssertThrow(parameters.global_refinements < 12, ExcInternalError());
 
   solver->set_no_slip_boundary(0);
   solver->fix_pressure_constant(0);
@@ -151,7 +152,7 @@ void MicroFluidicProblem<dim>::run ()
   solver->setup_problem(Functions::ZeroFunction<dim>(dim), InitialValuesLS<dim>());
   solver->output_solution(parameters.output_filename);
 
-  std::vector<std::vector<double> > solution_data;
+  std::vector<std::vector<double>> solution_data;
   solution_data.push_back(solver->compute_bubble_statistics(0));
 
   // time loop
@@ -170,26 +171,27 @@ void MicroFluidicProblem<dim>::run ()
           Utilities::MPI::this_mpi_process(triangulation.get_communicator()) == 0 &&
           solver->get_time_stepping().at_tick(parameters.output_frequency))
         {
-          const int time_step = 1.000001e4*solver->get_time_stepping().step_size();
+          const int time_step = 1.000001e4 * solver->get_time_stepping().step_size();
 
           std::ostringstream filename3;
           filename3 << parameters.output_filename << "-"
-                    << Utilities::int_to_string((int)parameters.adaptive_refinements, 1) << "-"
-                    << Utilities::int_to_string(parameters.global_refinements, 3) << "-"
-                    << Utilities::int_to_string(time_step, 4)
-                    << ".txt";
+                    << Utilities::int_to_string((int)parameters.adaptive_refinements, 1)
+                    << "-" << Utilities::int_to_string(parameters.global_refinements, 3)
+                    << "-" << Utilities::int_to_string(time_step, 4) << ".txt";
 
-          std::fstream output_positions3 (filename3.str().c_str(),
-                                          first_output ? std::ios::out : std::ios::out
-                                          | std::ios::app);
+          std::fstream output_positions3(filename3.str().c_str(),
+                                         first_output ? std::ios::out :
+                                                        std::ios::out | std::ios::app);
 
-          output_positions3.precision (14);
+          output_positions3.precision(14);
           if (first_output)
-            output_positions3 << "#    time        area      perimeter   circularity   bubble_xvel   bubble_yvel   bubble_xpos    bubble_ypos" << std::endl;
-          for (unsigned int i=0; i<solution_data.size(); ++i)
+            output_positions3
+              << "#    time        area      perimeter   circularity   bubble_xvel   bubble_yvel   bubble_xpos    bubble_ypos"
+              << std::endl;
+          for (unsigned int i = 0; i < solution_data.size(); ++i)
             {
               output_positions3 << " ";
-              for (unsigned int j=0; j<solution_data[i].size(); ++j)
+              for (unsigned int j = 0; j < solution_data[i].size(); ++j)
                 output_positions3 << solution_data[i][j] << "   ";
               output_positions3 << std::endl;
             }
@@ -201,59 +203,57 @@ void MicroFluidicProblem<dim>::run ()
 
 
 
-
-int main (int argc, char **argv)
+int
+main(int argc, char **argv)
 {
   using namespace dealii;
 
 
   try
     {
-      deallog.depth_console (0);
+      deallog.depth_console(0);
       Utilities::MPI::MPI_InitFinalize mpi_init(argc, argv, -1);
 
       std::string paramfile;
-      if (argc>1)
+      if (argc > 1)
         paramfile = argv[1];
       else
         paramfile = "rising_bubble.prm";
 
-      TwoPhaseParameters parameters (paramfile);
+      TwoPhaseParameters parameters(paramfile);
       if (parameters.dimension == 2)
         {
-          MicroFluidicProblem<2> flow_problem (parameters);
-          flow_problem.run ();
+          MicroFluidicProblem<2> flow_problem(parameters);
+          flow_problem.run();
         }
       else if (parameters.dimension == 3)
         {
-          MicroFluidicProblem<3> flow_problem (parameters);
-          flow_problem.run ();
+          MicroFluidicProblem<3> flow_problem(parameters);
+          flow_problem.run();
         }
       else
-        AssertThrow (false, ExcNotImplemented());
+        AssertThrow(false, ExcNotImplemented());
     }
   catch (std::exception &exc)
     {
-      std::cerr << std::endl << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
+      std::cerr << std::endl
+                << std::endl
+                << "----------------------------------------------------" << std::endl;
       std::cerr << "Exception on processing: " << std::endl
                 << exc.what() << std::endl
                 << "Aborting!" << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
+                << "----------------------------------------------------" << std::endl;
 
       return 1;
     }
   catch (...)
     {
-      std::cerr << std::endl << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
+      std::cerr << std::endl
+                << std::endl
+                << "----------------------------------------------------" << std::endl;
       std::cerr << "Unknown exception!" << std::endl
                 << "Aborting!" << std::endl
-                << "----------------------------------------------------"
-                << std::endl;
+                << "----------------------------------------------------" << std::endl;
       return 1;
     }
 

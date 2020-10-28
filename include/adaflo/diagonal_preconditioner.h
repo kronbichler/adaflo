@@ -16,11 +16,11 @@
 #ifndef __adaflo_diagonal_preconditioner_h
 #define __adaflo_diagonal_preconditioner_h
 
+#include <deal.II/lac/la_parallel_block_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
+
 #include <fstream>
 #include <iostream>
-
-#include <deal.II/lac/la_parallel_vector.h>
-#include <deal.II/lac/la_parallel_block_vector.h>
 
 using namespace dealii;
 
@@ -29,21 +29,30 @@ template <typename Number>
 class DiagonalPreconditioner
 {
 public:
-  DiagonalPreconditioner () {}
+  DiagonalPreconditioner()
+  {}
 
-  DiagonalPreconditioner (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
-  DiagonalPreconditioner (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
-  void reinit (const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
-  void reinit (const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
-  void vmult (LinearAlgebra::distributed::Vector<Number> &dst,
-              const LinearAlgebra::distributed::Vector<Number> &src) const;
-  void vmult (LinearAlgebra::distributed::BlockVector<Number> &dst,
-              const LinearAlgebra::distributed::BlockVector<Number> &src) const;
-  const LinearAlgebra::distributed::Vector<Number> &get_inverse_vector() const
+  DiagonalPreconditioner(
+    const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+  DiagonalPreconditioner(
+    const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+  void
+  reinit(const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+  void
+  reinit(const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+  void
+  vmult(LinearAlgebra::distributed::Vector<Number> &      dst,
+        const LinearAlgebra::distributed::Vector<Number> &src) const;
+  void
+  vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
+        const LinearAlgebra::distributed::BlockVector<Number> &src) const;
+  const LinearAlgebra::distributed::Vector<Number> &
+  get_inverse_vector() const
   {
     return inverse_diagonal_vector;
   }
-  const LinearAlgebra::distributed::Vector<Number> &get_vector() const
+  const LinearAlgebra::distributed::Vector<Number> &
+  get_vector() const
   {
     return diagonal_vector;
   }

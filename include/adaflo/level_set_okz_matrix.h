@@ -16,8 +16,9 @@
 #ifndef __adaflo_level_set_okz_matrix_h
 #define __adaflo_level_set_okz_matrix_h
 
-#include <adaflo/level_set_base.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
+
+#include <adaflo/level_set_base.h>
 
 
 
@@ -32,40 +33,48 @@ template <int dim>
 class LevelSetOKZMatrixSolver : public LevelSetBaseAlgorithm<dim>
 {
 public:
-  LevelSetOKZMatrixSolver (const FlowParameters &parameters,
-                           parallel::distributed::Triangulation<dim> &triangulation);
-  virtual ~LevelSetOKZMatrixSolver() {}
+  LevelSetOKZMatrixSolver(const FlowParameters &                     parameters,
+                          parallel::distributed::Triangulation<dim> &triangulation);
+  virtual ~LevelSetOKZMatrixSolver()
+  {}
 
-  virtual void initialize_data_structures ();
+  virtual void
+  initialize_data_structures();
 
-  virtual void transform_distance_function (LinearAlgebra::distributed::Vector<double> &vector) const;
+  virtual void
+  transform_distance_function(LinearAlgebra::distributed::Vector<double> &vector) const;
 
 private:
-
   // compute the force term and variable density/viscosity for the
   // Navier--Stokes equations
-  virtual void compute_force ();
+  virtual void
+  compute_force();
 
   // advection step
-  virtual void advance_concentration ();
+  virtual void
+  advance_concentration();
 
   // computes normal direction vector by projection of level set gradient (not
   // scaled to have norm 1!)
-  virtual void compute_normal (const bool fast_computation);
+  virtual void
+  compute_normal(const bool fast_computation);
 
   // computes curvature by projecting the divergence of the normal vector
   // (scaled to norm 1 now)
-  virtual void compute_curvature (const bool diffuse_large_values = false);
+  virtual void
+  compute_curvature(const bool diffuse_large_values = false);
 
   // performs reinitialization
-  virtual void reinitialize (const unsigned int stab_steps,
-                             const unsigned int diff_steps = 0,
-                             const bool         diffuse_cells_with_large_curvature_only = false);
+  virtual void
+  reinitialize(const unsigned int stab_steps,
+               const unsigned int diff_steps                              = 0,
+               const bool         diffuse_cells_with_large_curvature_only = false);
 
-  virtual void compute_heaviside ();
+  virtual void
+  compute_heaviside();
 
-  bool                 normal_calculated;
-  double               global_max_velocity;
+  bool   normal_calculated;
+  double global_max_velocity;
 
   TrilinosWrappers::SparseMatrix system_matrix;
 };

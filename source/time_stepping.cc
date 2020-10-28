@@ -14,30 +14,31 @@
 // --------------------------------------------------------------------------
 
 #include <deal.II/base/parameter_handler.h>
-#include <adaflo/time_stepping.h>
-#include <adaflo/parameters.h>
 
-TimeStepping::TimeStepping (const FlowParameters &parameters)
-  : start_val(parameters.start_time),
-    final_val(parameters.end_time),
-    tolerance_val(parameters.time_step_tolerance),
-    scheme_val(parameters.time_step_scheme),
-    start_step_val(parameters.time_step_size_start),
-    max_step_val  (parameters.time_step_size_max),
-    min_step_val  (parameters.time_step_size_min),
-    current_step_val(start_step_val),
-    last_step_val(0.),
-    step_val(start_step_val),
-    weight_val (1./start_step_val),
-    weight_old_val (-1.),
-    weight_old_old_val (0.),
-    factor_extrapol_old(0.),
-    factor_extrapol_old_old(0.),
-    step_no_val(0),
-    at_end_val(false),
-    weight_changed (true)
+#include <adaflo/parameters.h>
+#include <adaflo/time_stepping.h>
+
+TimeStepping::TimeStepping(const FlowParameters &parameters)
+  : start_val(parameters.start_time)
+  , final_val(parameters.end_time)
+  , tolerance_val(parameters.time_step_tolerance)
+  , scheme_val(parameters.time_step_scheme)
+  , start_step_val(parameters.time_step_size_start)
+  , max_step_val(parameters.time_step_size_max)
+  , min_step_val(parameters.time_step_size_min)
+  , current_step_val(start_step_val)
+  , last_step_val(0.)
+  , step_val(start_step_val)
+  , weight_val(1. / start_step_val)
+  , weight_old_val(-1.)
+  , weight_old_old_val(0.)
+  , factor_extrapol_old(0.)
+  , factor_extrapol_old_old(0.)
+  , step_no_val(0)
+  , at_end_val(false)
+  , weight_changed(true)
 {
-  now_val = start_val;
+  now_val  = start_val;
   prev_val = start_val;
   if (scheme_val == implicit_euler)
     {
@@ -61,15 +62,15 @@ TimeStepping::TimeStepping (const FlowParameters &parameters)
 
 
 void
-TimeStepping::restart ()
+TimeStepping::restart()
 {
-  step_no_val = 0;
-  now_val = start_val;
-  step_val = start_step_val;
+  step_no_val      = 0;
+  now_val          = start_val;
+  step_val         = start_step_val;
   current_step_val = step_val;
-  last_step_val = 0;
+  last_step_val    = 0;
 
-  if ((final_val-start_val)/start_step_val < 1e-14)
+  if ((final_val - start_val) / start_step_val < 1e-14)
     at_end_val = true;
   else
     at_end_val = false;
@@ -80,7 +81,7 @@ TimeStepping::restart ()
 
 
 double
-TimeStepping::next ()
+TimeStepping::next()
 {
   Assert(at_end_val == false, ExcMessage("Final time already reached, cannot proceed"));
   double s = current_step_val;
@@ -98,7 +99,7 @@ TimeStepping::next ()
     }
 
   // Try incrementing time by s
-  double h = now_val + s;
+  double h         = now_val + s;
   current_step_val = s;
 
   // If we just missed the final time, increase
@@ -106,33 +107,33 @@ TimeStepping::next ()
   // very small final step. If the step shot
   // over the final time, adjust it so we hit
   // the final time exactly.
-  double s1 = .01*s;
-  if (!at_end_val && h > final_val-s1)
+  double s1 = .01 * s;
+  if (!at_end_val && h > final_val - s1)
     {
       current_step_val = final_val - now_val;
-      h = final_val;
-      at_end_val = true;
+      h                = final_val;
+      at_end_val       = true;
     }
 
   {
     double new_weight;
     if (scheme_val == bdf_2 && now_val != start())
       {
-        new_weight = ((2.*current_step_val+last_step_val)/
-                      (current_step_val*(current_step_val+last_step_val)));
-        weight_old_val = -((current_step_val+last_step_val)/
-                           (current_step_val*last_step_val));
-        weight_old_old_val = current_step_val/(last_step_val*
-                                               (current_step_val+last_step_val));
+        new_weight = ((2. * current_step_val + last_step_val) /
+                      (current_step_val * (current_step_val + last_step_val)));
+        weight_old_val =
+          -((current_step_val + last_step_val) / (current_step_val * last_step_val));
+        weight_old_old_val =
+          current_step_val / (last_step_val * (current_step_val + last_step_val));
       }
     else
       {
-        new_weight = 1./current_step_val;
-        weight_old_val = -1./current_step_val;
+        new_weight     = 1. / current_step_val;
+        weight_old_val = -1. / current_step_val;
       }
-    if (std::fabs (new_weight - weight_val)/new_weight > 1e-12)
+    if (std::fabs(new_weight - weight_val) / new_weight > 1e-12)
       {
-        weight_val = new_weight;
+        weight_val     = new_weight;
         weight_changed = true;
       }
     else
@@ -142,25 +143,26 @@ TimeStepping::next ()
     // step because initial condition might not have been consistent
     if (step_no_val > 1)
       {
-        factor_extrapol_old = (current_step_val+last_step_val)/last_step_val;
+        factor_extrapol_old     = (current_step_val + last_step_val) / last_step_val;
         factor_extrapol_old_old = -current_step_val / last_step_val;
       }
     else
       {
-        factor_extrapol_old = 1.;
+        factor_extrapol_old     = 1.;
         factor_extrapol_old_old = 0.;
       }
   }
 
   prev_val = now_val;
-  now_val = h;
+  now_val  = h;
   step_no_val++;
   return now_val;
 }
 
 
 
-std::string TimeStepping::name () const
+std::string
+TimeStepping::name() const
 {
   std::string result;
   if (scheme_val == implicit_euler)
@@ -176,31 +178,33 @@ std::string TimeStepping::name () const
 
 
 
-TimeStepping::Scheme TimeStepping::scheme () const
+TimeStepping::Scheme
+TimeStepping::scheme() const
 {
   return scheme_val;
 }
 
 
 
-bool TimeStepping::at_tick (const double tick) const
+bool
+TimeStepping::at_tick(const double tick) const
 {
-  const double time = now();
-  const int position = int(time * 1.0000000001 / tick);
-  const double slot = position * tick;
-  if (((time - slot) > (step_size()*0.95)) && !at_end())
+  const double time     = now();
+  const int    position = int(time * 1.0000000001 / tick);
+  const double slot     = position * tick;
+  if (((time - slot) > (step_size() * 0.95)) && !at_end())
     return false;
   else
     return true;
 }
 
 
-void TimeStepping::set_time_step(const double desired_value)
+void
+TimeStepping::set_time_step(const double desired_value)
 {
-
   // We take into account the first iteration regarding to the
   // previous used time step
-  double step_size_prev = now() == 0 ?  desired_value : step_size();
+  double step_size_prev = now() == 0 ? desired_value : step_size();
 
   // When setting a new time step size one needs to consider three things:
   //  - That it is not smaller than the minimum given
@@ -208,12 +212,9 @@ void TimeStepping::set_time_step(const double desired_value)
   //  - That the change from the previous value is not too big, which should
   //    be fulfilled automatically in this case because we look at quantities
   //    that vary slowly.
-  current_step_val = std::min(2*step_size_prev,
-                              std::max(desired_value, 0.5*step_size_prev)
-                             );
-  current_step_val = std::min(max_step_val,
-                              std::max(min_step_val, current_step_val)
-                             );
+  current_step_val =
+    std::min(2 * step_size_prev, std::max(desired_value, 0.5 * step_size_prev));
+  current_step_val = std::min(max_step_val, std::max(min_step_val, current_step_val));
 
   step_val = current_step_val;
 }
