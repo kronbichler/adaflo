@@ -61,7 +61,7 @@ public:
   {}
 
   double
-  value(const Point<dim> &p, const unsigned int component = 0) const
+  value(const Point<dim> &p, const unsigned int) const
   {
     // set radius of bubble to 0.5, slightly shifted away from the center
     Point<dim> center;

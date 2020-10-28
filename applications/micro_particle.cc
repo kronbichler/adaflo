@@ -234,10 +234,7 @@ namespace MicroFluidic
   void
   set_boundary_indicators(Triangulation<dim> &triangulation)
   {
-    typename Triangulation<dim>::active_cell_iterator cell = triangulation.begin_active(),
-                                                      endc = triangulation.end();
-
-    for (; cell != endc; ++cell)
+    for (const auto &cell : triangulation.active_cell_iterators())
       for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
         {
           const Point<dim> face_center = cell->face(face)->center();
