@@ -35,8 +35,8 @@
 #include <deal.II/numerics/data_out.h>
 
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/distributed/tria.h>
@@ -109,8 +109,8 @@ private:
   template <int velocity_degree>
   void
   local_compute_force (const MatrixFree<dim,double> &data,
-                       parallel::distributed::Vector<double> &dst,
-                       const parallel::distributed::Vector<double> &,
+                       LinearAlgebra::distributed::Vector<double> &dst,
+                       const LinearAlgebra::distributed::Vector<double> &,
                        const std::pair<unsigned int,unsigned int> &cell_range) const;
 
   void compute_force();
@@ -244,8 +244,8 @@ template <int dim>
 template <int velocity_degree>
 void
 PeriodicChannelProblem<dim>::local_compute_force (const MatrixFree<dim,double> &data,
-                                                  parallel::distributed::Vector<double> &dst,
-                                                  const parallel::distributed::Vector<double> &,
+                                                  LinearAlgebra::distributed::Vector<double> &dst,
+                                                  const LinearAlgebra::distributed::Vector<double> &,
                                                   const std::pair<unsigned int,unsigned int> &cell_range) const
 {
   FEEvaluation<dim,velocity_degree,velocity_degree+1,dim> vel_values(data,0,0);
@@ -344,8 +344,8 @@ void PeriodicChannelProblem<dim>::run ()
     GridTools::transform (&grid_transform<dim>, triangulation);
   }
 
-  navier_stokes.set_velocity_dirichlet_boundary(0, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>(dim)));
-  navier_stokes.fix_pressure_constant(0, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>()));
+  navier_stokes.set_velocity_dirichlet_boundary(0, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>(dim)));
+  navier_stokes.fix_pressure_constant(0, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>()));
   navier_stokes.set_periodic_direction(0, 1, 3);
   navier_stokes.set_periodic_direction(2, 2, 4);
 

@@ -27,7 +27,7 @@
 #include <deal.II/grid/tria_accessor.h>
 #include <deal.II/grid/tria_iterator.h>
 
-#include <deal.II/lac/parallel_vector.h>
+#include <deal.II/lac/la_parallel_vector.h>
 
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/distributed/tria.h>
@@ -460,7 +460,7 @@ void ChannelProblem<dim>::output_results () const
       DataOut<dim> data_out;
 
       const NavierStokes<dim> &navier_stokes = twophase_flow.get_navier_stokes();
-      parallel::distributed::Vector<double> velocity_relative(navier_stokes.solution.block(0)), velocity_shift;
+      LinearAlgebra::distributed::Vector<double> velocity_relative(navier_stokes.solution.block(0)), velocity_shift;
       velocity_shift.reinit(velocity_relative);
       Vector<double> velocity_local(navier_stokes.get_fe_u().dofs_per_cell);
       for (unsigned int i=0; i<velocity_local.size(); ++i)
@@ -580,10 +580,10 @@ void ChannelProblem<dim>::run ()
 
   twophase_flow.set_no_slip_boundary(0);
 
-  twophase_flow.set_open_boundary_with_normal_flux(1, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>()), 1);
-  twophase_flow.set_open_boundary_with_normal_flux(2, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>()), -1);
+  twophase_flow.set_open_boundary_with_normal_flux(1, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>()), 1);
+  twophase_flow.set_open_boundary_with_normal_flux(2, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>()), -1);
 
-  twophase_flow.setup_problem(ZeroFunction<dim>(dim),
+  twophase_flow.setup_problem(Functions::ZeroFunction<dim>(dim),
                               InitialValuesLS<dim>());
 
   output_results ();

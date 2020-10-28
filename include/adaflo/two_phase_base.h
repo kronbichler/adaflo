@@ -18,7 +18,7 @@
 
 #include <deal.II/base/timer.h>
 #include <deal.II/fe/fe_values.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/affine_constraints.h>
 #include <deal.II/distributed/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/fe/fe.h>
@@ -39,7 +39,7 @@ class TwoPhaseBaseAlgorithm : public FlowBaseAlgorithm<dim>
 {
 public:
   TwoPhaseBaseAlgorithm (const FlowParameters     &parameters,
-                         const std_cxx11::shared_ptr<FiniteElement<dim> > fe,
+                         const std::shared_ptr<FiniteElement<dim> > fe,
                          parallel::distributed::Triangulation<dim> &triangulation,
                          TimerOutput              *external_timer = 0);
 
@@ -48,7 +48,7 @@ public:
   virtual void clear_data();
 
   virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = ZeroFunction<dim>());
+                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
 
   virtual void distribute_dofs ();
   virtual void initialize_data_structures ();
@@ -110,32 +110,32 @@ public:
     return dof_handler;
   }
 
-  const ConstraintMatrix &get_constraints_concentration() const
+  const AffineConstraints<double> &get_constraints_concentration() const
   {
     return constraints;
   }
 
-  ConstraintMatrix &modify_constraints_concentration()
+  AffineConstraints<double> &modify_constraints_concentration()
   {
     return constraints;
   }
 
-  const ConstraintMatrix &get_constraints_curvature() const
+  const AffineConstraints<double> &get_constraints_curvature() const
   {
     return constraints_curvature;
   }
 
-  ConstraintMatrix &modify_constraints_curvature()
+  AffineConstraints<double> &modify_constraints_curvature()
   {
     return constraints_curvature;
   }
 
-  const ConstraintMatrix &get_constraints_normals() const
+  const AffineConstraints<double> &get_constraints_normals() const
   {
     return constraints_normals;
   }
 
-  ConstraintMatrix &modify_constraints_normals()
+  AffineConstraints<double> &modify_constraints_normals()
   {
     return constraints_normals;
   }
@@ -168,23 +168,23 @@ protected:
   virtual void print_n_dofs () const;
 
   ConditionalOStream  pcout;
-  std_cxx11::shared_ptr<TimerOutput> timer;
+  std::shared_ptr<TimerOutput> timer;
 
   // Reference to externally defined triangulation
   parallel::distributed::Triangulation<dim>  &triangulation;
   NavierStokes<dim>    navier_stokes;
   MatrixFree<dim>      matrix_free;
-  const std_cxx11::shared_ptr<FiniteElement<dim> > fe;
+  const std::shared_ptr<FiniteElement<dim> > fe;
 
   DoFHandler<dim>      dof_handler;
 
   // We use two sets of constraints for the concentration/level set variable
   // and a 'curvature' field (in phase field, this is the chemical potential),
   // but both use the same DoFHandler
-  ConstraintMatrix     hanging_node_constraints;
-  ConstraintMatrix     constraints;
-  ConstraintMatrix     constraints_curvature;
-  ConstraintMatrix     constraints_normals;
+  AffineConstraints<double>     hanging_node_constraints;
+  AffineConstraints<double>     constraints;
+  AffineConstraints<double>     constraints_curvature;
+  AffineConstraints<double>     constraints_normals;
 
   LinearAlgebra::distributed::BlockVector<double>  system_rhs;
 

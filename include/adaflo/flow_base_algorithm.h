@@ -17,7 +17,6 @@
 #define __adaflo_flow_base_algorithm_h
 
 #include <deal.II/base/function.h>
-#include <deal.II/base/std_cxx11/shared_ptr.h>
 #include <deal.II/base/utilities.h>
 #include <deal.II/fe/mapping_q.h>
 #include <deal.II/numerics/data_out.h>
@@ -46,9 +45,9 @@ namespace helpers
   {
     BoundaryDescriptor();
 
-    std::map<types::boundary_id,std_cxx11::shared_ptr<Function<dim> > > dirichlet_conditions_u;
-    std::map<types::boundary_id,std_cxx11::shared_ptr<Function<dim> > > open_conditions_p;
-    std::map<types::boundary_id,std_cxx11::shared_ptr<Function<dim> > > pressure_fix;
+    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > dirichlet_conditions_u;
+    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > open_conditions_p;
+    std::map<types::boundary_id,std::shared_ptr<Function<dim> > > pressure_fix;
 
     std::set<types::boundary_id> normal_flux;
     std::set<types::boundary_id> symmetry;
@@ -105,7 +104,7 @@ struct FlowBaseAlgorithm
    * variables (vectors, matrices, etc.)
    */
   virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = ZeroFunction<dim>()) = 0;
+                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>()) = 0;
 
   /**
    * Performs one complete time step of the problem, including the solution of
@@ -150,7 +149,7 @@ struct FlowBaseAlgorithm
    * Prerequisite: The given function must consist of dim components.
    */
   void set_velocity_dirichlet_boundary (const types::boundary_id  boundary_id,
-                                        const std_cxx11::shared_ptr<Function<dim> > &velocity_function,
+                                        const std::shared_ptr<Function<dim> > &velocity_function,
                                         const int inflow_fluid_type = 0);
 
   /*
@@ -172,8 +171,8 @@ struct FlowBaseAlgorithm
    * Prerequisite: The given function(s) must be scalar.
    */
   void set_open_boundary (const types::boundary_id  boundary_id,
-                          const std_cxx11::shared_ptr<Function<dim> > &pressure_function
-                          = std_cxx11::shared_ptr<Function<dim> >(),
+                          const std::shared_ptr<Function<dim> > &pressure_function
+                          = std::shared_ptr<Function<dim> >(),
                           const int inflow_fluid_type = 0);
 
   /*
@@ -197,8 +196,8 @@ struct FlowBaseAlgorithm
    * Prerequisite: The given function(s) must be scalar.
    */
   void set_open_boundary_with_normal_flux (const types::boundary_id  boundary_id,
-                                           const std_cxx11::shared_ptr<Function<dim> > &pressure_function
-                                           = std_cxx11::shared_ptr<Function<dim> >(),
+                                           const std::shared_ptr<Function<dim> > &pressure_function
+                                           = std::shared_ptr<Function<dim> >(),
                                            const int inflow_fluid_type = 0);
 
   /*
@@ -212,8 +211,8 @@ struct FlowBaseAlgorithm
    * Prerequisite: The given function(s) must be scalar.
    */
   void fix_pressure_constant (const types::boundary_id  boundary_id,
-                              const std_cxx11::shared_ptr<Function<dim> > &pressure_function
-                              = std_cxx11::shared_ptr<Function<dim> >());
+                              const std::shared_ptr<Function<dim> > &pressure_function
+                              = std::shared_ptr<Function<dim> >());
 
   /*
    * Sets symmetry boundary conditions on the given boundaries. A symmetry
@@ -264,7 +263,7 @@ struct FlowBaseAlgorithm
                           const double        output_frequency,
                           DataOut<dim>       &data_out) const;
 
-  std_cxx11::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary;
+  std::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary;
 
   MappingQ<dim> mapping;
 };

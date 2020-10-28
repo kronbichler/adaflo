@@ -162,8 +162,8 @@ private:
   //GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> > vectors_normal;
   //DiagonalPreconditioner<float> preconditioner_float;
 
-  std_cxx11::shared_ptr<BlockMatrixExtension> projection_matrix;
-  std_cxx11::shared_ptr<BlockILUExtension> ilu_projection_matrix;
+  std::shared_ptr<BlockMatrixExtension> projection_matrix;
+  std::shared_ptr<BlockILUExtension> ilu_projection_matrix;
 };
 
 

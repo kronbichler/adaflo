@@ -64,7 +64,7 @@ template <int dim>
 void
 FlowBaseAlgorithm<dim>::set_velocity_dirichlet_boundary
 (const types::boundary_id                     boundary_id,
- const std_cxx11::shared_ptr<Function<dim> > &velocity_function,
+ const std::shared_ptr<Function<dim> > &velocity_function,
  const int                                    inflow_fluid_type)
 {
   if (velocity_function.get() == 0)
@@ -94,11 +94,11 @@ template <int dim>
 void
 FlowBaseAlgorithm<dim>::set_open_boundary
 (const types::boundary_id                     boundary_id,
- const std_cxx11::shared_ptr<Function<dim> > &pressure_function,
+ const std::shared_ptr<Function<dim> > &pressure_function,
  const int                                    inflow_fluid_type)
 {
   if (pressure_function.get() == 0)
-    boundary->open_conditions_p[boundary_id] = std_cxx11::shared_ptr<Function<dim> >(new ZeroFunction<dim>(1));
+    boundary->open_conditions_p[boundary_id] = std::shared_ptr<Function<dim> >(new Functions::ZeroFunction<dim>(1));
   else
     {
       AssertThrow (pressure_function->n_components == 1,
@@ -127,11 +127,11 @@ template <int dim>
 void
 FlowBaseAlgorithm<dim>::set_open_boundary_with_normal_flux
 (const types::boundary_id                     boundary_id,
- const std_cxx11::shared_ptr<Function<dim> > &pressure_function,
+ const std::shared_ptr<Function<dim> > &pressure_function,
  const int                                    inflow_fluid_type)
 {
   if (pressure_function.get() == 0)
-    boundary->open_conditions_p[boundary_id] = std_cxx11::shared_ptr<Function<dim> >(new ZeroFunction<dim>(1));
+    boundary->open_conditions_p[boundary_id] = std::shared_ptr<Function<dim> >(new Functions::ZeroFunction<dim>(1));
   else
     {
       AssertThrow (pressure_function->n_components == 1,
@@ -161,7 +161,7 @@ template <int dim>
 void
 FlowBaseAlgorithm<dim>::fix_pressure_constant
 (const types::boundary_id                     boundary_id,
- const std_cxx11::shared_ptr<Function<dim> > &pressure_function)
+ const std::shared_ptr<Function<dim> > &pressure_function)
 {
   AssertThrow (pressure_function.get() == 0 ||
                pressure_function->n_components == 1,

@@ -21,7 +21,7 @@
 #include <deal.II/base/thread_local_storage.h>
 
 #include <deal.II/lac/trilinos_sparse_matrix.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/affine_constraints.h>
 #include <deal.II/lac/la_parallel_block_vector.h>
 
 #include <deal.II/dofs/dof_handler.h>
@@ -47,8 +47,8 @@ public:
   NavierStokes (const FlowParameters &parameters,
                 parallel::distributed::Triangulation<dim> &triangulation,
                 TimerOutput                  *external_timer = 0,
-                std_cxx11::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary_descriptor =
-                  std_cxx11::shared_ptr<helpers::BoundaryDescriptor<dim> >());
+                std::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary_descriptor =
+                  std::shared_ptr<helpers::BoundaryDescriptor<dim> >());
 
   virtual ~NavierStokes();
 
@@ -59,17 +59,17 @@ public:
   const FiniteElement<dim> &get_fe_p () const;
 
   const DoFHandler<dim>     &get_dof_handler_u () const;
-  const ConstraintMatrix    &get_constraints_u () const;
+  const AffineConstraints<double>    &get_constraints_u () const;
   const DoFHandler<dim>     &get_dof_handler_p () const;
-  const ConstraintMatrix    &get_constraints_p () const;
+  const AffineConstraints<double>    &get_constraints_p () const;
 
-  ConstraintMatrix          &modify_constraints_u ();
-  ConstraintMatrix          &modify_constraints_p ();
+  AffineConstraints<double>          &modify_constraints_u ();
+  AffineConstraints<double>          &modify_constraints_p ();
 
   void distribute_dofs ();
   void initialize_data_structures ();
   virtual void setup_problem (const Function<dim> &initial_velocity_field,
-                              const Function<dim> &initial_distance_function = ZeroFunction<dim>());
+                              const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
   void initialize_matrix_free (MatrixFree<dim> *external_matrix_free = 0);
 
   void init_time_advance (const bool   print_time_info = true);
@@ -181,16 +181,16 @@ private:
   DoFHandler<dim>           dof_handler_u;
   DoFHandler<dim>           dof_handler_p;
 
-  ConstraintMatrix          hanging_node_constraints_u;
-  ConstraintMatrix          hanging_node_constraints_p;
-  ConstraintMatrix          constraints_u;
-  ConstraintMatrix          constraints_p;
+  AffineConstraints<double>          hanging_node_constraints_u;
+  AffineConstraints<double>          hanging_node_constraints_p;
+  AffineConstraints<double>          constraints_u;
+  AffineConstraints<double>          constraints_p;
 
   NavierStokesMatrix<dim>   navier_stokes_matrix;
   LinearAlgebra::distributed::BlockVector<double> system_rhs, const_rhs;
 
-  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_u;
-  std_cxx11::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_p;
+  std::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_u;
+  std::shared_ptr<parallel::distributed::SolutionTransfer<dim,LinearAlgebra::distributed::Vector<double> > > sol_trans_p;
 
   NavierStokesPreconditioner<dim>  preconditioner;
 
@@ -205,7 +205,7 @@ private:
   // ourselves (when calling the function
   // setup()) without argument, or we get it
   // from outside and share it.
-  std_cxx11::shared_ptr<MatrixFree<dim> > matrix_free;
+  std::shared_ptr<MatrixFree<dim> > matrix_free;
 
   bool                dofs_distributed;
   bool                system_is_setup;
@@ -215,7 +215,7 @@ private:
   bool                update_preconditioner;
   unsigned int        update_preconditioner_frequency;
 
-  std_cxx11::shared_ptr<TimerOutput> timer;
+  std::shared_ptr<TimerOutput> timer;
   std::pair<unsigned int,double> solver_timers[2];
 };
 
@@ -288,7 +288,7 @@ const DoFHandler<dim> &NavierStokes<dim>::get_dof_handler_p () const
 
 template <int dim>
 inline
-const ConstraintMatrix &NavierStokes<dim>::get_constraints_u() const
+const AffineConstraints<double> &NavierStokes<dim>::get_constraints_u() const
 {
   return constraints_u;
 }
@@ -297,7 +297,7 @@ const ConstraintMatrix &NavierStokes<dim>::get_constraints_u() const
 
 template <int dim>
 inline
-ConstraintMatrix &NavierStokes<dim>::modify_constraints_u()
+AffineConstraints<double> &NavierStokes<dim>::modify_constraints_u()
 {
   return constraints_u;
 }
@@ -306,7 +306,7 @@ ConstraintMatrix &NavierStokes<dim>::modify_constraints_u()
 
 template <int dim>
 inline
-const ConstraintMatrix &NavierStokes<dim>::get_constraints_p() const
+const AffineConstraints<double> &NavierStokes<dim>::get_constraints_p() const
 {
   return constraints_p;
 }
@@ -315,7 +315,7 @@ const ConstraintMatrix &NavierStokes<dim>::get_constraints_p() const
 
 template <int dim>
 inline
-ConstraintMatrix &NavierStokes<dim>::modify_constraints_p()
+AffineConstraints<double> &NavierStokes<dim>::modify_constraints_p()
 {
   return constraints_p;
 }

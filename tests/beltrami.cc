@@ -33,8 +33,8 @@
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/numerics/data_out.h>
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/distributed/tria.h>
@@ -280,14 +280,14 @@ void BeltramiProblem<dim>::compute_errors () const
   QGauss<dim> quadrature_2 (v_degree);
   VectorTools::integrate_difference (navier_stokes.get_dof_handler_p(),
                                      navier_stokes.solution.block(1),
-                                     ZeroFunction<dim> (1),
+                                     Functions::ZeroFunction<dim> (1),
                                      cellwise_errors, quadrature_2,
                                      VectorTools::L2_norm);
   const double p_l2_norm = std::sqrt(Utilities::MPI::sum(cellwise_errors.norm_sqr(),
                                                          MPI_COMM_WORLD));
   VectorTools::integrate_difference (navier_stokes.get_dof_handler_u(),
                                      navier_stokes.solution.block(0),
-                                     ZeroFunction<dim> (dim),
+                                     Functions::ZeroFunction<dim> (dim),
                                      cellwise_errors, quadrature_2,
                                      VectorTools::L2_norm);
   const double u_l2_norm = std::sqrt(Utilities::MPI::sum(cellwise_errors.norm_sqr(),
@@ -416,7 +416,7 @@ void BeltramiProblem<dim>::run ()
 
   timer.leave_subsection();
 
-  navier_stokes.set_velocity_dirichlet_boundary(0, std_cxx11::shared_ptr<Function<dim> > (new ExactSolutionU<dim>(nu)));
+  navier_stokes.set_velocity_dirichlet_boundary(0, std::shared_ptr<Function<dim> > (new ExactSolutionU<dim>(nu)));
 
   navier_stokes.distribute_dofs();
   navier_stokes.print_n_dofs();
@@ -425,10 +425,10 @@ void BeltramiProblem<dim>::run ()
   if (constrain_all_pressure_boundary)
     VectorTools::interpolate_boundary_values(navier_stokes.get_dof_handler_p(),
                                              0,
-                                             ZeroFunction<dim>(1),
+                                             Functions::ZeroFunction<dim>(1),
                                              navier_stokes.modify_constraints_p());
   else
-    navier_stokes.fix_pressure_constant(0, std_cxx11::shared_ptr<Function<dim> > (new ExactSolutionP<dim>(nu)));
+    navier_stokes.fix_pressure_constant(0, std::shared_ptr<Function<dim> > (new ExactSolutionP<dim>(nu)));
 
   navier_stokes.initialize_data_structures();
   navier_stokes.initialize_matrix_free();

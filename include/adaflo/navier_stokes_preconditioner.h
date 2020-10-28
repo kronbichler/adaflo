@@ -17,7 +17,7 @@
 #define __adaflo_navier_stokes_preconditioner_h
 
 #include <deal.II/lac/trilinos_sparse_matrix.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/base/utilities.h>
@@ -59,7 +59,7 @@ public:
   NavierStokesPreconditioner (const FlowParameters &parameters,
                               const FlowBaseAlgorithm<dim> &base_algorithm,
                               const parallel::distributed::Triangulation<dim> &tria,
-                              const ConstraintMatrix       &constraints_u);
+                              const AffineConstraints<double>       &constraints_u);
 
   void clear ();
 
@@ -80,7 +80,7 @@ public:
 
   void initialize_matrices (const DoFHandler<dim>  &dof_handler_u,
                             const DoFHandler<dim>  &dof_handler_p,
-                            const ConstraintMatrix &constraints_p);
+                            const AffineConstraints<double> &constraints_p);
   void set_system_matrix (const NavierStokesMatrix<dim> &matrix);
   void assemble_matrices ();
 
@@ -123,11 +123,11 @@ public:
   bool initialized;
 
 private:
-  const ConstraintMatrix        &constraints_u;
+  const AffineConstraints<double>        &constraints_u;
 
   DoFHandler<dim>                dof_handler_u_scalar;
-  ConstraintMatrix               constraints_u_scalar;
-  ConstraintMatrix               constraints_schur_complement;
+  AffineConstraints<double>               constraints_u_scalar;
+  AffineConstraints<double>               constraints_schur_complement;
   std::vector<unsigned int>      constraints_schur_complement_only;
 
   mutable LinearAlgebra::distributed::Vector<double> temp_vector, temp_vector2;
@@ -140,15 +140,15 @@ private:
 
   std::vector<unsigned int> scalar_dof_indices;
 
-  std_cxx11::shared_ptr<TrilinosWrappers::PreconditionILU > uu_ilu;
-  std_cxx11::shared_ptr<ComponentILUExtension<dim> > uu_ilu_scalar;
-  std_cxx11::shared_ptr<MatrixFreeWrapper> uu_amg_mat;
-  std_cxx11::shared_ptr<Precondition_LinML> uu_amg;
+  std::shared_ptr<TrilinosWrappers::PreconditionILU > uu_ilu;
+  std::shared_ptr<ComponentILUExtension<dim> > uu_ilu_scalar;
+  std::shared_ptr<MatrixFreeWrapper> uu_amg_mat;
+  std::shared_ptr<Precondition_LinML> uu_amg;
 
-  std_cxx11::shared_ptr<MatrixFreeWrapper> pp_mass_mat;
-  std_cxx11::shared_ptr<TrilinosWrappers::PreconditionBase> pp_mass;
-  std_cxx11::shared_ptr<MatrixFreeWrapper> pp_poisson_mat;
-  std_cxx11::shared_ptr<Precondition_LinML> pp_poisson;
+  std::shared_ptr<MatrixFreeWrapper> pp_mass_mat;
+  std::shared_ptr<TrilinosWrappers::PreconditionBase> pp_mass;
+  std::shared_ptr<MatrixFreeWrapper> pp_poisson_mat;
+  std::shared_ptr<Precondition_LinML> pp_poisson;
 
   std::vector<std::vector<bool> > constant_modes_u;
   std::vector<std::vector<bool> > constant_modes_p;
@@ -182,8 +182,8 @@ private:
     std::vector<std::vector<unsigned int> > dof_to_lin_u;
     std::vector<std::vector<unsigned int> > dof_to_lin_p;
 
-    std_cxx11::shared_ptr<Quadrature<dim> > quadrature_sub_u;
-    std_cxx11::shared_ptr<Quadrature<dim> > quadrature_sub_p;
+    std::shared_ptr<Quadrature<dim> > quadrature_sub_u;
+    std::shared_ptr<Quadrature<dim> > quadrature_sub_p;
     std::vector<std::vector<unsigned int> > quad_to_lin_u;
     std::vector<std::vector<unsigned int> > quad_to_lin_p;
   };

@@ -35,8 +35,8 @@
 #include <deal.II/numerics/data_out.h>
 
 
-#include <deal.II/lac/parallel_vector.h>
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/affine_constraints.h>
 
 #include <deal.II/base/index_set.h>
 #include <deal.II/distributed/tria.h>
@@ -355,8 +355,8 @@ void LidDrivenCavityProblem<dim>::run ()
     //GridTools::transform (&grid_transform<dim>, triangulation);
   }
 
-  navier_stokes.set_velocity_dirichlet_boundary(0, std_cxx11::shared_ptr<Function<dim> > (new BoundaryVelocity<dim>()));
-  navier_stokes.fix_pressure_constant(0, std_cxx11::shared_ptr<Function<dim> > (new ZeroFunction<dim>()));
+  navier_stokes.set_velocity_dirichlet_boundary(0, std::shared_ptr<Function<dim> > (new BoundaryVelocity<dim>()));
+  navier_stokes.fix_pressure_constant(0, std::shared_ptr<Function<dim> > (new Functions::ZeroFunction<dim>()));
 
   navier_stokes.distribute_dofs();
 

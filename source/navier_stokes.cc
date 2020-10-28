@@ -48,7 +48,7 @@ template <int dim>
 NavierStokes<dim>::NavierStokes (const FlowParameters &parameters,
                                  parallel::distributed::Triangulation<dim>  &triangulation_in,
                                  TimerOutput         *external_timer,
-                                 std_cxx11::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary_descriptor)
+                                 std::shared_ptr<helpers::BoundaryDescriptor<dim> > boundary_descriptor)
   :
   time_stepping (parameters),
   parameters (parameters),
@@ -246,10 +246,10 @@ void NavierStokes<dim>::initialize_data_structures ()
   // Now generate the rest of the constraints for the velocity
   constraints_u.merge(hanging_node_constraints_u);
   {
-    ZeroFunction<dim> zero_func(dim);
-    typename FunctionMap<dim>::type homogeneous_dirichlet;
+    Functions::ZeroFunction<dim> zero_func(dim);
+    std::map< types::boundary_id, const Function< dim > *> homogeneous_dirichlet;
     for (typename std::map<types::boundary_id,
-         std_cxx11::shared_ptr<Function<dim> > >::
+         std::shared_ptr<Function<dim> > >::
          const_iterator it = this->boundary->dirichlet_conditions_u.begin();
          it != this->boundary->dirichlet_conditions_u.end(); ++it)
       {
@@ -288,7 +288,7 @@ void NavierStokes<dim>::initialize_data_structures ()
   // Next set the hanging node constraints and boundary conditions for
   // pressure
   constraints_p.merge(hanging_node_constraints_p,
-                      ConstraintMatrix::right_object_wins);
+                      AffineConstraints<double>::right_object_wins);
   hanging_node_constraints_p.close();
   constraints_p.close ();
   AssertThrow (constraints_p.has_inhomogeneities() == false,
@@ -362,7 +362,7 @@ initialize_matrix_free (MatrixFree<dim> *external_matrix_free)
       std::vector<const DoFHandler<dim>*> dof_handlers;
       dof_handlers.push_back (&dof_handler_u);
       dof_handlers.push_back (&dof_handler_p);
-      std::vector<const ConstraintMatrix *> constraints;
+      std::vector<const AffineConstraints<double> *> constraints;
       constraints.push_back (&constraints_u);
       constraints.push_back (&constraints_p);
       std::vector<Quadrature<1> > quadratures;
@@ -526,7 +526,7 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
         }
       residual = solver_control_simple.last_value();
     }
-  catch (SolverControl::NoConvergence)
+  catch (const SolverControl::NoConvergence &)
     {
       if (parameters.iterations_before_inner_solvers <
           parameters.max_lin_iteration)
@@ -543,7 +543,7 @@ std::pair<unsigned int,double> NavierStokes<dim>::solve_system (const double lin
               solver.solve (navier_stokes_matrix, solution_update, system_rhs,
                             preconditioner);
             }
-          catch (SolverControl::NoConvergence)
+          catch (const SolverControl::NoConvergence &)
             {}
 
           residual = solver_control_strong.last_value();
@@ -906,7 +906,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
             if (cell->at_boundary(face))
               {
                 typename std::map<types::boundary_id,
-                         std_cxx11::shared_ptr<Function<dim> > >::iterator it =
+                         std::shared_ptr<Function<dim> > >::iterator it =
                            this->boundary->pressure_fix.find(cell->face(face)->boundary_id());
                 if (it != this->boundary->pressure_fix.end())
                   {
@@ -946,11 +946,11 @@ end_loop:
   if (!this->boundary->open_conditions_p.empty() &&
       this->parameters.linearization == FlowParameters::projection)
     {
-      typename FunctionMap<dim>::type dirichlet_p;
+      std::map< types::boundary_id, const Function< dim > *>dirichlet_p;
 
       // write the prescribed functions as Dirichlet values into the pressure
       for (typename std::map<types::boundary_id,
-           std_cxx11::shared_ptr<Function<dim> > >::iterator it =
+           std::shared_ptr<Function<dim> > >::iterator it =
              this->boundary->open_conditions_p.begin();
            it != this->boundary->open_conditions_p.end(); ++it)
         {
@@ -1102,12 +1102,12 @@ void NavierStokes<dim>::apply_boundary_conditions()
 {
   const double time = time_stepping.now();
   {
-    typename FunctionMap<dim>::type dirichlet_u;
+    std::map< types::boundary_id, const Function< dim > *> dirichlet_u;
 
     // evaluate Dirichlet boundaries and no-slip boundaries
     // modify the time in the function
     for (typename std::map<types::boundary_id,
-         std_cxx11::shared_ptr<Function<dim> > >::iterator it =
+         std::shared_ptr<Function<dim> > >::iterator it =
            this->boundary->dirichlet_conditions_u.begin();
          it != this->boundary->dirichlet_conditions_u.end(); ++it)
       {
@@ -1115,7 +1115,7 @@ void NavierStokes<dim>::apply_boundary_conditions()
         dirichlet_u[it->first] = it->second.get();
       }
 
-    ZeroFunction<dim> zero_func(dim);
+    Functions::ZeroFunction<dim> zero_func(dim);
     for (typename std::set<types::boundary_id>::const_iterator it =
            this->boundary->no_slip.begin(); it != this->boundary->no_slip.end(); ++it)
       dirichlet_u[*it] = &zero_func;
@@ -1140,7 +1140,7 @@ void NavierStokes<dim>::apply_boundary_conditions()
   if (!this->boundary->open_conditions_p.empty())
     {
       for (typename std::map<types::boundary_id,
-           std_cxx11::shared_ptr<Function<dim> > >::iterator
+           std::shared_ptr<Function<dim> > >::iterator
            it = this->boundary->open_conditions_p.begin();
            it != this->boundary->open_conditions_p.end(); ++it)
         it->second->set_time(time);
@@ -1209,7 +1209,7 @@ void NavierStokes<dim>::refine_grid_pressure_based (const unsigned int max_grid_
   Vector<float> estimated_error_per_cell (triangulation.n_active_cells());
   KellyErrorEstimator<dim>::estimate (dof_handler_p,
                                       QGauss<dim-1>(parameters.velocity_degree + 2),
-                                      typename FunctionMap<dim>::type(),
+                                      std::map< types::boundary_id, const Function< dim > *>(),
                                       pressure_extended,
                                       estimated_error_per_cell,
                                       ComponentMask(),
@@ -1300,6 +1300,8 @@ void NavierStokes<dim>::output_solution (const std::string output_name,
   std::vector<DataComponentInterpretation::DataComponentInterpretation>
   vector_component_interpretation
   (dim, DataComponentInterpretation::component_is_part_of_vector);
+  
+  solution.update_ghost_values();
 
   data_out.add_data_vector (get_dof_handler_u(),
                             solution.block(0),

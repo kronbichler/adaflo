@@ -18,7 +18,7 @@
 
 #include <deal.II/base/timer.h>
 
-#include <deal.II/lac/constraint_matrix.h>
+#include <deal.II/lac/affine_constraints.h>
 #include <deal.II/lac/trilinos_sparse_matrix.h>
 
 #include <deal.II/distributed/tria.h>
@@ -113,7 +113,7 @@ protected:
   const FlowParameters &parameters;
 
   TrilinosWrappers::SparseMatrix    preconditioner_matrix;
-  std_cxx11::shared_ptr<TrilinosWrappers::PreconditionAMG> amg_preconditioner;
+  std::shared_ptr<TrilinosWrappers::PreconditionAMG> amg_preconditioner;
 
   FullMatrix<double>   interpolation_concentration_pressure;
 
