@@ -398,7 +398,16 @@ FlowParameters::parse_parameters(const std::string parameter_file, ParameterHand
 {
   try
     {
-      prm.parse_input(parameter_file);
+      if (parameter_file.substr(parameter_file.find_last_of(".") + 1) == "json")
+        {
+          std::ifstream file;
+          file.open(parameter_file);
+          prm.parse_input_from_json(file, true);
+        }
+      else if (parameter_file.substr(parameter_file.find_last_of(".") + 1) == "prm")
+        prm.parse_input(parameter_file);
+      else
+        AssertThrow(false, ExcMessage("Parameterhandler cannot handle current file"));
     }
   catch (...)
     {
