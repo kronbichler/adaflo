@@ -415,7 +415,13 @@ FlowParameters::parse_parameters(const std::string parameter_file, ParameterHand
         prm.print_parameters(std::cout, ParameterHandler::Text);
       AssertThrow(false, ExcMessage("Invalid input parameter file."));
     }
+  
+  this->parse_parameters(prm);
+}
 
+void
+FlowParameters::parse_parameters(ParameterHandler &prm)
+{
   prm.enter_subsection("Navier-Stokes");
 
   dimension                  = prm.get_integer("dimension");
