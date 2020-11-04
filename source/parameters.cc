@@ -231,7 +231,7 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     Patterns::Integer(),
                     "defines whether to output vtk files with the "
                     "whole solution field or just collected point data");
-  prm.declare_entry("output wall_times",
+  prm.declare_entry("output wall times",
                     "0",
                     Patterns::Integer(),
                     "Defines whether to output wall times. 0 means no output.");
