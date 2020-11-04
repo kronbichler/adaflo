@@ -231,6 +231,10 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     Patterns::Integer(),
                     "defines whether to output vtk files with the "
                     "whole solution field or just collected point data");
+  prm.declare_entry("output wall times",
+                    "0",
+                    Patterns::Integer(),
+                    "Defines whether to output wall times. 0 means no output.");
   prm.leave_subsection();
 
   prm.enter_subsection("Two phase");
@@ -508,6 +512,7 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
   print_solution_fields = prm.get_integer("output vtk files");
   if (print_solution_fields > 2)
     print_solution_fields = 1;
+  output_wall_times      = prm.get_integer("output wall times") > 0;
   prm.leave_subsection();
 
 

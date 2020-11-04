@@ -66,7 +66,7 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   TimerOutput *                              timer_in)
   : pcout(std::cout, Utilities::MPI::this_mpi_process(tria_in.get_communicator()) == 0)
   , timer((timer_in == 0 ?
-             new TimerOutput(pcout, TimerOutput::summary, TimerOutput::wall_times) :
+             new TimerOutput(pcout, parameters_in.output_wall_times ? TimerOutput::summary : TimerOutput::never, TimerOutput::wall_times) :
              timer_in),
           helpers::DummyDeleter<TimerOutput>(timer_in == 0))
   , triangulation(tria_in)
