@@ -92,9 +92,13 @@ NavierStokes<dim>::NavierStokes(
 
   // if we own the timer (not obtained from another class), reset
   // it. otherwise, just set the pointer
+  
   if (external_timer == 0)
+  {
+    const auto output_frequency = parameters.output_wall_times ? TimerOutput::summary : TimerOutput::never;
     timer =
-      std::make_shared<TimerOutput>(pcout, TimerOutput::summary, TimerOutput::wall_times);
+      std::make_shared<TimerOutput>(pcout, output_frequency, TimerOutput::wall_times);
+  }
   else
     timer.reset(external_timer, helpers::DummyDeleter<TimerOutput>());
 }

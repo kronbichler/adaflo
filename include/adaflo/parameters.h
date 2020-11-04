@@ -89,6 +89,7 @@ struct FlowParameters
   unsigned int output_verbosity;
   double       output_frequency;
   unsigned int print_solution_fields;
+  bool         output_wall_times;
 
   TimeStepping::Scheme time_step_scheme;
   double               start_time;
