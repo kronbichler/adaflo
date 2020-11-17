@@ -254,7 +254,7 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
   // cells close to the interface (here: cells on finest level)
   epsilon_used        = 0;
   minimal_edge_length = global_omega_diameter;
-  cell_diameters.resize(this->matrix_free.n_macro_cells());
+  cell_diameters.resize(this->matrix_free.n_cell_batches());
 
   // to find the cell diameters, we compute the maximum and minimum eigenvalue
   // of the Jacobian transformation from the unit to the real cell. We check
@@ -280,7 +280,7 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
                           navier_stokes.get_fe_p(),
                           Quadrature<dim>(face_centers),
                           update_jacobians);
-  for (unsigned int cell = 0; cell < this->matrix_free.n_macro_cells(); ++cell)
+  for (unsigned int cell = 0; cell < this->matrix_free.n_cell_batches(); ++cell)
     {
       VectorizedArray<double> diameter = VectorizedArray<double>();
       for (unsigned int v = 0; v < this->matrix_free.n_components_filled(cell); ++v)

@@ -108,8 +108,8 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   matrix_free_float.clear();
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
-  artificial_viscosities.resize(this->matrix_free.n_macro_cells());
-  evaluated_convection.resize(this->matrix_free.n_macro_cells() *
+  artificial_viscosities.resize(this->matrix_free.n_cell_batches());
+  evaluated_convection.resize(this->matrix_free.n_cell_batches() *
                               this->matrix_free.get_n_q_points(2));
 
   // create diagonal preconditioner vector by assembly of mass matrix diagonal
@@ -162,14 +162,14 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   //                          QIterated<1> (QGauss<1>(2),
   //                          this->parameters.concentration_subdivisions),
   //                          data);
-  // cell_diameters_float.resize(matrix_free_float.n_macro_cells());
+  // cell_diameters_float.resize(matrix_free_float.n_cell_batches());
   // std::map<std::pair<unsigned int,unsigned int>,double> diameters;
-  // for (unsigned int c=0; c<this->matrix_free.n_macro_cells(); ++c)
+  // for (unsigned int c=0; c<this->matrix_free.n_cell_batches(); ++c)
   //   for (unsigned int v=0; v<this->matrix_free.n_components_filled(c); ++v)
   //     diameters[std::make_pair(this->matrix_free.get_cell_iterator(c,v)->level(),
   //                              this->matrix_free.get_cell_iterator(c,v)->index())]
   //       = this->cell_diameters[c][v];
-  // for (unsigned int c=0; c<matrix_free_float.n_macro_cells(); ++c)
+  // for (unsigned int c=0; c<matrix_free_float.n_cell_batches(); ++c)
   //   for (unsigned int v=0; v<matrix_free_float.n_components_filled(c); ++v)
   //     cell_diameters_float[c][v] =
   //       diameters[std::make_pair(matrix_free_float.get_cell_iterator(c,v)->level(),
@@ -943,7 +943,7 @@ LevelSetOKZSolver<dim>::advance_concentration_vmult(
       std::vector<Tensor<1, dim>> local_gradients(fe_face_values.get_quadrature().size());
       src.update_ghost_values();
 
-      for (unsigned int mcell = 0; mcell < this->matrix_free.n_macro_cells(); ++mcell)
+      for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
         for (unsigned int v = 0; v < this->matrix_free.n_components_filled(mcell); ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =
@@ -1338,7 +1338,7 @@ LevelSetOKZSolver<dim>::advance_concentration()
       std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
       std::vector<Tensor<1, dim>> local_gradients(fe_face_values.get_quadrature().size());
 
-      for (unsigned int mcell = 0; mcell < this->matrix_free.n_macro_cells(); ++mcell)
+      for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
         for (unsigned int v = 0; v < this->matrix_free.n_components_filled(mcell); ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =

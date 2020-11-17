@@ -168,7 +168,7 @@ LevelSetOKZMatrixSolver<dim>::compute_force()
 
   // loop over all cells and treat only those that are close to the interface
   // and give a contribution to the force
-  for (unsigned int mcell = 0; mcell < this->matrix_free.n_macro_cells(); ++mcell)
+  for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
     for (unsigned int vec = 0; vec < this->matrix_free.n_components_filled(mcell); ++vec)
       {
         local_rhs = 0;
