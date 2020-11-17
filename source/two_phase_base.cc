@@ -283,7 +283,7 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
   for (unsigned int cell = 0; cell < this->matrix_free.n_cell_batches(); ++cell)
     {
       VectorizedArray<double> diameter = VectorizedArray<double>();
-      for (unsigned int v = 0; v < this->matrix_free.n_components_filled(cell); ++v)
+      for (unsigned int v = 0; v < this->matrix_free.n_active_entries_per_cell_batch(cell); ++v)
         {
           typename DoFHandler<dim>::active_cell_iterator dcell =
             this->matrix_free.get_cell_iterator(cell, v, 1);
