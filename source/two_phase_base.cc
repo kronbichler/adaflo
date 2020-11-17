@@ -510,7 +510,7 @@ TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
   const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 1);
   const unsigned int   n_q_points = quadrature_formula.size();
 
-  FEValues<dim> fe_values(navier_stokes.get_fe_u()[0], quadrature_formula, update_values);
+  FEValues<dim> fe_values(navier_stokes.get_fe_u(), quadrature_formula, update_values);
   std::vector<Tensor<1, dim>> velocity_values(n_q_points);
 
   const FEValuesExtractors::Vector velocities(0);
@@ -659,11 +659,11 @@ std::vector<double> TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
                           quadrature_formula,
                           update_values | update_JxW_values | update_quadrature_points);
   FEValues<dim>        ns_values(this->mapping,
-                          navier_stokes.get_fe_u()[0],
+                          navier_stokes.get_fe_u(),
                           quadrature_formula,
                           update_values);
   FEValues<dim>        interior_ns_values(this->mapping,
-                                   navier_stokes.get_fe_u()[0],
+                                   navier_stokes.get_fe_u(),
                                    interior_quadrature,
                                    update_values | update_JxW_values |
                                      update_quadrature_points);
@@ -1007,7 +1007,7 @@ std::vector<double>
                           update_values | update_JxW_values | update_quadrature_points);
 
   FEValues<dim> ns_values(this->mapping,
-                          navier_stokes.get_fe_u()[0],
+                          navier_stokes.get_fe_u(),
                           quadrature_formula,
                           update_values);
 
