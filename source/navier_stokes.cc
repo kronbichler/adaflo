@@ -1102,7 +1102,7 @@ NavierStokes<dim>::compute_initial_stokes_field()
         {
           const VectorizedArray<double> viscosity =
             make_vectorized_array(parameters.viscosity);
-          for (unsigned int cell = 0; cell < matrix_free->n_macro_cells(); ++cell)
+          for (unsigned int cell = 0; cell < matrix_free->n_cell_batches(); ++cell)
             {
               VectorizedArray<double> *visc =
                 navier_stokes_matrix.begin_viscosities(cell);

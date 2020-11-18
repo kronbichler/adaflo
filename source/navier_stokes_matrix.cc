@@ -77,9 +77,9 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
 {
   matrix_free                      = &matrix_free_in;
   time_stepping                    = &time_stepping_in;
-  const unsigned int n_macro_cells = matrix_free->n_macro_cells();
+  const unsigned int n_cell_batches = matrix_free->n_cell_batches();
   const unsigned int n_q_points    = matrix_free->get_n_q_points(0);
-  const unsigned int size          = n_macro_cells * n_q_points;
+  const unsigned int size          = n_cell_batches * n_q_points;
 
   const bool use_variable_coefficients =
     parameters.density_diff != 0 || parameters.viscosity_diff != 0;

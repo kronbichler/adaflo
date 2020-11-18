@@ -137,9 +137,9 @@ PhaseFieldSolver<dim>::initialize_data_structures()
 
   this->TwoPhaseBaseAlgorithm<dim>::initialize_data_structures();
 
-  evaluated_convection.resize(this->matrix_free.n_macro_cells() *
+  evaluated_convection.resize(this->matrix_free.n_cell_batches() *
                               this->matrix_free.get_n_q_points(2));
-  evaluated_phi.resize(this->matrix_free.n_macro_cells() *
+  evaluated_phi.resize(this->matrix_free.n_cell_batches() *
                        this->matrix_free.get_n_q_points(2));
 
   velocity_vector = &this->navier_stokes.solution.block(0);

@@ -1720,7 +1720,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
 
   for (unsigned int mcell = cell_range.first; mcell < cell_range.second; ++mcell)
     {
-      for (unsigned int vec = 0; vec < matrix_free.n_components_filled(mcell); ++vec)
+      for (unsigned int vec = 0; vec < matrix_free.n_active_entries_per_cell_batch(mcell); ++vec)
         {
           typename DoFHandler<dim>::active_cell_iterator
             cell_u = matrix_free.get_cell_iterator(mcell, vec, 0),
