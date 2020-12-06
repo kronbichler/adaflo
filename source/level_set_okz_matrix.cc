@@ -37,6 +37,7 @@
 #include <deal.II/numerics/vector_tools.h>
 
 #include <adaflo/level_set_okz_matrix.h>
+#include <adaflo/util.h>
 
 #include <fstream>
 #include <iostream>
@@ -47,9 +48,8 @@ using namespace dealii;
 
 
 template <int dim>
-LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(
-  const FlowParameters &                     parameters_in,
-  parallel::distributed::Triangulation<dim> &tria_in)
+LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(const FlowParameters &parameters_in,
+                                                      Triangulation<dim> &  tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
 {}
 
@@ -86,7 +86,7 @@ LevelSetOKZMatrixSolver<dim>::initialize_data_structures()
   DoFTools::make_sparsity_pattern(this->dof_handler, dsp, this->constraints, true);
   system_matrix.reinit(this->dof_handler.locally_owned_dofs(),
                        dsp,
-                       this->triangulation.get_communicator(),
+                       get_communicator(this->triangulation),
                        true);
 }
 

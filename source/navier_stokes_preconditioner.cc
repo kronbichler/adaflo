@@ -36,6 +36,7 @@
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/navier_stokes_preconditioner.h>
+#include <adaflo/util.h>
 #include <ml_MultiLevelPreconditioner.h>
 #include <ml_epetra_utils.h>
 #include <ml_include.h>
@@ -959,10 +960,10 @@ NavierStokesPreconditioner<dim>::compute()
 
 template <int dim>
 NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
-  const FlowParameters &                           parameters,
-  const FlowBaseAlgorithm<dim> &                   flow_algorithm,
-  const parallel::distributed::Triangulation<dim> &tria,
-  const AffineConstraints<double> &                constraints_u)
+  const FlowParameters &           parameters,
+  const FlowBaseAlgorithm<dim> &   flow_algorithm,
+  const Triangulation<dim> &       tria,
+  const AffineConstraints<double> &constraints_u)
   : do_inner_solves(false)
   , initialized(false)
   , constraints_u(constraints_u)
@@ -1002,13 +1003,12 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
   const DoFHandler<dim> &          dof_handler_p,
   const AffineConstraints<double> &constraints_p)
 {
-  const FiniteElement<dim> &                       fe_u = dof_handler_u.get_fe();
-  const FiniteElement<dim> &                       fe_p = dof_handler_p.get_fe();
-  const parallel::distributed::Triangulation<dim> &triangulation =
-    dynamic_cast<const parallel::distributed::Triangulation<dim> &>(
-      dof_handler_u.get_triangulation());
+  const FiniteElement<dim> &fe_u = dof_handler_u.get_fe();
+  const FiniteElement<dim> &fe_p = dof_handler_p.get_fe();
+  const Triangulation<dim> &triangulation =
+    dynamic_cast<const Triangulation<dim> &>(dof_handler_u.get_triangulation());
   const unsigned int this_mpi_process =
-    Utilities::MPI::this_mpi_process(triangulation.get_communicator());
+    Utilities::MPI::this_mpi_process(get_communicator(triangulation));
 
   integration_helper.set_local_ordering_u(fe_u);
   integration_helper.initialize_linear_elements(fe_u, fe_p);
@@ -1118,7 +1118,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
             break;
           }
       const types::global_dof_index min_index =
-        -Utilities::MPI::max(min_local_index, triangulation.get_communicator());
+        -Utilities::MPI::max(min_local_index, get_communicator(triangulation));
       AssertThrow(min_index < dof_handler_p.n_dofs(),
                   ExcMessage("Could not locate pressure boundary dof."));
       if (constraints_schur_complement.can_store_line(min_index))
@@ -1140,7 +1140,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
             break;
           }
       const types::global_dof_index min_index =
-        -Utilities::MPI::max(min_local_index, triangulation.get_communicator());
+        -Utilities::MPI::max(min_local_index, get_communicator(triangulation));
       AssertThrow(min_index < dof_handler_p.n_dofs(),
                   ExcMessage("Could not locate pressure average dof."));
       if (constraints_schur_complement.can_store_line(min_index))
@@ -1163,7 +1163,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
     csp.reinit(dof_handler_u.locally_owned_dofs(),
                dof_handler_u.locally_owned_dofs(),
                constraints_u.get_local_lines(),
-               triangulation.get_communicator());
+               get_communicator(triangulation));
 
     if (parameters.precondition_velocity == FlowParameters::u_amg ||
         parameters.precondition_velocity == FlowParameters::u_ilu)
@@ -1186,7 +1186,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
         csp.reinit(reduced_owned,
                    reduced_owned,
                    constraints_u_scalar.get_local_lines(),
-                   triangulation.get_communicator());
+                   get_communicator(triangulation));
         DoFTools::make_sparsity_pattern(
           dof_handler_u_scalar, csp, constraints_u_scalar, false, this_mpi_process);
 
@@ -1268,7 +1268,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
     TrilinosWrappers::SparsityPattern csp(dof_handler_p.locally_owned_dofs(),
                                           dof_handler_p.locally_owned_dofs(),
                                           constraints_p.get_local_lines(),
-                                          triangulation.get_communicator());
+                                          get_communicator(triangulation));
 
     if (parameters.precondition_velocity != FlowParameters::u_amg_linear ||
         parameters.augmented_taylor_hood)
@@ -1305,7 +1305,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
         TrilinosWrappers::SparsityPattern    sparsity(dof_handler_p.locally_owned_dofs(),
                                                    dof_handler_p.locally_owned_dofs(),
                                                    constraints_p.get_local_lines(),
-                                                   triangulation.get_communicator());
+                                                   get_communicator(triangulation));
         std::vector<types::global_dof_index> local_dof_indices(fe_p.dofs_per_cell);
         std::vector<types::global_dof_index> neigh_dof_indices(fe_p.dofs_per_cell);
         std::vector<types::global_dof_index> const_dof_index(1);
@@ -1726,8 +1726,9 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
           typename DoFHandler<dim>::active_cell_iterator
             cell_u = matrix_free.get_cell_iterator(mcell, vec, 0),
             cell_p = matrix_free.get_cell_iterator(mcell, vec, 1);
-          typename parallel::distributed::Triangulation<dim>::active_cell_iterator cell(
-            &triangulation, cell_u->level(), cell_u->index());
+          typename Triangulation<dim>::active_cell_iterator cell(&triangulation,
+                                                                 cell_u->level(),
+                                                                 cell_u->index());
           Assert(cell->is_locally_owned(), ExcInternalError());
 
           // if we should not use linear elements for the preconditioner, use

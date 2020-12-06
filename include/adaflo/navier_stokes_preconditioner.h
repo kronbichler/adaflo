@@ -60,9 +60,9 @@ template <int dim>
 class NavierStokesPreconditioner
 {
 public:
-  NavierStokesPreconditioner(const FlowParameters &        parameters,
-                             const FlowBaseAlgorithm<dim> &base_algorithm,
-                             const parallel::distributed::Triangulation<dim> &tria,
+  NavierStokesPreconditioner(const FlowParameters &           parameters,
+                             const FlowBaseAlgorithm<dim> &   base_algorithm,
+                             const Triangulation<dim> &       tria,
                              const AffineConstraints<double> &constraints_u);
 
   void

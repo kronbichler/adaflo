@@ -33,6 +33,7 @@
 #include <deal.II/numerics/vector_tools.h>
 
 #include <adaflo/two_phase_base.h>
+#include <adaflo/util.h>
 
 #include <fstream>
 #include <iostream>
@@ -60,11 +61,11 @@ namespace
 
 template <int dim>
 TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
-  const FlowParameters &                     parameters_in,
-  const std::shared_ptr<FiniteElement<dim>>  fe_in,
-  parallel::distributed::Triangulation<dim> &tria_in,
-  TimerOutput *                              timer_in)
-  : pcout(std::cout, Utilities::MPI::this_mpi_process(tria_in.get_communicator()) == 0)
+  const FlowParameters &                    parameters_in,
+  const std::shared_ptr<FiniteElement<dim>> fe_in,
+  Triangulation<dim> &                      tria_in,
+  TimerOutput *                             timer_in)
+  : pcout(std::cout, Utilities::MPI::this_mpi_process(get_communicator(tria_in)) == 0)
   , timer((timer_in == 0 ?
              new TimerOutput(pcout,
                              parameters_in.output_wall_times ? TimerOutput::summary :
@@ -313,8 +314,8 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
       cell_diameters[cell] = diameter;
     }
   minimal_edge_length =
-    -Utilities::MPI::max(-minimal_edge_length, triangulation.get_communicator());
-  epsilon_used = Utilities::MPI::max(epsilon_used, triangulation.get_communicator());
+    -Utilities::MPI::max(-minimal_edge_length, get_communicator(triangulation));
+  epsilon_used = Utilities::MPI::max(epsilon_used, get_communicator(triangulation));
 
   this->pcout << "Mesh size (largest/smallest element length at finest level): "
               << epsilon_used << " / " << minimal_edge_length << std::endl;
@@ -415,7 +416,7 @@ TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
       }
   const bool global_must_refine =
     Utilities::MPI::max(static_cast<unsigned int>(must_refine),
-                        triangulation.get_communicator());
+                        get_communicator(triangulation));
   timer->leave_subsection();
   return global_must_refine;
 }
@@ -536,7 +537,7 @@ TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
           max_velocity = std::max(max_velocity, velocity_values[q].norm());
       }
 
-  return Utilities::MPI::max(max_velocity, triangulation.get_communicator());
+  return Utilities::MPI::max(max_velocity, get_communicator(triangulation));
 }
 
 
@@ -570,8 +571,8 @@ TwoPhaseBaseAlgorithm<dim>::get_concentration_range() const
           }
       }
   last_concentration_range = std::make_pair(
-    -Utilities::MPI::max(-min_concentration, triangulation.get_communicator()),
-    Utilities::MPI::max(max_concentration, triangulation.get_communicator()));
+    -Utilities::MPI::max(-min_concentration, get_communicator(triangulation)),
+    Utilities::MPI::max(max_concentration, get_communicator(triangulation)));
   return last_concentration_range;
 }
 
@@ -873,7 +874,7 @@ std::vector<double> TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
           }
       }
 
-  const MPI_Comm &mpi_communicator = triangulation.get_communicator();
+  const MPI_Comm &mpi_communicator = get_communicator(triangulation);
 
   const double global_area      = Utilities::MPI::sum(area, mpi_communicator);
   const double global_perimeter = Utilities::MPI::sum(perimeter, mpi_communicator);
@@ -1060,7 +1061,7 @@ std::vector<double>
           }
       }
 
-  const MPI_Comm &mpi_communicator = triangulation.get_communicator();
+  const MPI_Comm &mpi_communicator = get_communicator(triangulation);
 
   Tensor<1, dim> global_mass_center;
   Tensor<1, dim> global_velocity;
