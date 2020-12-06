@@ -19,6 +19,7 @@
 
 #include <deal.II/matrix_free/fe_evaluation.h>
 
+#include <adaflo/level_set_okz_compute_curvature.h>
 #include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/level_set_okz_template_instantations.h>
 
@@ -258,9 +259,10 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
             {
               this->constraints_normals.distribute(
                 this->normal_vector_field.block(block));
-              compute_curvature_vmult(this->normal_vector_rhs.block(block),
-                                      this->normal_vector_field.block(block),
-                                      2);
+              curvatur_operator.compute_curvature_vmult(
+                this->normal_vector_rhs.block(block),
+                this->normal_vector_field.block(block),
+                2);
             }
           preconditioner.vmult(this->normal_vector_rhs, this->normal_vector_rhs);
           this->normal_vector_field.add(-0.05, this->normal_vector_rhs);

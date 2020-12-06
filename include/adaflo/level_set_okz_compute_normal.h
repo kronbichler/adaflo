@@ -29,10 +29,14 @@
 using namespace dealii;
 
 template <int dim>
+class LevelSetOKZSolverComputeCurvature;
+
+template <int dim>
 class LevelSetOKZSolverComputeNormal
 {
 public:
   LevelSetOKZSolverComputeNormal(
+    LevelSetOKZSolverComputeCurvature<dim> &         curvatur_operator,
     const AlignedVector<VectorizedArray<double>> &   cell_diameters,
     const double &                                   epsilon_used,
     const double &                                   minimal_edge_length,
@@ -49,7 +53,8 @@ public:
     const DiagonalPreconditioner<double> &           preconditioner,
     const std::shared_ptr<BlockMatrixExtension> &    projection_matrix,
     const std::shared_ptr<BlockILUExtension> &       ilu_projection_matrix)
-    : cell_diameters(cell_diameters)
+    : curvatur_operator(curvatur_operator)
+    , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
     , constraints_normals(constraints_normals)
@@ -69,17 +74,13 @@ public:
 
 
 
-  void
-  compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                          const LinearAlgebra::distributed::Vector<double> &srcc,
-                          const bool apply_diffusion) const
-  {
-    (void)dst;
-    (void)srcc;
-    (void)apply_diffusion;
-
-    AssertThrow(false, ExcNotImplemented());
-  }
+  //  void
+  //  compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  //                          const LinearAlgebra::distributed::Vector<double> &srcc,
+  //                          const bool apply_diffusion) const
+  //  {
+  //    curvatur_operator.compute_curvature_vmult(dst, srcc, apply_diffusion);
+  //  }
 
   virtual void
   compute_normal(const bool fast_computation);
@@ -107,6 +108,7 @@ private:
                            const std::pair<unsigned int, unsigned int> &cell_range) const;
 
 
+  LevelSetOKZSolverComputeCurvature<dim> &         curvatur_operator;
   const AlignedVector<VectorizedArray<double>> &   cell_diameters;
   const double &                                   epsilon_used;
   const double &                                   minimal_edge_length;

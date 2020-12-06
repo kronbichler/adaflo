@@ -21,6 +21,7 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/level_set_okz_compute_curvature.h>
+#include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/level_set_okz_template_instantations.h>
 
 
@@ -196,7 +197,7 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   // This function computes the curvature from the normal field. Could also
   // compute the curvature directly from C, but that is less accurate. TODO:
   // include that variant by a parameter
-  compute_normal(false);
+  normal_operator.compute_normal(false);
 
   TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
 

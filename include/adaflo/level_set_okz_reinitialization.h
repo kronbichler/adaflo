@@ -22,6 +22,7 @@
 #include <deal.II/matrix_free/matrix_free.h>
 
 #include <adaflo/diagonal_preconditioner.h>
+#include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/navier_stokes.h>
 #include <adaflo/parameters.h>
 #include <adaflo/time_stepping.h>
@@ -33,6 +34,7 @@ class LevelSetOKZSolverReinitialization
 {
 public:
   LevelSetOKZSolverReinitialization(
+    LevelSetOKZSolverComputeNormal<dim> &                   normal_operator,
     const LinearAlgebra::distributed::BlockVector<double> & normal_vector_field,
     const AlignedVector<VectorizedArray<double>> &          cell_diameters,
     const double &                                          epsilon_used,
@@ -51,7 +53,8 @@ public:
     bool &                                                  first_reinit_step,
     const MatrixFree<dim, double> &                         matrix_free,
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
-    : normal_vector_field(normal_vector_field)
+    : normal_operator(normal_operator)
+    , normal_vector_field(normal_vector_field)
     , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
@@ -100,10 +103,10 @@ private:
   virtual void
   compute_normal(const bool fast_computation)
   {
-    (void)fast_computation;
-
-    AssertThrow(false, ExcNotImplemented())
+    normal_operator.compute_normal(fast_computation);
   }
+
+  LevelSetOKZSolverComputeNormal<dim> &normal_operator;
 
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
 

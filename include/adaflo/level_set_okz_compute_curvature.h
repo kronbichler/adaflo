@@ -30,10 +30,14 @@
 using namespace dealii;
 
 template <int dim>
+class LevelSetOKZSolverComputeNormal;
+
+template <int dim>
 class LevelSetOKZSolverComputeCurvature
 {
 public:
   LevelSetOKZSolverComputeCurvature(
+    LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
     const AlignedVector<VectorizedArray<double>> &         cell_diameters,
     const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
     const AffineConstraints<double> &                      constraints_curvature,
@@ -48,7 +52,8 @@ public:
     const DiagonalPreconditioner<double> &                 preconditioner,
     std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
     std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
-    : cell_diameters(cell_diameters)
+    : normal_operator(normal_operator)
+    , cell_diameters(cell_diameters)
     , normal_vector_field(normal_vector_field)
     , constraints_curvature(constraints_curvature)
     , constraints(constraints)
@@ -66,13 +71,11 @@ public:
 
 
 
-  virtual void
-  compute_normal(const bool fast_computation)
-  {
-    (void)fast_computation;
-
-    AssertThrow(false, ExcNotImplemented());
-  }
+  //  virtual void
+  //  compute_normal(const bool fast_computation)
+  //  {
+  //    normal_operator.compute_normal(fast_computation);
+  //  }
 
   virtual void
   compute_curvature(const bool diffuse_large_values = false);
@@ -99,6 +102,7 @@ private:
     const std::pair<unsigned int, unsigned int> &     cell_range) const;
 
 
+  LevelSetOKZSolverComputeNormal<dim> &                  normal_operator;
   const AlignedVector<VectorizedArray<double>> &         cell_diameters;
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
   const AffineConstraints<double> &                      constraints_curvature;
