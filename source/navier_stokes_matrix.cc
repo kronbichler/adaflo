@@ -55,7 +55,9 @@ NavierStokesMatrix<dim>::NavierStokesMatrix(
   const unsigned int degree_p = matrix_free->get_dof_handler(1).get_fe().degree; \
                                                                                  \
   AssertThrow(degree_p >= 1 && degree_p <= 5, ExcNotImplemented());              \
-  if (degree_p == 1)                                                             \
+  if (parameters.use_simplex_mesh)                                               \
+    OPERATION(-1);                                                               \
+  else if (degree_p == 1)                                                        \
     OPERATION(1);                                                                \
   else if (degree_p == 2)                                                        \
     OPERATION(2);                                                                \
@@ -587,12 +589,14 @@ NavierStokesMatrix<dim>::local_operation(
   const VectorType &                           src,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
-  typedef VectorizedArray<double>                    vector_t;
-  FEEvaluation<dim, degree_p + 1, degree_p + 2, dim> velocity(data, 0);
-  FEEvaluation<dim, degree_p, degree_p + 2, 1>       pressure(data, 1);
+  typedef VectorizedArray<double>                                            vector_t;
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> velocity(
+    data, 0);
+  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1);
 
-  FEEvaluation<dim, degree_p + 1, degree_p + 2, dim> old(data, 0);
-  FEEvaluation<dim, degree_p + 1, degree_p + 2, dim> old_old(data, 0);
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old(data, 0);
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old_old(data,
+                                                                                     0);
 
   // get variables for the time step
   const vector_t time_step_weight = make_vectorized_array<double>(
@@ -870,8 +874,9 @@ NavierStokesMatrix<dim>::local_divergence(
   const LinearAlgebra::distributed::Vector<double> &src,
   const std::pair<unsigned int, unsigned int> &     cell_range) const
 {
-  FEEvaluation<dim, degree_p + 1, degree_p + 2, dim> velocity(data, 0);
-  FEEvaluation<dim, degree_p, degree_p + 2, 1>       pressure(data, 1);
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> velocity(
+    data, 0);
+  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1);
 
   const VectorizedArray<double> *mu_values =
     variable_viscosities.empty() ? 0 : begin_viscosities(cell_range.first);

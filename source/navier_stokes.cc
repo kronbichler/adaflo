@@ -946,7 +946,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
            cell != dof_handler_p.end();
            ++cell)
         if (cell->is_locally_owned())
-          for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
+          for (unsigned int face = 0; face < cell->n_faces(); ++face)
             if (cell->at_boundary(face))
               {
                 typename std::map<types::boundary_id,
@@ -1203,7 +1203,12 @@ NavierStokes<dim>::apply_boundary_conditions()
            ++it)
         it->second->set_time(time);
 
-      QGauss<dim - 1> face_quadrature(fe_u.degree + 1);
+      Quadrature<dim - 1> face_quadrature;
+
+      if (parameters.use_simplex_mesh)
+        face_quadrature = Simplex::QGauss<dim - 1>(fe_u.degree + 1);
+      else
+        face_quadrature = QGauss<dim - 1>(fe_u.degree + 1);
 
       FEFaceValues<dim> fe_values(this->mapping,
                                   fe_u,
@@ -1220,8 +1225,8 @@ NavierStokes<dim>::apply_boundary_conditions()
              dof_handler_u.begin_active();
            cell != dof_handler_u.end();
            ++cell)
-        for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-          if (cell->is_locally_owned())
+        if (cell->is_locally_owned())
+          for (unsigned int face = 0; face < cell->n_faces(); ++face)
             if (cell->at_boundary(face) && (this->boundary->open_conditions_p.find(
                                               cell->face(face)->boundary_id()) !=
                                             this->boundary->open_conditions_p.end()))

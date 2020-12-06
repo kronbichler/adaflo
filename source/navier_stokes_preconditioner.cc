@@ -1017,9 +1017,9 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
   const unsigned int this_mpi_process =
     Utilities::MPI::this_mpi_process(get_communicator(triangulation));
 
+  integration_helper.set_local_ordering_u(fe_u);
   if (parameters.use_simplex_mesh == false)
     {
-      integration_helper.set_local_ordering_u(fe_u);
       integration_helper.initialize_linear_elements(fe_u, fe_p);
     }
   else
