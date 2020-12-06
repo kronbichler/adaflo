@@ -42,11 +42,6 @@ public:
   virtual ~LevelSetOKZSolver()
   {}
 
-  void
-  compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                          const LinearAlgebra::distributed::Vector<double> &srcc,
-                          const bool apply_diffusion) const;
-
   virtual void
   initialize_data_structures();
 
@@ -89,21 +84,6 @@ private:
                       LinearAlgebra::distributed::Vector<double> &      dst,
                       const LinearAlgebra::distributed::Vector<double> &src,
                       const std::pair<unsigned int, unsigned int> &     cell_range);
-
-  // diffusion_setting: 0: both terms, 1: only mass, 2: only diffusion
-  template <int ls_degree, int diffusion_setting>
-  void
-  local_compute_curvature(const MatrixFree<dim, double> &                   data,
-                          LinearAlgebra::distributed::Vector<double> &      dst,
-                          const LinearAlgebra::distributed::Vector<double> &src,
-                          const std::pair<unsigned int, unsigned int> &cell_range) const;
-  template <int ls_degree>
-  void
-  local_compute_curvature_rhs(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range) const;
 
   void
   local_projection_matrix(
