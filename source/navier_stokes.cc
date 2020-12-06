@@ -39,6 +39,7 @@
 #include <deal.II/numerics/vector_tools.h>
 
 #include <deal.II/simplex/fe_lib.h>
+#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/navier_stokes.h>
 #include <adaflo/util.h>
@@ -325,6 +326,9 @@ void
 NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
                                  const Function<dim> &)
 {
+  if (parameters.use_simplex_mesh)
+    AssertDimension(parameters.global_refinements, 0);
+
   // if we should to more than 15 refinements, this can't be right: We would
   // get 1e9 as many elements in 2d and 3e13 in 3d! The user likely used this
   // variables for specifying how often to refine a rectangle...
@@ -382,9 +386,17 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *external_matrix_free)
       std::vector<const AffineConstraints<double> *> constraints;
       constraints.push_back(&constraints_u);
       constraints.push_back(&constraints_p);
-      std::vector<Quadrature<1>> quadratures;
-      quadratures.push_back(QGauss<1>(parameters.velocity_degree + 1));
-      quadratures.push_back(QGauss<1>(parameters.velocity_degree));
+      std::vector<Quadrature<dim>> quadratures;
+      if (parameters.use_simplex_mesh)
+        {
+          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree + 1));
+          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree));
+        }
+      else
+        {
+          quadratures.push_back(QGauss<dim>(parameters.velocity_degree + 1));
+          quadratures.push_back(QGauss<dim>(parameters.velocity_degree));
+        }
       matrix_free->reinit(this->mapping, dof_handlers, constraints, quadratures, data);
     }
   navier_stokes_matrix.initialize(*matrix_free,
@@ -1188,7 +1200,8 @@ NavierStokes<dim>::apply_boundary_conditions()
 
       QGauss<dim - 1> face_quadrature(fe_u.degree + 1);
 
-      FEFaceValues<dim> fe_values(fe_u,
+      FEFaceValues<dim> fe_values(this->mapping,
+                                  fe_u,
                                   face_quadrature,
                                   update_values | update_JxW_values |
                                     update_quadrature_points | update_normal_vectors);
