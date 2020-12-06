@@ -127,7 +127,7 @@ private:
   const FlowParameters &                                  parameters;
   const TimeStepping &                                    time_stepping;
   bool &                                                  first_reinit_step;
-  const MatrixFree<dim>                                   matrix_free;
+  const MatrixFree<dim> &                                 matrix_free;
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;
 };
 

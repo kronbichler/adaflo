@@ -48,14 +48,6 @@ public:
     const LinearAlgebra::distributed::Vector<double> &src) const;
 
   void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<double> &sr) const;
-
-  void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<float> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<float> &sr) const;
-
-  void
   compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
                           const LinearAlgebra::distributed::Vector<double> &srcc,
                           const bool apply_diffusion) const;
@@ -118,18 +110,6 @@ private:
     LinearAlgebra::distributed::Vector<double> &      dst,
     const LinearAlgebra::distributed::Vector<double> &src,
     const std::pair<unsigned int, unsigned int> &     cell_range);
-  template <int ls_degree, typename Number>
-  void
-  local_compute_normal(const MatrixFree<dim, Number> &                        data,
-                       LinearAlgebra::distributed::BlockVector<Number> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<Number> &src,
-                       const std::pair<unsigned int, unsigned int> &cell_range) const;
-  template <int ls_degree>
-  void
-  local_compute_normal_rhs(const MatrixFree<dim, double> &                   data,
-                           LinearAlgebra::distributed::BlockVector<double> & dst,
-                           const LinearAlgebra::distributed::Vector<double> &src,
-                           const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   // diffusion_setting: 0: both terms, 1: only mass, 2: only diffusion
   template <int ls_degree, int diffusion_setting>
