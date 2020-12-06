@@ -321,6 +321,59 @@ LevelSetOKZSolver<dim>::local_projection_matrix(
 
 
 
+#define EXPAND_OPERATIONS(OPERATION)                                                      \
+  const unsigned int degree_u  = this->navier_stokes.get_dof_handler_u().get_fe().degree; \
+  const unsigned int ls_degree = this->parameters.concentration_subdivisions;             \
+                                                                                          \
+  AssertThrow(degree_u >= 2 && degree_u <= 5, ExcNotImplemented());                       \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());                     \
+  if (ls_degree == 1)                                                                     \
+    {                                                                                     \
+      if (degree_u == 2)                                                                  \
+        OPERATION(1, 2);                                                                  \
+      else if (degree_u == 3)                                                             \
+        OPERATION(1, 3);                                                                  \
+      else if (degree_u == 4)                                                             \
+        OPERATION(1, 4);                                                                  \
+      else if (degree_u == 5)                                                             \
+        OPERATION(1, 5);                                                                  \
+    }                                                                                     \
+  else if (ls_degree == 2)                                                                \
+    {                                                                                     \
+      if (degree_u == 2)                                                                  \
+        OPERATION(2, 2);                                                                  \
+      else if (degree_u == 3)                                                             \
+        OPERATION(2, 3);                                                                  \
+      else if (degree_u == 4)                                                             \
+        OPERATION(2, 4);                                                                  \
+      else if (degree_u == 5)                                                             \
+        OPERATION(2, 5);                                                                  \
+    }                                                                                     \
+  else if (ls_degree == 3)                                                                \
+    {                                                                                     \
+      if (degree_u == 2)                                                                  \
+        OPERATION(3, 2);                                                                  \
+      else if (degree_u == 3)                                                             \
+        OPERATION(3, 3);                                                                  \
+      else if (degree_u == 4)                                                             \
+        OPERATION(3, 4);                                                                  \
+      else if (degree_u == 5)                                                             \
+        OPERATION(3, 5);                                                                  \
+    }                                                                                     \
+  else if (ls_degree == 4)                                                                \
+    {                                                                                     \
+      if (degree_u == 2)                                                                  \
+        OPERATION(4, 2);                                                                  \
+      else if (degree_u == 3)                                                             \
+        OPERATION(4, 3);                                                                  \
+      else if (degree_u == 4)                                                             \
+        OPERATION(4, 4);                                                                  \
+      else if (degree_u == 5)                                                             \
+        OPERATION(4, 5);                                                                  \
+    }
+
+
+
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
@@ -410,6 +463,29 @@ LevelSetOKZSolver<dim>::local_compute_force(
 
       vel_values.distribute_local_to_global(dst);
     }
+}
+
+template <int dim>
+void
+LevelSetOKZSolver<dim>::compute_force()
+{
+  compute_heaviside();
+  compute_curvature();
+
+  TimerOutput::Scope timer(*this->timer, "LS compute force.");
+
+  this->compute_density_on_faces();
+
+  this->navier_stokes.user_rhs = 0;
+#define OPERATION(ls_degree, vel_degree)                                          \
+  this->matrix_free.cell_loop(                                                    \
+    &LevelSetOKZSolver<dim>::template local_compute_force<ls_degree, vel_degree>, \
+    this,                                                                         \
+    this->navier_stokes.user_rhs.block(0),                                        \
+    this->solution.block(0))
+
+  EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
 }
 
 
@@ -553,367 +629,6 @@ LevelSetOKZSolver<dim>::local_advance_concentration_rhs(
 
 
 template <int dim>
-template <int ls_degree, typename Number>
-void
-LevelSetOKZSolver<dim>::local_compute_normal(
-  const MatrixFree<dim, Number> &                        data,
-  LinearAlgebra::distributed::BlockVector<Number> &      dst,
-  const LinearAlgebra::distributed::BlockVector<Number> &src,
-  const std::pair<unsigned int, unsigned int> &          cell_range) const
-{
-  bool do_float = std::is_same<Number, float>::value;
-  // The second input argument below refers to which constrains should be used,
-  // 4 means constraints_normals
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim, Number> phi(data,
-                                                               do_float ? 0 : 4,
-                                                               do_float ? 0 : 2);
-  const VectorizedArray<Number>                            min_diameter =
-    make_vectorized_array<Number>(this->epsilon_used / this->parameters.epsilon);
-  // cast avoids compile errors, but we always use the path without casting
-  const VectorizedArray<Number> *cell_diameters =
-    do_float ?
-      reinterpret_cast<const VectorizedArray<Number> *>(cell_diameters_float.begin()) :
-      reinterpret_cast<const VectorizedArray<Number> *>(this->cell_diameters.begin());
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      phi.reinit(cell);
-      phi.read_dof_values(src);
-      phi.evaluate(true, true);
-      const VectorizedArray<Number> damping =
-        Number(4.) *
-        Utilities::fixed_power<2>(
-          std::max(min_diameter, cell_diameters[cell] / static_cast<Number>(ls_degree)));
-      for (unsigned int q = 0; q < phi.n_q_points; ++q)
-        {
-          phi.submit_value(phi.get_value(q), q);
-          phi.submit_gradient(phi.get_gradient(q) * damping, q);
-        }
-      phi.integrate(true, true);
-      phi.distribute_local_to_global(dst);
-    }
-}
-
-
-
-template <int dim>
-template <int ls_degree>
-void
-LevelSetOKZSolver<dim>::local_compute_normal_rhs(
-  const MatrixFree<dim, double> &                  data,
-  LinearAlgebra::distributed::BlockVector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
-  const std::pair<unsigned int, unsigned int> &cell_range) const
-{
-  // The second input argument below refers to which constrains should be used,
-  // 4 means constraints_normals and 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(data, 4, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>   ls_values(data, 2, 2);
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      normal_values.reinit(cell);
-      ls_values.reinit(cell);
-
-      ls_values.read_dof_values_plain(this->solution.block(0));
-      ls_values.evaluate(false, true, false);
-
-      for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
-        normal_values.submit_value(ls_values.get_gradient(q), q);
-
-      normal_values.integrate(true, false);
-      normal_values.distribute_local_to_global(dst);
-    }
-}
-
-
-
-template <int dim>
-template <int ls_degree, int diffusion_setting>
-void
-LevelSetOKZSolver<dim>::local_compute_curvature(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
-{
-  // The second input argument below refers to which constrains should be used,
-  // 3 means constraints_curvature
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> phi(data, 3, 2);
-  const VectorizedArray<double>                  min_diameter =
-    make_vectorized_array(this->epsilon_used / this->parameters.epsilon);
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      phi.reinit(cell);
-      phi.read_dof_values(src);
-      // If diffusion_setting is true a damping term is added to the weak form
-      //  i.e. diffusion_setting=1 => diffusion_setting%2 == 1 is true.
-      phi.evaluate(diffusion_setting < 2, diffusion_setting % 2 == 1);
-      const VectorizedArray<double> damping =
-        diffusion_setting % 2 == 1 ?
-          Utilities::fixed_power<2>(
-            std::max(min_diameter,
-                     this->cell_diameters[cell] / static_cast<double>(ls_degree))) :
-          VectorizedArray<double>();
-      for (unsigned int q = 0; q < phi.n_q_points; ++q)
-        {
-          if (diffusion_setting < 2)
-            phi.submit_value(phi.get_value(q), q);
-          if (diffusion_setting % 2 == 1)
-            phi.submit_gradient(phi.get_gradient(q) * damping, q);
-        }
-      phi.integrate(diffusion_setting < 2, diffusion_setting % 2 == 1);
-      phi.distribute_local_to_global(dst);
-    }
-}
-
-
-
-template <int dim>
-template <int ls_degree>
-void
-LevelSetOKZSolver<dim>::local_compute_curvature_rhs(
-  const MatrixFree<dim, double> &             data,
-  LinearAlgebra::distributed::Vector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
-  const std::pair<unsigned int, unsigned int> &cell_range) const
-{
-  // The second input argument below refers to which constrains should be used,
-  // 4 means constraints_normals and 3 constraints_curvature
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(data, 4, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>   curv_values(data, 3, 2);
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      normal_values.reinit(cell);
-      curv_values.reinit(cell);
-
-      normal_values.read_dof_values_plain(this->normal_vector_field);
-
-      // This computes (v, \nabla \cdot (n/|n|)). Since we store only \nabla
-      // \phi in the vector normal_values, the normalization must be done here
-      // and be done before we apply the derivatives, which is done in the
-      // code below.
-      bool all_zero = true;
-      for (unsigned int i = 0; i < normal_values.dofs_per_component; ++i)
-        {
-          Tensor<1, dim, VectorizedArray<double>> normal = normal_values.get_dof_value(i);
-          const VectorizedArray<double>           normal_norm = normal.norm();
-          for (unsigned int d = 0; d < VectorizedArray<double>::size(); ++d)
-            if (normal_norm[d] > 1e-2)
-              {
-                all_zero = false;
-                for (unsigned int e = 0; e < dim; ++e)
-                  normal[e][d] /= normal_norm[d];
-              }
-            else
-              for (unsigned int e = 0; e < dim; ++e)
-                normal[e][d] = 0;
-          normal_values.submit_dof_value(normal, i);
-        }
-
-      if (all_zero == false)
-        {
-          normal_values.evaluate(false, true, false);
-          for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
-            curv_values.submit_value(-normal_values.get_divergence(q), q);
-          curv_values.integrate(true, false);
-          curv_values.distribute_local_to_global(dst);
-        }
-    }
-}
-
-
-
-template <int dim>
-template <int ls_degree, bool diffuse_only>
-void
-LevelSetOKZSolver<dim>::local_reinitialize(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
-{
-  const double dtau_inv = std::max(0.95 / (1. / (dim * dim) * this->minimal_edge_length /
-                                           this->parameters.concentration_subdivisions),
-                                   1. / (5. * this->time_stepping.step_size()));
-
-  // The second input argument below refers to which constrains should be used,
-  // 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree> phi(data, 2, 2);
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      phi.reinit(cell);
-      phi.read_dof_values(src);
-      phi.evaluate(true, true, false);
-
-      VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
-      VectorizedArray<double> diffusion =
-        std::max(make_vectorized_array(this->epsilon_used),
-                 cell_diameter / static_cast<double>(ls_degree));
-
-      const Tensor<1, dim, VectorizedArray<double>> *normal =
-        &evaluated_convection[cell * phi.n_q_points];
-      for (unsigned int q = 0; q < phi.n_q_points; ++q)
-        if (!diffuse_only)
-          {
-            phi.submit_value(dtau_inv * phi.get_value(q), q);
-            phi.submit_gradient((diffusion * (normal[q] * phi.get_gradient(q))) *
-                                  normal[q],
-                                q);
-          }
-        else
-          {
-            phi.submit_value(dtau_inv * phi.get_value(q), q);
-            phi.submit_gradient(phi.get_gradient(q) * diffusion, q);
-          }
-
-      phi.integrate(true, true);
-      phi.distribute_local_to_global(dst);
-    }
-}
-
-
-
-template <int dim>
-template <int ls_degree, bool diffuse_only>
-void
-LevelSetOKZSolver<dim>::local_reinitialize_rhs(
-  const MatrixFree<dim, double> &             data,
-  LinearAlgebra::distributed::Vector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
-  const std::pair<unsigned int, unsigned int> &cell_range)
-{
-  // The second input argument below refers to which constrains should be used,
-  // 2 means constraints (for LS-function) and 4 means constraints_normals
-  FEEvaluation<dim, ls_degree, 2 * ls_degree>      phi(data, 2, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normals(data, 4, 2);
-
-  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      phi.reinit(cell);
-      phi.read_dof_values_plain(this->solution.block(0));
-      phi.evaluate(true, true, false);
-
-      normals.reinit(cell);
-      normals.read_dof_values_plain(this->normal_vector_field);
-      normals.evaluate(true, false, false);
-
-      VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
-      VectorizedArray<double> diffusion =
-        std::max(make_vectorized_array(this->epsilon_used),
-                 cell_diameter / static_cast<double>(ls_degree));
-
-      for (unsigned int q = 0; q < phi.n_q_points; ++q)
-        if (!diffuse_only)
-          {
-            Tensor<1, dim, VectorizedArray<double>> grad = phi.get_gradient(q);
-            if (first_reinit_step)
-              {
-                Tensor<1, dim, VectorizedArray<double>> normal = normals.get_value(q);
-                normal /= std::max(make_vectorized_array(1e-4), normal.norm());
-                evaluated_convection[cell * phi.n_q_points + q] = normal;
-              }
-            // take normal as it was for the first reinit step
-            Tensor<1, dim, VectorizedArray<double>> normal =
-              evaluated_convection[cell * phi.n_q_points + q];
-            phi.submit_gradient(normal *
-                                  (0.5 * (1. - phi.get_value(q) * phi.get_value(q)) -
-                                   (normal * grad * diffusion)),
-                                q);
-          }
-        else
-          {
-            phi.submit_gradient(-diffusion * phi.get_gradient(q), q);
-          }
-
-      phi.integrate(false, true);
-      phi.distribute_local_to_global(dst);
-    }
-}
-
-
-
-#define EXPAND_OPERATIONS(OPERATION)                                                      \
-  const unsigned int degree_u  = this->navier_stokes.get_dof_handler_u().get_fe().degree; \
-  const unsigned int ls_degree = this->parameters.concentration_subdivisions;             \
-                                                                                          \
-  AssertThrow(degree_u >= 2 && degree_u <= 5, ExcNotImplemented());                       \
-  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());                     \
-  if (ls_degree == 1)                                                                     \
-    {                                                                                     \
-      if (degree_u == 2)                                                                  \
-        OPERATION(1, 2);                                                                  \
-      else if (degree_u == 3)                                                             \
-        OPERATION(1, 3);                                                                  \
-      else if (degree_u == 4)                                                             \
-        OPERATION(1, 4);                                                                  \
-      else if (degree_u == 5)                                                             \
-        OPERATION(1, 5);                                                                  \
-    }                                                                                     \
-  else if (ls_degree == 2)                                                                \
-    {                                                                                     \
-      if (degree_u == 2)                                                                  \
-        OPERATION(2, 2);                                                                  \
-      else if (degree_u == 3)                                                             \
-        OPERATION(2, 3);                                                                  \
-      else if (degree_u == 4)                                                             \
-        OPERATION(2, 4);                                                                  \
-      else if (degree_u == 5)                                                             \
-        OPERATION(2, 5);                                                                  \
-    }                                                                                     \
-  else if (ls_degree == 3)                                                                \
-    {                                                                                     \
-      if (degree_u == 2)                                                                  \
-        OPERATION(3, 2);                                                                  \
-      else if (degree_u == 3)                                                             \
-        OPERATION(3, 3);                                                                  \
-      else if (degree_u == 4)                                                             \
-        OPERATION(3, 4);                                                                  \
-      else if (degree_u == 5)                                                             \
-        OPERATION(3, 5);                                                                  \
-    }                                                                                     \
-  else if (ls_degree == 4)                                                                \
-    {                                                                                     \
-      if (degree_u == 2)                                                                  \
-        OPERATION(4, 2);                                                                  \
-      else if (degree_u == 3)                                                             \
-        OPERATION(4, 3);                                                                  \
-      else if (degree_u == 4)                                                             \
-        OPERATION(4, 4);                                                                  \
-      else if (degree_u == 5)                                                             \
-        OPERATION(4, 5);                                                                  \
-    }
-
-
-template <int dim>
-void
-LevelSetOKZSolver<dim>::compute_force()
-{
-  compute_heaviside();
-  compute_curvature();
-
-  TimerOutput::Scope timer(*this->timer, "LS compute force.");
-
-  this->compute_density_on_faces();
-
-  this->navier_stokes.user_rhs = 0;
-#define OPERATION(ls_degree, vel_degree)                                          \
-  this->matrix_free.cell_loop(                                                    \
-    &LevelSetOKZSolver<dim>::template local_compute_force<ls_degree, vel_degree>, \
-    this,                                                                         \
-    this->navier_stokes.user_rhs.block(0),                                        \
-    this->solution.block(0))
-
-  EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-}
-
-
-
-template <int dim>
 void
 LevelSetOKZSolver<dim>::advance_concentration_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
@@ -1011,259 +726,6 @@ struct AdvanceConcentrationMatrix
   }
 
   const LevelSetOKZSolver<dim> &problem;
-};
-
-
-
-template <int dim>
-void
-LevelSetOKZSolver<dim>::compute_normal_vmult(
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
-  const LinearAlgebra::distributed::BlockVector<double> &src) const
-{
-  dst = 0.;
-#define OPERATION(c_degree, u_degree)                                         \
-  this->matrix_free.cell_loop(                                                \
-    &LevelSetOKZSolver<dim>::template local_compute_normal<c_degree, double>, \
-    this,                                                                     \
-    dst,                                                                      \
-    src)
-
-  EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-
-  // The number "4" below is so that constraints_normals is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
-    for (unsigned int d = 0; d < dim; ++d)
-      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
-        preconditioner.get_vector().local_element(
-          this->matrix_free.get_constrained_dofs(4)[i]) *
-        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
-}
-
-
-
-template <int dim>
-void
-LevelSetOKZSolver<dim>::compute_normal_vmult(
-  LinearAlgebra::distributed::BlockVector<float> &      dst,
-  const LinearAlgebra::distributed::BlockVector<float> &src) const
-{
-  dst = 0.;
-#define OPERATION(c_degree, u_degree)                                        \
-  matrix_free_float.cell_loop(                                               \
-    &LevelSetOKZSolver<dim>::template local_compute_normal<c_degree, float>, \
-    this,                                                                    \
-    dst,                                                                     \
-    src)
-
-  EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-
-  // The number "4" below is so that constraints_normals is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
-    for (unsigned int d = 0; d < dim; ++d)
-      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
-        preconditioner.get_vector().local_element(
-          this->matrix_free.get_constrained_dofs(4)[i]) *
-        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
-}
-
-
-
-template <int dim>
-struct ComputeNormalMatrix
-{
-  ComputeNormalMatrix(const LevelSetOKZSolver<dim> &problem)
-    : problem(problem)
-  {}
-
-  template <typename Number>
-  void
-  vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
-        const LinearAlgebra::distributed::BlockVector<Number> &src) const
-  {
-    problem.compute_normal_vmult(dst, src);
-  }
-
-  const LevelSetOKZSolver<dim> &problem;
-};
-
-
-
-template <int dim>
-class InverseNormalMatrix
-{
-public:
-  InverseNormalMatrix(
-    GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &mem,
-    const ComputeNormalMatrix<dim> &                                     matrix,
-    const DiagonalPreconditioner<float> &                                preconditioner)
-    : memory(mem)
-    , matrix(matrix)
-    , preconditioner(preconditioner)
-  {}
-
-  void
-  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-        const LinearAlgebra::distributed::BlockVector<double> &src) const
-  {
-    LinearAlgebra::distributed::BlockVector<float> *src_f = memory.alloc();
-    LinearAlgebra::distributed::BlockVector<float> *dst_f = memory.alloc();
-
-    src_f->reinit(src);
-    dst_f->reinit(dst);
-
-    *dst_f = 0;
-    *src_f = src;
-    ReductionControl                                         control(10000, 1e-30, 1e-1);
-    SolverCG<LinearAlgebra::distributed::BlockVector<float>> solver(control, memory);
-    try
-      {
-        solver.solve(matrix, *dst_f, *src_f, preconditioner);
-      }
-    catch (...)
-      {
-        std::cout << "Error, normal solver did not converge!" << std::endl;
-      }
-    dst = *dst_f;
-
-    memory.free(src_f);
-    memory.free(dst_f);
-  }
-
-private:
-  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &memory;
-  const ComputeNormalMatrix<dim> &                                     matrix;
-  const DiagonalPreconditioner<float> &                                preconditioner;
-};
-
-
-template <int dim>
-void
-LevelSetOKZSolver<dim>::compute_curvature_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const bool                                        apply_diffusion) const
-{
-  dst = 0.;
-  if (apply_diffusion)
-    {
-      // diffusion_setting will be 1 (true) in local_compute_curvature so that
-      // damping will be added
-#define OPERATION(c_degree, u_degree)                                       \
-  this->matrix_free.cell_loop(                                              \
-    &LevelSetOKZSolver<dim>::template local_compute_curvature<c_degree, 1>, \
-    this,                                                                   \
-    dst,                                                                    \
-    src)
-
-      EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-    }
-  else
-    {
-      // diffusion_setting will be 0 (fals) in local_compute_curvature so that
-      // NO damping will be added
-#define OPERATION(c_degree, u_degree)                                       \
-  this->matrix_free.cell_loop(                                              \
-    &LevelSetOKZSolver<dim>::template local_compute_curvature<c_degree, 0>, \
-    this,                                                                   \
-    dst,                                                                    \
-    src)
-
-      EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-    }
-
-  // The numer "3" below is so that constraints_curvature is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(3).size(); ++i)
-    dst.local_element(this->matrix_free.get_constrained_dofs(3)[i]) =
-      preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(3)[i]) *
-      src.local_element(this->matrix_free.get_constrained_dofs(3)[i]);
-}
-
-
-
-template <int dim>
-struct ComputeCurvatureMatrix
-{
-  ComputeCurvatureMatrix(const LevelSetOKZSolver<dim> &problem)
-    : problem(problem)
-  {}
-
-  void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
-  {
-    problem.compute_curvature_vmult(dst, src, true);
-  }
-
-  const LevelSetOKZSolver<dim> &problem;
-};
-
-
-
-template <int dim>
-void
-LevelSetOKZSolver<dim>::reinitialization_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const bool                                        diffuse_only) const
-{
-  dst = 0.;
-  if (diffuse_only)
-    {
-#define OPERATION(c_degree, u_degree)                                     \
-  this->matrix_free.cell_loop(                                            \
-    &LevelSetOKZSolver<dim>::template local_reinitialize<c_degree, true>, \
-    this,                                                                 \
-    dst,                                                                  \
-    src)
-
-      EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-    }
-  else
-    {
-#define OPERATION(c_degree, u_degree)                                      \
-  this->matrix_free.cell_loop(                                             \
-    &LevelSetOKZSolver<dim>::template local_reinitialize<c_degree, false>, \
-    this,                                                                  \
-    dst,                                                                   \
-    src)
-
-      EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-    }
-
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(2).size(); ++i)
-    dst.local_element(this->matrix_free.get_constrained_dofs(2)[i]) =
-      preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(2)[i]) *
-      src.local_element(this->matrix_free.get_constrained_dofs(2)[i]);
-}
-
-
-
-template <int dim>
-struct ReinitializationMatrix
-{
-  ReinitializationMatrix(const LevelSetOKZSolver<dim> &problem, const bool diffuse_only)
-    : problem(problem)
-    , diffuse_only(diffuse_only)
-  {}
-
-  void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
-  {
-    problem.reinitialization_vmult(dst, src, diffuse_only);
-  }
-
-  const LevelSetOKZSolver<dim> &problem;
-  const bool                    diffuse_only;
 };
 
 
@@ -1421,6 +883,207 @@ LevelSetOKZSolver<dim>::advance_concentration()
 
 
 
+template <int dim>
+template <int ls_degree, typename Number>
+void
+LevelSetOKZSolver<dim>::local_compute_normal(
+  const MatrixFree<dim, Number> &                        data,
+  LinearAlgebra::distributed::BlockVector<Number> &      dst,
+  const LinearAlgebra::distributed::BlockVector<Number> &src,
+  const std::pair<unsigned int, unsigned int> &          cell_range) const
+{
+  bool do_float = std::is_same<Number, float>::value;
+  // The second input argument below refers to which constrains should be used,
+  // 4 means constraints_normals
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim, Number> phi(data,
+                                                               do_float ? 0 : 4,
+                                                               do_float ? 0 : 2);
+  const VectorizedArray<Number>                            min_diameter =
+    make_vectorized_array<Number>(this->epsilon_used / this->parameters.epsilon);
+  // cast avoids compile errors, but we always use the path without casting
+  const VectorizedArray<Number> *cell_diameters =
+    do_float ?
+      reinterpret_cast<const VectorizedArray<Number> *>(cell_diameters_float.begin()) :
+      reinterpret_cast<const VectorizedArray<Number> *>(this->cell_diameters.begin());
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      phi.reinit(cell);
+      phi.read_dof_values(src);
+      phi.evaluate(true, true);
+      const VectorizedArray<Number> damping =
+        Number(4.) *
+        Utilities::fixed_power<2>(
+          std::max(min_diameter, cell_diameters[cell] / static_cast<Number>(ls_degree)));
+      for (unsigned int q = 0; q < phi.n_q_points; ++q)
+        {
+          phi.submit_value(phi.get_value(q), q);
+          phi.submit_gradient(phi.get_gradient(q) * damping, q);
+        }
+      phi.integrate(true, true);
+      phi.distribute_local_to_global(dst);
+    }
+}
+
+
+
+template <int dim>
+template <int ls_degree>
+void
+LevelSetOKZSolver<dim>::local_compute_normal_rhs(
+  const MatrixFree<dim, double> &                  data,
+  LinearAlgebra::distributed::BlockVector<double> &dst,
+  const LinearAlgebra::distributed::Vector<double> &,
+  const std::pair<unsigned int, unsigned int> &cell_range) const
+{
+  // The second input argument below refers to which constrains should be used,
+  // 4 means constraints_normals and 2 means constraints (for LS-function)
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(data, 4, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>   ls_values(data, 2, 2);
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      normal_values.reinit(cell);
+      ls_values.reinit(cell);
+
+      ls_values.read_dof_values_plain(this->solution.block(0));
+      ls_values.evaluate(false, true, false);
+
+      for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
+        normal_values.submit_value(ls_values.get_gradient(q), q);
+
+      normal_values.integrate(true, false);
+      normal_values.distribute_local_to_global(dst);
+    }
+}
+
+
+
+template <int dim>
+void
+LevelSetOKZSolver<dim>::compute_normal_vmult(
+  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  const LinearAlgebra::distributed::BlockVector<double> &src) const
+{
+  dst = 0.;
+#define OPERATION(c_degree, u_degree)                                         \
+  this->matrix_free.cell_loop(                                                \
+    &LevelSetOKZSolver<dim>::template local_compute_normal<c_degree, double>, \
+    this,                                                                     \
+    dst,                                                                      \
+    src)
+
+  EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+
+  // The number "4" below is so that constraints_normals is used
+  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
+    for (unsigned int d = 0; d < dim; ++d)
+      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
+        preconditioner.get_vector().local_element(
+          this->matrix_free.get_constrained_dofs(4)[i]) *
+        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
+}
+
+
+
+template <int dim>
+void
+LevelSetOKZSolver<dim>::compute_normal_vmult(
+  LinearAlgebra::distributed::BlockVector<float> &      dst,
+  const LinearAlgebra::distributed::BlockVector<float> &src) const
+{
+  dst = 0.;
+#define OPERATION(c_degree, u_degree)                                        \
+  matrix_free_float.cell_loop(                                               \
+    &LevelSetOKZSolver<dim>::template local_compute_normal<c_degree, float>, \
+    this,                                                                    \
+    dst,                                                                     \
+    src)
+
+  EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+
+  // The number "4" below is so that constraints_normals is used
+  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
+    for (unsigned int d = 0; d < dim; ++d)
+      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
+        preconditioner.get_vector().local_element(
+          this->matrix_free.get_constrained_dofs(4)[i]) *
+        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
+}
+
+
+
+template <int dim>
+struct ComputeNormalMatrix
+{
+  ComputeNormalMatrix(const LevelSetOKZSolver<dim> &problem)
+    : problem(problem)
+  {}
+
+  template <typename Number>
+  void
+  vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
+        const LinearAlgebra::distributed::BlockVector<Number> &src) const
+  {
+    problem.compute_normal_vmult(dst, src);
+  }
+
+  const LevelSetOKZSolver<dim> &problem;
+};
+
+
+
+template <int dim>
+class InverseNormalMatrix
+{
+public:
+  InverseNormalMatrix(
+    GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &mem,
+    const ComputeNormalMatrix<dim> &                                     matrix,
+    const DiagonalPreconditioner<float> &                                preconditioner)
+    : memory(mem)
+    , matrix(matrix)
+    , preconditioner(preconditioner)
+  {}
+
+  void
+  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+        const LinearAlgebra::distributed::BlockVector<double> &src) const
+  {
+    LinearAlgebra::distributed::BlockVector<float> *src_f = memory.alloc();
+    LinearAlgebra::distributed::BlockVector<float> *dst_f = memory.alloc();
+
+    src_f->reinit(src);
+    dst_f->reinit(dst);
+
+    *dst_f = 0;
+    *src_f = src;
+    ReductionControl                                         control(10000, 1e-30, 1e-1);
+    SolverCG<LinearAlgebra::distributed::BlockVector<float>> solver(control, memory);
+    try
+      {
+        solver.solve(matrix, *dst_f, *src_f, preconditioner);
+      }
+    catch (...)
+      {
+        std::cout << "Error, normal solver did not converge!" << std::endl;
+      }
+    dst = *dst_f;
+
+    memory.free(src_f);
+    memory.free(dst_f);
+  }
+
+private:
+  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &memory;
+  const ComputeNormalMatrix<dim> &                                     matrix;
+  const DiagonalPreconditioner<float> &                                preconditioner;
+};
+
+
+
 // @sect4{LevelSetOKZSolver::compute_normal}
 template <int dim>
 void
@@ -1496,6 +1159,170 @@ LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
       this->normal_vector_field.block(d).update_ghost_values();
     }
 }
+
+
+
+template <int dim>
+template <int ls_degree, int diffusion_setting>
+void
+LevelSetOKZSolver<dim>::local_compute_curvature(
+  const MatrixFree<dim, double> &                   data,
+  LinearAlgebra::distributed::Vector<double> &      dst,
+  const LinearAlgebra::distributed::Vector<double> &src,
+  const std::pair<unsigned int, unsigned int> &     cell_range) const
+{
+  // The second input argument below refers to which constrains should be used,
+  // 3 means constraints_curvature
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> phi(data, 3, 2);
+  const VectorizedArray<double>                  min_diameter =
+    make_vectorized_array(this->epsilon_used / this->parameters.epsilon);
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      phi.reinit(cell);
+      phi.read_dof_values(src);
+      // If diffusion_setting is true a damping term is added to the weak form
+      //  i.e. diffusion_setting=1 => diffusion_setting%2 == 1 is true.
+      phi.evaluate(diffusion_setting < 2, diffusion_setting % 2 == 1);
+      const VectorizedArray<double> damping =
+        diffusion_setting % 2 == 1 ?
+          Utilities::fixed_power<2>(
+            std::max(min_diameter,
+                     this->cell_diameters[cell] / static_cast<double>(ls_degree))) :
+          VectorizedArray<double>();
+      for (unsigned int q = 0; q < phi.n_q_points; ++q)
+        {
+          if (diffusion_setting < 2)
+            phi.submit_value(phi.get_value(q), q);
+          if (diffusion_setting % 2 == 1)
+            phi.submit_gradient(phi.get_gradient(q) * damping, q);
+        }
+      phi.integrate(diffusion_setting < 2, diffusion_setting % 2 == 1);
+      phi.distribute_local_to_global(dst);
+    }
+}
+
+
+
+template <int dim>
+template <int ls_degree>
+void
+LevelSetOKZSolver<dim>::local_compute_curvature_rhs(
+  const MatrixFree<dim, double> &             data,
+  LinearAlgebra::distributed::Vector<double> &dst,
+  const LinearAlgebra::distributed::Vector<double> &,
+  const std::pair<unsigned int, unsigned int> &cell_range) const
+{
+  // The second input argument below refers to which constrains should be used,
+  // 4 means constraints_normals and 3 constraints_curvature
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(data, 4, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>   curv_values(data, 3, 2);
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      normal_values.reinit(cell);
+      curv_values.reinit(cell);
+
+      normal_values.read_dof_values_plain(this->normal_vector_field);
+
+      // This computes (v, \nabla \cdot (n/|n|)). Since we store only \nabla
+      // \phi in the vector normal_values, the normalization must be done here
+      // and be done before we apply the derivatives, which is done in the
+      // code below.
+      bool all_zero = true;
+      for (unsigned int i = 0; i < normal_values.dofs_per_component; ++i)
+        {
+          Tensor<1, dim, VectorizedArray<double>> normal = normal_values.get_dof_value(i);
+          const VectorizedArray<double>           normal_norm = normal.norm();
+          for (unsigned int d = 0; d < VectorizedArray<double>::size(); ++d)
+            if (normal_norm[d] > 1e-2)
+              {
+                all_zero = false;
+                for (unsigned int e = 0; e < dim; ++e)
+                  normal[e][d] /= normal_norm[d];
+              }
+            else
+              for (unsigned int e = 0; e < dim; ++e)
+                normal[e][d] = 0;
+          normal_values.submit_dof_value(normal, i);
+        }
+
+      if (all_zero == false)
+        {
+          normal_values.evaluate(false, true, false);
+          for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
+            curv_values.submit_value(-normal_values.get_divergence(q), q);
+          curv_values.integrate(true, false);
+          curv_values.distribute_local_to_global(dst);
+        }
+    }
+}
+
+
+
+template <int dim>
+void
+LevelSetOKZSolver<dim>::compute_curvature_vmult(
+  LinearAlgebra::distributed::Vector<double> &      dst,
+  const LinearAlgebra::distributed::Vector<double> &src,
+  const bool                                        apply_diffusion) const
+{
+  dst = 0.;
+  if (apply_diffusion)
+    {
+      // diffusion_setting will be 1 (true) in local_compute_curvature so that
+      // damping will be added
+#define OPERATION(c_degree, u_degree)                                       \
+  this->matrix_free.cell_loop(                                              \
+    &LevelSetOKZSolver<dim>::template local_compute_curvature<c_degree, 1>, \
+    this,                                                                   \
+    dst,                                                                    \
+    src)
+
+      EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+    }
+  else
+    {
+      // diffusion_setting will be 0 (fals) in local_compute_curvature so that
+      // NO damping will be added
+#define OPERATION(c_degree, u_degree)                                       \
+  this->matrix_free.cell_loop(                                              \
+    &LevelSetOKZSolver<dim>::template local_compute_curvature<c_degree, 0>, \
+    this,                                                                   \
+    dst,                                                                    \
+    src)
+
+      EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+    }
+
+  // The numer "3" below is so that constraints_curvature is used
+  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(3).size(); ++i)
+    dst.local_element(this->matrix_free.get_constrained_dofs(3)[i]) =
+      preconditioner.get_vector().local_element(
+        this->matrix_free.get_constrained_dofs(3)[i]) *
+      src.local_element(this->matrix_free.get_constrained_dofs(3)[i]);
+}
+
+
+
+template <int dim>
+struct ComputeCurvatureMatrix
+{
+  ComputeCurvatureMatrix(const LevelSetOKZSolver<dim> &problem)
+    : problem(problem)
+  {}
+
+  void
+  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+        const LinearAlgebra::distributed::Vector<double> &src) const
+  {
+    problem.compute_curvature_vmult(dst, src, true);
+  }
+
+  const LevelSetOKZSolver<dim> &problem;
+};
 
 
 
@@ -1640,6 +1467,179 @@ LevelSetOKZSolver<dim>::compute_heaviside()
       }
   this->heaviside.update_ghost_values();
 }
+
+
+
+template <int dim>
+template <int ls_degree, bool diffuse_only>
+void
+LevelSetOKZSolver<dim>::local_reinitialize(
+  const MatrixFree<dim, double> &                   data,
+  LinearAlgebra::distributed::Vector<double> &      dst,
+  const LinearAlgebra::distributed::Vector<double> &src,
+  const std::pair<unsigned int, unsigned int> &     cell_range) const
+{
+  const double dtau_inv = std::max(0.95 / (1. / (dim * dim) * this->minimal_edge_length /
+                                           this->parameters.concentration_subdivisions),
+                                   1. / (5. * this->time_stepping.step_size()));
+
+  // The second input argument below refers to which constrains should be used,
+  // 2 means constraints (for LS-function)
+  FEEvaluation<dim, ls_degree, 2 * ls_degree> phi(data, 2, 2);
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      phi.reinit(cell);
+      phi.read_dof_values(src);
+      phi.evaluate(true, true, false);
+
+      VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
+      VectorizedArray<double> diffusion =
+        std::max(make_vectorized_array(this->epsilon_used),
+                 cell_diameter / static_cast<double>(ls_degree));
+
+      const Tensor<1, dim, VectorizedArray<double>> *normal =
+        &evaluated_convection[cell * phi.n_q_points];
+      for (unsigned int q = 0; q < phi.n_q_points; ++q)
+        if (!diffuse_only)
+          {
+            phi.submit_value(dtau_inv * phi.get_value(q), q);
+            phi.submit_gradient((diffusion * (normal[q] * phi.get_gradient(q))) *
+                                  normal[q],
+                                q);
+          }
+        else
+          {
+            phi.submit_value(dtau_inv * phi.get_value(q), q);
+            phi.submit_gradient(phi.get_gradient(q) * diffusion, q);
+          }
+
+      phi.integrate(true, true);
+      phi.distribute_local_to_global(dst);
+    }
+}
+
+
+
+template <int dim>
+template <int ls_degree, bool diffuse_only>
+void
+LevelSetOKZSolver<dim>::local_reinitialize_rhs(
+  const MatrixFree<dim, double> &             data,
+  LinearAlgebra::distributed::Vector<double> &dst,
+  const LinearAlgebra::distributed::Vector<double> &,
+  const std::pair<unsigned int, unsigned int> &cell_range)
+{
+  // The second input argument below refers to which constrains should be used,
+  // 2 means constraints (for LS-function) and 4 means constraints_normals
+  FEEvaluation<dim, ls_degree, 2 * ls_degree>      phi(data, 2, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normals(data, 4, 2);
+
+  for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+    {
+      phi.reinit(cell);
+      phi.read_dof_values_plain(this->solution.block(0));
+      phi.evaluate(true, true, false);
+
+      normals.reinit(cell);
+      normals.read_dof_values_plain(this->normal_vector_field);
+      normals.evaluate(true, false, false);
+
+      VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
+      VectorizedArray<double> diffusion =
+        std::max(make_vectorized_array(this->epsilon_used),
+                 cell_diameter / static_cast<double>(ls_degree));
+
+      for (unsigned int q = 0; q < phi.n_q_points; ++q)
+        if (!diffuse_only)
+          {
+            Tensor<1, dim, VectorizedArray<double>> grad = phi.get_gradient(q);
+            if (first_reinit_step)
+              {
+                Tensor<1, dim, VectorizedArray<double>> normal = normals.get_value(q);
+                normal /= std::max(make_vectorized_array(1e-4), normal.norm());
+                evaluated_convection[cell * phi.n_q_points + q] = normal;
+              }
+            // take normal as it was for the first reinit step
+            Tensor<1, dim, VectorizedArray<double>> normal =
+              evaluated_convection[cell * phi.n_q_points + q];
+            phi.submit_gradient(normal *
+                                  (0.5 * (1. - phi.get_value(q) * phi.get_value(q)) -
+                                   (normal * grad * diffusion)),
+                                q);
+          }
+        else
+          {
+            phi.submit_gradient(-diffusion * phi.get_gradient(q), q);
+          }
+
+      phi.integrate(false, true);
+      phi.distribute_local_to_global(dst);
+    }
+}
+
+
+
+template <int dim>
+void
+LevelSetOKZSolver<dim>::reinitialization_vmult(
+  LinearAlgebra::distributed::Vector<double> &      dst,
+  const LinearAlgebra::distributed::Vector<double> &src,
+  const bool                                        diffuse_only) const
+{
+  dst = 0.;
+  if (diffuse_only)
+    {
+#define OPERATION(c_degree, u_degree)                                     \
+  this->matrix_free.cell_loop(                                            \
+    &LevelSetOKZSolver<dim>::template local_reinitialize<c_degree, true>, \
+    this,                                                                 \
+    dst,                                                                  \
+    src)
+
+      EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+    }
+  else
+    {
+#define OPERATION(c_degree, u_degree)                                      \
+  this->matrix_free.cell_loop(                                             \
+    &LevelSetOKZSolver<dim>::template local_reinitialize<c_degree, false>, \
+    this,                                                                  \
+    dst,                                                                   \
+    src)
+
+      EXPAND_OPERATIONS(OPERATION);
+#undef OPERATION
+    }
+
+  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(2).size(); ++i)
+    dst.local_element(this->matrix_free.get_constrained_dofs(2)[i]) =
+      preconditioner.get_vector().local_element(
+        this->matrix_free.get_constrained_dofs(2)[i]) *
+      src.local_element(this->matrix_free.get_constrained_dofs(2)[i]);
+}
+
+
+
+template <int dim>
+struct ReinitializationMatrix
+{
+  ReinitializationMatrix(const LevelSetOKZSolver<dim> &problem, const bool diffuse_only)
+    : problem(problem)
+    , diffuse_only(diffuse_only)
+  {}
+
+  void
+  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+        const LinearAlgebra::distributed::Vector<double> &src) const
+  {
+    problem.reinitialization_vmult(dst, src, diffuse_only);
+  }
+
+  const LevelSetOKZSolver<dim> &problem;
+  const bool                    diffuse_only;
+};
 
 
 
