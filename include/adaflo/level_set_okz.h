@@ -43,11 +43,6 @@ public:
   {}
 
   void
-  advance_concentration_vmult(
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src) const;
-
-  void
   compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
                           const LinearAlgebra::distributed::Vector<double> &srcc,
                           const bool apply_diffusion) const;
@@ -94,22 +89,6 @@ private:
                       LinearAlgebra::distributed::Vector<double> &      dst,
                       const LinearAlgebra::distributed::Vector<double> &src,
                       const std::pair<unsigned int, unsigned int> &     cell_range);
-
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration_rhs(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range);
 
   // diffusion_setting: 0: both terms, 1: only mass, 2: only diffusion
   template <int ls_degree, int diffusion_setting>
