@@ -1,20 +1,20 @@
-Running a 2D Beltrami problem using BDF-2, Q2/Q1+ elements on 8 processes
+Running a 2D Beltrami problem using BDF-2, Q2/Q1+ elements on 3 processes
  Number of active cells: 1024.
  Number of degrees of freedom (velocity/pressure): 10563 (8450 + 2113).
  Approximate size last cell: 0.0625
   L2-Errors absolute: ||e_p||_L2 = 0.0003512,   ||e_u||_L2 = 1.267e-06
   L2-Errors relative: ||e_p||_L2 = 0.000847,   ||e_u||_L2 = 1.479e-06
-  Cell divergence:    |div(u)|_cells = 9.281e-17
+  Cell divergence:    |div(u)|_cells = 9.341e-17
 
 Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01). 
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.092e-01   0.000e+00        AMG        3.26e-01   4.58e-02      13       3.93e-10
+   2.092e-01   0.000e+00        AMG        3.26e-01   4.58e-02      14       1.59e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      211      214      217           2      1     
--- Statistics -- nln solver  :    0.105    0.105    0.105    0.105  0      7     
+-- Statistics -- memory [MB] :       99      101      103           0      1     
+-- Statistics -- nln solver  :   0.0887   0.0887   0.0887   0.0887  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -28,11 +28,11 @@ Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.162e-01   0.000e+00        AMG        3.32e-01   4.02e+00      13       1.16e-10
+   2.162e-01   0.000e+00        AMG        3.32e-01   4.02e+00      13       1.79e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      214      218           2      1     
--- Statistics -- nln solver  :   0.0893   0.0893   0.0893   0.0893  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0856   0.0856   0.0856   0.0856  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -46,11 +46,11 @@ Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   3.006e-02   0.000e+00        ---        1.41e-01   1.01e+00      12       1.99e-10
+   3.006e-02   0.000e+00        ---        1.41e-01   1.01e+00      12       3.09e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0137   0.0137   0.0138   0.0137  0      6     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -64,11 +64,11 @@ Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   1.219e-02   0.000e+00        ---        5.77e-02   1.39e-01      11       4.04e-10
+   1.219e-02   0.000e+00        ---        5.77e-02   1.39e-01      12       1.39e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0131   0.0131   0.0131   0.0131  0      6     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0248   0.0248   0.0248   0.0248  0      2     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -85,11 +85,11 @@ Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   3.788e-03   0.000e+00        ---        1.12e-02   8.16e-02      11       1.21e-10
+   3.788e-03   0.000e+00        ---        1.12e-02   8.16e-02      11       1.59e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0131   0.0131   0.0131   0.0131  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0219   0.0219   0.0219   0.0219  0      2     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -103,11 +103,11 @@ Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.675e-03   0.000e+00        ---        4.67e-03   9.89e-02      10       2.93e-10
+   2.675e-03   0.000e+00        ---        4.67e-03   9.89e-02      10       2.88e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0111   0.0111   0.0111   0.0111  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0174   0.0174   0.0174   0.0174  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -121,11 +121,11 @@ Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.521e-03   0.000e+00        ---        3.84e-03   9.54e-02      10       1.99e-10
+   2.521e-03   0.000e+00        ---        3.84e-03   9.55e-02      10       2.22e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :    0.011    0.011    0.011    0.011  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -139,11 +139,11 @@ Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.483e-03   0.000e+00        ---        3.74e-03   9.34e-02      10       1.63e-10
+   2.483e-03   0.000e+00        ---        3.74e-03   9.34e-02      10       1.88e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0107   0.0107   0.0107   0.0107  0      3     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0176   0.0176   0.0176   0.0176  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -160,11 +160,11 @@ Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.453e-03   0.000e+00        ---        3.69e-03   9.26e-02      10       1.49e-10
+   2.453e-03   0.000e+00        ---        3.69e-03   9.26e-02      10       1.84e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :    0.011    0.011    0.011    0.011  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0196   0.0196   0.0196   0.0196  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -178,11 +178,11 @@ Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.423e-03   0.000e+00        ---        3.64e-03   9.15e-02      10       1.46e-10
+   2.423e-03   0.000e+00        ---        3.64e-03   9.15e-02      10       1.83e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0107   0.0107   0.0107   0.0107  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0174   0.0174   0.0174   0.0174  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -194,43 +194,43 @@ Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01).
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |     0.339s |            |
+| Total CPU time elapsed since start          |      0.42s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |    0.0163s |       4.8% |
-| NS apply boundary conditions.   |        20 |    0.0189s |       5.6% |
-| NS assemble nonlinear residual. |        10 |  0.000813s |      0.24% |
-| NS assemble preconditioner.     |         2 |    0.0554s |        16% |
-| NS build preconditioner.        |         2 |    0.0655s |        19% |
-| NS distribute DoFs.             |         1 |    0.0109s |       3.2% |
-| NS setup matrix and vectors.    |         1 |   0.00804s |       2.4% |
-| NS solve pressure               |        10 |    0.0556s |        16% |
-| NS solve velocity               |        10 |    0.0446s |        13% |
-| Output solution.                |         3 |    0.0188s |       5.5% |
-| Setup grid.                     |         1 |    0.0158s |       4.7% |
-| Setup initial condition.        |         1 |    0.0022s |      0.65% |
+| Compute errors.                 |         3 |     0.028s |       6.7% |
+| NS apply boundary conditions.   |        20 |     0.012s |       2.9% |
+| NS assemble nonlinear residual. |        10 |         0s |         0% |
+| NS assemble preconditioner.     |         2 |     0.016s |       3.8% |
+| NS build preconditioner.        |         2 |     0.076s |        18% |
+| NS distribute DoFs.             |         1 |     0.004s |      0.95% |
+| NS setup matrix and vectors.    |         1 |     0.012s |       2.9% |
+| NS solve pressure               |        10 |     0.072s |        17% |
+| NS solve velocity               |        10 |     0.108s |        26% |
+| Output solution.                |         3 |     0.072s |        17% |
+| Setup grid.                     |         1 |     0.008s |       1.9% |
+| Setup initial condition.        |         1 |     0.004s |      0.95% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |     0.452s |            |
+| Total wallclock time elapsed since start    |     0.519s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |    0.0293s |       6.5% |
-| NS apply boundary conditions.   |        20 |    0.0247s |       5.5% |
-| NS assemble nonlinear residual. |        10 |   0.00115s |      0.25% |
-| NS assemble preconditioner.     |         2 |    0.0877s |        19% |
-| NS build preconditioner.        |         2 |    0.0767s |        17% |
-| NS distribute DoFs.             |         1 |    0.0139s |       3.1% |
-| NS setup matrix and vectors.    |         1 |    0.0121s |       2.7% |
-| NS solve pressure               |        10 |    0.0565s |        12% |
-| NS solve velocity               |        10 |    0.0446s |       9.9% |
-| Output solution.                |         3 |    0.0394s |       8.7% |
-| Setup grid.                     |         1 |    0.0197s |       4.4% |
-| Setup initial condition.        |         1 |   0.00437s |      0.97% |
+| Compute errors.                 |         3 |    0.0307s |       5.9% |
+| NS apply boundary conditions.   |        20 |     0.021s |         4% |
+| NS assemble nonlinear residual. |        10 |   0.00252s |      0.49% |
+| NS assemble preconditioner.     |         2 |    0.0279s |       5.4% |
+| NS build preconditioner.        |         2 |    0.0983s |        19% |
+| NS distribute DoFs.             |         1 |   0.00549s |       1.1% |
+| NS setup matrix and vectors.    |         1 |    0.0167s |       3.2% |
+| NS solve pressure               |        10 |    0.0865s |        17% |
+| NS solve velocity               |        10 |     0.116s |        22% |
+| Output solution.                |         3 |    0.0835s |        16% |
+| Setup grid.                     |         1 |    0.0127s |       2.5% |
+| Setup initial condition.        |         1 |   0.00277s |      0.53% |
 +---------------------------------+-----------+------------+------------+
 
 
@@ -238,11 +238,11 @@ Time step #11, advancing from t_n-1 = 0.1 to t = 0.11 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.394e-03   0.000e+00        ---        3.59e-03   8.98e-02      10       1.44e-10
+   2.394e-03   0.000e+00        ---        3.59e-03   8.98e-02      10       1.79e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0106   0.0106   0.0106   0.0106  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :    0.021    0.021    0.021    0.021  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -256,11 +256,11 @@ Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.364e-03   0.000e+00        ---        3.55e-03   8.79e-02      10       1.43e-10
+   2.364e-03   0.000e+00        ---        3.55e-03   8.79e-02      10       1.75e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      1     
--- Statistics -- nln solver  :   0.0106   0.0106   0.0106   0.0106  6      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0194   0.0194   0.0194   0.0194  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -277,11 +277,11 @@ Time step #13, advancing from t_n-1 = 0.12 to t = 0.13 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.335e-03   0.000e+00        ---        3.51e-03   8.59e-02      10       1.41e-10
+   2.335e-03   0.000e+00        ---        3.51e-03   8.59e-02      10       1.72e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :   0.0107   0.0107   0.0107   0.0107  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0213   0.0213   0.0213   0.0213  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -295,11 +295,11 @@ Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.307e-03   0.000e+00        ---        3.46e-03   8.39e-02      10       1.39e-10
+   2.307e-03   0.000e+00        ---        3.46e-03   8.39e-02      10       1.69e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :  0.00969   0.0097   0.0097   0.0097  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0181   0.0181   0.0182   0.0181  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -313,11 +313,11 @@ Time step #15, advancing from t_n-1 = 0.14 to t = 0.15 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.279e-03   0.000e+00        ---        3.42e-03   8.21e-02      10       1.38e-10
+   2.279e-03   0.000e+00        ---        3.42e-03   8.21e-02      10       1.67e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :   0.0095   0.0095   0.0095   0.0095  0      2     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0184   0.0184   0.0184   0.0184  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -331,11 +331,11 @@ Time step #16, advancing from t_n-1 = 0.15 to t = 0.16 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.251e-03   0.000e+00        AMG        3.38e-03   8.04e-02      10       1.35e-10
+   2.251e-03   0.000e+00        AMG        3.38e-03   8.04e-02      10       1.64e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :   0.0691   0.0691   0.0691   0.0691  0      1     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0845   0.0845   0.0845   0.0845  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -352,11 +352,11 @@ Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.223e-03   0.000e+00        ---        3.34e-03   7.87e-02      10       1.34e-10
+   2.223e-03   0.000e+00        ---        3.34e-03   7.87e-02      10       1.62e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :  0.00869  0.00869  0.00869  0.00869  0      1     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0183   0.0183   0.0183   0.0183  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -370,11 +370,11 @@ Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.196e-03   0.000e+00        ---        3.30e-03   7.71e-02      10       1.32e-10
+   2.196e-03   0.000e+00        ---        3.30e-03   7.71e-02      10       1.60e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :  0.00845  0.00846  0.00846  0.00846  0      4     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :    0.019    0.019    0.019    0.019  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -388,11 +388,11 @@ Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.169e-03   0.000e+00        ---        3.25e-03   7.56e-02      10       1.31e-10
+   2.169e-03   0.000e+00        ---        3.25e-03   7.56e-02      10       1.58e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :  0.00835  0.00836  0.00836  0.00836  0      1     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0214   0.0214   0.0214   0.0214  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -406,11 +406,11 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
 
    NL Resid u  NL Resid p     Prec Upd     Increm u   Increm p   Lin Iter     Lin Res
    __________________________________________________________________________________
-   2.142e-03   0.000e+00        ---        3.21e-03   7.41e-02      10       1.29e-10
+   2.142e-03   0.000e+00        ---        3.21e-03   7.41e-02      10       1.56e-10
 
 -- Statistics --                    min      avg      max avg/call  p_min  p_max
--- Statistics -- memory [MB] :      212      215      218           2      0     
--- Statistics -- nln solver  :  0.00838  0.00838  0.00838  0.00838  0      1     
+-- Statistics -- memory [MB] :       99      102      104           0      1     
+-- Statistics -- nln solver  :   0.0178   0.0178   0.0178   0.0178  0      1     
 -- Statistics --  lin solver :        0        0        0     -nan  0      0     
 -- Statistics --   mat-vec   :        0        0        0     -nan  0      0     
 -- Statistics --   full prec :        0        0        0     -nan  0      0     
@@ -425,54 +425,54 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |     0.176s |            |
+| Total CPU time elapsed since start          |      0.38s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |     0.014s |       7.9% |
-| NS apply boundary conditions.   |        20 |    0.0103s |       5.8% |
-| NS assemble nonlinear residual. |        10 |  0.000723s |      0.41% |
-| NS assemble preconditioner.     |         1 |    0.0197s |        11% |
-| NS build preconditioner.        |         1 |    0.0274s |        16% |
-| NS solve pressure               |        10 |    0.0438s |        25% |
-| NS solve velocity               |        10 |    0.0322s |        18% |
-| Output solution.                |         3 |    0.0153s |       8.7% |
+| Compute errors.                 |         3 |     0.028s |       7.4% |
+| NS apply boundary conditions.   |        20 |     0.008s |       2.1% |
+| NS assemble nonlinear residual. |        10 |     0.004s |       1.1% |
+| NS assemble preconditioner.     |         1 |     0.016s |       4.2% |
+| NS build preconditioner.        |         1 |     0.048s |        13% |
+| NS solve pressure               |        10 |     0.088s |        23% |
+| NS solve velocity               |        10 |     0.088s |        23% |
+| Output solution.                |         3 |     0.092s |        24% |
 +---------------------------------+-----------+------------+------------+
 
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |     0.225s |            |
+| Total wallclock time elapsed since start    |     0.398s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Compute errors.                 |         3 |    0.0209s |       9.3% |
-| NS apply boundary conditions.   |        20 |    0.0171s |       7.6% |
-| NS assemble nonlinear residual. |        10 |  0.000915s |      0.41% |
-| NS assemble preconditioner.     |         1 |    0.0308s |        14% |
-| NS build preconditioner.        |         1 |    0.0286s |        13% |
-| NS solve pressure               |        10 |    0.0439s |        20% |
-| NS solve velocity               |        10 |    0.0326s |        15% |
-| Output solution.                |         3 |    0.0301s |        13% |
+| Compute errors.                 |         3 |    0.0299s |       7.5% |
+| NS apply boundary conditions.   |        20 |   0.00901s |       2.3% |
+| NS assemble nonlinear residual. |        10 |   0.00316s |      0.79% |
+| NS assemble preconditioner.     |         1 |    0.0163s |       4.1% |
+| NS build preconditioner.        |         1 |    0.0506s |        13% |
+| NS solve pressure               |        10 |    0.0835s |        21% |
+| NS solve velocity               |        10 |     0.104s |        26% |
+| Output solution.                |         3 |    0.0928s |        23% |
 +---------------------------------+-----------+------------+------------+
 
 
 +--- Memory consumption Navier-Stokes objects ---
-| DoFHandler: 0.06949 MB
-| Matrix-free objects: 0.06468 MB
-| Constraints: 0.01454 MB
-| Linearized velocities: 0.1106 MB
-| Preconditioner matrices: 0.2894 MB
-| AMG preconditioner for uu block: 0.001576 MB
-| AMG preconditioner for pp block: 0.001576 MB
-| Vectors: 0.07338 MB
+| DoFHandler: 0.08393 MB
+| Matrix-free objects: 0.0642 MB
+| Constraints: 0.02755 MB
+| Linearized velocities: 0.2938 MB
+| Preconditioner matrices: 0.7642 MB
+| AMG preconditioner for uu block: 0.001568 MB
+| AMG preconditioner for pp block: 0.001568 MB
+| Vectors: 0.1905 MB
 | Memory consumption used objects:
-| Triangulation: 0.06315 MB
+| Triangulation: 0.1197 MB
 +------------------------------------------------
 
 
 +---------------------------------------------+------------+------------+
-| Total CPU time elapsed since start          |  0.000688s |            |
+| Total CPU time elapsed since start          |         0s |            |
 |                                             |            |            |
 | Section                         | no. calls |  CPU time  | % of total |
 +---------------------------------+-----------+------------+------------+
@@ -481,7 +481,7 @@ Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01).
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |  0.000707s |            |
+| Total wallclock time elapsed since start    |    0.0008s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+

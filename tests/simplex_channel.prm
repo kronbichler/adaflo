@@ -15,13 +15,13 @@
 # Listing of Parameters
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 10.
+  set end time         = 5.
   set step size        = 0.02
 end
 subsection Navier-Stokes
   set physical type      = incompressible
   set dimension          = 2
-  set global refinements = 3
+  set global refinements = 2
   set velocity degree    = 2
   set viscosity          = 0.005
   set simplex mesh       = 1
@@ -39,7 +39,7 @@ subsection Navier-Stokes
 end
 subsection Output options
   set output verbosity = 2
-  set output frequency = 0.1
+  set output frequency = 1
   set output filename  = output-simplex_channel/data
   set output vtk files = 0
 end
