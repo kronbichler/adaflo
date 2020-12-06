@@ -95,6 +95,11 @@ struct FlowBaseAlgorithm
   /**
    * Constructor.
    */
+  FlowBaseAlgorithm(const std::shared_ptr<Mapping<dim>> mapping_data);
+
+  /**
+   * Same as above but with MappingQ<dim>(3).
+   */
   FlowBaseAlgorithm();
 
   /**
@@ -283,7 +288,8 @@ struct FlowBaseAlgorithm
 
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary;
 
-  MappingQ<dim> mapping;
+  const std::shared_ptr<Mapping<dim>> mapping_data;
+  const Mapping<dim> &                mapping;
 };
 
 

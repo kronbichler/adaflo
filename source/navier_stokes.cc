@@ -55,28 +55,18 @@ NavierStokes<dim>::NavierStokes(
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
   : time_stepping(parameters)
   , parameters(parameters)
-  ,
-
-  n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
+  , n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
   , this_mpi_process(Utilities::MPI::this_mpi_process(get_communicator(triangulation_in)))
-  ,
-
-  pcout(std::cout, this_mpi_process == 0)
-  ,
-
-  triangulation(triangulation_in)
-  ,
-
-  fe_u(FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1)), dim)
+  , pcout(std::cout, this_mpi_process == 0)
+  , triangulation(triangulation_in)
+  , fe_u(FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1)), dim)
   , fe_p(parameters.augmented_taylor_hood ?
            static_cast<const FiniteElement<dim> &>(
              FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
            static_cast<const FiniteElement<dim> &>(
              FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree))),
          1)
-  ,
-
-  dof_handler_u(triangulation)
+  , dof_handler_u(triangulation)
   , dof_handler_p(triangulation)
   , navier_stokes_matrix(parameters, solution_old, solution_old_old)
   , preconditioner(parameters, *this, triangulation, constraints_u)
