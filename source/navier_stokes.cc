@@ -25,6 +25,7 @@
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
 #include <deal.II/fe/fe_values.h>
+#include <deal.II/fe/mapping_fe.h>
 #include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_tools.h>
@@ -56,7 +57,11 @@ NavierStokes<dim>::NavierStokes(
   Triangulation<dim> &                              triangulation_in,
   TimerOutput *                                     external_timer,
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
-  : time_stepping(parameters)
+  : FlowBaseAlgorithm<dim>(
+      parameters.use_simplex_mesh ?
+        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+        std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
+  , time_stepping(parameters)
   , parameters(parameters)
   , n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
   , this_mpi_process(Utilities::MPI::this_mpi_process(get_communicator(triangulation_in)))
