@@ -66,7 +66,10 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   TimerOutput *                              timer_in)
   : pcout(std::cout, Utilities::MPI::this_mpi_process(tria_in.get_communicator()) == 0)
   , timer((timer_in == 0 ?
-             new TimerOutput(pcout, parameters_in.output_wall_times ? TimerOutput::summary : TimerOutput::never, TimerOutput::wall_times) :
+             new TimerOutput(pcout,
+                             parameters_in.output_wall_times ? TimerOutput::summary :
+                                                               TimerOutput::never,
+                             TimerOutput::wall_times) :
              timer_in),
           helpers::DummyDeleter<TimerOutput>(timer_in == 0))
   , triangulation(tria_in)
@@ -283,7 +286,9 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
   for (unsigned int cell = 0; cell < this->matrix_free.n_cell_batches(); ++cell)
     {
       VectorizedArray<double> diameter = VectorizedArray<double>();
-      for (unsigned int v = 0; v < this->matrix_free.n_active_entries_per_cell_batch(cell); ++v)
+      for (unsigned int v = 0;
+           v < this->matrix_free.n_active_entries_per_cell_batch(cell);
+           ++v)
         {
           typename DoFHandler<dim>::active_cell_iterator dcell =
             this->matrix_free.get_cell_iterator(cell, v, 1);

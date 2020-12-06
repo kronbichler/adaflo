@@ -944,7 +944,9 @@ LevelSetOKZSolver<dim>::advance_concentration_vmult(
       src.update_ghost_values();
 
       for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
-        for (unsigned int v = 0; v < this->matrix_free.n_active_entries_per_cell_batch(mcell); ++v)
+        for (unsigned int v = 0;
+             v < this->matrix_free.n_active_entries_per_cell_batch(mcell);
+             ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =
               this->matrix_free.get_cell_iterator(mcell, v, 2);
@@ -1339,7 +1341,9 @@ LevelSetOKZSolver<dim>::advance_concentration()
       std::vector<Tensor<1, dim>> local_gradients(fe_face_values.get_quadrature().size());
 
       for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
-        for (unsigned int v = 0; v < this->matrix_free.n_active_entries_per_cell_batch(mcell); ++v)
+        for (unsigned int v = 0;
+             v < this->matrix_free.n_active_entries_per_cell_batch(mcell);
+             ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =
               this->matrix_free.get_cell_iterator(mcell, v, 2);
