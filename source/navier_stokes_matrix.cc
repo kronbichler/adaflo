@@ -75,11 +75,11 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
                                     const TimeStepping &   time_stepping_in,
                                     const bool             pressure_average_fix)
 {
-  matrix_free                      = &matrix_free_in;
-  time_stepping                    = &time_stepping_in;
+  matrix_free                       = &matrix_free_in;
+  time_stepping                     = &time_stepping_in;
   const unsigned int n_cell_batches = matrix_free->n_cell_batches();
-  const unsigned int n_q_points    = matrix_free->get_n_q_points(0);
-  const unsigned int size          = n_cell_batches * n_q_points;
+  const unsigned int n_q_points     = matrix_free->get_n_q_points(0);
+  const unsigned int size           = n_cell_batches * n_q_points;
 
   const bool use_variable_coefficients =
     parameters.density_diff != 0 || parameters.viscosity_diff != 0;

@@ -419,7 +419,7 @@ FlowParameters::parse_parameters(const std::string parameter_file, ParameterHand
         prm.print_parameters(std::cout, ParameterHandler::Text);
       AssertThrow(false, ExcMessage("Invalid input parameter file."));
     }
-  
+
   this->parse_parameters(prm);
 }
 
@@ -512,7 +512,7 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
   print_solution_fields = prm.get_integer("output vtk files");
   if (print_solution_fields > 2)
     print_solution_fields = 1;
-  output_wall_times      = prm.get_integer("output wall times") > 0;
+  output_wall_times = prm.get_integer("output wall times") > 0;
   prm.leave_subsection();
 
 

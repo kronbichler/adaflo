@@ -35,10 +35,10 @@ struct FlowParameters
 
   static void
   declare_parameters(ParameterHandler &prm);
-  
+
   void
   parse_parameters(const std::string parameter_filename, ParameterHandler &prm);
-  
+
   void
   parse_parameters(ParameterHandler &prm);
 
