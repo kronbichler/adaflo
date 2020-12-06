@@ -31,8 +31,8 @@ template <int dim>
 class LevelSetBaseAlgorithm : public TwoPhaseBaseAlgorithm<dim>
 {
 public:
-  LevelSetBaseAlgorithm(const FlowParameters &                     parameters,
-                        parallel::distributed::Triangulation<dim> &triangulation);
+  LevelSetBaseAlgorithm(const FlowParameters &parameters,
+                        Triangulation<dim> &  triangulation);
   virtual ~LevelSetBaseAlgorithm()
   {}
 

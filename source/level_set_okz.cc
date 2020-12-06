@@ -42,6 +42,7 @@
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/level_set_okz.h>
+#include <adaflo/util.h>
 
 #include <fstream>
 #include <iostream>
@@ -52,9 +53,8 @@ using namespace dealii;
 
 
 template <int dim>
-LevelSetOKZSolver<dim>::LevelSetOKZSolver(
-  const FlowParameters &                     parameters_in,
-  parallel::distributed::Triangulation<dim> &tria_in)
+LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
+                                          Triangulation<dim> &  tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
   , first_reinit_step(true)
 {}
@@ -208,7 +208,7 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     csp.reinit(this->dof_handler.locally_owned_dofs(),
                this->dof_handler.locally_owned_dofs(),
                relevant_dofs,
-               this->triangulation.get_communicator());
+               get_communicator(this->triangulation));
     std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
     typename DoFHandler<dim>::active_cell_iterator cell =
                                                      this->dof_handler.begin_active(),

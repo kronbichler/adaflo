@@ -43,10 +43,10 @@ template <int dim>
 class TwoPhaseBaseAlgorithm : public FlowBaseAlgorithm<dim>
 {
 public:
-  TwoPhaseBaseAlgorithm(const FlowParameters &                     parameters,
-                        const std::shared_ptr<FiniteElement<dim>>  fe,
-                        parallel::distributed::Triangulation<dim> &triangulation,
-                        TimerOutput *                              external_timer = 0);
+  TwoPhaseBaseAlgorithm(const FlowParameters &                    parameters,
+                        const std::shared_ptr<FiniteElement<dim>> fe,
+                        Triangulation<dim> &                      triangulation,
+                        TimerOutput *                             external_timer = 0);
 
   virtual ~TwoPhaseBaseAlgorithm();
 
@@ -203,10 +203,10 @@ protected:
   std::shared_ptr<TimerOutput> timer;
 
   // Reference to externally defined triangulation
-  parallel::distributed::Triangulation<dim> &triangulation;
-  NavierStokes<dim>                          navier_stokes;
-  MatrixFree<dim>                            matrix_free;
-  const std::shared_ptr<FiniteElement<dim>>  fe;
+  Triangulation<dim> &                      triangulation;
+  NavierStokes<dim>                         navier_stokes;
+  MatrixFree<dim>                           matrix_free;
+  const std::shared_ptr<FiniteElement<dim>> fe;
 
   DoFHandler<dim> dof_handler;
 

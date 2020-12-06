@@ -33,8 +33,8 @@ template <int dim>
 class LevelSetOKZMatrixSolver : public LevelSetBaseAlgorithm<dim>
 {
 public:
-  LevelSetOKZMatrixSolver(const FlowParameters &                     parameters,
-                          parallel::distributed::Triangulation<dim> &triangulation);
+  LevelSetOKZMatrixSolver(const FlowParameters &parameters,
+                          Triangulation<dim> &  triangulation);
   virtual ~LevelSetOKZMatrixSolver()
   {}
 

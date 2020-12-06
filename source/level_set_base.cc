@@ -37,6 +37,7 @@
 #include <deal.II/numerics/vector_tools.h>
 
 #include <adaflo/level_set_base.h>
+#include <adaflo/util.h>
 
 #include <fstream>
 #include <iostream>
@@ -47,9 +48,8 @@ using namespace dealii;
 
 
 template <int dim>
-LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(
-  const FlowParameters &                     parameters_in,
-  parallel::distributed::Triangulation<dim> &tria_in)
+LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &parameters_in,
+                                                  Triangulation<dim> &  tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                std::make_shared<FE_Q_iso_Q1<dim>>(
                                  parameters_in.concentration_subdivisions),
@@ -317,7 +317,7 @@ LevelSetBaseAlgorithm<dim>::mark_cells_for_refinement()
 
   unsigned int do_refine =
     Utilities::MPI::max(static_cast<unsigned int>(needs_refinement_or_coarsening),
-                        this->triangulation.get_communicator());
+                        get_communicator(this->triangulation));
 
   if (!do_refine)
     return false;
@@ -445,7 +445,7 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
 
     joint_solution.reinit(joint_dof_handler.locally_owned_dofs(),
                           locally_relevant_joint_dofs,
-                          this->triangulation.get_communicator());
+                          get_communicator(this->triangulation));
   }
 
 

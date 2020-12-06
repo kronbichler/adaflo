@@ -48,8 +48,7 @@ template <int dim>
 class PhaseFieldSolver : public TwoPhaseBaseAlgorithm<dim>
 {
 public:
-  PhaseFieldSolver(const FlowParameters &                     parameters,
-                   parallel::distributed::Triangulation<dim> &triangulation);
+  PhaseFieldSolver(const FlowParameters &parameters, Triangulation<dim> &triangulation);
 
   virtual ~PhaseFieldSolver()
   {}

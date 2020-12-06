@@ -47,7 +47,7 @@ class NavierStokes : public FlowBaseAlgorithm<dim>
 {
 public:
   NavierStokes(const FlowParameters &                            parameters,
-               parallel::distributed::Triangulation<dim> &       triangulation,
+               Triangulation<dim> &                              triangulation,
                TimerOutput *                                     external_timer = 0,
                std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor =
                  std::shared_ptr<helpers::BoundaryDescriptor<dim>>());
@@ -218,7 +218,7 @@ private:
 
   ConditionalOStream pcout;
 
-  parallel::distributed::Triangulation<dim> &triangulation;
+  Triangulation<dim> &triangulation;
 
 
   const FESystem<dim> fe_u;
