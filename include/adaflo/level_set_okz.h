@@ -60,11 +60,6 @@ public:
                           const LinearAlgebra::distributed::Vector<double> &srcc,
                           const bool apply_diffusion) const;
 
-  void
-  reinitialization_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const bool diffuse_only) const;
-
   virtual void
   initialize_data_structures();
 
@@ -150,20 +145,6 @@ private:
     LinearAlgebra::distributed::Vector<double> &      dst,
     const LinearAlgebra::distributed::Vector<double> &src,
     const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize(const MatrixFree<dim, double> &                   data,
-                     LinearAlgebra::distributed::Vector<double> &      dst,
-                     const LinearAlgebra::distributed::Vector<double> &src,
-                     const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize_rhs(const MatrixFree<dim, double> &                   data,
-                         LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const std::pair<unsigned int, unsigned int> &     cell_range);
 
   void
   local_projection_matrix(

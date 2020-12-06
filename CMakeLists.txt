@@ -56,6 +56,7 @@ DEAL_II_INITIALIZE_CACHED_VARIABLES()
 # Set the source files to be compiled
 SET( TARGET_SRC
      source/level_set_okz.cc
+     source/level_set_okz_reinitialization.cc
      source/phase_field.cc
      source/phase_field_local.cc
      source/navier_stokes_matrix.cc
