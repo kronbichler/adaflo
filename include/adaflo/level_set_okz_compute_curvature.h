@@ -71,7 +71,7 @@ public:
   {
     (void)fast_computation;
 
-    Assert(false, ExcNotImplemented());
+    AssertThrow(false, ExcNotImplemented());
   }
 
   virtual void

@@ -78,7 +78,7 @@ public:
     (void)srcc;
     (void)apply_diffusion;
 
-    Assert(false, ExcNotImpelemented());
+    AssertThrow(false, ExcNotImplemented());
   }
 
   virtual void

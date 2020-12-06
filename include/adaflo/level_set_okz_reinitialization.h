@@ -102,7 +102,7 @@ private:
   {
     (void)fast_computation;
 
-    Assert(false, ExcNotImpelemented())
+    AssertThrow(false, ExcNotImplemented())
   }
 
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;

@@ -447,32 +447,33 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::advance_concentration()
 {
-  LevelSetOKZSolverAdvanceConcentration<dim> op(this->solution_old,
-                                                this->solution_old_old,
-                                                this->triangulation,
-                                                this->global_omega_diameter,
-                                                this->cell_diameters,
+  LevelSetOKZSolverAdvanceConcentration<dim> advection_operator(
+    this->solution_old,
+    this->solution_old_old,
+    this->triangulation,
+    this->global_omega_diameter,
+    this->cell_diameters,
 
-                                                this->constraints,
-                                                this->pcout,
-                                                this->time_stepping,
-                                                this->boundary,
-                                                this->mapping,
-                                                this->dof_handler,
-                                                this->fe,
-                                                this->matrix_free,
-                                                this->timer,
-                                                this->solution_update,
-                                                this->solution,
-                                                this->system_rhs,
-                                                this->navier_stokes,
-                                                this->parameters,
-                                                this->artificial_viscosities,
-                                                this->global_max_velocity,
-                                                this->preconditioner,
-                                                this->evaluated_convection);
+    this->constraints,
+    this->pcout,
+    this->time_stepping,
+    this->boundary,
+    this->mapping,
+    this->dof_handler,
+    this->fe,
+    this->matrix_free,
+    this->timer,
+    this->solution_update,
+    this->solution,
+    this->system_rhs,
+    this->navier_stokes,
+    this->parameters,
+    this->artificial_viscosities,
+    this->global_max_velocity,
+    this->preconditioner,
+    this->evaluated_convection);
 
-  op.advance_concentration();
+  advection_operator.advance_concentration();
 }
 
 
@@ -482,23 +483,23 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
 {
-  LevelSetOKZSolverComputeNormal<dim> op(this->cell_diameters,
-                                         this->epsilon_used,
-                                         this->minimal_edge_length,
-                                         this->constraints_normals,
-                                         this->normal_vector_field,
-                                         this->timer,
-                                         this->navier_stokes,
-                                         this->parameters,
-                                         this->matrix_free,
-                                         this->solution,
-                                         this->normal_vector_rhs,
-                                         this->matrix_free_float,
-                                         this->cell_diameters_float,
-                                         this->preconditioner,
-                                         this->projection_matrix,
-                                         this->ilu_projection_matrix);
-  op.compute_normal(fast_computation);
+  LevelSetOKZSolverComputeNormal<dim> normal_operator(this->cell_diameters,
+                                                      this->epsilon_used,
+                                                      this->minimal_edge_length,
+                                                      this->constraints_normals,
+                                                      this->normal_vector_field,
+                                                      this->timer,
+                                                      this->navier_stokes,
+                                                      this->parameters,
+                                                      this->matrix_free,
+                                                      this->solution,
+                                                      this->normal_vector_rhs,
+                                                      this->matrix_free_float,
+                                                      this->cell_diameters_float,
+                                                      this->preconditioner,
+                                                      this->projection_matrix,
+                                                      this->ilu_projection_matrix);
+  normal_operator.compute_normal(fast_computation);
 }
 
 
@@ -508,22 +509,22 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
-  LevelSetOKZSolverComputeCurvature<dim> op(this->cell_diameters,
-                                            this->normal_vector_field,
-                                            this->constraints_curvature,
-                                            this->constraints,
-                                            this->epsilon_used,
-                                            this->timer,
-                                            this->system_rhs,
-                                            this->navier_stokes,
-                                            this->parameters,
-                                            this->solution,
-                                            this->matrix_free,
-                                            preconditioner,
-                                            projection_matrix,
-                                            ilu_projection_matrix);
+  LevelSetOKZSolverComputeCurvature<dim> curvatur_operator(this->cell_diameters,
+                                                           this->normal_vector_field,
+                                                           this->constraints_curvature,
+                                                           this->constraints,
+                                                           this->epsilon_used,
+                                                           this->timer,
+                                                           this->system_rhs,
+                                                           this->navier_stokes,
+                                                           this->parameters,
+                                                           this->solution,
+                                                           this->matrix_free,
+                                                           preconditioner,
+                                                           projection_matrix,
+                                                           ilu_projection_matrix);
 
-  op.compute_curvature(diffuse_large_values);
+  curvatur_operator.compute_curvature(diffuse_large_values);
 }
 
 
@@ -601,26 +602,28 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
                                      const unsigned int diff_steps,
                                      const bool diffuse_cells_with_large_curvature_only)
 {
-  LevelSetOKZSolverReinitialization<dim> op(this->normal_vector_field,
-                                            this->cell_diameters,
-                                            this->epsilon_used,
-                                            this->minimal_edge_length,
-                                            this->navier_stokes,
-                                            this->constraints,
-                                            this->solution_update,
-                                            this->solution,
-                                            this->system_rhs,
-                                            this->timer,
-                                            this->pcout,
-                                            this->preconditioner,
-                                            this->last_concentration_range,
-                                            this->parameters,
-                                            this->time_stepping,
-                                            this->first_reinit_step,
-                                            this->matrix_free,
-                                            this->evaluated_convection);
+  LevelSetOKZSolverReinitialization<dim> reinit_operator(this->normal_vector_field,
+                                                         this->cell_diameters,
+                                                         this->epsilon_used,
+                                                         this->minimal_edge_length,
+                                                         this->navier_stokes,
+                                                         this->constraints,
+                                                         this->solution_update,
+                                                         this->solution,
+                                                         this->system_rhs,
+                                                         this->timer,
+                                                         this->pcout,
+                                                         this->preconditioner,
+                                                         this->last_concentration_range,
+                                                         this->parameters,
+                                                         this->time_stepping,
+                                                         this->first_reinit_step,
+                                                         this->matrix_free,
+                                                         this->evaluated_convection);
 
-  op.reinitialize(stab_steps, diff_steps, diffuse_cells_with_large_curvature_only);
+  reinit_operator.reinitialize(stab_steps,
+                               diff_steps,
+                               diffuse_cells_with_large_curvature_only);
 }
 
 
