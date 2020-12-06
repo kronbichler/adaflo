@@ -177,8 +177,19 @@ void create_triangulation(Triangulation<2> & tria,
 
   if (use_simplex_mesh)
     {
-      GridGenerator::subdivided_hyper_rectangle_with_simplices(
-        tria, {5 * n, 1 * n}, Point<2>(0.0, 0.0), Point<2>(5.0, 1.0), false);
+      if (false)
+        {
+          GridGenerator::subdivided_hyper_rectangle_with_simplices(
+            tria, {5 * n, 1 * n}, Point<2>(0.0, 0.0), Point<2>(5.0, 1.0), false);
+        }
+      else
+        {
+          GridIn<2> grid_in;
+          grid_in.attach_triangulation(tria);
+          std::ifstream input_file("simplex_channel_" + std::to_string(n_refinements) +
+                                   ".msh");
+          grid_in.read_msh(input_file);
+        }
 
       for (auto cell : tria)
         for (auto face : cell.face_iterators())

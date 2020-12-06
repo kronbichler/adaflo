@@ -15,13 +15,13 @@
 # Listing of Parameters
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 5.
+  set end time         = 10.
   set step size        = 0.02
 end
 subsection Navier-Stokes
   set physical type      = incompressible
   set dimension          = 2
-  set global refinements = 4
+  set global refinements = 3
   set velocity degree    = 2
   set viscosity          = 0.005
   set simplex mesh       = 1
