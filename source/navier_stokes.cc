@@ -38,6 +38,8 @@
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
 
+#include <deal.II/simplex/fe_lib.h>
+
 #include <adaflo/navier_stokes.h>
 #include <adaflo/util.h>
 
@@ -59,12 +61,20 @@ NavierStokes<dim>::NavierStokes(
   , this_mpi_process(Utilities::MPI::this_mpi_process(get_communicator(triangulation_in)))
   , pcout(std::cout, this_mpi_process == 0)
   , triangulation(triangulation_in)
-  , fe_u(FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1)), dim)
-  , fe_p(parameters.augmented_taylor_hood ?
+  , fe_u(parameters.use_simplex_mesh ?
            static_cast<const FiniteElement<dim> &>(
-             FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
+             Simplex::FE_P<dim>(parameters.velocity_degree)) :
            static_cast<const FiniteElement<dim> &>(
-             FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree))),
+             FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1))),
+         dim)
+  , fe_p(parameters.use_simplex_mesh ?
+           static_cast<const FiniteElement<dim> &>(
+             Simplex::FE_P<dim>(parameters.velocity_degree - 1)) :
+           (parameters.augmented_taylor_hood ?
+              static_cast<const FiniteElement<dim> &>(
+                FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
+              static_cast<const FiniteElement<dim> &>(
+                FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree)))),
          1)
   , dof_handler_u(triangulation)
   , dof_handler_p(triangulation)
