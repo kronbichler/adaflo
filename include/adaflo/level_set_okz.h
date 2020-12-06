@@ -19,7 +19,10 @@
 
 #include <adaflo/diagonal_preconditioner.h>
 #include <adaflo/level_set_base.h>
-
+#include <adaflo/level_set_okz_advance_concentration.h>
+#include <adaflo/level_set_okz_compute_curvature.h>
+#include <adaflo/level_set_okz_compute_normal.h>
+#include <adaflo/level_set_okz_reinitialization.h>
 
 using namespace dealii;
 
@@ -113,6 +116,11 @@ private:
 
   std::shared_ptr<BlockMatrixExtension> projection_matrix;
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
+
+  LevelSetOKZSolverReinitialization<dim>     reinit_operator;
+  LevelSetOKZSolverAdvanceConcentration<dim> advection_operator;
+  LevelSetOKZSolverComputeNormal<dim>        normal_operator;
+  LevelSetOKZSolverComputeCurvature<dim>     curvatur_operator;
 };
 
 
