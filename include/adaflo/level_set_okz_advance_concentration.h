@@ -33,11 +33,11 @@ class LevelSetOKZSolverAdvanceConcentration
 {
 public:
   LevelSetOKZSolverAdvanceConcentration(
+    LinearAlgebra::distributed::Vector<double> &      solution,
     const LinearAlgebra::distributed::Vector<double> &solution_old,
     const LinearAlgebra::distributed::Vector<double> &solution_old_old,
-    LinearAlgebra::distributed::Vector<double> &      solution_update,
-    LinearAlgebra::distributed::Vector<double> &      solution,
-    LinearAlgebra::distributed::Vector<double> &      system_rhs,
+    LinearAlgebra::distributed::Vector<double> &      increment,
+    LinearAlgebra::distributed::Vector<double> &      rhs,
     Triangulation<dim> &                              triangulation,
     double &                                          global_omega_diameter,
     AlignedVector<VectorizedArray<double>> &          cell_diameters,
@@ -57,11 +57,11 @@ public:
     double &                                                global_max_velocity,
     const DiagonalPreconditioner<double> &                  preconditioner,
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
-    : solution_old(solution_old)
+    : solution(solution)
+    , solution_old(solution_old)
     , solution_old_old(solution_old_old)
-    , solution_update(solution_update)
-    , solution(solution)
-    , system_rhs(system_rhs)
+    , increment(increment)
+    , rhs(rhs)
     , triangulation(triangulation)
     , global_omega_diameter(global_omega_diameter)
     , cell_diameters(cell_diameters)
@@ -139,11 +139,12 @@ private:
     const std::pair<unsigned int, unsigned int> &     cell_range);
 
 
-  const LinearAlgebra::distributed::Vector<double> &solution_old;
-  const LinearAlgebra::distributed::Vector<double> &solution_old_old;
-  LinearAlgebra::distributed::Vector<double> &      solution_update;
-  LinearAlgebra::distributed::Vector<double> &      solution;
-  LinearAlgebra::distributed::Vector<double> &      system_rhs;
+  LinearAlgebra::distributed::Vector<double> &      solution;     // [o] new ls solution
+  const LinearAlgebra::distributed::Vector<double> &solution_old; // [i] old ls solution
+  const LinearAlgebra::distributed::Vector<double>
+    &                                         solution_old_old; // [i] old ls solution
+  LinearAlgebra::distributed::Vector<double> &increment;        // [-] temp
+  LinearAlgebra::distributed::Vector<double> &rhs;              // [-] temp
 
   Triangulation<dim> &                    triangulation;
   double &                                global_omega_diameter;

@@ -308,10 +308,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   }
 
   // compute right hand side
-  global_max_velocity                                   = this->get_maximal_velocity();
-  LinearAlgebra::distributed::Vector<double> &rhs       = this->system_rhs;
-  LinearAlgebra::distributed::Vector<double> &increment = this->solution_update;
-  rhs                                                   = 0;
+  global_max_velocity = this->get_maximal_velocity();
+  rhs                 = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
   this->matrix_free.cell_loop(                                            \
@@ -381,9 +379,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
             cell->get_dof_indices(local_dof_indices);
             this->constraints.distribute_local_to_global(cell_rhs,
                                                          local_dof_indices,
-                                                         this->system_rhs);
+                                                         this->rhs);
           }
-      this->system_rhs.compress(VectorOperation::add);
+      this->rhs.compress(VectorOperation::add);
     }
 
 

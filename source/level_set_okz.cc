@@ -256,10 +256,10 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   }
 
   this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
+    this->solution.block(0),
     this->solution_old.block(0),
     this->solution_old_old.block(0),
     this->solution_update.block(0),
-    this->solution.block(0),
     this->system_rhs.block(0),
     this->triangulation,
     this->global_omega_diameter,
