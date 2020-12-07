@@ -61,6 +61,11 @@ NavierStokes<dim>::NavierStokes(
       parameters.use_simplex_mesh ?
         std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
         std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
+  , user_rhs(2)
+  , solution(2)
+  , solution_old(2)
+  , solution_old_old(2)
+  , solution_update(2)
   , time_stepping(parameters)
   , parameters(parameters)
   , n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
@@ -85,6 +90,8 @@ NavierStokes<dim>::NavierStokes(
   , dof_handler_u(triangulation)
   , dof_handler_p(triangulation)
   , navier_stokes_matrix(parameters, solution_old, solution_old_old)
+  , system_rhs(2)
+  , const_rhs(2)
   , preconditioner(parameters, *this, triangulation, constraints_u)
   , dofs_distributed(false)
   , system_is_setup(false)
