@@ -77,29 +77,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
                     this->first_reinit_step,
                     this->matrix_free,
                     this->evaluated_convection)
-  , advection_operator(this->solution_old,
-                       this->solution_old_old,
-                       this->triangulation,
-                       this->global_omega_diameter,
-                       this->cell_diameters,
-                       this->constraints,
-                       this->pcout,
-                       this->time_stepping,
-                       this->boundary,
-                       this->mapping,
-                       this->dof_handler,
-                       this->fe,
-                       this->matrix_free,
-                       this->timer,
-                       this->solution_update,
-                       this->solution,
-                       this->system_rhs,
-                       this->navier_stokes,
-                       this->parameters,
-                       this->artificial_viscosities,
-                       this->global_max_velocity,
-                       this->preconditioner,
-                       this->evaluated_convection)
   , normal_operator(this->curvatur_operator,
                     this->cell_diameters,
                     this->epsilon_used,
@@ -277,6 +254,31 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     ilu_projection_matrix = std::make_shared<BlockILUExtension>();
     ilu_projection_matrix->initialize(*projection_matrix);
   }
+
+  this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
+    this->solution_old.block(0),
+    this->solution_old_old.block(0),
+    this->solution_update.block(0),
+    this->solution.block(0),
+    this->system_rhs.block(0),
+    this->triangulation,
+    this->global_omega_diameter,
+    this->cell_diameters,
+    this->constraints,
+    this->pcout,
+    this->time_stepping,
+    this->boundary,
+    this->mapping,
+    this->dof_handler,
+    this->fe,
+    this->matrix_free,
+    this->timer,
+    this->navier_stokes,
+    this->parameters,
+    this->artificial_viscosities,
+    this->global_max_velocity,
+    this->preconditioner,
+    this->evaluated_convection);
 }
 
 
@@ -480,7 +482,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::advance_concentration()
 {
-  advection_operator.advance_concentration();
+  advection_operator->advance_concentration();
 }
 
 

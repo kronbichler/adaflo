@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2008 - 2016 by the adaflo authors
+// Copyright (C) 2020 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -33,11 +33,14 @@ class LevelSetOKZSolverAdvanceConcentration
 {
 public:
   LevelSetOKZSolverAdvanceConcentration(
-    LinearAlgebra::distributed::BlockVector<double> &solution_old,
-    LinearAlgebra::distributed::BlockVector<double> &solution_old_old,
-    Triangulation<dim> &                             triangulation,
-    double &                                         global_omega_diameter,
-    AlignedVector<VectorizedArray<double>> &         cell_diameters,
+    LinearAlgebra::distributed::Vector<double> &solution_old,
+    LinearAlgebra::distributed::Vector<double> &solution_old_old,
+    LinearAlgebra::distributed::Vector<double> &solution_update,
+    LinearAlgebra::distributed::Vector<double> &solution,
+    LinearAlgebra::distributed::Vector<double> &system_rhs,
+    Triangulation<dim> &                        triangulation,
+    double &                                    global_omega_diameter,
+    AlignedVector<VectorizedArray<double>> &    cell_diameters,
 
     const AffineConstraints<double> &                       constraints,
     const ConditionalOStream &                              pcout,
@@ -48,9 +51,6 @@ public:
     const std::shared_ptr<FiniteElement<dim>> &             fe,
     const MatrixFree<dim> &                                 matrix_free,
     const std::shared_ptr<TimerOutput> &                    timer,
-    LinearAlgebra::distributed::BlockVector<double> &       solution_update,
-    LinearAlgebra::distributed::BlockVector<double> &       solution,
-    LinearAlgebra::distributed::BlockVector<double> &       system_rhs,
     const NavierStokes<dim> &                               navier_stokes,
     const FlowParameters &                                  parameters,
     AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
@@ -59,6 +59,9 @@ public:
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
     : solution_old(solution_old)
     , solution_old_old(solution_old_old)
+    , solution_update(solution_update)
+    , solution(solution)
+    , system_rhs(system_rhs)
     , triangulation(triangulation)
     , global_omega_diameter(global_omega_diameter)
     , cell_diameters(cell_diameters)
@@ -71,9 +74,6 @@ public:
     , fe(fe)
     , matrix_free(matrix_free)
     , timer(timer)
-    , solution_update(solution_update)
-    , solution(solution)
-    , system_rhs(system_rhs)
     , navier_stokes(navier_stokes)
     , parameters(parameters)
     , artificial_viscosities(artificial_viscosities)
@@ -139,11 +139,15 @@ private:
     const std::pair<unsigned int, unsigned int> &     cell_range);
 
 
-  LinearAlgebra::distributed::BlockVector<double> &solution_old;
-  LinearAlgebra::distributed::BlockVector<double> &solution_old_old;
-  Triangulation<dim> &                             triangulation;
-  double &                                         global_omega_diameter;
-  AlignedVector<VectorizedArray<double>> &         cell_diameters;
+  LinearAlgebra::distributed::Vector<double> &solution_old;
+  LinearAlgebra::distributed::Vector<double> &solution_old_old;
+  LinearAlgebra::distributed::Vector<double> &solution_update;
+  LinearAlgebra::distributed::Vector<double> &solution;
+  LinearAlgebra::distributed::Vector<double> &system_rhs;
+
+  Triangulation<dim> &                    triangulation;
+  double &                                global_omega_diameter;
+  AlignedVector<VectorizedArray<double>> &cell_diameters;
 
 
   const AffineConstraints<double> &constraints;
@@ -160,12 +164,9 @@ private:
 
   const MatrixFree<dim> &matrix_free;
 
-  const std::shared_ptr<TimerOutput> &             timer;
-  LinearAlgebra::distributed::BlockVector<double> &solution_update;
-  LinearAlgebra::distributed::BlockVector<double> &solution;
-  LinearAlgebra::distributed::BlockVector<double> &system_rhs;
-  const NavierStokes<dim> &                        navier_stokes;
-  const FlowParameters &                           parameters;
+  const std::shared_ptr<TimerOutput> &timer;
+  const NavierStokes<dim> &           navier_stokes;
+  const FlowParameters &              parameters;
 
 
   AlignedVector<VectorizedArray<double>> &artificial_viscosities;

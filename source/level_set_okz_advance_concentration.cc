@@ -98,13 +98,12 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
       vel_values_old.reinit(cell);
       vel_values_old_old.reinit(cell);
 
-      vel_values.read_dof_values_plain(this->navier_stokes.solution.block(0));
-      vel_values_old.read_dof_values_plain(this->navier_stokes.solution_old.block(0));
-      vel_values_old_old.read_dof_values_plain(
-        this->navier_stokes.solution_old_old.block(0));
-      ls_values.read_dof_values_plain(this->solution.block(0));
-      ls_values_old.read_dof_values_plain(this->solution_old.block(0));
-      ls_values_old_old.read_dof_values_plain(this->solution_old_old.block(0));
+      vel_values.read_dof_values_plain(this->navier_stokes.solution);
+      vel_values_old.read_dof_values_plain(this->navier_stokes.solution_old);
+      vel_values_old_old.read_dof_values_plain(this->navier_stokes.solution_old_old);
+      ls_values.read_dof_values_plain(this->solution);
+      ls_values_old.read_dof_values_plain(this->solution_old);
+      ls_values_old_old.read_dof_values_plain(this->solution_old_old);
 
       vel_values.evaluate(true, false);
       vel_values_old.evaluate(true, false);
@@ -303,15 +302,15 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
            boundary_values.begin();
          it != boundary_values.end();
          ++it)
-      if (this->solution.block(0).locally_owned_elements().is_element(it->first))
-        this->solution.block(0)(it->first) = it->second;
-    this->solution.block(0).update_ghost_values();
+      if (this->solution.locally_owned_elements().is_element(it->first))
+        this->solution(it->first) = it->second;
+    this->solution.update_ghost_values();
   }
 
   // compute right hand side
   global_max_velocity                                   = this->get_maximal_velocity();
-  LinearAlgebra::distributed::Vector<double> &rhs       = this->system_rhs.block(0);
-  LinearAlgebra::distributed::Vector<double> &increment = this->solution_update.block(0);
+  LinearAlgebra::distributed::Vector<double> &rhs       = this->system_rhs;
+  LinearAlgebra::distributed::Vector<double> &increment = this->solution_update;
   rhs                                                   = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
@@ -320,7 +319,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
       dim>::template local_advance_concentration_rhs<c_degree, u_degree>, \
     this,                                                                 \
     rhs,                                                                  \
-    this->solution.block(0))
+    this->solution)
 
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
@@ -359,7 +358,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
                         this->boundary->symmetry.end())
                       {
                         fe_face_values.reinit(cell, face);
-                        fe_face_values.get_function_gradients(this->solution.block(0),
+                        fe_face_values.get_function_gradients(this->solution,
                                                               local_gradients);
 
                         for (unsigned int i = 0; i < this->fe->dofs_per_cell; ++i)
@@ -417,8 +416,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
                 << n_iterations << "]";
 
   this->constraints.distribute(increment);
-  this->solution.block(0) += increment;
-  this->solution.block(0).update_ghost_values();
+  this->solution += increment;
+  this->solution.update_ghost_values();
 }
 
 

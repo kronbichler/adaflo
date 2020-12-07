@@ -111,10 +111,10 @@ private:
   std::shared_ptr<BlockMatrixExtension> projection_matrix;
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
 
-  LevelSetOKZSolverReinitialization<dim>     reinit_operator;
-  LevelSetOKZSolverAdvanceConcentration<dim> advection_operator;
-  LevelSetOKZSolverComputeNormal<dim>        normal_operator;
-  LevelSetOKZSolverComputeCurvature<dim>     curvatur_operator;
+  LevelSetOKZSolverReinitialization<dim>                      reinit_operator;
+  std::unique_ptr<LevelSetOKZSolverAdvanceConcentration<dim>> advection_operator;
+  LevelSetOKZSolverComputeNormal<dim>                         normal_operator;
+  LevelSetOKZSolverComputeCurvature<dim>                      curvatur_operator;
 };
 
 
