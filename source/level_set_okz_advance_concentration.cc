@@ -234,7 +234,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
       // Boundary part of stabilization-term:
       FEFaceValues<dim> fe_face_values(
         fe,
-        this->matrix_free.get_face_quadrature(1 /*TODO????*/),
+        this->matrix_free.get_face_quadrature(parameters.quad_index),
         update_values | update_gradients | update_JxW_values | update_normal_vectors);
       Vector<double>                       cell_rhs(fe.dofs_per_cell);
       std::vector<types::global_dof_index> local_dof_indices(fe.dofs_per_cell);
@@ -381,7 +381,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
       FEFaceValues<dim> fe_face_values(
         mapping,
         fe,
-        this->matrix_free.get_face_quadrature(1 /*TODO???*/),
+        this->matrix_free.get_face_quadrature(parameters.quad_index),
         update_values | update_gradients | update_JxW_values | update_normal_vectors);
 
       Vector<double>                       cell_rhs(fe.dofs_per_cell);
