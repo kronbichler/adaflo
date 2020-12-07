@@ -38,7 +38,6 @@ public:
     const LinearAlgebra::distributed::Vector<double> &solution_old_old,
     LinearAlgebra::distributed::Vector<double> &      increment,
     LinearAlgebra::distributed::Vector<double> &      rhs,
-    Triangulation<dim> &                              triangulation,
     double &                                          global_omega_diameter,
     AlignedVector<VectorizedArray<double>> &          cell_diameters,
 
@@ -62,7 +61,6 @@ public:
     , solution_old_old(solution_old_old)
     , increment(increment)
     , rhs(rhs)
-    , triangulation(triangulation)
     , global_omega_diameter(global_omega_diameter)
     , cell_diameters(cell_diameters)
     , constraints(constraints)
@@ -84,22 +82,20 @@ public:
 
   // TODO: make utility function?
   double
-  get_maximal_velocity() const
+  get_maximal_velocity(const DoFHandler<dim> &dof_handler) const
   {
-    const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 1);
+    const QIterated<dim> quadrature_formula(QTrapez<1>(),
+                                            dof_handler.get_fe().tensor_degree() + 1);
     const unsigned int   n_q_points = quadrature_formula.size();
 
-    FEValues<dim> fe_values(navier_stokes.get_fe_u(), quadrature_formula, update_values);
+    FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
     std::vector<Tensor<1, dim>> velocity_values(n_q_points);
 
     const FEValuesExtractors::Vector velocities(0);
 
     double max_velocity = 0;
 
-    typename DoFHandler<dim>::active_cell_iterator
-      cell = navier_stokes.get_dof_handler_u().begin_active(),
-      endc = navier_stokes.get_dof_handler_u().end();
-    for (; cell != endc; ++cell)
+    for (const auto &cell : dof_handler.active_cell_iterators())
       if (cell->is_locally_owned())
         {
           fe_values.reinit(cell);
@@ -110,7 +106,7 @@ public:
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
         }
 
-    return Utilities::MPI::max(max_velocity, get_communicator(triangulation));
+    return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
   }
 
   virtual void
@@ -146,7 +142,6 @@ private:
   LinearAlgebra::distributed::Vector<double> &increment;        // [-] temp
   LinearAlgebra::distributed::Vector<double> &rhs;              // [-] temp
 
-  Triangulation<dim> &                    triangulation;
   double &                                global_omega_diameter;
   AlignedVector<VectorizedArray<double>> &cell_diameters;
 

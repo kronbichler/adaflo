@@ -261,7 +261,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->solution_old_old.block(0),
     this->solution_update.block(0),
     this->system_rhs.block(0),
-    this->triangulation,
     this->global_omega_diameter,
     this->cell_diameters,
     this->constraints,

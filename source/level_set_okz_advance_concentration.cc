@@ -308,7 +308,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   }
 
   // compute right hand side
-  global_max_velocity = this->get_maximal_velocity();
+  global_max_velocity = this->get_maximal_velocity(navier_stokes.get_dof_handler_u());
   rhs                 = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
