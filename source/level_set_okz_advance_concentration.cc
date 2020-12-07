@@ -80,9 +80,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
   const MatrixFree<dim> &                                             matrix_free,
   const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-  AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
-  double &                                                global_max_velocity,
-  const DiagonalPreconditioner<double> &                  preconditioner,
+  double &                                                            global_max_velocity,
+  const DiagonalPreconditioner<double> &                              preconditioner,
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
   : parameters(parameters)
   , solution(solution)
@@ -100,7 +99,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   , global_omega_diameter(global_omega_diameter)
   , cell_diameters(cell_diameters)
   , boundary(boundary)
-  , artificial_viscosities(artificial_viscosities)
   , global_max_velocity(global_max_velocity)
   , evaluated_convection(evaluated_convection)
   , preconditioner(preconditioner)
@@ -363,6 +361,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
   const auto &dof_handler = this->matrix_free.get_dof_handler(parameters.dof_index_ls);
   const auto &fe          = dof_handler.get_fe();
+
+  if (artificial_viscosities.size() != this->matrix_free.n_cell_batches())
+    artificial_viscosities.resize(this->matrix_free.n_cell_batches());
 
   // apply boundary values
   {

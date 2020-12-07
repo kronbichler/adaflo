@@ -154,7 +154,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
         bcs,
         this->matrix_free,
         params,
-        this->artificial_viscosities,
         this->global_max_velocity,
         this->preconditioner,
         this->evaluated_convection);
@@ -208,7 +207,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
-  artificial_viscosities.resize(this->matrix_free.n_cell_batches());
   evaluated_convection.resize(this->matrix_free.n_cell_batches() *
                               this->matrix_free.get_n_q_points(2));
 

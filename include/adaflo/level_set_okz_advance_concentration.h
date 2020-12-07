@@ -113,7 +113,6 @@ public:
     const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
     const MatrixFree<dim> &                                             matrix_free,
     const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-    AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
     double &                                                global_max_velocity,
     const DiagonalPreconditioner<double> &                  preconditioner,
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection);
@@ -174,12 +173,12 @@ private:
   /**
    * Physics section
    */
-  const double &                                global_omega_diameter;          // [i]
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;                 // [i]
-  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;  // [i]
-  AlignedVector<VectorizedArray<double>> &artificial_viscosities;               // [-] ???
-  double &                                global_max_velocity;                  // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection; // [o]
+  const double &                                global_omega_diameter;            // [i]
+  const AlignedVector<VectorizedArray<double>> &cell_diameters;                   // [i]
+  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;    // [i]
+  AlignedVector<VectorizedArray<double>>                  artificial_viscosities; // [-]
+  double &                                                global_max_velocity;    // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;   // [o]
 
   /**
    * Solver section

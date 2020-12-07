@@ -102,7 +102,6 @@ private:
     std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
     const std::pair<unsigned int, unsigned int> &                     cell_range);
 
-  AlignedVector<VectorizedArray<double>>                 artificial_viscosities;
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;
   bool                                                   first_reinit_step;
   double                                                 global_max_velocity;
