@@ -71,8 +71,8 @@ public:
     const VectorType &vel_solution_old,
     const VectorType &vel_solution_old_old,
 
-    double &                                global_omega_diameter,
-    AlignedVector<VectorizedArray<double>> &cell_diameters,
+    const double &                                global_omega_diameter,
+    const AlignedVector<VectorizedArray<double>> &cell_diameters,
 
     const AffineConstraints<double> &                       constraints,
     const ConditionalOStream &                              pcout,
@@ -85,7 +85,8 @@ public:
     double &                                                global_max_velocity,
     const DiagonalPreconditioner<double> &                  preconditioner,
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
-    : solution(solution)
+    : parameters(parameters)
+    , solution(solution)
     , solution_old(solution_old)
     , solution_old_old(solution_old_old)
     , increment(increment)
@@ -93,19 +94,18 @@ public:
     , vel_solution(vel_solution)
     , vel_solution_old(vel_solution_old)
     , vel_solution_old_old(vel_solution_old_old)
-    , global_omega_diameter(global_omega_diameter)
-    , cell_diameters(cell_diameters)
+    , matrix_free(matrix_free)
     , constraints(constraints)
     , pcout(pcout)
-    , time_stepping(time_stepping)
-    , boundary(boundary)
-    , matrix_free(matrix_free)
     , timer(timer)
-    , parameters(parameters)
+    , time_stepping(time_stepping)
+    , global_omega_diameter(global_omega_diameter)
+    , cell_diameters(cell_diameters)
+    , boundary(boundary)
     , artificial_viscosities(artificial_viscosities)
     , global_max_velocity(global_max_velocity)
-    , preconditioner(preconditioner)
     , evaluated_convection(evaluated_convection)
+    , preconditioner(preconditioner)
   {}
 
   virtual void
@@ -136,6 +136,14 @@ private:
   static const unsigned int dof_index_vel = 0; //
   static const unsigned int quad_index    = 2; //
 
+  /**
+   * Parameters
+   */
+  const LevelSetOKZSolverAdvanceConcentrationParameter parameters; // [i]
+
+  /**
+   * Vector section
+   */
   VectorType &      solution;         // [o] new ls solution
   const VectorType &solution_old;     // [i] old ls solution
   const VectorType &solution_old_old; // [i] old ls solution
@@ -146,30 +154,33 @@ private:
   const VectorType &vel_solution_old;     // [i] old velocity solution
   const VectorType &vel_solution_old_old; // [i] old velocity solution
 
-  double &                                global_omega_diameter;
-  AlignedVector<VectorizedArray<double>> &cell_diameters;
+  /**
+   * MatrixFree
+   */
+  const MatrixFree<dim> &          matrix_free; // [i]
+  const AffineConstraints<double> &constraints; // [i]
 
+  /**
+   * Utility
+   */
+  const ConditionalOStream &          pcout;         // [i]
+  const std::shared_ptr<TimerOutput> &timer;         // [i]
+  const TimeStepping &                time_stepping; // [-] TODO
 
-  const AffineConstraints<double> &constraints;
-  const ConditionalOStream &       pcout;
-  const TimeStepping &             time_stepping;
+  /**
+   * Physics section
+   */
+  const double &                                     global_omega_diameter;     // [i]
+  const AlignedVector<VectorizedArray<double>> &     cell_diameters;            // [i]
+  std::shared_ptr<helpers::BoundaryDescriptor<dim>> &boundary;                  // [i]
+  AlignedVector<VectorizedArray<double>> &           artificial_viscosities;    // [-] ???
+  double &                                           global_max_velocity;       // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection; // [o]
 
-
-
-  std::shared_ptr<helpers::BoundaryDescriptor<dim>> &boundary;
-
-
-  const MatrixFree<dim> &matrix_free;
-
-  const std::shared_ptr<TimerOutput> &timer;
-
-  const LevelSetOKZSolverAdvanceConcentrationParameter parameters;
-
-  AlignedVector<VectorizedArray<double>> &artificial_viscosities;
-  double &                                global_max_velocity;
-
-  const DiagonalPreconditioner<double> &                  preconditioner;
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;
+  /**
+   * Solver section
+   */
+  const DiagonalPreconditioner<double> &preconditioner; // [i] preconditioner
 };
 
 #endif
