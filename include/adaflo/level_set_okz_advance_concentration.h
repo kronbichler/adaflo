@@ -58,14 +58,16 @@ template <int dim>
 class LevelSetOKZSolverAdvanceConcentration
 {
 public:
+  using VectorType = LinearAlgebra::distributed::Vector<double>;
+
   LevelSetOKZSolverAdvanceConcentration(
-    LinearAlgebra::distributed::Vector<double> &      solution,
-    const LinearAlgebra::distributed::Vector<double> &solution_old,
-    const LinearAlgebra::distributed::Vector<double> &solution_old_old,
-    LinearAlgebra::distributed::Vector<double> &      increment,
-    LinearAlgebra::distributed::Vector<double> &      rhs,
-    double &                                          global_omega_diameter,
-    AlignedVector<VectorizedArray<double>> &          cell_diameters,
+    VectorType &                            solution,
+    const VectorType &                      solution_old,
+    const VectorType &                      solution_old_old,
+    VectorType &                            increment,
+    VectorType &                            rhs,
+    double &                                global_omega_diameter,
+    AlignedVector<VectorizedArray<double>> &cell_diameters,
 
     const AffineConstraints<double> &                       constraints,
     const ConditionalOStream &                              pcout,
@@ -132,33 +134,29 @@ public:
   advance_concentration();
 
   void
-  advance_concentration_vmult(
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src) const;
+  advance_concentration_vmult(VectorType &dst, const VectorType &src) const;
 
 private:
   template <int ls_degree, int velocity_degree>
   void
   local_advance_concentration(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range) const;
+    const MatrixFree<dim, double> &              data,
+    VectorType &                                 dst,
+    const VectorType &                           src,
+    const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   template <int ls_degree, int velocity_degree>
   void
   local_advance_concentration_rhs(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range);
+    const MatrixFree<dim, double> &              data,
+    VectorType &                                 dst,
+    const VectorType &                           src,
+    const std::pair<unsigned int, unsigned int> &cell_range);
 
 
   static const unsigned int dof_index_ls  = 2; // TODO: make input variables
   static const unsigned int dof_index_vel = 0; //
   static const unsigned int quad_index    = 2; //
-
-  using VectorType = LinearAlgebra::distributed::Vector<double>;
 
   VectorType &      solution;         // [o] new ls solution
   const VectorType &solution_old;     // [i] old ls solution

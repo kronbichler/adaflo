@@ -33,10 +33,10 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
+  const MatrixFree<dim, double> &              data,
+  VectorType &                                 dst,
+  const VectorType &                           src,
+  const std::pair<unsigned int, unsigned int> &cell_range) const
 {
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function)
@@ -74,9 +74,9 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
-  const MatrixFree<dim, double> &             data,
-  LinearAlgebra::distributed::Vector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
+  const MatrixFree<dim, double> &data,
+  VectorType &                   dst,
+  const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range)
 {
   // The second input argument below refers to which constrains should be used,
@@ -183,8 +183,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
 template <int dim>
 void
 LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src) const
+  VectorType &      dst,
+  const VectorType &src) const
 {
   dst = 0.;
 #define OPERATION(c_degree, u_degree)                                 \
@@ -267,7 +267,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
 
 
 
-template <int dim>
+template <int dim, typename VectorType>
 struct AdvanceConcentrationMatrix
 {
   AdvanceConcentrationMatrix(const LevelSetOKZSolverAdvanceConcentration<dim> &problem)
@@ -275,8 +275,7 @@ struct AdvanceConcentrationMatrix
   {}
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
+  vmult(VectorType &dst, const VectorType &src) const
   {
     problem.advance_concentration_vmult(dst, src);
   }
@@ -343,7 +342,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
 
-  AdvanceConcentrationMatrix<dim> matrix(*this);
+  AdvanceConcentrationMatrix<dim, VectorType> matrix(*this);
 
 
 
@@ -412,11 +411,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   try
     {
       ReductionControl control(30, 0.05 * this->parameters.tol_nl_iteration, 1e-8);
-      SolverBicgstab<LinearAlgebra::distributed::Vector<double>>::AdditionalData
-        bicg_data;
+      SolverBicgstab<VectorType>::AdditionalData bicg_data;
       bicg_data.exact_residual = false;
-      SolverBicgstab<LinearAlgebra::distributed::Vector<double>> solver(control,
-                                                                        bicg_data);
+      SolverBicgstab<VectorType> solver(control, bicg_data);
       increment = 0;
       solver.solve(matrix, increment, rhs, preconditioner);
       n_iterations     = control.last_step();
@@ -426,7 +423,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
     {
       // GMRES is typically slower but much more robust
       ReductionControl control(3000, 0.05 * this->parameters.tol_nl_iteration, 1e-8);
-      SolverGMRES<LinearAlgebra::distributed::Vector<double>> solver(control);
+      SolverGMRES<VectorType> solver(control);
       solver.solve(matrix, increment, rhs, preconditioner);
       n_iterations = 30 + control.last_step();
     }
