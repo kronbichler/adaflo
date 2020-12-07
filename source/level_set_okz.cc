@@ -76,7 +76,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
                                                             this->epsilon_used,
                                                             this->minimal_edge_length,
                                                             this->constraints_normals,
-                                                            this->timer,
                                                             params,
                                                             this->matrix_free,
                                                             this->preconditioner,
@@ -537,6 +536,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
 {
+  TimerOutput::Scope timer(*this->timer, "LS compute normal.");
   normal_operator->compute_normal(fast_computation);
 }
 

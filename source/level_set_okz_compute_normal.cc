@@ -45,7 +45,6 @@ LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
   const double &                                 epsilon_used,
   const double &                                 minimal_edge_length,
   const AffineConstraints<double> &              constraints_normals,
-  const std::shared_ptr<TimerOutput> &           timer,
   const LevelSetOKZSolverComputeNormalParameter &parameters,
   const MatrixFree<dim> &                        matrix_free,
   const DiagonalPreconditioner<double> &         preconditioner,
@@ -60,7 +59,6 @@ LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
   , cell_diameters(cell_diameters)
   , epsilon_used(epsilon_used)
   , minimal_edge_length(minimal_edge_length)
-  , timer(timer)
   , preconditioner(preconditioner)
   , projection_matrix(projection_matrix)
   , ilu_projection_matrix(ilu_projection_matrix)
@@ -192,8 +190,6 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
 {
   // This function computes the normal from a projection of $\nabla C$ onto
   // the space of linear finite elements (with some small damping)
-
-  TimerOutput::Scope timer(*this->timer, "LS compute normal.");
 
   // compute right hand side
   this->normal_vector_rhs = 0;

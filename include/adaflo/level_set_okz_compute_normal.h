@@ -80,7 +80,6 @@ public:
     const double &                                 epsilon_used,
     const double &                                 minimal_edge_length,
     const AffineConstraints<double> &              constraints_normals,
-    const std::shared_ptr<TimerOutput> &           timer,
     const LevelSetOKZSolverComputeNormalParameter &parameters,
     const MatrixFree<dim> &                        matrix_free,
     const DiagonalPreconditioner<double> &         preconditioner,
@@ -132,8 +131,6 @@ private:
   const AlignedVector<VectorizedArray<double>> &cell_diameters;      // [i]
   const double &                                epsilon_used;        // [i]
   const double &                                minimal_edge_length; // [i]
-
-  const std::shared_ptr<TimerOutput> &timer;
 
   /**
    * Solver section
