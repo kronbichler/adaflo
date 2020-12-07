@@ -264,13 +264,25 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   params.convection_stabilization   = this->parameters.convection_stabilization;
   params.do_iteration               = this->parameters.do_iteration;
   params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
-  params.time_step_scheme           = this->parameters.time_step_scheme;
 
   LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor bcs;
 
   bcs.fluid_type_plus  = this->boundary->fluid_type_plus;
   bcs.fluid_type_minus = this->boundary->fluid_type_minus;
   bcs.symmetry         = this->boundary->symmetry;
+
+  // set time stepping parameters of level set to correspond with the values from
+  // Navier-Stokes
+  // @todo
+  params.time.time_step_scheme     = this->parameters.time_step_scheme;
+  params.time.start_time           = this->parameters.start_time;
+  params.time.end_time             = this->parameters.end_time;
+  params.time.time_step_size_start = this->parameters.time_step_size_start;
+  params.time.time_stepping_cfl    = this->parameters.time_stepping_cfl;
+  params.time.time_stepping_coef2  = this->parameters.time_stepping_coef2;
+  params.time.time_step_tolerance  = this->parameters.time_step_tolerance;
+  params.time.time_step_size_max   = this->parameters.time_step_size_max;
+  params.time.time_step_size_min   = this->parameters.time_step_size_min;
 
   this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
     this->solution.block(0),
@@ -285,7 +297,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->cell_diameters,
     this->constraints,
     this->pcout,
-    this->time_stepping,
     bcs,
     this->matrix_free,
     params,

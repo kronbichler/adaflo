@@ -192,7 +192,7 @@ PhaseFieldSolver<dim>::local_residual(
           w_values[q]   = c_val;
           val += this->time_stepping.weight_old() * inv_time_weight *
                  old_c_values.get_value(q);
-          if (this->time_stepping.scheme() == TimeStepping::bdf_2 &&
+          if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
               this->time_stepping.step_no() > 1)
             val += this->time_stepping.weight_old_old() * inv_time_weight *
                    old_old_c_values.get_value(q);

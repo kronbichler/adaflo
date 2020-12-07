@@ -71,7 +71,7 @@ struct LevelSetOKZSolverAdvanceConcentrationParameter
   /**
    * TODO
    */
-  TimeStepping::Scheme time_step_scheme;
+  TimeSteppingParameters time;
 };
 
 /**
@@ -114,7 +114,6 @@ public:
     const AlignedVector<VectorizedArray<double>> &                 cell_diameters,
     const AffineConstraints<double> &                              constraints,
     const ConditionalOStream &                                     pcout,
-    const TimeStepping &                                           time_stepping,
     const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor &boundary,
     const MatrixFree<dim> &                                        matrix_free,
     const LevelSetOKZSolverAdvanceConcentrationParameter &         parameters,
@@ -174,7 +173,7 @@ private:
    * Utility
    */
   const ConditionalOStream &pcout;         // [i]
-  const TimeStepping &      time_stepping; // [-] TODO
+  TimeStepping              time_stepping; // [i]
 
   /**
    * Physics section

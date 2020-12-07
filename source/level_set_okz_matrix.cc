@@ -502,7 +502,7 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration()
           {
             const Tensor<1, dim> &velocity = velocity_values[q];
             double old_value = -this->time_stepping.weight_old() * old_values[q];
-            if (this->time_stepping.scheme() == TimeStepping::bdf_2 &&
+            if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
                 this->time_stepping.step_no() > 1)
               old_value -= this->time_stepping.weight_old_old() * old_old_values[q];
 

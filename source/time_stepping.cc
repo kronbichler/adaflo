@@ -39,25 +39,64 @@ TimeStepping::TimeStepping(const FlowParameters &parameters)
 {
   now_val  = start_val;
   prev_val = start_val;
-  if (scheme_val == implicit_euler)
+  if (scheme_val == TimeSteppingParameters::Scheme::implicit_euler)
     {
       tau1_val = 1.;
       tau2_val = 0.;
     }
-  else if (scheme_val == explicit_euler)
+  else if (scheme_val == TimeSteppingParameters::Scheme::explicit_euler)
     {
       tau1_val = 0.;
       tau2_val = 1.;
     }
-  else if (scheme_val == crank_nicolson)
+  else if (scheme_val == TimeSteppingParameters::Scheme::crank_nicolson)
     tau1_val = tau2_val = .5;
-  else if (scheme_val == bdf_2)
+  else if (scheme_val == TimeSteppingParameters::Scheme::bdf_2)
     {
       tau1_val = 1.;
       tau2_val = 0.;
     }
 }
 
+TimeStepping::TimeStepping(const TimeSteppingParameters &parameters)
+  : start_val(parameters.start_time)
+  , final_val(parameters.end_time)
+  , scheme_val(parameters.time_step_scheme)
+  , start_step_val(parameters.time_step_size_start)
+  , max_step_val(parameters.time_step_size_max)
+  , min_step_val(parameters.time_step_size_min)
+  , current_step_val(start_step_val)
+  , last_step_val(0.)
+  , step_val(start_step_val)
+  , weight_val(1. / start_step_val)
+  , weight_old_val(-1.)
+  , weight_old_old_val(0.)
+  , factor_extrapol_old(0.)
+  , factor_extrapol_old_old(0.)
+  , step_no_val(0)
+  , at_end_val(false)
+  , weight_changed(true)
+{
+  now_val  = start_val;
+  prev_val = start_val;
+  if (scheme_val == TimeSteppingParameters::Scheme::implicit_euler)
+    {
+      tau1_val = 1.;
+      tau2_val = 0.;
+    }
+  else if (scheme_val == TimeSteppingParameters::Scheme::explicit_euler)
+    {
+      tau1_val = 0.;
+      tau2_val = 1.;
+    }
+  else if (scheme_val == TimeSteppingParameters::Scheme::crank_nicolson)
+    tau1_val = tau2_val = .5;
+  else if (scheme_val == TimeSteppingParameters::Scheme::bdf_2)
+    {
+      tau1_val = 1.;
+      tau2_val = 0.;
+    }
+}
 
 void
 TimeStepping::restart()
@@ -89,7 +128,7 @@ TimeStepping::next()
   if (now_val != start())
     {
       last_step_val = current_step_val;
-      if (scheme_val == bdf_2 && step_no_val == 1)
+      if (scheme_val == TimeSteppingParameters::Scheme::bdf_2 && step_no_val == 1)
         s = step_val;
 
       if (s > max_step_val)
@@ -115,7 +154,7 @@ TimeStepping::next()
 
   {
     double new_weight;
-    if (scheme_val == bdf_2 && now_val != start())
+    if (scheme_val == TimeSteppingParameters::Scheme::bdf_2 && now_val != start())
       {
         new_weight = ((2. * current_step_val + last_step_val) /
                       (current_step_val * (current_step_val + last_step_val)));
@@ -163,19 +202,19 @@ std::string
 TimeStepping::name() const
 {
   std::string result;
-  if (scheme_val == implicit_euler)
+  if (scheme_val == TimeSteppingParameters::Scheme::implicit_euler)
     result = std::string("ImplEuler");
-  else if (scheme_val == explicit_euler)
+  else if (scheme_val == TimeSteppingParameters::Scheme::explicit_euler)
     result = std::string("ExplEuler");
-  else if (scheme_val == crank_nicolson)
+  else if (scheme_val == TimeSteppingParameters::Scheme::crank_nicolson)
     result = std::string("CrankNicolson");
-  else if (scheme_val == bdf_2)
+  else if (scheme_val == TimeSteppingParameters::Scheme::bdf_2)
     result = std::string("BDF-2");
   return result;
 }
 
 
-TimeStepping::Scheme
+TimeSteppingParameters::Scheme
 TimeStepping::scheme() const
 {
   return scheme_val;

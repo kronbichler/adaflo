@@ -77,7 +77,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   const AlignedVector<VectorizedArray<double>> &                 cell_diameters,
   const AffineConstraints<double> &                              constraints,
   const ConditionalOStream &                                     pcout,
-  const TimeStepping &                                           time_stepping,
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor &boundary,
   const MatrixFree<dim> &                                        matrix_free,
   const LevelSetOKZSolverAdvanceConcentrationParameter &         parameters,
@@ -97,7 +96,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   , matrix_free(matrix_free)
   , constraints(constraints)
   , pcout(pcout)
-  , time_stepping(time_stepping)
+  , time_stepping(parameters.time)
   , global_omega_diameter(global_omega_diameter)
   , cell_diameters(cell_diameters)
   , boundary(boundary)
@@ -234,7 +233,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
           // compute right hand side
           vector_t old_value =
             this->time_stepping.weight_old() * ls_values_old.get_value(q);
-          if (this->time_stepping.scheme() == TimeStepping::bdf_2 &&
+          if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
               this->time_stepping.step_no() > 1)
             old_value +=
               this->time_stepping.weight_old_old() * ls_values_old_old.get_value(q);

@@ -28,18 +28,36 @@ using namespace dealii;
 
 struct FlowParameters;
 
-class TimeStepping : public Subscriptor
+struct TimeSteppingParameters
 {
-public:
-  enum Scheme
+  /**
+   * TODO
+   */
+  enum class Scheme
   {
     implicit_euler,
     explicit_euler,
     crank_nicolson,
     bdf_2
   };
+  Scheme time_step_scheme;
+  double start_time;
+  double end_time;
+  double time_step_size_start;
+  double time_stepping_cfl;
+  double time_stepping_coef2;
+  double time_step_tolerance;
+  double time_step_size_max;
+  double time_step_size_min;
+};
 
+
+class TimeStepping : public Subscriptor
+{
+public:
   TimeStepping(const FlowParameters &parameters);
+
+  TimeStepping(const TimeSteppingParameters &parameters);
 
   double
   start() const;
@@ -98,7 +116,7 @@ public:
   set_time_step(double);
   std::string
   name() const;
-  Scheme
+  TimeSteppingParameters::Scheme
   scheme() const;
 
   void
@@ -111,7 +129,7 @@ private:
                     // modification is nowhere used, keep?
   double final_val; // [m] end time; may be modified by set_final_time @todo: modification
                     // is nowhere used, keep?
-  const Scheme scheme_val;       // [i] time integration scheme
+  const TimeSteppingParameters::Scheme scheme_val; // [i] time integration scheme
   const double start_step_val;   // [i] initial value of the time increment
   const double max_step_val;     // [i] maximum value of the time increment
   const double min_step_val;     // [i] minimum value of the time increment
@@ -121,10 +139,10 @@ private:
                                  //     fulfilling the criteria
                                  //         - 0.5 * step_size_prev <= current_step_val <=
                                  //         2*step_size_prev
-                           //         - min_step_val <= current_step_val <= max_step_val
-  double last_step_val; // [m] constructor and restart() sets this parameter to zero.
-                        //     next() sets this parameter equal to current_step_val
-                        //     (corresponding to the previous time increment)
+  //         - min_step_val <= current_step_val <= max_step_val
+  double last_step_val;  // [m] constructor and restart() sets this parameter to zero.
+                         //     next() sets this parameter equal to current_step_val
+                         //     (corresponding to the previous time increment)
   double step_val;       // [m] current value of the time increment; m]
                          //     - initialized in the constructor by start_step_val
                          //     - changed in set_time_step to be equal to current_step_val
@@ -159,6 +177,7 @@ private:
                    // value, i.e. f(t_n-1)
                    //     - constructor: parameter depends on the scheme_val
 };
+
 
 /**
  * Getter functions
@@ -237,7 +256,7 @@ TimeStepping::weight() const
 inline double
 TimeStepping::max_weight_uniform() const
 {
-  if (scheme_val == bdf_2)
+  if (scheme_val == TimeSteppingParameters::Scheme::bdf_2)
     return 1.5 / current_step_val;
   else
     return 1. / current_step_val;
