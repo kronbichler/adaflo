@@ -255,6 +255,14 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     ilu_projection_matrix->initialize(*projection_matrix);
   }
 
+  // TODO
+  LevelSetOKZSolverAdvanceConcentrationParameter params;
+
+  params.concentration_subdivisions = this->parameters.concentration_subdivisions;
+  params.convection_stabilization   = this->parameters.convection_stabilization;
+  params.do_iteration               = this->parameters.do_iteration;
+  params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
+
   this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
     this->solution.block(0),
     this->solution_old.block(0),
@@ -270,7 +278,7 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->matrix_free,
     this->timer,
     this->navier_stokes,
-    this->parameters,
+    params,
     this->artificial_viscosities,
     this->global_max_velocity,
     this->preconditioner,

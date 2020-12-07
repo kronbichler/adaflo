@@ -28,6 +28,32 @@
 
 using namespace dealii;
 
+/**
+ * Parameters of the avection-concentration operator.
+ */
+struct LevelSetOKZSolverAdvanceConcentrationParameter
+{
+  /**
+   * TODO: needed? this is equivalent to `fe.tenosor_degree()+1`?
+   */
+  unsigned int concentration_subdivisions;
+
+  /**
+   * TODO
+   */
+  bool convection_stabilization;
+
+  /**
+   * TODO
+   */
+  bool do_iteration;
+
+  /**
+   * TODO
+   */
+  double tol_nl_iteration;
+};
+
 template <int dim>
 class LevelSetOKZSolverAdvanceConcentration
 {
@@ -48,7 +74,7 @@ public:
     const MatrixFree<dim> &                                 matrix_free,
     const std::shared_ptr<TimerOutput> &                    timer,
     const NavierStokes<dim> &                               navier_stokes,
-    const FlowParameters &                                  parameters,
+    const LevelSetOKZSolverAdvanceConcentrationParameter &  parameters,
     AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
     double &                                                global_max_velocity,
     const DiagonalPreconditioner<double> &                  preconditioner,
@@ -157,8 +183,8 @@ private:
 
   const std::shared_ptr<TimerOutput> &timer;
   const NavierStokes<dim> &           navier_stokes;
-  const FlowParameters &              parameters;
 
+  const LevelSetOKZSolverAdvanceConcentrationParameter parameters;
 
   AlignedVector<VectorizedArray<double>> &artificial_viscosities;
   double &                                global_max_velocity;
