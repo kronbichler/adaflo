@@ -112,9 +112,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
       vel_values_old.reinit(cell);
       vel_values_old_old.reinit(cell);
 
-      vel_values.read_dof_values_plain(this->navier_stokes.solution);
-      vel_values_old.read_dof_values_plain(this->navier_stokes.solution_old);
-      vel_values_old_old.read_dof_values_plain(this->navier_stokes.solution_old_old);
+      vel_values.read_dof_values_plain(vel_solution);
+      vel_values_old.read_dof_values_plain(vel_solution_old);
+      vel_values_old_old.read_dof_values_plain(vel_solution_old_old);
       ls_values.read_dof_values_plain(this->solution);
       ls_values_old.read_dof_values_plain(this->solution_old);
       ls_values_old_old.read_dof_values_plain(this->solution_old_old);
@@ -328,8 +328,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   }
 
   // compute right hand side
-  global_max_velocity = this->get_maximal_velocity(navier_stokes.get_dof_handler_u());
-  rhs                 = 0;
+  global_max_velocity =
+    this->get_maximal_velocity(navier_stokes.get_dof_handler_u(), vel_solution);
+  rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
   this->matrix_free.cell_loop(                                            \

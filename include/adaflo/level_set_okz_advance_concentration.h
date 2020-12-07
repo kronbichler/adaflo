@@ -61,11 +61,16 @@ public:
   using VectorType = LinearAlgebra::distributed::Vector<double>;
 
   LevelSetOKZSolverAdvanceConcentration(
-    VectorType &                            solution,
-    const VectorType &                      solution_old,
-    const VectorType &                      solution_old_old,
-    VectorType &                            increment,
-    VectorType &                            rhs,
+    VectorType &      solution,
+    const VectorType &solution_old,
+    const VectorType &solution_old_old,
+    VectorType &      increment,
+    VectorType &      rhs,
+
+    const VectorType &vel_solution,
+    const VectorType &vel_solution_old,
+    const VectorType &vel_solution_old_old,
+
     double &                                global_omega_diameter,
     AlignedVector<VectorizedArray<double>> &cell_diameters,
 
@@ -86,6 +91,9 @@ public:
     , solution_old_old(solution_old_old)
     , increment(increment)
     , rhs(rhs)
+    , vel_solution(vel_solution)
+    , vel_solution_old(vel_solution_old)
+    , vel_solution_old_old(vel_solution_old_old)
     , global_omega_diameter(global_omega_diameter)
     , cell_diameters(cell_diameters)
     , constraints(constraints)
@@ -104,7 +112,8 @@ public:
 
   // TODO: make utility function?
   double
-  get_maximal_velocity(const DoFHandler<dim> &dof_handler) const
+  get_maximal_velocity(const DoFHandler<dim> &dof_handler,
+                       const VectorType       solution) const
   {
     const QIterated<dim> quadrature_formula(QTrapez<1>(),
                                             dof_handler.get_fe().tensor_degree() + 1);
@@ -120,8 +129,7 @@ public:
       if (cell->is_locally_owned())
         {
           fe_values.reinit(cell);
-          fe_values[velocities].get_function_values(navier_stokes.solution.block(0),
-                                                    velocity_values);
+          fe_values[velocities].get_function_values(solution, velocity_values);
 
           for (const auto q : fe_values.quadrature_point_indices())
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
@@ -163,6 +171,10 @@ private:
   const VectorType &solution_old_old; // [i] old ls solution
   VectorType &      increment;        // [-] temp
   VectorType &      rhs;              // [-] temp
+
+  const VectorType &vel_solution;         // [i] new velocity solution
+  const VectorType &vel_solution_old;     // [i] old velocity solution
+  const VectorType &vel_solution_old_old; // [i] old velocity solution
 
   double &                                global_omega_diameter;
   AlignedVector<VectorizedArray<double>> &cell_diameters;
