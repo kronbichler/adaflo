@@ -267,8 +267,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->pcout,
     this->time_stepping,
     this->boundary,
-    this->dof_handler,
-    this->fe,
     this->matrix_free,
     this->timer,
     this->navier_stokes,

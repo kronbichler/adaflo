@@ -45,8 +45,6 @@ public:
     const ConditionalOStream &                              pcout,
     const TimeStepping &                                    time_stepping,
     std::shared_ptr<helpers::BoundaryDescriptor<dim>> &     boundary,
-    DoFHandler<dim> &                                       dof_handler,
-    const std::shared_ptr<FiniteElement<dim>> &             fe,
     const MatrixFree<dim> &                                 matrix_free,
     const std::shared_ptr<TimerOutput> &                    timer,
     const NavierStokes<dim> &                               navier_stokes,
@@ -66,8 +64,6 @@ public:
     , pcout(pcout)
     , time_stepping(time_stepping)
     , boundary(boundary)
-    , dof_handler(dof_handler)
-    , fe(fe)
     , matrix_free(matrix_free)
     , timer(timer)
     , navier_stokes(navier_stokes)
@@ -155,8 +151,6 @@ private:
 
 
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> &boundary;
-  DoFHandler<dim> &                                  dof_handler;
-  const std::shared_ptr<FiniteElement<dim>> &        fe;
 
 
   const MatrixFree<dim> &matrix_free;

@@ -201,13 +201,16 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
 
   if (this->parameters.convection_stabilization)
     {
+      const auto &dof_handler = this->matrix_free.get_dof_handler(dof_index_ls);
+      const auto &fe          = dof_handler.get_fe();
+
       // Boundary part of stabilization-term:
-      FEFaceValues<dim>                    fe_face_values(*this->fe,
-                                       this->matrix_free.get_face_quadrature(1),
-                                       update_values | update_gradients |
-                                         update_JxW_values | update_normal_vectors);
-      Vector<double>                       cell_rhs(this->fe->dofs_per_cell);
-      std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
+      FEFaceValues<dim> fe_face_values(
+        fe,
+        this->matrix_free.get_face_quadrature(1 /*TODO????*/),
+        update_values | update_gradients | update_JxW_values | update_normal_vectors);
+      Vector<double>                       cell_rhs(fe.dofs_per_cell);
+      std::vector<types::global_dof_index> local_dof_indices(fe.dofs_per_cell);
       std::vector<Tensor<1, dim>> local_gradients(fe_face_values.get_quadrature().size());
       src.update_ghost_values();
 
@@ -229,7 +232,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
                       {
                         fe_face_values.reinit(cell, face);
                         fe_face_values.get_function_gradients(src, local_gradients);
-                        for (unsigned int i = 0; i < this->fe->dofs_per_cell; ++i)
+                        for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
                           {
                             for (unsigned int q = 0;
                                  q < fe_face_values.get_quadrature().size();
@@ -290,7 +293,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
 {
   TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
 
-  const auto &mapping = *this->matrix_free.get_mapping_info().mapping;
+  const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
+  const auto &dof_handler = this->matrix_free.get_dof_handler(dof_index_ls);
+  const auto &fe          = dof_handler.get_fe();
 
   // apply boundary values
   {
@@ -310,7 +315,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
 
     std::map<types::global_dof_index, double> boundary_values;
     VectorTools::interpolate_boundary_values(mapping,
-                                             this->dof_handler,
+                                             dof_handler,
                                              dirichlet,
                                              boundary_values);
 
@@ -345,14 +350,14 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   if (this->parameters.convection_stabilization)
     {
       // Boundary part of stabilization-term:
-      FEFaceValues<dim> fe_face_values(mapping,
-                                       *this->fe,
-                                       this->matrix_free.get_face_quadrature(1),
-                                       update_values | update_gradients |
-                                         update_JxW_values | update_normal_vectors);
+      FEFaceValues<dim> fe_face_values(
+        mapping,
+        fe,
+        this->matrix_free.get_face_quadrature(1 /*TODO???*/),
+        update_values | update_gradients | update_JxW_values | update_normal_vectors);
 
-      Vector<double>                       cell_rhs(this->fe->dofs_per_cell);
-      std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
+      Vector<double>                       cell_rhs(fe.dofs_per_cell);
+      std::vector<types::global_dof_index> local_dof_indices(fe.dofs_per_cell);
       std::vector<Tensor<1, dim>> local_gradients(fe_face_values.get_quadrature().size());
 
       for (unsigned int mcell = 0; mcell < this->matrix_free.n_cell_batches(); ++mcell)
@@ -375,7 +380,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
                         fe_face_values.get_function_gradients(this->solution,
                                                               local_gradients);
 
-                        for (unsigned int i = 0; i < this->fe->dofs_per_cell; ++i)
+                        for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
                           {
                             for (unsigned int q = 0;
                                  q < fe_face_values.get_quadrature().size();
