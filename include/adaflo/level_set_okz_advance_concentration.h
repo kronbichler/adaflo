@@ -36,17 +36,17 @@ struct LevelSetOKZSolverAdvanceConcentrationParameter
   /**
    * TODO
    */
-  const unsigned int dof_index_ls = 2;
+  unsigned int dof_index_ls;
 
   /**
    * TODO
    */
-  const unsigned int dof_index_vel = 0;
+  unsigned int dof_index_vel;
 
   /**
    * TODO
    */
-  const unsigned int quad_index = 2;
+  unsigned int quad_index;
 
   /**
    * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?

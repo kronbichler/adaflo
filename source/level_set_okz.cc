@@ -258,6 +258,9 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   // TODO
   LevelSetOKZSolverAdvanceConcentrationParameter params;
 
+  params.dof_index_ls               = 2;
+  params.dof_index_vel              = 0;
+  params.quad_index                 = 2;
   params.concentration_subdivisions = this->parameters.concentration_subdivisions;
   params.convection_stabilization   = this->parameters.convection_stabilization;
   params.do_iteration               = this->parameters.do_iteration;
