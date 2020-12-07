@@ -20,7 +20,20 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/level_set_okz_compute_normal.h>
-#include <adaflo/level_set_okz_template_instantations.h>
+
+
+#define EXPAND_OPERATIONS(OPERATION)                                          \
+  const unsigned int ls_degree = this->parameters.concentration_subdivisions; \
+                                                                              \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());         \
+  if (ls_degree == 1)                                                         \
+    OPERATION(1, 0);                                                          \
+  else if (ls_degree == 2)                                                    \
+    OPERATION(2, 0);                                                          \
+  else if (ls_degree == 3)                                                    \
+    OPERATION(3, 0);                                                          \
+  else if (ls_degree == 4)                                                    \
+    OPERATION(4, 0);
 
 
 template <int dim>
@@ -80,7 +93,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
       normal_values.reinit(cell);
       ls_values.reinit(cell);
 
-      ls_values.read_dof_values_plain(this->solution.block(0));
+      ls_values.read_dof_values_plain(this->vel_solution);
       ls_values.evaluate(false, true, false);
 
       for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
@@ -100,7 +113,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   dst = 0.;
-#define OPERATION(c_degree, u_degree)                                                  \
+#define OPERATION(c_degree, dummy)                                                     \
   this->matrix_free.cell_loop(&LevelSetOKZSolverComputeNormal<                         \
                                 dim>::template local_compute_normal<c_degree, double>, \
                               this,                                                    \
@@ -158,7 +171,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
     &LevelSetOKZSolverComputeNormal<dim>::template local_compute_normal_rhs<c_degree>, \
     this,                                                                              \
     this->normal_vector_rhs,                                                           \
-    this->solution.block(0))
+    this->vel_solution)
 
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION

@@ -28,10 +28,45 @@
 
 using namespace dealii;
 
+/**
+ * Parameters of the advection-concentration operator.
+ */
+struct LevelSetOKZSolverComputeNormalParameter
+{
+  /**
+   * TODO
+   */
+  unsigned int dof_index_ls;
+
+  /**
+   * TODO
+   */
+  unsigned int dof_index_normal;
+
+  /**
+   * TODO
+   */
+  unsigned int quad_index;
+
+  /**
+   * TODO
+   */
+  double epsilon;
+
+  /**
+   * TODO
+   */
+
+  bool approximate_projections;
+};
+
 template <int dim>
 class LevelSetOKZSolverComputeNormal
 {
 public:
+  using VectorType      = LinearAlgebra::distributed::Vector<double>;
+  using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
+
   LevelSetOKZSolverComputeNormal(
     const AlignedVector<VectorizedArray<double>> &   cell_diameters,
     const double &                                   epsilon_used,
@@ -56,7 +91,7 @@ public:
     , navier_stokes(navier_stokes)
     , parameters(parameters)
     , matrix_free(matrix_free)
-    , solution(solution)
+    , vel_solution(solution.block(0))
     , normal_vector_rhs(normal_vector_rhs)
     , preconditioner(preconditioner)
     , projection_matrix(projection_matrix)
@@ -85,22 +120,22 @@ private:
                            const std::pair<unsigned int, unsigned int> &cell_range) const;
 
 
-  const AlignedVector<VectorizedArray<double>> &   cell_diameters;
-  const double &                                   epsilon_used;
-  const double &                                   minimal_edge_length;
-  const AffineConstraints<double> &                constraints_normals;
-  LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
+  const AlignedVector<VectorizedArray<double>> &cell_diameters;
+  const double &                                epsilon_used;
+  const double &                                minimal_edge_length;
+  const AffineConstraints<double> &             constraints_normals;
+  BlockVectorType &                             normal_vector_field;
 
-  const std::shared_ptr<TimerOutput> &             timer;
-  const NavierStokes<dim> &                        navier_stokes;
-  const FlowParameters &                           parameters;
-  const MatrixFree<dim> &                          matrix_free;
-  LinearAlgebra::distributed::BlockVector<double> &solution;
-  LinearAlgebra::distributed::BlockVector<double> &normal_vector_rhs;
+  const std::shared_ptr<TimerOutput> &timer;
+  const NavierStokes<dim> &           navier_stokes;
+  const FlowParameters &              parameters;
+  const MatrixFree<dim> &             matrix_free;
+  const VectorType &                  vel_solution;
+  BlockVectorType &                   normal_vector_rhs;
 
-  const DiagonalPreconditioner<double> &       preconditioner;
-  const std::shared_ptr<BlockMatrixExtension> &projection_matrix;
-  const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix;
+  const DiagonalPreconditioner<double> &       preconditioner;        // [i]
+  const std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
+  const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
 };
 
 #endif
