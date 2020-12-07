@@ -74,7 +74,6 @@ public:
     const AffineConstraints<double> &                constraints_normals,
     LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
     const std::shared_ptr<TimerOutput> &             timer,
-    const NavierStokes<dim> &                        navier_stokes,
     const FlowParameters &                           parameters,
     const MatrixFree<dim> &                          matrix_free,
     LinearAlgebra::distributed::BlockVector<double> &solution,
@@ -88,7 +87,6 @@ public:
     , constraints_normals(constraints_normals)
     , normal_vector_field(normal_vector_field)
     , timer(timer)
-    , navier_stokes(navier_stokes)
     , parameters(parameters)
     , matrix_free(matrix_free)
     , vel_solution(solution.block(0))
@@ -127,7 +125,6 @@ private:
   BlockVectorType &                             normal_vector_field;
 
   const std::shared_ptr<TimerOutput> &timer;
-  const NavierStokes<dim> &           navier_stokes;
   const FlowParameters &              parameters;
   const MatrixFree<dim> &             matrix_free;
   const VectorType &                  vel_solution;
