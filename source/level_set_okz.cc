@@ -262,6 +262,7 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   params.convection_stabilization   = this->parameters.convection_stabilization;
   params.do_iteration               = this->parameters.do_iteration;
   params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
+  params.time_step_scheme           = this->parameters.time_step_scheme;
 
   this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
     this->solution.block(0),

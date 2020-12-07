@@ -67,6 +67,11 @@ struct LevelSetOKZSolverAdvanceConcentrationParameter
    * TODO
    */
   double tol_nl_iteration;
+
+  /**
+   * TODO
+   */
+  TimeStepping::Scheme time_step_scheme;
 };
 
 template <int dim>
