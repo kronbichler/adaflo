@@ -65,25 +65,25 @@ namespace
 
 template <int dim>
 LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentration(
-  VectorType &                                                   solution,
-  const VectorType &                                             solution_old,
-  const VectorType &                                             solution_old_old,
-  VectorType &                                                   increment,
-  VectorType &                                                   rhs,
-  const VectorType &                                             vel_solution,
-  const VectorType &                                             vel_solution_old,
-  const VectorType &                                             vel_solution_old_old,
-  const double &                                                 global_omega_diameter,
-  const AlignedVector<VectorizedArray<double>> &                 cell_diameters,
-  const AffineConstraints<double> &                              constraints,
-  const ConditionalOStream &                                     pcout,
-  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor &boundary,
-  const MatrixFree<dim> &                                        matrix_free,
-  const LevelSetOKZSolverAdvanceConcentrationParameter &         parameters,
-  AlignedVector<VectorizedArray<double>> &                       artificial_viscosities,
-  double &                                                       global_max_velocity,
-  const DiagonalPreconditioner<double> &                         preconditioner,
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &       evaluated_convection)
+  VectorType &                                  solution,
+  const VectorType &                            solution_old,
+  const VectorType &                            solution_old_old,
+  VectorType &                                  increment,
+  VectorType &                                  rhs,
+  const VectorType &                            vel_solution,
+  const VectorType &                            vel_solution_old,
+  const VectorType &                            vel_solution_old_old,
+  const double &                                global_omega_diameter,
+  const AlignedVector<VectorizedArray<double>> &cell_diameters,
+  const AffineConstraints<double> &             constraints,
+  const ConditionalOStream &                    pcout,
+  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
+  const MatrixFree<dim> &                                             matrix_free,
+  const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
+  AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
+  double &                                                global_max_velocity,
+  const DiagonalPreconditioner<double> &                  preconditioner,
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
   : parameters(parameters)
   , solution(solution)
   , solution_old(solution_old)
@@ -368,13 +368,11 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
 
-    Functions::ConstantFunction<dim> plus_func(1., 1);
-    for (const auto bid : this->boundary.fluid_type_plus)
-      dirichlet[bid] = &plus_func;
+    for (const auto &b : this->boundary.fluid_type_plus)
+      dirichlet[b.first] = b.second.get();
 
-    Functions::ConstantFunction<dim> minus_func(-1., 1);
-    for (const auto bid : this->boundary.fluid_type_minus)
-      dirichlet[bid] = &minus_func;
+    for (const auto &b : this->boundary.fluid_type_minus)
+      dirichlet[b.first] = b.second.get();
 
     std::map<types::global_dof_index, double> boundary_values;
     VectorTools::interpolate_boundary_values(mapping,

@@ -119,7 +119,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
     params.do_iteration               = this->parameters.do_iteration;
     params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
 
-    LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor bcs;
+    LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> bcs;
 
     bcs.fluid_type_plus  = this->boundary->fluid_type_plus;
     bcs.fluid_type_minus = this->boundary->fluid_type_minus;

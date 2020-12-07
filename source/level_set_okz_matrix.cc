@@ -377,18 +377,12 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration()
   // apply boundary values
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
-    Functions::ConstantFunction<dim>                    plus_func(1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_plus.begin();
-         it != this->boundary->fluid_type_plus.end();
-         ++it)
-      dirichlet[*it] = &plus_func;
-    Functions::ConstantFunction<dim> minus_func(-1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_minus.begin();
-         it != this->boundary->fluid_type_minus.end();
-         ++it)
-      dirichlet[*it] = &minus_func;
+
+    for (const auto &b : this->boundary->fluid_type_plus)
+      dirichlet[b.first] = b.second.get();
+
+    for (const auto &b : this->boundary->fluid_type_minus)
+      dirichlet[b.first] = b.second.get();
 
     std::map<types::global_dof_index, double> boundary_values;
     VectorTools::interpolate_boundary_values(this->dof_handler,
