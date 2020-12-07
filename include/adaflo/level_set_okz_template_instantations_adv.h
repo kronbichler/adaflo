@@ -17,56 +17,58 @@
 #ifndef __adaflo_level_set_okz_template_instantiations_h
 #define __adaflo_level_set_okz_template_instantiations_h
 
-#define EXPAND_OPERATIONS(OPERATION)                                           \
-  const unsigned int degree_u =                                                \
-    this->matrix_free.get_dof_handler(dof_index_vel).get_fe().tensor_degree(); \
-  const unsigned int ls_degree = this->parameters.concentration_subdivisions;  \
-                                                                               \
-  AssertThrow(degree_u >= 2 && degree_u <= 5, ExcNotImplemented());            \
-  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());          \
-  if (ls_degree == 1)                                                          \
-    {                                                                          \
-      if (degree_u == 2)                                                       \
-        OPERATION(1, 2);                                                       \
-      else if (degree_u == 3)                                                  \
-        OPERATION(1, 3);                                                       \
-      else if (degree_u == 4)                                                  \
-        OPERATION(1, 4);                                                       \
-      else if (degree_u == 5)                                                  \
-        OPERATION(1, 5);                                                       \
-    }                                                                          \
-  else if (ls_degree == 2)                                                     \
-    {                                                                          \
-      if (degree_u == 2)                                                       \
-        OPERATION(2, 2);                                                       \
-      else if (degree_u == 3)                                                  \
-        OPERATION(2, 3);                                                       \
-      else if (degree_u == 4)                                                  \
-        OPERATION(2, 4);                                                       \
-      else if (degree_u == 5)                                                  \
-        OPERATION(2, 5);                                                       \
-    }                                                                          \
-  else if (ls_degree == 3)                                                     \
-    {                                                                          \
-      if (degree_u == 2)                                                       \
-        OPERATION(3, 2);                                                       \
-      else if (degree_u == 3)                                                  \
-        OPERATION(3, 3);                                                       \
-      else if (degree_u == 4)                                                  \
-        OPERATION(3, 4);                                                       \
-      else if (degree_u == 5)                                                  \
-        OPERATION(3, 5);                                                       \
-    }                                                                          \
-  else if (ls_degree == 4)                                                     \
-    {                                                                          \
-      if (degree_u == 2)                                                       \
-        OPERATION(4, 2);                                                       \
-      else if (degree_u == 3)                                                  \
-        OPERATION(4, 3);                                                       \
-      else if (degree_u == 4)                                                  \
-        OPERATION(4, 4);                                                       \
-      else if (degree_u == 5)                                                  \
-        OPERATION(4, 5);                                                       \
+#define EXPAND_OPERATIONS(OPERATION)                                          \
+  const unsigned int degree_u =                                               \
+    this->matrix_free.get_dof_handler(parameters.dof_index_vel)               \
+      .get_fe()                                                               \
+      .tensor_degree();                                                       \
+  const unsigned int ls_degree = this->parameters.concentration_subdivisions; \
+                                                                              \
+  AssertThrow(degree_u >= 2 && degree_u <= 5, ExcNotImplemented());           \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());         \
+  if (ls_degree == 1)                                                         \
+    {                                                                         \
+      if (degree_u == 2)                                                      \
+        OPERATION(1, 2);                                                      \
+      else if (degree_u == 3)                                                 \
+        OPERATION(1, 3);                                                      \
+      else if (degree_u == 4)                                                 \
+        OPERATION(1, 4);                                                      \
+      else if (degree_u == 5)                                                 \
+        OPERATION(1, 5);                                                      \
+    }                                                                         \
+  else if (ls_degree == 2)                                                    \
+    {                                                                         \
+      if (degree_u == 2)                                                      \
+        OPERATION(2, 2);                                                      \
+      else if (degree_u == 3)                                                 \
+        OPERATION(2, 3);                                                      \
+      else if (degree_u == 4)                                                 \
+        OPERATION(2, 4);                                                      \
+      else if (degree_u == 5)                                                 \
+        OPERATION(2, 5);                                                      \
+    }                                                                         \
+  else if (ls_degree == 3)                                                    \
+    {                                                                         \
+      if (degree_u == 2)                                                      \
+        OPERATION(3, 2);                                                      \
+      else if (degree_u == 3)                                                 \
+        OPERATION(3, 3);                                                      \
+      else if (degree_u == 4)                                                 \
+        OPERATION(3, 4);                                                      \
+      else if (degree_u == 5)                                                 \
+        OPERATION(3, 5);                                                      \
+    }                                                                         \
+  else if (ls_degree == 4)                                                    \
+    {                                                                         \
+      if (degree_u == 2)                                                      \
+        OPERATION(4, 2);                                                      \
+      else if (degree_u == 3)                                                 \
+        OPERATION(4, 3);                                                      \
+      else if (degree_u == 4)                                                 \
+        OPERATION(4, 4);                                                      \
+      else if (degree_u == 5)                                                 \
+        OPERATION(4, 5);                                                      \
     }
 
 #endif

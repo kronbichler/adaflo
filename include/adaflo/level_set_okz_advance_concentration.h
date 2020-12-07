@@ -34,6 +34,21 @@ using namespace dealii;
 struct LevelSetOKZSolverAdvanceConcentrationParameter
 {
   /**
+   * TODO
+   */
+  static const unsigned int dof_index_ls = 2;
+
+  /**
+   * TODO
+   */
+  static const unsigned int dof_index_vel = 0;
+
+  /**
+   * TODO
+   */
+  static const unsigned int quad_index = 2;
+
+  /**
    * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
    */
   unsigned int concentration_subdivisions;
@@ -130,11 +145,6 @@ private:
     VectorType &                                 dst,
     const VectorType &                           src,
     const std::pair<unsigned int, unsigned int> &cell_range);
-
-
-  static const unsigned int dof_index_ls  = 2; // TODO: make input variables
-  static const unsigned int dof_index_vel = 0; //
-  static const unsigned int quad_index    = 2; //
 
   /**
    * Parameters
