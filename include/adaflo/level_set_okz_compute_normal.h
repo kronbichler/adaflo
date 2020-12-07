@@ -68,29 +68,29 @@ public:
   using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
   LevelSetOKZSolverComputeNormal(
-    const AlignedVector<VectorizedArray<double>> &   cell_diameters,
-    const double &                                   epsilon_used,
-    const double &                                   minimal_edge_length,
-    const AffineConstraints<double> &                constraints_normals,
-    LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
-    const std::shared_ptr<TimerOutput> &             timer,
-    const FlowParameters &                           parameters,
-    const MatrixFree<dim> &                          matrix_free,
-    LinearAlgebra::distributed::BlockVector<double> &solution,
-    LinearAlgebra::distributed::BlockVector<double> &normal_vector_rhs,
-    const DiagonalPreconditioner<double> &           preconditioner,
-    const std::shared_ptr<BlockMatrixExtension> &    projection_matrix,
-    const std::shared_ptr<BlockILUExtension> &       ilu_projection_matrix)
-    : cell_diameters(cell_diameters)
+    BlockVectorType &                             normal_vector_field,
+    BlockVectorType &                             normal_vector_rhs,
+    VectorType &                                  solution,
+    const AlignedVector<VectorizedArray<double>> &cell_diameters,
+    const double &                                epsilon_used,
+    const double &                                minimal_edge_length,
+    const AffineConstraints<double> &             constraints_normals,
+    const std::shared_ptr<TimerOutput> &          timer,
+    const FlowParameters &                        parameters,
+    const MatrixFree<dim> &                       matrix_free,
+    const DiagonalPreconditioner<double> &        preconditioner,
+    const std::shared_ptr<BlockMatrixExtension> & projection_matrix,
+    const std::shared_ptr<BlockILUExtension> &    ilu_projection_matrix)
+    : parameters(parameters)
+    , normal_vector_field(normal_vector_field)
+    , normal_vector_rhs(normal_vector_rhs)
+    , vel_solution(solution)
+    , matrix_free(matrix_free)
+    , constraints_normals(constraints_normals)
+    , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
-    , constraints_normals(constraints_normals)
-    , normal_vector_field(normal_vector_field)
     , timer(timer)
-    , parameters(parameters)
-    , matrix_free(matrix_free)
-    , vel_solution(solution.block(0))
-    , normal_vector_rhs(normal_vector_rhs)
     , preconditioner(preconditioner)
     , projection_matrix(projection_matrix)
     , ilu_projection_matrix(ilu_projection_matrix)
@@ -110,6 +110,7 @@ private:
                        LinearAlgebra::distributed::BlockVector<Number> &      dst,
                        const LinearAlgebra::distributed::BlockVector<Number> &src,
                        const std::pair<unsigned int, unsigned int> &cell_range) const;
+
   template <int ls_degree>
   void
   local_compute_normal_rhs(const MatrixFree<dim, double> &                   data,
@@ -117,19 +118,36 @@ private:
                            const LinearAlgebra::distributed::Vector<double> &src,
                            const std::pair<unsigned int, unsigned int> &cell_range) const;
 
+  /**
+   * Parameters
+   */
+  const FlowParameters &parameters; // [i]
 
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;
-  const double &                                epsilon_used;
-  const double &                                minimal_edge_length;
-  const AffineConstraints<double> &             constraints_normals;
-  BlockVectorType &                             normal_vector_field;
+  /**
+   * Vector section
+   */
+  BlockVectorType & normal_vector_field; // [o]
+  BlockVectorType & normal_vector_rhs;   // [-]
+  const VectorType &vel_solution;        // [i]
+
+  /**
+   * MatrixFree
+   */
+  const MatrixFree<dim> &          matrix_free;         // [i]
+  const AffineConstraints<double> &constraints_normals; // [i]
+
+  /**
+   * Physics section
+   */
+  const AlignedVector<VectorizedArray<double>> &cell_diameters;      // [i]
+  const double &                                epsilon_used;        // [i]
+  const double &                                minimal_edge_length; // [i]
 
   const std::shared_ptr<TimerOutput> &timer;
-  const FlowParameters &              parameters;
-  const MatrixFree<dim> &             matrix_free;
-  const VectorType &                  vel_solution;
-  BlockVectorType &                   normal_vector_rhs;
 
+  /**
+   * Solver section
+   */
   const DiagonalPreconditioner<double> &       preconditioner;        // [i]
   const std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
   const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
