@@ -33,14 +33,14 @@ class LevelSetOKZSolverAdvanceConcentration
 {
 public:
   LevelSetOKZSolverAdvanceConcentration(
-    LinearAlgebra::distributed::Vector<double> &solution_old,
-    LinearAlgebra::distributed::Vector<double> &solution_old_old,
-    LinearAlgebra::distributed::Vector<double> &solution_update,
-    LinearAlgebra::distributed::Vector<double> &solution,
-    LinearAlgebra::distributed::Vector<double> &system_rhs,
-    Triangulation<dim> &                        triangulation,
-    double &                                    global_omega_diameter,
-    AlignedVector<VectorizedArray<double>> &    cell_diameters,
+    const LinearAlgebra::distributed::Vector<double> &solution_old,
+    const LinearAlgebra::distributed::Vector<double> &solution_old_old,
+    LinearAlgebra::distributed::Vector<double> &      solution_update,
+    LinearAlgebra::distributed::Vector<double> &      solution,
+    LinearAlgebra::distributed::Vector<double> &      system_rhs,
+    Triangulation<dim> &                              triangulation,
+    double &                                          global_omega_diameter,
+    AlignedVector<VectorizedArray<double>> &          cell_diameters,
 
     const AffineConstraints<double> &                       constraints,
     const ConditionalOStream &                              pcout,
@@ -139,11 +139,11 @@ private:
     const std::pair<unsigned int, unsigned int> &     cell_range);
 
 
-  LinearAlgebra::distributed::Vector<double> &solution_old;
-  LinearAlgebra::distributed::Vector<double> &solution_old_old;
-  LinearAlgebra::distributed::Vector<double> &solution_update;
-  LinearAlgebra::distributed::Vector<double> &solution;
-  LinearAlgebra::distributed::Vector<double> &system_rhs;
+  const LinearAlgebra::distributed::Vector<double> &solution_old;
+  const LinearAlgebra::distributed::Vector<double> &solution_old_old;
+  LinearAlgebra::distributed::Vector<double> &      solution_update;
+  LinearAlgebra::distributed::Vector<double> &      solution;
+  LinearAlgebra::distributed::Vector<double> &      system_rhs;
 
   Triangulation<dim> &                    triangulation;
   double &                                global_omega_diameter;
