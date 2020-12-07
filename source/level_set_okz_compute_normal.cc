@@ -19,7 +19,6 @@
 
 #include <deal.II/matrix_free/fe_evaluation.h>
 
-#include <adaflo/level_set_okz_compute_curvature.h>
 #include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/level_set_okz_template_instantations.h>
 
@@ -166,6 +165,11 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
 
   if (this->parameters.approximate_projections == true)
     {
+      AssertThrow(false, ExcNotImplemented());
+      // [PM]: The following code has been removed since it was not used in any test
+      // and it introduced annoying cyclic dependencies.
+
+      /*
       // apply damping to avoid oscillations. this corresponds to one time
       // step of exlicit Euler for a diffusion problem (need to avoid too
       // large diffusions!)
@@ -180,10 +184,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
                 this->normal_vector_rhs.block(block),
                 this->normal_vector_field.block(block),
                 2);
-            }
-          preconditioner.vmult(this->normal_vector_rhs, this->normal_vector_rhs);
-          this->normal_vector_field.add(-0.05, this->normal_vector_rhs);
-        }
+       */
     }
   else
     {

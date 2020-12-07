@@ -23,14 +23,12 @@
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/diagonal_preconditioner.h>
+#include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/navier_stokes.h>
 #include <adaflo/time_stepping.h>
 #include <adaflo/util.h>
 
 using namespace dealii;
-
-template <int dim>
-class LevelSetOKZSolverComputeNormal;
 
 template <int dim>
 class LevelSetOKZSolverComputeCurvature

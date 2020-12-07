@@ -21,7 +21,6 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/level_set_okz_compute_curvature.h>
-#include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/level_set_okz_template_instantations.h>
 
 
