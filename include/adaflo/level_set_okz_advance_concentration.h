@@ -45,7 +45,6 @@ public:
     const ConditionalOStream &                              pcout,
     const TimeStepping &                                    time_stepping,
     std::shared_ptr<helpers::BoundaryDescriptor<dim>> &     boundary,
-    Mapping<dim> &                                          mapping,
     DoFHandler<dim> &                                       dof_handler,
     const std::shared_ptr<FiniteElement<dim>> &             fe,
     const MatrixFree<dim> &                                 matrix_free,
@@ -67,7 +66,6 @@ public:
     , pcout(pcout)
     , time_stepping(time_stepping)
     , boundary(boundary)
-    , mapping(mapping)
     , dof_handler(dof_handler)
     , fe(fe)
     , matrix_free(matrix_free)
@@ -86,10 +84,9 @@ public:
   {
     const QIterated<dim> quadrature_formula(QTrapez<1>(),
                                             dof_handler.get_fe().tensor_degree() + 1);
-    const unsigned int   n_q_points = quadrature_formula.size();
 
     FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
-    std::vector<Tensor<1, dim>> velocity_values(n_q_points);
+    std::vector<Tensor<1, dim>> velocity_values(quadrature_formula.size());
 
     const FEValuesExtractors::Vector velocities(0);
 
@@ -102,7 +99,7 @@ public:
           fe_values[velocities].get_function_values(navier_stokes.solution.block(0),
                                                     velocity_values);
 
-          for (unsigned int q = 0; q < n_q_points; ++q)
+          for (const auto q : fe_values.quadrature_point_indices())
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
         }
 
@@ -135,12 +132,17 @@ private:
     const std::pair<unsigned int, unsigned int> &     cell_range);
 
 
-  LinearAlgebra::distributed::Vector<double> &      solution;     // [o] new ls solution
-  const LinearAlgebra::distributed::Vector<double> &solution_old; // [i] old ls solution
-  const LinearAlgebra::distributed::Vector<double>
-    &                                         solution_old_old; // [i] old ls solution
-  LinearAlgebra::distributed::Vector<double> &increment;        // [-] temp
-  LinearAlgebra::distributed::Vector<double> &rhs;              // [-] temp
+  static const unsigned int dof_index_ls  = 2; // TODO: make input variables
+  static const unsigned int dof_index_vel = 0; //
+  static const unsigned int quad_index    = 2; //
+
+  using VectorType = LinearAlgebra::distributed::Vector<double>;
+
+  VectorType &      solution;         // [o] new ls solution
+  const VectorType &solution_old;     // [i] old ls solution
+  const VectorType &solution_old_old; // [i] old ls solution
+  VectorType &      increment;        // [-] temp
+  VectorType &      rhs;              // [-] temp
 
   double &                                global_omega_diameter;
   AlignedVector<VectorizedArray<double>> &cell_diameters;
@@ -153,7 +155,6 @@ private:
 
 
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> &boundary;
-  Mapping<dim> &                                     mapping;
   DoFHandler<dim> &                                  dof_handler;
   const std::shared_ptr<FiniteElement<dim>> &        fe;
 

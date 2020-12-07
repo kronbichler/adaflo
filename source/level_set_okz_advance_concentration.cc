@@ -40,7 +40,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
 {
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values(data, 2, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values(data,
+                                                           dof_index_ls,
+                                                           quad_index);
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       const Tensor<1, dim, VectorizedArray<double>> *velocities =
@@ -80,12 +82,24 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function) and 0 means
   // &navier_stokes.get_constraints_u()
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values(data, 2, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values_old(data, 2, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values_old_old(data, 2, 2);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values(data, 0, 2);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old(data, 0, 2);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old_old(data, 0, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values(data,
+                                                           dof_index_ls,
+                                                           quad_index);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values_old(data,
+                                                               dof_index_ls,
+                                                               quad_index);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         ls_values_old_old(data,
+                                                                   dof_index_ls,
+                                                                   quad_index);
+  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values(data,
+                                                                    dof_index_vel,
+                                                                    quad_index);
+  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old(data,
+                                                                        dof_index_vel,
+                                                                        quad_index);
+  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old_old(data,
+                                                                            dof_index_vel,
+                                                                            quad_index);
 
   typedef VectorizedArray<double> vector_t;
 
@@ -276,6 +290,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
 {
   TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
 
+  const auto &mapping = *this->matrix_free.get_mapping_info().mapping;
+
   // apply boundary values
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
@@ -293,7 +309,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
       dirichlet[*it] = &minus_func;
 
     std::map<types::global_dof_index, double> boundary_values;
-    VectorTools::interpolate_boundary_values(this->mapping,
+    VectorTools::interpolate_boundary_values(mapping,
                                              this->dof_handler,
                                              dirichlet,
                                              boundary_values);
@@ -329,7 +345,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   if (this->parameters.convection_stabilization)
     {
       // Boundary part of stabilization-term:
-      FEFaceValues<dim> fe_face_values(this->mapping,
+      FEFaceValues<dim> fe_face_values(mapping,
                                        *this->fe,
                                        this->matrix_free.get_face_quadrature(1),
                                        update_values | update_gradients |
