@@ -42,6 +42,7 @@
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/level_set_okz.h>
+#include <adaflo/level_set_okz_preconditioner.h>
 #include <adaflo/level_set_okz_template_instantations.h>
 #include <adaflo/util.h>
 
@@ -249,40 +250,10 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
-  // create diagonal preconditioner vector by assembly of mass matrix diagonal
-  LinearAlgebra::distributed::Vector<double> diagonal(this->solution_update.block(0));
-  {
-    diagonal = 0;
-    QIterated<dim> quadrature(QGauss<1>(2), this->parameters.concentration_subdivisions);
-    FEValues<dim>  fe_values(this->mapping,
-                            *this->fe,
-                            quadrature,
-                            update_values | update_JxW_values);
-    Vector<double> local_rhs(this->fe->dofs_per_cell);
-    std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
-    typename DoFHandler<dim>::active_cell_iterator cell =
-                                                     this->dof_handler.begin_active(),
-                                                   end = this->dof_handler.end();
-    for (; cell != end; ++cell)
-      if (cell->is_locally_owned())
-        {
-          fe_values.reinit(cell);
-          for (unsigned int i = 0; i < this->fe->dofs_per_cell; ++i)
-            {
-              double value = 0;
-              for (unsigned int q = 0; q < quadrature.size(); ++q)
-                value += fe_values.shape_value(i, q) * fe_values.shape_value(i, q) *
-                         fe_values.JxW(q);
-              local_rhs(i) = value;
-            }
-          cell->get_dof_indices(local_dof_indices);
-          this->hanging_node_constraints.distribute_local_to_global(local_rhs,
-                                                                    local_dof_indices,
-                                                                    diagonal);
-        }
-    diagonal.compress(VectorOperation::add);
-    preconditioner.reinit(diagonal);
-  }
+  mass_matrix_diagonal(this->matrix_free,
+                       this->hanging_node_constraints,
+                       2,
+                       preconditioner);
 
   // create sparse matrix for projection systems.
   //
