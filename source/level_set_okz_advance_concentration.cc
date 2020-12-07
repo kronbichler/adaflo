@@ -319,18 +319,14 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
   // apply boundary values
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
-    Functions::ConstantFunction<dim>                    plus_func(1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary.fluid_type_plus.begin();
-         it != this->boundary.fluid_type_plus.end();
-         ++it)
-      dirichlet[*it] = &plus_func;
+
+    Functions::ConstantFunction<dim> plus_func(1., 1);
+    for (const auto bid : this->boundary.fluid_type_plus)
+      dirichlet[bid] = &plus_func;
+
     Functions::ConstantFunction<dim> minus_func(-1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary.fluid_type_minus.begin();
-         it != this->boundary.fluid_type_minus.end();
-         ++it)
-      dirichlet[*it] = &minus_func;
+    for (const auto bid : this->boundary.fluid_type_minus)
+      dirichlet[bid] = &minus_func;
 
     std::map<types::global_dof_index, double> boundary_values;
     VectorTools::interpolate_boundary_values(mapping,
@@ -338,12 +334,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
                                              dirichlet,
                                              boundary_values);
 
-    for (typename std::map<types::global_dof_index, double>::const_iterator it =
-           boundary_values.begin();
-         it != boundary_values.end();
-         ++it)
-      if (this->solution.locally_owned_elements().is_element(it->first))
-        this->solution(it->first) = it->second;
+    for (const auto &it : boundary_values)
+      if (this->solution.locally_owned_elements().is_element(it.first))
+        this->solution(it.first) = it.second;
     this->solution.update_ghost_values();
   }
 
