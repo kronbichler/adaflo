@@ -25,6 +25,7 @@
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
 #include <deal.II/fe/fe_values.h>
+#include <deal.II/fe/mapping_fe.h>
 #include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_tools.h>
@@ -37,6 +38,9 @@
 
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
+
+#include <deal.II/simplex/fe_lib.h>
+#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/navier_stokes.h>
 #include <adaflo/util.h>
@@ -53,30 +57,32 @@ NavierStokes<dim>::NavierStokes(
   Triangulation<dim> &                              triangulation_in,
   TimerOutput *                                     external_timer,
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
-  : time_stepping(parameters)
+  : FlowBaseAlgorithm<dim>(
+      parameters.use_simplex_mesh ?
+        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+        std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
+  , time_stepping(parameters)
   , parameters(parameters)
-  ,
-
-  n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
+  , n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
   , this_mpi_process(Utilities::MPI::this_mpi_process(get_communicator(triangulation_in)))
-  ,
-
-  pcout(std::cout, this_mpi_process == 0)
-  ,
-
-  triangulation(triangulation_in)
-  ,
-
-  fe_u(FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1)), dim)
-  , fe_p(parameters.augmented_taylor_hood ?
+  , pcout(std::cout, this_mpi_process == 0)
+  , triangulation(triangulation_in)
+  , fe_u(parameters.use_simplex_mesh ?
            static_cast<const FiniteElement<dim> &>(
-             FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
+             Simplex::FE_P<dim>(parameters.velocity_degree)) :
            static_cast<const FiniteElement<dim> &>(
-             FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree))),
+             FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1))),
+         dim)
+  , fe_p(parameters.use_simplex_mesh ?
+           static_cast<const FiniteElement<dim> &>(
+             Simplex::FE_P<dim>(parameters.velocity_degree - 1)) :
+           (parameters.augmented_taylor_hood ?
+              static_cast<const FiniteElement<dim> &>(
+                FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
+              static_cast<const FiniteElement<dim> &>(
+                FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree)))),
          1)
-  ,
-
-  dof_handler_u(triangulation)
+  , dof_handler_u(triangulation)
   , dof_handler_p(triangulation)
   , navier_stokes_matrix(parameters, solution_old, solution_old_old)
   , preconditioner(parameters, *this, triangulation, constraints_u)
@@ -323,6 +329,9 @@ void
 NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
                                  const Function<dim> &)
 {
+  if (parameters.use_simplex_mesh)
+    AssertDimension(parameters.global_refinements, 0);
+
   // if we should to more than 15 refinements, this can't be right: We would
   // get 1e9 as many elements in 2d and 3e13 in 3d! The user likely used this
   // variables for specifying how often to refine a rectangle...
@@ -380,9 +389,17 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *external_matrix_free)
       std::vector<const AffineConstraints<double> *> constraints;
       constraints.push_back(&constraints_u);
       constraints.push_back(&constraints_p);
-      std::vector<Quadrature<1>> quadratures;
-      quadratures.push_back(QGauss<1>(parameters.velocity_degree + 1));
-      quadratures.push_back(QGauss<1>(parameters.velocity_degree));
+      std::vector<Quadrature<dim>> quadratures;
+      if (parameters.use_simplex_mesh)
+        {
+          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree + 1));
+          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree));
+        }
+      else
+        {
+          quadratures.push_back(QGauss<dim>(parameters.velocity_degree + 1));
+          quadratures.push_back(QGauss<dim>(parameters.velocity_degree));
+        }
       matrix_free->reinit(this->mapping, dof_handlers, constraints, quadratures, data);
     }
   navier_stokes_matrix.initialize(*matrix_free,
@@ -927,7 +944,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
            cell != dof_handler_p.end();
            ++cell)
         if (cell->is_locally_owned())
-          for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
+          for (unsigned int face = 0; face < cell->n_faces(); ++face)
             if (cell->at_boundary(face))
               {
                 typename std::map<types::boundary_id,
@@ -1184,9 +1201,15 @@ NavierStokes<dim>::apply_boundary_conditions()
            ++it)
         it->second->set_time(time);
 
-      QGauss<dim - 1> face_quadrature(fe_u.degree + 1);
+      Quadrature<dim - 1> face_quadrature;
 
-      FEFaceValues<dim> fe_values(fe_u,
+      if (parameters.use_simplex_mesh)
+        face_quadrature = Simplex::QGauss<dim - 1>(fe_u.degree + 1);
+      else
+        face_quadrature = QGauss<dim - 1>(fe_u.degree + 1);
+
+      FEFaceValues<dim> fe_values(this->mapping,
+                                  fe_u,
                                   face_quadrature,
                                   update_values | update_JxW_values |
                                     update_quadrature_points | update_normal_vectors);
@@ -1200,8 +1223,8 @@ NavierStokes<dim>::apply_boundary_conditions()
              dof_handler_u.begin_active();
            cell != dof_handler_u.end();
            ++cell)
-        for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-          if (cell->is_locally_owned())
+        if (cell->is_locally_owned())
+          for (unsigned int face = 0; face < cell->n_faces(); ++face)
             if (cell->at_boundary(face) && (this->boundary->open_conditions_p.find(
                                               cell->face(face)->boundary_id()) !=
                                             this->boundary->open_conditions_p.end()))

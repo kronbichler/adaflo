@@ -77,6 +77,12 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     "defines whether the mesh should be refined "
                     "anisotropically in normal direction to the interface, "
                     "0 means no anisotropy");
+  prm.declare_entry("simplex mesh",
+                    "0",
+                    Patterns::Integer(),
+                    "defines whether a simplex mesh has been provided, "
+                    "0 means mesh with only quadrilaterals (2D) and hexahedra "
+                    "(3D) has been provided");
   prm.declare_entry("adaptive refinements",
                     "0",
                     Patterns::Integer(),
@@ -432,6 +438,7 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
   global_refinements         = prm.get_integer("global refinements");
   adaptive_refinements       = prm.get_integer("adaptive refinements");
   use_anisotropic_refinement = prm.get_integer("anisotropic refinement") > 0;
+  use_simplex_mesh           = prm.get_integer("simplex mesh") > 0;
 
   velocity_degree = prm.get_integer("velocity degree");
   AssertThrow(velocity_degree > 1, ExcNotImplemented());

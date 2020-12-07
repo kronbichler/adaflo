@@ -32,9 +32,18 @@ helpers::BoundaryDescriptor<dim>::BoundaryDescriptor()
 
 
 template <int dim>
-FlowBaseAlgorithm<dim>::FlowBaseAlgorithm()
+FlowBaseAlgorithm<dim>::FlowBaseAlgorithm(
+  const std::shared_ptr<Mapping<dim>> mapping_data)
   : boundary(new helpers::BoundaryDescriptor<dim>())
-  , mapping(3)
+  , mapping_data(mapping_data)
+  , mapping(*mapping_data)
+{}
+
+
+
+template <int dim>
+FlowBaseAlgorithm<dim>::FlowBaseAlgorithm()
+  : FlowBaseAlgorithm(std::make_shared<MappingQ<dim>>(3))
 {}
 
 

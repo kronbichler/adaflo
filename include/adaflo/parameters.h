@@ -49,6 +49,7 @@ struct FlowParameters
   unsigned int global_refinements;
   unsigned int adaptive_refinements;
   bool         use_anisotropic_refinement;
+  bool         use_simplex_mesh;
 
   enum PhysicalType
   {

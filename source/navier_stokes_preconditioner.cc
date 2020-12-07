@@ -34,6 +34,8 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
+#include <deal.II/simplex/quadrature_lib.h>
+
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/navier_stokes_preconditioner.h>
 #include <adaflo/util.h>
@@ -852,13 +854,16 @@ namespace
   // ML needs the coordinates of the points for re-partitioning
   template <int dim>
   std::vector<std::vector<double>>
-  get_nodal_points(const DoFHandler<dim> &dof_handler)
+  get_nodal_points(const DoFHandler<dim> &dof_handler, const Mapping<dim> &mapping)
   {
     const IndexSet                   locally_owned = dof_handler.locally_owned_dofs();
     std::vector<std::vector<double>> coordinates(
       dim, std::vector<double>(locally_owned.n_elements()));
     Quadrature<dim> quad(dof_handler.get_fe().get_unit_support_points());
-    FEValues<dim>   fe_values(dof_handler.get_fe(), quad, update_quadrature_points);
+    FEValues<dim>   fe_values(mapping,
+                            dof_handler.get_fe(),
+                            quad,
+                            update_quadrature_points);
     std::vector<types::global_dof_index> local_dof_indices(
       dof_handler.get_fe().dofs_per_cell);
     typename DoFHandler<dim>::active_cell_iterator cell = dof_handler.begin_active(),
@@ -909,7 +914,8 @@ NavierStokesPreconditioner<dim>::compute()
       uu_amg->initialize(*uu_amg_mat,
                          constant_modes_u,
                          true,
-                         get_nodal_points(matrix->get_matrix_free().get_dof_handler(0)));
+                         get_nodal_points(matrix->get_matrix_free().get_dof_handler(0),
+                                          flow_algorithm.mapping));
     }
 
   if (parameters.density > 0)
@@ -925,8 +931,9 @@ NavierStokesPreconditioner<dim>::compute()
       pp_poisson->initialize(*pp_poisson_mat,
                              constant_modes_p,
                              false,
-                             get_nodal_points(
-                               matrix->get_matrix_free().get_dof_handler(1)));
+                             get_nodal_points(matrix->get_matrix_free().get_dof_handler(
+                                                1),
+                                              flow_algorithm.mapping));
     }
 
   // Augmented Taylor-Hood always needs AMG on the pressure mass matrix
@@ -1011,7 +1018,16 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
     Utilities::MPI::this_mpi_process(get_communicator(triangulation));
 
   integration_helper.set_local_ordering_u(fe_u);
-  integration_helper.initialize_linear_elements(fe_u, fe_p);
+  if (parameters.use_simplex_mesh == false)
+    {
+      integration_helper.initialize_linear_elements(fe_u, fe_p);
+    }
+  else
+    {
+      // needed for setup of FEValues
+      integration_helper.quadrature_sub_u = std::make_unique<Simplex::QGauss<dim>>(1);
+      integration_helper.quadrature_sub_p = std::make_unique<Simplex::QGauss<dim>>(1);
+    }
 
   // For scalar ILU, need to distributed DoFs and fill in the various
   // constraints
@@ -1223,6 +1239,8 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
       }
     else
       {
+        Assert(parameters.use_simplex_mesh == false, ExcNotImplemented());
+
         // if we subdivide the elements into linear subelements with the same
         // number of degrees of freedom, the system matrix is sparser and we
         // need to manually fill in the entries by a loop over
@@ -1486,17 +1504,25 @@ namespace AssemblyData
     const FiniteElement<dim> &             fe_p)
     : fe_values_u(mapping,
                   fe_u.base_element(0),
-                  QGauss<dim>(fe_u.degree + 1),
+                  // TODO: not particular nice to distinguish here
+                  fe_u.reference_cell_type() == ReferenceCell::get_hypercube(dim) ?
+                    static_cast<const Quadrature<dim> &>(QGauss<dim>(fe_u.degree + 1)) :
+                    static_cast<const Quadrature<dim> &>(
+                      Simplex::QGauss<dim>(fe_u.degree + 1)),
                   update_values | update_gradients | update_JxW_values)
     , fe_values_p(mapping,
                   fe_p,
                   fe_values_u.get_quadrature(),
                   update_values | update_gradients | update_JxW_values)
-    , fe_face_values_p(mapping,
-                       fe_p,
-                       QGauss<dim - 1>(fe_p.degree + 1),
-                       update_values | update_gradients | update_JxW_values |
-                         update_normal_vectors)
+    , fe_face_values_p(
+        mapping,
+        fe_p,
+        // TODO: not particular nice to distinguish here
+        fe_p.reference_cell_type() == ReferenceCell::get_hypercube(dim) ?
+          static_cast<const Quadrature<dim - 1> &>(QGauss<dim - 1>(fe_p.degree + 1)) :
+          static_cast<const Quadrature<dim - 1> &>(
+            Simplex::QGauss<dim - 1>(fe_p.degree + 1)),
+        update_values | update_gradients | update_JxW_values | update_normal_vectors)
     , fe_subface_values_p(mapping,
                           fe_p,
                           fe_face_values_p.get_quadrature(),
