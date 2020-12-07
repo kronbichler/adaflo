@@ -21,7 +21,6 @@
 TimeStepping::TimeStepping(const FlowParameters &parameters)
   : start_val(parameters.start_time)
   , final_val(parameters.end_time)
-  , tolerance_val(parameters.time_step_tolerance)
   , scheme_val(parameters.time_step_scheme)
   , start_step_val(parameters.time_step_size_start)
   , max_step_val(parameters.time_step_size_max)
@@ -58,7 +57,6 @@ TimeStepping::TimeStepping(const FlowParameters &parameters)
       tau2_val = 0.;
     }
 }
-
 
 
 void
@@ -175,7 +173,6 @@ TimeStepping::name() const
     result = std::string("BDF-2");
   return result;
 }
-
 
 
 TimeStepping::Scheme

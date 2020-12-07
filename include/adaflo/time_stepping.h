@@ -46,8 +46,6 @@ public:
   double
   final() const;
   double
-  tolerance() const;
-  double
   step_size() const;
   double
   max_step_size() const;
@@ -98,8 +96,6 @@ public:
   set_final_time(double);
   void
   set_time_step(double);
-  void
-  set_tolerance(double);
   std::string
   name() const;
   Scheme
@@ -111,32 +107,53 @@ public:
   at_end() const;
 
 private:
-  double       start_val;
-  double       final_val;
-  double       tolerance_val;
-  Scheme       scheme_val;
-  double       start_step_val;
-  double       max_step_val;
-  double       min_step_val;
-  double       current_step_val;
-  double       last_step_val;
-  double       step_val;
-  double       weight_val;
-  double       weight_old_val;
-  double       weight_old_old_val;
-  double       factor_extrapol_old;
-  double       factor_extrapol_old_old;
-  unsigned int step_no_val;
-  bool         at_end_val;
-  bool         weight_changed;
-
-  double now_val;
-  double prev_val;
-  double tau1_val;
-  double tau2_val;
+  double       start_val;                 // [i] start time
+  double       final_val;                 // [i] end time
+  Scheme       scheme_val;                // [i] time integration scheme      
+  double       start_step_val;            // [i] initial value of the time increment
+  double       max_step_val;              // [i] maximum value of the time increment
+  double       min_step_val;              // [i] minimum value of the time increment
+  double       current_step_val;          // [m] current value of the time increment; 
+                                          //     initialized in the constructor by start_step_val
+                                          //     can be modified in set_time_step(desired_value) fulfilling the criteria
+                                          //         - 0.5 * step_size_prev <= current_step_val <= 2*step_size_prev 
+                                          //         - min_step_val <= current_step_val <= max_step_val            
+  double       last_step_val;             // [m] constructor and restart() sets this parameter to zero. 
+                                          //     next() sets this parameter equal to current_step_val (corresponding to the 
+                                          //     previous time increment)
+  double       step_val;                  // [m] current value of the time increment; m]
+                                          //     - initialized in the constructor by start_step_val
+                                          //     - changed in set_time_step to be equal to current_step_val
+                                          //     @todo - ambiguous with current_step_val (?)
+  double       weight_val;                // [m] 1/time_increment 
+                                          //     - constructor: 1/start_step_val; 
+                                          //     - next():      1/current_step_val
+  double       weight_old_val;            // [m] old time increment; 
+                                          //     - BDF2: this parameter is used for the time integration
+                                          //     - else this parameter is used to determine weight_changed
+  double       weight_old_old_val;        // [m] old old time increment; only used in case of BDF2
+  double       factor_extrapol_old;       // [m] extrapolation factor determined between the current and the last
+                                          //     value of the increment
+  double       factor_extrapol_old_old;   // [m] extrapolation factor determined by the ratio between the current and
+                                          //     and the old value of the time increment
+  unsigned int step_no_val;               // [m] - constructor/restart(): initialize to zero
+                                          //     - incremented by 1 in next()
+  bool         at_end_val;                // [m] determines if the end time is reached
+  bool         weight_changed;            // [m] determines if the integration weight has changed; this parameter is never reused
+                                          //     this is used in navier_stokes.cc or phase_field.cc
+  double now_val;                         // [m] current time; time to be reached after time integration (t_n)
+                                          //     - constructor/restart(): initialize to start_val
+                                          //     - calculated as return argument from next()
+  double prev_val;                        // [m] old time; time at the begin of the integration step
+  double tau1_val;                        // [i] integration weight for multiplication with the current function value, i.e. f(t_n)
+                                          //     - constructor: parameter depends on the scheme_val
+  double tau2_val;                        // [i] integration weight for multiplication with the old function value, i.e. f(t_n-1)
+                                          //     - constructor: parameter depends on the scheme_val
 };
 
-
+/**
+ * Getter functions
+ */
 inline double
 TimeStepping::start() const
 {
@@ -149,7 +166,6 @@ TimeStepping::final() const
 {
   return final_val;
 }
-
 
 
 inline double
@@ -172,13 +188,6 @@ TimeStepping::old_step_size() const
 {
   return last_step_val;
 }
-
-inline double
-TimeStepping::tolerance() const
-{
-  return tolerance_val;
-}
-
 
 inline double
 TimeStepping::now() const
@@ -262,14 +271,6 @@ TimeStepping::set_final_time(double t)
 {
   final_val = t;
 }
-
-
-inline void
-TimeStepping::set_tolerance(double t)
-{
-  tolerance_val = t;
-}
-
 
 inline bool
 TimeStepping::at_end() const
