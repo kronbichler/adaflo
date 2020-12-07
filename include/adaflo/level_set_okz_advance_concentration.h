@@ -29,7 +29,7 @@
 using namespace dealii;
 
 /**
- * Parameters of the avection-concentration operator.
+ * Parameters of the advection-concentration operator.
  */
 struct LevelSetOKZSolverAdvanceConcentrationParameter
 {
@@ -74,6 +74,27 @@ struct LevelSetOKZSolverAdvanceConcentrationParameter
   TimeStepping::Scheme time_step_scheme;
 };
 
+/**
+ * Boundary descriptors of the advection-concentration operator.
+ */
+struct LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor
+{
+  /**
+   * TODO
+   */
+  std::set<types::boundary_id> fluid_type_plus;
+
+  /**
+   * TODO
+   */
+  std::set<types::boundary_id> fluid_type_minus;
+
+  /**
+   * TODO
+   */
+  std::set<types::boundary_id> symmetry;
+};
+
 template <int dim>
 class LevelSetOKZSolverAdvanceConcentration
 {
@@ -94,17 +115,17 @@ public:
     const double &                                global_omega_diameter,
     const AlignedVector<VectorizedArray<double>> &cell_diameters,
 
-    const AffineConstraints<double> &                       constraints,
-    const ConditionalOStream &                              pcout,
-    const TimeStepping &                                    time_stepping,
-    std::shared_ptr<helpers::BoundaryDescriptor<dim>> &     boundary,
-    const MatrixFree<dim> &                                 matrix_free,
-    const std::shared_ptr<TimerOutput> &                    timer,
-    const LevelSetOKZSolverAdvanceConcentrationParameter &  parameters,
-    AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
-    double &                                                global_max_velocity,
-    const DiagonalPreconditioner<double> &                  preconditioner,
-    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
+    const AffineConstraints<double> &                              constraints,
+    const ConditionalOStream &                                     pcout,
+    const TimeStepping &                                           time_stepping,
+    const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor &boundary,
+    const MatrixFree<dim> &                                        matrix_free,
+    const std::shared_ptr<TimerOutput> &                           timer,
+    const LevelSetOKZSolverAdvanceConcentrationParameter &         parameters,
+    AlignedVector<VectorizedArray<double>> &                       artificial_viscosities,
+    double &                                                       global_max_velocity,
+    const DiagonalPreconditioner<double> &                         preconditioner,
+    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &       evaluated_convection)
     : parameters(parameters)
     , solution(solution)
     , solution_old(solution_old)
@@ -185,11 +206,11 @@ private:
   /**
    * Physics section
    */
-  const double &                                     global_omega_diameter;     // [i]
-  const AlignedVector<VectorizedArray<double>> &     cell_diameters;            // [i]
-  std::shared_ptr<helpers::BoundaryDescriptor<dim>> &boundary;                  // [i]
-  AlignedVector<VectorizedArray<double>> &           artificial_viscosities;    // [-] ???
-  double &                                           global_max_velocity;       // [o]
+  const double &                                global_omega_diameter;          // [i]
+  const AlignedVector<VectorizedArray<double>> &cell_diameters;                 // [i]
+  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor boundary;       // [i]
+  AlignedVector<VectorizedArray<double>> &artificial_viscosities;               // [-] ???
+  double &                                global_max_velocity;                  // [o]
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection; // [o]
 
   /**

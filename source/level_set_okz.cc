@@ -264,6 +264,12 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
   params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
   params.time_step_scheme           = this->parameters.time_step_scheme;
 
+  LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor bcs;
+
+  bcs.fluid_type_plus  = this->boundary->fluid_type_plus;
+  bcs.fluid_type_minus = this->boundary->fluid_type_minus;
+  bcs.symmetry         = this->boundary->symmetry;
+
   this->advection_operator = std::make_unique<LevelSetOKZSolverAdvanceConcentration<dim>>(
     this->solution.block(0),
     this->solution_old.block(0),
@@ -278,7 +284,7 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->constraints,
     this->pcout,
     this->time_stepping,
-    this->boundary,
+    bcs,
     this->matrix_free,
     this->timer,
     params,

@@ -254,8 +254,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
               {
                 if (cell->face(face)->at_boundary())
                   {
-                    if (this->boundary->symmetry.find(cell->face(face)->boundary_id()) ==
-                        this->boundary->symmetry.end())
+                    if (this->boundary.symmetry.find(cell->face(face)->boundary_id()) ==
+                        this->boundary.symmetry.end())
                       {
                         fe_face_values.reinit(cell, face);
                         fe_face_values.get_function_gradients(src, local_gradients);
@@ -328,14 +328,14 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
     Functions::ConstantFunction<dim>                    plus_func(1., 1);
     for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_plus.begin();
-         it != this->boundary->fluid_type_plus.end();
+           this->boundary.fluid_type_plus.begin();
+         it != this->boundary.fluid_type_plus.end();
          ++it)
       dirichlet[*it] = &plus_func;
     Functions::ConstantFunction<dim> minus_func(-1., 1);
     for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_minus.begin();
-         it != this->boundary->fluid_type_minus.end();
+           this->boundary.fluid_type_minus.begin();
+         it != this->boundary.fluid_type_minus.end();
          ++it)
       dirichlet[*it] = &minus_func;
 
@@ -401,8 +401,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
               {
                 if (cell->face(face)->at_boundary())
                   {
-                    if (this->boundary->symmetry.find(cell->face(face)->boundary_id()) ==
-                        this->boundary->symmetry.end())
+                    if (this->boundary.symmetry.find(cell->face(face)->boundary_id()) ==
+                        this->boundary.symmetry.end())
                       {
                         fe_face_values.reinit(cell, face);
                         fe_face_values.get_function_gradients(this->solution,
