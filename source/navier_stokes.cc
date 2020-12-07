@@ -109,8 +109,6 @@ NavierStokes<dim>::NavierStokes(
 template <int dim>
 NavierStokes<dim>::~NavierStokes()
 {
-  if (matrix_free != 0)
-    matrix_free->clear();
   solver_memory.release_unused_memory();
   GrowingVectorMemory<
     LinearAlgebra::distributed::Vector<double>>::release_unused_memory();
