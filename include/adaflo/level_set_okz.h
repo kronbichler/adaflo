@@ -108,12 +108,6 @@ private:
   double                                                 global_max_velocity;
   DiagonalPreconditioner<double>                         preconditioner;
 
-  // In case we can better combine float/double solvers at some point...
-  MatrixFree<dim, float>                matrix_free_float;
-  AlignedVector<VectorizedArray<float>> cell_diameters_float;
-  // GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> >
-  // vectors_normal; DiagonalPreconditioner<float> preconditioner_float;
-
   std::shared_ptr<BlockMatrixExtension> projection_matrix;
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
 

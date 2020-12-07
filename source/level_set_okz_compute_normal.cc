@@ -33,19 +33,13 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
   const LinearAlgebra::distributed::BlockVector<Number> &src,
   const std::pair<unsigned int, unsigned int> &          cell_range) const
 {
-  bool do_float = std::is_same<Number, float>::value;
   // The second input argument below refers to which constrains should be used,
   // 4 means constraints_normals
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim, Number> phi(data,
-                                                               do_float ? 0 : 4,
-                                                               do_float ? 0 : 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim, Number> phi(data, 4, 2);
   const VectorizedArray<Number>                            min_diameter =
     make_vectorized_array<Number>(this->epsilon_used / this->parameters.epsilon);
   // cast avoids compile errors, but we always use the path without casting
-  const VectorizedArray<Number> *cell_diameters =
-    do_float ?
-      reinterpret_cast<const VectorizedArray<Number> *>(cell_diameters_float.begin()) :
-      reinterpret_cast<const VectorizedArray<Number> *>(this->cell_diameters.begin());
+  const VectorizedArray<Number> *cell_diameters = this->cell_diameters.begin();
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
@@ -129,34 +123,6 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
 
 
 template <int dim>
-void
-LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
-  LinearAlgebra::distributed::BlockVector<float> &      dst,
-  const LinearAlgebra::distributed::BlockVector<float> &src) const
-{
-  dst = 0.;
-#define OPERATION(c_degree, u_degree)                                                 \
-  matrix_free_float.cell_loop(&LevelSetOKZSolverComputeNormal<                        \
-                                dim>::template local_compute_normal<c_degree, float>, \
-                              this,                                                   \
-                              dst,                                                    \
-                              src)
-
-  EXPAND_OPERATIONS(OPERATION);
-#undef OPERATION
-
-  // The number "4" below is so that constraints_normals is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
-    for (unsigned int d = 0; d < dim; ++d)
-      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
-        preconditioner.get_vector().local_element(
-          this->matrix_free.get_constrained_dofs(4)[i]) *
-        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
-}
-
-
-
-template <int dim>
 struct ComputeNormalMatrix
 {
   ComputeNormalMatrix(const LevelSetOKZSolverComputeNormal<dim> &problem)
@@ -172,55 +138,6 @@ struct ComputeNormalMatrix
   }
 
   const LevelSetOKZSolverComputeNormal<dim> &problem;
-};
-
-
-
-template <int dim>
-class InverseNormalMatrix
-{
-public:
-  InverseNormalMatrix(
-    GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &mem,
-    const ComputeNormalMatrix<dim> &                                     matrix,
-    const DiagonalPreconditioner<float> &                                preconditioner)
-    : memory(mem)
-    , matrix(matrix)
-    , preconditioner(preconditioner)
-  {}
-
-  void
-  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-        const LinearAlgebra::distributed::BlockVector<double> &src) const
-  {
-    LinearAlgebra::distributed::BlockVector<float> *src_f = memory.alloc();
-    LinearAlgebra::distributed::BlockVector<float> *dst_f = memory.alloc();
-
-    src_f->reinit(src);
-    dst_f->reinit(dst);
-
-    *dst_f = 0;
-    *src_f = src;
-    ReductionControl                                         control(10000, 1e-30, 1e-1);
-    SolverCG<LinearAlgebra::distributed::BlockVector<float>> solver(control, memory);
-    try
-      {
-        solver.solve(matrix, *dst_f, *src_f, preconditioner);
-      }
-    catch (...)
-      {
-        std::cout << "Error, normal solver did not converge!" << std::endl;
-      }
-    dst = *dst_f;
-
-    memory.free(src_f);
-    memory.free(dst_f);
-  }
-
-private:
-  GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float>> &memory;
-  const ComputeNormalMatrix<dim> &                                     matrix;
-  const DiagonalPreconditioner<float> &                                preconditioner;
 };
 
 
@@ -278,10 +195,6 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
       // appear and the solver fails
       ReductionControl solver_control(4000, 1e-50, fast_computation ? 1e-5 : 1e-7);
 
-      // ... in case we can somehow come up with a better combination of
-      // float/double solvers
-      // InverseNormalMatrix<dim> inverse(vectors_normal, matrix,
-      // preconditioner_float);
       SolverCG<LinearAlgebra::distributed::BlockVector<double>> solver(solver_control);
       // solver.solve (matrix, this->normal_vector_field,
       // this->normal_vector_rhs,

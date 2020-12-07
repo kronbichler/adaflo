@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2008 - 2016 by the adaflo authors
+// Copyright (C) 2020 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -48,8 +48,6 @@ public:
     const MatrixFree<dim> &                          matrix_free,
     LinearAlgebra::distributed::BlockVector<double> &solution,
     LinearAlgebra::distributed::BlockVector<double> &normal_vector_rhs,
-    const MatrixFree<dim, float> &                   matrix_free_float,
-    const AlignedVector<VectorizedArray<float>> &    cell_diameters_float,
     const DiagonalPreconditioner<double> &           preconditioner,
     const std::shared_ptr<BlockMatrixExtension> &    projection_matrix,
     const std::shared_ptr<BlockILUExtension> &       ilu_projection_matrix)
@@ -65,8 +63,6 @@ public:
     , matrix_free(matrix_free)
     , solution(solution)
     , normal_vector_rhs(normal_vector_rhs)
-    , matrix_free_float(matrix_free_float)
-    , cell_diameters_float(cell_diameters_float)
     , preconditioner(preconditioner)
     , projection_matrix(projection_matrix)
     , ilu_projection_matrix(ilu_projection_matrix)
@@ -88,10 +84,6 @@ public:
   void
   compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
                        const LinearAlgebra::distributed::BlockVector<double> &sr) const;
-
-  void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<float> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<float> &sr) const;
 
 private:
   template <int ls_degree, typename Number>
@@ -121,9 +113,6 @@ private:
   const MatrixFree<dim> &                          matrix_free;
   LinearAlgebra::distributed::BlockVector<double> &solution;
   LinearAlgebra::distributed::BlockVector<double> &normal_vector_rhs;
-
-  const MatrixFree<dim, float> &               matrix_free_float;
-  const AlignedVector<VectorizedArray<float>> &cell_diameters_float;
 
   const DiagonalPreconditioner<double> &       preconditioner;
   const std::shared_ptr<BlockMatrixExtension> &projection_matrix;

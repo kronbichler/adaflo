@@ -112,8 +112,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
                     this->matrix_free,
                     this->solution,
                     this->normal_vector_rhs,
-                    this->matrix_free_float,
-                    this->cell_diameters_float,
                     this->preconditioner,
                     this->projection_matrix,
                     this->ilu_projection_matrix)
@@ -179,8 +177,6 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::initialize_data_structures()
 {
-  cell_diameters_float.clear();
-  matrix_free_float.clear();
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
   artificial_viscosities.resize(this->matrix_free.n_cell_batches());
@@ -221,39 +217,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     diagonal.compress(VectorOperation::add);
     preconditioner.reinit(diagonal);
   }
-
-  // Initialize float matrix-free object for normal computation in case we
-  // want to do that at some point...
-
-  // vectors_normal.release_unused_memory();
-  // typename MatrixFree<dim,float>::AdditionalData data;
-  // data.tasks_parallel_scheme =
-  //   MatrixFree<dim,float>::AdditionalData::partition_partition;
-  // data.mapping_update_flags = update_JxW_values | update_gradients;
-  // data.store_plain_indices = false;
-  // data.mpi_communicator = this->triangulation.get_communicator();
-  // matrix_free_float.reinit(this->mapping, this->dof_handler,
-  //                          this->constraints,
-  //                          QIterated<1> (QGauss<1>(2),
-  //                          this->parameters.concentration_subdivisions),
-  //                          data);
-  // cell_diameters_float.resize(matrix_free_float.n_cell_batches());
-  // std::map<std::pair<unsigned int,unsigned int>,double> diameters;
-  // for (unsigned int c=0; c<this->matrix_free.n_cell_batches(); ++c)
-  //   for (unsigned int v=0; v<this->matrix_free.n_active_entries_per_cell_batch(c); ++v)
-  //     diameters[std::make_pair(this->matrix_free.get_cell_iterator(c,v)->level(),
-  //                              this->matrix_free.get_cell_iterator(c,v)->index())]
-  //       = this->cell_diameters[c][v];
-  // for (unsigned int c=0; c<matrix_free_float.n_cell_batches(); ++c)
-  //   for (unsigned int v=0; v<matrix_free_float.n_active_entries_per_cell_batch(c); ++v)
-  //     cell_diameters_float[c][v] =
-  //       diameters[std::make_pair(matrix_free_float.get_cell_iterator(c,v)->level(),
-  //                                matrix_free_float.get_cell_iterator(c,v)->index())];
-
-  // LinearAlgebra::distributed::Vector<float> diagonal_f;
-  // diagonal_f = this->solution_update.block(0);
-  // preconditioner_float.reinit(diagonal_f);
-
 
   // create sparse matrix for projection systems.
   //
