@@ -251,30 +251,24 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
               this->matrix_free.get_cell_iterator(mcell, v, 2);
             cell_rhs = 0;
 
-            for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
+            for (const auto &face : cell->face_iterators())
               {
-                if (cell->face(face)->at_boundary())
-                  {
-                    if (this->boundary.symmetry.find(cell->face(face)->boundary_id()) ==
-                        this->boundary.symmetry.end())
-                      {
-                        fe_face_values.reinit(cell, face);
-                        fe_face_values.get_function_gradients(src, local_gradients);
-                        for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
-                          {
-                            for (unsigned int q = 0;
-                                 q < fe_face_values.get_quadrature().size();
-                                 ++q)
-                              {
-                                cell_rhs(i) += -((fe_face_values.shape_value(i, q) *
-                                                  fe_face_values.normal_vector(q) *
-                                                  artificial_viscosities[mcell][v] *
-                                                  local_gradients[q]) *
-                                                 fe_face_values.JxW(q));
-                              }
-                          }
-                      }
-                  }
+                if (face->at_boundary() == false)
+                  continue;
+
+                if (this->boundary.symmetry.find(face->boundary_id()) !=
+                    this->boundary.symmetry.end())
+                  continue;
+
+                fe_face_values.reinit(cell, face);
+                fe_face_values.get_function_gradients(src, local_gradients);
+                for (const auto i : fe_face_values.dof_indices())
+                  for (const auto q : fe_face_values.quadrature_point_indices())
+                    cell_rhs(i) +=
+                      -((fe_face_values.shape_value(i, q) *
+                         fe_face_values.normal_vector(q) *
+                         artificial_viscosities[mcell][v] * local_gradients[q]) *
+                        fe_face_values.JxW(q));
               }
 
             cell->get_dof_indices(local_dof_indices);
@@ -396,32 +390,25 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
               this->matrix_free.get_cell_iterator(mcell, v, 2);
             cell_rhs = 0;
 
-            for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
+            for (const auto face : cell->face_iterators())
               {
-                if (cell->face(face)->at_boundary())
-                  {
-                    if (this->boundary.symmetry.find(cell->face(face)->boundary_id()) ==
-                        this->boundary.symmetry.end())
-                      {
-                        fe_face_values.reinit(cell, face);
-                        fe_face_values.get_function_gradients(this->solution,
-                                                              local_gradients);
+                if (face->at_boundary() == false)
+                  continue;
 
-                        for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
-                          {
-                            for (unsigned int q = 0;
-                                 q < fe_face_values.get_quadrature().size();
-                                 ++q)
-                              {
-                                cell_rhs(i) += ((fe_face_values.shape_value(i, q) *
-                                                 fe_face_values.normal_vector(q) *
-                                                 artificial_viscosities[mcell][v] *
-                                                 local_gradients[q]) *
-                                                fe_face_values.JxW(q));
-                              }
-                          }
-                      }
-                  }
+                if (this->boundary.symmetry.find(face->boundary_id()) !=
+                    this->boundary.symmetry.end())
+                  continue;
+
+                fe_face_values.reinit(cell, face);
+                fe_face_values.get_function_gradients(this->solution, local_gradients);
+
+                for (const auto i : fe_face_values.dof_indices())
+                  for (const auto q : fe_face_values.quadrature_point_indices())
+                    cell_rhs(i) +=
+                      ((fe_face_values.shape_value(i, q) *
+                        fe_face_values.normal_vector(q) *
+                        artificial_viscosities[mcell][v] * local_gradients[q]) *
+                       fe_face_values.JxW(q));
               }
 
             cell->get_dof_indices(local_dof_indices);
