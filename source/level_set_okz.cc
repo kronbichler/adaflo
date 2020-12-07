@@ -511,7 +511,7 @@ void
 LevelSetOKZSolver<dim>::advance_concentration()
 {
   TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
-  advection_operator->advance_concentration();
+  advection_operator->advance_concentration(this->time_stepping.step_size());
 }
 
 

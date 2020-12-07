@@ -123,7 +123,7 @@ public:
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &       evaluated_convection);
 
   virtual void
-  advance_concentration();
+  advance_concentration(const double dt);
 
   void
   advance_concentration_vmult(VectorType &dst, const VectorType &src) const;

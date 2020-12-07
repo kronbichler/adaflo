@@ -355,8 +355,11 @@ struct AdvanceConcentrationMatrix
 // @sect4{LevelSetOKZSolverAdvanceConcentration::advance_concentration}
 template <int dim>
 void
-LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
+LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double dt)
 {
+  this->time_stepping.set_time_step(dt);
+  this->time_stepping.next();
+
   const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
   const auto &dof_handler = this->matrix_free.get_dof_handler(parameters.dof_index_ls);
   const auto &fe          = dof_handler.get_fe();
