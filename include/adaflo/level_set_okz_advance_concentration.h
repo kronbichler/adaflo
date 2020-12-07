@@ -83,12 +83,7 @@ struct LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor
   /**
    * TODO
    */
-  std::map<types::boundary_id, std::shared_ptr<Function<dim>>> fluid_type_plus;
-
-  /**
-   * TODO
-   */
-  std::map<types::boundary_id, std::shared_ptr<Function<dim>>> fluid_type_minus;
+  std::map<types::boundary_id, std::shared_ptr<Function<dim>>> dirichlet;
 
   /**
    * TODO

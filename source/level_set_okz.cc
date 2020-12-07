@@ -121,9 +121,8 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
 
     LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> bcs;
 
-    bcs.fluid_type_plus  = this->boundary->fluid_type_plus;
-    bcs.fluid_type_minus = this->boundary->fluid_type_minus;
-    bcs.symmetry         = this->boundary->symmetry;
+    bcs.dirichlet = this->boundary->fluid_type;
+    bcs.symmetry  = this->boundary->symmetry;
 
     // set time stepping parameters of level set to correspond with the values from
     // Navier-Stokes

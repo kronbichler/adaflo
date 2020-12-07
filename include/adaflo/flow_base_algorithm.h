@@ -56,8 +56,7 @@ namespace helpers
     std::set<types::boundary_id> symmetry;
     std::set<types::boundary_id> no_slip;
 
-    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> fluid_type_plus;
-    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> fluid_type_minus;
+    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> fluid_type;
 
     std::pair<types::boundary_id, types::boundary_id> periodic_boundaries[dim];
   };

@@ -368,10 +368,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
 
-    for (const auto &b : this->boundary.fluid_type_plus)
-      dirichlet[b.first] = b.second.get();
-
-    for (const auto &b : this->boundary.fluid_type_minus)
+    for (const auto &b : this->boundary.dirichlet)
       dirichlet[b.first] = b.second.get();
 
     std::map<types::global_dof_index, double> boundary_values;
