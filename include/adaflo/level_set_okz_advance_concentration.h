@@ -120,7 +120,6 @@ public:
     const TimeStepping &                                           time_stepping,
     const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor &boundary,
     const MatrixFree<dim> &                                        matrix_free,
-    const std::shared_ptr<TimerOutput> &                           timer,
     const LevelSetOKZSolverAdvanceConcentrationParameter &         parameters,
     AlignedVector<VectorizedArray<double>> &                       artificial_viscosities,
     double &                                                       global_max_velocity,
@@ -138,7 +137,6 @@ public:
     , matrix_free(matrix_free)
     , constraints(constraints)
     , pcout(pcout)
-    , timer(timer)
     , time_stepping(time_stepping)
     , global_omega_diameter(global_omega_diameter)
     , cell_diameters(cell_diameters)
@@ -199,9 +197,8 @@ private:
   /**
    * Utility
    */
-  const ConditionalOStream &          pcout;         // [i]
-  const std::shared_ptr<TimerOutput> &timer;         // [i]
-  const TimeStepping &                time_stepping; // [-] TODO
+  const ConditionalOStream &pcout;         // [i]
+  const TimeStepping &      time_stepping; // [-] TODO
 
   /**
    * Physics section

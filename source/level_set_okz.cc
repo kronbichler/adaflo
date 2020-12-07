@@ -286,7 +286,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->time_stepping,
     bcs,
     this->matrix_free,
-    this->timer,
     params,
     this->artificial_viscosities,
     this->global_max_velocity,
@@ -495,6 +494,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::advance_concentration()
 {
+  TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
   advection_operator->advance_concentration();
 }
 

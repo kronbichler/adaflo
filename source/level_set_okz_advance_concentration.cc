@@ -29,6 +29,10 @@
 
 namespace
 {
+  /**
+   * Compute maximal velocity for a given vector and the corresponding
+   * dof-handler object.
+   */
   template <int dim, typename VectorType>
   double
   get_maximal_velocity(const DoFHandler<dim> &dof_handler, const VectorType solution)
@@ -79,8 +83,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
         &evaluated_convection[cell * ls_values.n_q_points];
       ls_values.reinit(cell);
 
-      ls_values.read_dof_values(src);
-      ls_values.evaluate(true, true);
+      ls_values.gather_evaluate(src, true, true);
 
       for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
         {
@@ -93,8 +96,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
           if (this->parameters.convection_stabilization)
             ls_values.submit_gradient(artificial_viscosities[cell] * ls_grad, q);
         }
-      ls_values.integrate(true, this->parameters.convection_stabilization);
-      ls_values.distribute_local_to_global(dst);
+      ls_values.integrate_scatter(true, this->parameters.convection_stabilization, dst);
     }
 }
 
@@ -199,8 +201,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
             ls_values.submit_gradient(-artificial_viscosities[cell] * ls_grad, q);
           velocities[q] = vel_values.get_value(q);
         }
-      ls_values.integrate(true, this->parameters.convection_stabilization);
-      ls_values.distribute_local_to_global(dst);
+      ls_values.integrate_scatter(true, this->parameters.convection_stabilization, dst);
     }
 }
 
@@ -317,8 +318,6 @@ template <int dim>
 void
 LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
 {
-  TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
-
   const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
   const auto &dof_handler = this->matrix_free.get_dof_handler(parameters.dof_index_ls);
   const auto &fe          = dof_handler.get_fe();
