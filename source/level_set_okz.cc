@@ -280,7 +280,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
     this->boundary,
     this->matrix_free,
     this->timer,
-    this->navier_stokes,
     params,
     this->artificial_viscosities,
     this->global_max_velocity,

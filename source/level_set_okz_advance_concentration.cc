@@ -25,7 +25,37 @@
 #include <deal.II/numerics/vector_tools.h>
 
 #include <adaflo/level_set_okz_advance_concentration.h>
-#include <adaflo/level_set_okz_template_instantations.h>
+#include <adaflo/level_set_okz_template_instantations_adv.h>
+
+namespace
+{
+  template <int dim, typename VectorType>
+  double
+  get_maximal_velocity(const DoFHandler<dim> &dof_handler, const VectorType solution)
+  {
+    const QIterated<dim> quadrature_formula(QTrapez<1>(),
+                                            dof_handler.get_fe().tensor_degree() + 1);
+
+    FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
+    std::vector<Tensor<1, dim>> velocity_values(quadrature_formula.size());
+
+    const FEValuesExtractors::Vector velocities(0);
+
+    double max_velocity = 0;
+
+    for (const auto &cell : dof_handler.active_cell_iterators())
+      if (cell->is_locally_owned())
+        {
+          fe_values.reinit(cell);
+          fe_values[velocities].get_function_values(solution, velocity_values);
+
+          for (const auto q : fe_values.quadrature_point_indices())
+            max_velocity = std::max(max_velocity, velocity_values[q].norm());
+        }
+
+    return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
+  }
+} // namespace
 
 
 
@@ -329,7 +359,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration()
 
   // compute right hand side
   global_max_velocity =
-    this->get_maximal_velocity(navier_stokes.get_dof_handler_u(), vel_solution);
+    get_maximal_velocity(matrix_free.get_dof_handler(dof_index_vel), vel_solution);
   rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \

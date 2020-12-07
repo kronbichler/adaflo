@@ -34,7 +34,7 @@ using namespace dealii;
 struct LevelSetOKZSolverAdvanceConcentrationParameter
 {
   /**
-   * TODO: needed? this is equivalent to `fe.tenosor_degree()+1`?
+   * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
    */
   unsigned int concentration_subdivisions;
 
@@ -80,7 +80,6 @@ public:
     std::shared_ptr<helpers::BoundaryDescriptor<dim>> &     boundary,
     const MatrixFree<dim> &                                 matrix_free,
     const std::shared_ptr<TimerOutput> &                    timer,
-    const NavierStokes<dim> &                               navier_stokes,
     const LevelSetOKZSolverAdvanceConcentrationParameter &  parameters,
     AlignedVector<VectorizedArray<double>> &                artificial_viscosities,
     double &                                                global_max_velocity,
@@ -102,41 +101,12 @@ public:
     , boundary(boundary)
     , matrix_free(matrix_free)
     , timer(timer)
-    , navier_stokes(navier_stokes)
     , parameters(parameters)
     , artificial_viscosities(artificial_viscosities)
     , global_max_velocity(global_max_velocity)
     , preconditioner(preconditioner)
     , evaluated_convection(evaluated_convection)
   {}
-
-  // TODO: make utility function?
-  double
-  get_maximal_velocity(const DoFHandler<dim> &dof_handler,
-                       const VectorType       solution) const
-  {
-    const QIterated<dim> quadrature_formula(QTrapez<1>(),
-                                            dof_handler.get_fe().tensor_degree() + 1);
-
-    FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
-    std::vector<Tensor<1, dim>> velocity_values(quadrature_formula.size());
-
-    const FEValuesExtractors::Vector velocities(0);
-
-    double max_velocity = 0;
-
-    for (const auto &cell : dof_handler.active_cell_iterators())
-      if (cell->is_locally_owned())
-        {
-          fe_values.reinit(cell);
-          fe_values[velocities].get_function_values(solution, velocity_values);
-
-          for (const auto q : fe_values.quadrature_point_indices())
-            max_velocity = std::max(max_velocity, velocity_values[q].norm());
-        }
-
-    return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
-  }
 
   virtual void
   advance_concentration();
@@ -192,7 +162,6 @@ private:
   const MatrixFree<dim> &matrix_free;
 
   const std::shared_ptr<TimerOutput> &timer;
-  const NavierStokes<dim> &           navier_stokes;
 
   const LevelSetOKZSolverAdvanceConcentrationParameter parameters;
 
