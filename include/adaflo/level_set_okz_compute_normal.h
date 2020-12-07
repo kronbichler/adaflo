@@ -49,6 +49,11 @@ struct LevelSetOKZSolverComputeNormalParameter
   unsigned int quad_index;
 
   /**
+   * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
+   */
+  unsigned int concentration_subdivisions;
+
+  /**
    * TODO
    */
   double epsilon;
@@ -68,40 +73,25 @@ public:
   using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
   LevelSetOKZSolverComputeNormal(
-    BlockVectorType &                             normal_vector_field,
-    BlockVectorType &                             normal_vector_rhs,
-    VectorType &                                  solution,
-    const AlignedVector<VectorizedArray<double>> &cell_diameters,
-    const double &                                epsilon_used,
-    const double &                                minimal_edge_length,
-    const AffineConstraints<double> &             constraints_normals,
-    const std::shared_ptr<TimerOutput> &          timer,
-    const FlowParameters &                        parameters,
-    const MatrixFree<dim> &                       matrix_free,
-    const DiagonalPreconditioner<double> &        preconditioner,
-    const std::shared_ptr<BlockMatrixExtension> & projection_matrix,
-    const std::shared_ptr<BlockILUExtension> &    ilu_projection_matrix)
-    : parameters(parameters)
-    , normal_vector_field(normal_vector_field)
-    , normal_vector_rhs(normal_vector_rhs)
-    , vel_solution(solution)
-    , matrix_free(matrix_free)
-    , constraints_normals(constraints_normals)
-    , cell_diameters(cell_diameters)
-    , epsilon_used(epsilon_used)
-    , minimal_edge_length(minimal_edge_length)
-    , timer(timer)
-    , preconditioner(preconditioner)
-    , projection_matrix(projection_matrix)
-    , ilu_projection_matrix(ilu_projection_matrix)
-  {}
+    BlockVectorType &                              normal_vector_field,
+    BlockVectorType &                              normal_vector_rhs,
+    VectorType &                                   solution,
+    const AlignedVector<VectorizedArray<double>> & cell_diameters,
+    const double &                                 epsilon_used,
+    const double &                                 minimal_edge_length,
+    const AffineConstraints<double> &              constraints_normals,
+    const std::shared_ptr<TimerOutput> &           timer,
+    const LevelSetOKZSolverComputeNormalParameter &parameters,
+    const MatrixFree<dim> &                        matrix_free,
+    const DiagonalPreconditioner<double> &         preconditioner,
+    const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
+    const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix);
 
   virtual void
   compute_normal(const bool fast_computation);
 
   void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<double> &sr) const;
+  compute_normal_vmult(BlockVectorType &dst, const BlockVectorType &sr) const;
 
 private:
   template <int ls_degree, typename Number>
@@ -113,15 +103,15 @@ private:
 
   template <int ls_degree>
   void
-  local_compute_normal_rhs(const MatrixFree<dim, double> &                   data,
-                           LinearAlgebra::distributed::BlockVector<double> & dst,
-                           const LinearAlgebra::distributed::Vector<double> &src,
+  local_compute_normal_rhs(const MatrixFree<dim, double> &              data,
+                           BlockVectorType &                            dst,
+                           const VectorType &                           src,
                            const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   /**
    * Parameters
    */
-  const FlowParameters &parameters; // [i]
+  const LevelSetOKZSolverComputeNormalParameter parameters; // [i]
 
   /**
    * Vector section

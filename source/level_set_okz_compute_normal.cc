@@ -37,6 +37,37 @@
 
 
 template <int dim>
+LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
+  BlockVectorType &                              normal_vector_field,
+  BlockVectorType &                              normal_vector_rhs,
+  VectorType &                                   solution,
+  const AlignedVector<VectorizedArray<double>> & cell_diameters,
+  const double &                                 epsilon_used,
+  const double &                                 minimal_edge_length,
+  const AffineConstraints<double> &              constraints_normals,
+  const std::shared_ptr<TimerOutput> &           timer,
+  const LevelSetOKZSolverComputeNormalParameter &parameters,
+  const MatrixFree<dim> &                        matrix_free,
+  const DiagonalPreconditioner<double> &         preconditioner,
+  const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
+  const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix)
+  : parameters(parameters)
+  , normal_vector_field(normal_vector_field)
+  , normal_vector_rhs(normal_vector_rhs)
+  , vel_solution(solution)
+  , matrix_free(matrix_free)
+  , constraints_normals(constraints_normals)
+  , cell_diameters(cell_diameters)
+  , epsilon_used(epsilon_used)
+  , minimal_edge_length(minimal_edge_length)
+  , timer(timer)
+  , preconditioner(preconditioner)
+  , projection_matrix(projection_matrix)
+  , ilu_projection_matrix(ilu_projection_matrix)
+{}
+
+
+template <int dim>
 template <int ls_degree, typename Number>
 void
 LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
@@ -78,9 +109,9 @@ template <int dim>
 template <int ls_degree>
 void
 LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
-  const MatrixFree<dim, double> &                  data,
-  LinearAlgebra::distributed::BlockVector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
+  const MatrixFree<dim, double> &data,
+  BlockVectorType &              dst,
+  const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
   // The second input argument below refers to which constrains should be used,
@@ -109,8 +140,8 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
 template <int dim>
 void
 LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
-  const LinearAlgebra::distributed::BlockVector<double> &src) const
+  BlockVectorType &      dst,
+  const BlockVectorType &src) const
 {
   dst = 0.;
 #define OPERATION(c_degree, dummy)                                                     \
@@ -209,7 +240,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
       // appear and the solver fails
       ReductionControl solver_control(4000, 1e-50, fast_computation ? 1e-5 : 1e-7);
 
-      SolverCG<LinearAlgebra::distributed::BlockVector<double>> solver(solver_control);
+      SolverCG<BlockVectorType> solver(solver_control);
       // solver.solve (matrix, this->normal_vector_field,
       // this->normal_vector_rhs,
       //              preconditioner);

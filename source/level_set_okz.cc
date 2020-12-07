@@ -58,54 +58,74 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
                                           Triangulation<dim> &  tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
   , first_reinit_step(true)
-  , reinit_operator(this->normal_operator,
-                    this->normal_vector_field,
-                    this->cell_diameters,
-                    this->epsilon_used,
-                    this->minimal_edge_length,
-                    this->navier_stokes,
-                    this->constraints,
-                    this->solution_update,
-                    this->solution,
-                    this->system_rhs,
-                    this->timer,
-                    this->pcout,
-                    this->preconditioner,
-                    this->last_concentration_range,
-                    this->parameters,
-                    this->time_stepping,
-                    this->first_reinit_step,
-                    this->matrix_free,
-                    this->evaluated_convection)
-  , normal_operator(this->normal_vector_field,
-                    this->normal_vector_rhs,
-                    this->solution.block(0),
-                    this->cell_diameters,
-                    this->epsilon_used,
-                    this->minimal_edge_length,
-                    this->constraints_normals,
-                    this->timer,
-                    this->parameters,
-                    this->matrix_free,
-                    this->preconditioner,
-                    this->projection_matrix,
-                    this->ilu_projection_matrix)
-  , curvatur_operator(this->normal_operator,
-                      this->cell_diameters,
-                      this->normal_vector_field,
-                      this->constraints_curvature,
-                      this->constraints,
-                      this->epsilon_used,
-                      this->timer,
-                      this->system_rhs,
-                      this->navier_stokes,
-                      this->parameters,
-                      this->solution,
-                      this->matrix_free,
-                      preconditioner,
-                      projection_matrix,
-                      ilu_projection_matrix)
 {
+  {
+    LevelSetOKZSolverComputeNormalParameter params;
+    params.dof_index_ls               = 2;
+    params.dof_index_normal           = 4;
+    params.quad_index                 = 2;
+    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
+    params.epsilon                    = this->parameters.epsilon;
+    params.approximate_projections    = this->parameters.approximate_projections;
+
+    this->normal_operator =
+      std::make_unique<LevelSetOKZSolverComputeNormal<dim>>(this->normal_vector_field,
+                                                            this->normal_vector_rhs,
+                                                            this->solution.block(0),
+                                                            this->cell_diameters,
+                                                            this->epsilon_used,
+                                                            this->minimal_edge_length,
+                                                            this->constraints_normals,
+                                                            this->timer,
+                                                            params,
+                                                            this->matrix_free,
+                                                            this->preconditioner,
+                                                            this->projection_matrix,
+                                                            this->ilu_projection_matrix);
+  }
+
+  {
+    this->reinit_operator = std::make_unique<LevelSetOKZSolverReinitialization<dim>>(
+      *this->normal_operator,
+      this->normal_vector_field,
+      this->cell_diameters,
+      this->epsilon_used,
+      this->minimal_edge_length,
+      this->navier_stokes,
+      this->constraints,
+      this->solution_update,
+      this->solution,
+      this->system_rhs,
+      this->timer,
+      this->pcout,
+      this->preconditioner,
+      this->last_concentration_range,
+      this->parameters,
+      this->time_stepping,
+      this->first_reinit_step,
+      this->matrix_free,
+      this->evaluated_convection);
+  }
+
+  {
+    this->curvatur_operator = std::make_unique<LevelSetOKZSolverComputeCurvature<dim>>(
+      *this->normal_operator,
+      this->cell_diameters,
+      this->normal_vector_field,
+      this->constraints_curvature,
+      this->constraints,
+      this->epsilon_used,
+      this->timer,
+      this->system_rhs,
+      this->navier_stokes,
+      this->parameters,
+      this->solution,
+      this->matrix_free,
+      preconditioner,
+      projection_matrix,
+      ilu_projection_matrix);
+  }
+
   // set up advection operator
   {
     LevelSetOKZSolverAdvanceConcentrationParameter params;
@@ -517,7 +537,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
 {
-  normal_operator.compute_normal(fast_computation);
+  normal_operator->compute_normal(fast_computation);
 }
 
 
@@ -527,7 +547,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
-  curvatur_operator.compute_curvature(diffuse_large_values);
+  curvatur_operator->compute_curvature(diffuse_large_values);
 }
 
 
@@ -605,9 +625,9 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
                                      const unsigned int diff_steps,
                                      const bool diffuse_cells_with_large_curvature_only)
 {
-  reinit_operator.reinitialize(stab_steps,
-                               diff_steps,
-                               diffuse_cells_with_large_curvature_only);
+  reinit_operator->reinitialize(stab_steps,
+                                diff_steps,
+                                diffuse_cells_with_large_curvature_only);
 }
 
 
