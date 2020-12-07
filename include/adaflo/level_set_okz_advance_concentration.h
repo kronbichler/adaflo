@@ -102,19 +102,16 @@ public:
   using VectorType = LinearAlgebra::distributed::Vector<double>;
 
   LevelSetOKZSolverAdvanceConcentration(
-    VectorType &      solution,
-    const VectorType &solution_old,
-    const VectorType &solution_old_old,
-    VectorType &      increment,
-    VectorType &      rhs,
-
-    const VectorType &vel_solution,
-    const VectorType &vel_solution_old,
-    const VectorType &vel_solution_old_old,
-
-    const double &                                global_omega_diameter,
-    const AlignedVector<VectorizedArray<double>> &cell_diameters,
-
+    VectorType &                                                   solution,
+    const VectorType &                                             solution_old,
+    const VectorType &                                             solution_old_old,
+    VectorType &                                                   increment,
+    VectorType &                                                   rhs,
+    const VectorType &                                             vel_solution,
+    const VectorType &                                             vel_solution_old,
+    const VectorType &                                             vel_solution_old_old,
+    const double &                                                 global_omega_diameter,
+    const AlignedVector<VectorizedArray<double>> &                 cell_diameters,
     const AffineConstraints<double> &                              constraints,
     const ConditionalOStream &                                     pcout,
     const TimeStepping &                                           time_stepping,
@@ -124,28 +121,7 @@ public:
     AlignedVector<VectorizedArray<double>> &                       artificial_viscosities,
     double &                                                       global_max_velocity,
     const DiagonalPreconditioner<double> &                         preconditioner,
-    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &       evaluated_convection)
-    : parameters(parameters)
-    , solution(solution)
-    , solution_old(solution_old)
-    , solution_old_old(solution_old_old)
-    , increment(increment)
-    , rhs(rhs)
-    , vel_solution(vel_solution)
-    , vel_solution_old(vel_solution_old)
-    , vel_solution_old_old(vel_solution_old_old)
-    , matrix_free(matrix_free)
-    , constraints(constraints)
-    , pcout(pcout)
-    , time_stepping(time_stepping)
-    , global_omega_diameter(global_omega_diameter)
-    , cell_diameters(cell_diameters)
-    , boundary(boundary)
-    , artificial_viscosities(artificial_viscosities)
-    , global_max_velocity(global_max_velocity)
-    , evaluated_convection(evaluated_convection)
-    , preconditioner(preconditioner)
-  {}
+    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &       evaluated_convection);
 
   virtual void
   advance_concentration();
