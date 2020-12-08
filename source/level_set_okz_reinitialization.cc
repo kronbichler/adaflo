@@ -238,7 +238,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
     {
       first_reinit_step = (tau == actual_diff_steps);
       if (first_reinit_step)
-        compute_normal(true);
+        normal_operator.compute_normal(true);
 
       TimerOutput::Scope timer(*this->timer, "LS reinitialization step.");
 

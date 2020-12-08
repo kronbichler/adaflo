@@ -98,12 +98,6 @@ private:
                          const LinearAlgebra::distributed::Vector<double> &src,
                          const std::pair<unsigned int, unsigned int> &     cell_range);
 
-  virtual void
-  compute_normal(const bool fast_computation)
-  {
-    normal_operator.compute_normal(fast_computation);
-  }
-
   LevelSetOKZSolverComputeNormal<dim> &normal_operator;
 
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
