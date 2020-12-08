@@ -222,30 +222,29 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
 
   // compute right hand side
-  LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-  rhs                                             = 0;
+  rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                                 \
   this->matrix_free.cell_loop(&LevelSetOKZSolverComputeCurvature<                     \
                                 dim>::template local_compute_curvature_rhs<c_degree>, \
                               this,                                                   \
                               rhs,                                                    \
-                              this->solution.block(0))
+                              this->solution_ls)
 
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
 
   // solve linear system for projection
   if (this->parameters.approximate_projections == true)
-    preconditioner.vmult(this->solution.block(1), rhs);
+    preconditioner.vmult(this->solution_curvature, rhs);
   else
     {
       ComputeCurvatureMatrix<dim> matrix(*this);
 
       ReductionControl solver_control(2000, 1e-50, 1e-8);
       SolverCG<LinearAlgebra::distributed::Vector<double>> cg(solver_control);
-      // cg.solve (matrix, this->solution.block(1), rhs, preconditioner);
-      cg.solve(*projection_matrix, this->solution.block(1), rhs, *ilu_projection_matrix);
+      // cg.solve (matrix, this->solution_curvature, rhs, preconditioner);
+      cg.solve(*projection_matrix, this->solution_curvature, rhs, *ilu_projection_matrix);
       // this->pcout << "N its curv: " << solver_control.last_step() <<
       // std::endl;
     }
@@ -254,21 +253,22 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   // and correcting the value, if so requested
   if (this->parameters.curvature_correction == true)
     {
-      for (unsigned int i = 0; i < this->solution.block(1).local_size(); ++i)
-        if (this->solution.block(1).local_element(i) > 1e-4)
+      for (unsigned int i = 0; i < this->solution_curvature.local_size(); ++i)
+        if (this->solution_curvature.local_element(i) > 1e-4)
           {
-            const double c_val = this->solution.block(0).local_element(i);
+            const double c_val = this->solution_ls.local_element(i);
             const double distance =
               (1 - c_val * c_val) > 1e-2 ?
                 this->epsilon_used * std::log((1. + c_val) / (1. - c_val)) :
                 0;
 
-            this->solution.block(1).local_element(i) =
-              1. / (1. / this->solution.block(1).local_element(i) + distance / (dim - 1));
+            this->solution_curvature.local_element(i) =
+              1. /
+              (1. / this->solution_curvature.local_element(i) + distance / (dim - 1));
           }
     }
 
-  this->constraints_curvature.distribute(this->solution.block(1));
+  this->constraints_curvature.distribute(this->solution_curvature);
 
   // apply damping to avoid oscillations. this corresponds to one time
   // step of explicit Euler for a diffusion problem (need to avoid too
@@ -276,12 +276,12 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   if (this->parameters.approximate_projections == true)
     for (unsigned int i = 0; i < 8; ++i)
       {
-        compute_curvature_vmult(rhs, this->solution.block(1), 2);
+        compute_curvature_vmult(rhs, this->solution_curvature, 2);
         preconditioner.vmult(rhs, rhs);
-        this->solution.block(1).add(-0.05, rhs);
-        this->constraints.distribute(this->solution.block(1));
+        this->solution_curvature.add(-0.05, rhs);
+        this->constraints.distribute(this->solution_curvature);
       }
-  this->solution.block(1).update_ghost_values();
+  this->solution_curvature.update_ghost_values();
 }
 
 
