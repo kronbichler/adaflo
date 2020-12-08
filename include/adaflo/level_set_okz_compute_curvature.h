@@ -38,17 +38,22 @@ struct LevelSetOKZSolverComputeCurvatureParameter
   /**
    * TODO
    */
-  unsigned int dof_index_curvature = 3;
+  unsigned int dof_index_ls;
 
   /**
    * TODO
    */
-  unsigned int dof_index_normal = 4;
+  unsigned int dof_index_curvature;
 
   /**
    * TODO
    */
-  unsigned int quad_index = 2;
+  unsigned int dof_index_normal;
+
+  /**
+   * TODO
+   */
+  unsigned int quad_index;
 
   /**
    * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?

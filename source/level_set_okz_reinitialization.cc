@@ -22,17 +22,18 @@
 
 #include <adaflo/level_set_okz_reinitialization.h>
 
-#define EXPAND_OPERATIONS(OPERATION)                                          \
-  const unsigned int ls_degree = this->parameters.concentration_subdivisions; \
-                                                                              \
-  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());         \
-  if (ls_degree == 1)                                                         \
-    OPERATION(1, 0);                                                          \
-  else if (ls_degree == 2)                                                    \
-    OPERATION(2, 0);                                                          \
-  else if (ls_degree == 3)                                                    \
-    OPERATION(3, 0);                                                          \
-  else if (ls_degree == 4)                                                    \
+#define EXPAND_OPERATIONS(OPERATION)                                                     \
+  const unsigned int ls_degree =                                                         \
+    this->matrix_free.get_dof_handler(parameters.dof_index_ls).get_fe().tensor_degree(); \
+                                                                                         \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());                    \
+  if (ls_degree == 1)                                                                    \
+    OPERATION(1, 0);                                                                     \
+  else if (ls_degree == 2)                                                               \
+    OPERATION(2, 0);                                                                     \
+  else if (ls_degree == 3)                                                               \
+    OPERATION(3, 0);                                                                     \
+  else if (ls_degree == 4)                                                               \
     OPERATION(4, 0);
 
 using namespace dealii;
@@ -46,8 +47,11 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
   const VectorType &                           src,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
+  const unsigned int concentration_subdivisions =
+    this->matrix_free.get_dof_handler(parameters.dof_index_ls).get_fe().tensor_degree();
+
   const double dtau_inv = std::max(0.95 / (1. / (dim * dim) * this->minimal_edge_length /
-                                           this->parameters.concentration_subdivisions),
+                                           concentration_subdivisions),
                                    1. / (5. * this->time_stepping.step_size()));
 
   // The second input argument below refers to which constrains should be used,

@@ -126,6 +126,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
 
   {
     LevelSetOKZSolverComputeCurvatureParameter params;
+    params.dof_index_ls               = 2;
     params.dof_index_curvature        = 3;
     params.dof_index_normal           = 4;
     params.quad_index                 = 2;
