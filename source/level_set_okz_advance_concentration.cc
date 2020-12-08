@@ -37,6 +37,7 @@ namespace
   double
   get_maximal_velocity(const DoFHandler<dim> &dof_handler, const VectorType solution)
   {
+    solution.update_ghost_values();
     const QIterated<dim> quadrature_formula(QTrapez<1>(),
                                             dof_handler.get_fe().tensor_degree() + 1);
 
@@ -57,6 +58,8 @@ namespace
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
         }
 
+    solution.zero_out_ghosts();
+    
     return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
   }
 } // namespace
