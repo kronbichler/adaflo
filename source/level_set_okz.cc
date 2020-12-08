@@ -86,6 +86,9 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
   {
     LevelSetOKZSolverReinitializationParameter params;
 
+    params.dof_index_ls               = 2;
+    params.dof_index_normal           = 4;
+    params.quad_index                 = 2;
     params.concentration_subdivisions = this->parameters.concentration_subdivisions;
     params.do_iteration               = this->parameters.do_iteration;
 

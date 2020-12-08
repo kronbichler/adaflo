@@ -52,7 +52,9 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
 
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree> phi(data, 2, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree> phi(data,
+                                                  parameters.dof_index_ls,
+                                                  parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
@@ -99,8 +101,12 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
 {
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function) and 4 means constraints_normals
-  FEEvaluation<dim, ls_degree, 2 * ls_degree>      phi(data, 2, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normals(data, 4, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree>      phi(data,
+                                                  parameters.dof_index_ls,
+                                                  parameters.quad_index);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normals(data,
+                                                           parameters.dof_index_normal,
+                                                           parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
@@ -180,11 +186,15 @@ LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
 #undef OPERATION
     }
 
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(2).size(); ++i)
-    dst.local_element(this->matrix_free.get_constrained_dofs(2)[i]) =
+  for (unsigned int i = 0;
+       i < this->matrix_free.get_constrained_dofs(parameters.dof_index_ls).size();
+       ++i)
+    dst.local_element(
+      this->matrix_free.get_constrained_dofs(parameters.dof_index_ls)[i]) =
       preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(2)[i]) *
-      src.local_element(this->matrix_free.get_constrained_dofs(2)[i]);
+        this->matrix_free.get_constrained_dofs(parameters.dof_index_ls)[i]) *
+      src.local_element(
+        this->matrix_free.get_constrained_dofs(parameters.dof_index_ls)[i]);
 }
 
 
@@ -224,9 +234,10 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
   // described in the paper by Olsson, Kreiss, and Zahedi.
 
   if (evaluated_normal.size() !=
-      this->matrix_free.n_cell_batches() * this->matrix_free.get_n_q_points(2))
+      this->matrix_free.n_cell_batches() *
+        this->matrix_free.get_n_q_points(parameters.quad_index))
     evaluated_normal.resize(this->matrix_free.n_cell_batches() *
-                            this->matrix_free.get_n_q_points(2));
+                            this->matrix_free.get_n_q_points(parameters.quad_index));
 
   std::cout.precision(3);
 

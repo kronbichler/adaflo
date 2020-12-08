@@ -42,7 +42,7 @@ struct LevelSetOKZSolverReinitializationParameter
   /**
    * TODO
    */
-  unsigned int dof_index_vel;
+  unsigned int dof_index_normal;
 
   /**
    * TODO
