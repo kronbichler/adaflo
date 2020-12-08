@@ -250,10 +250,8 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
-  mass_matrix_diagonal(this->matrix_free,
-                       this->hanging_node_constraints,
-                       2,
-                       preconditioner);
+  mass_matrix_diagonal(
+    this->matrix_free, this->hanging_node_constraints, 2, 2, preconditioner);
 
   // create sparse matrix for projection systems.
   //

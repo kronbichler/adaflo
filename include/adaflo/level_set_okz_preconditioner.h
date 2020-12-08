@@ -31,6 +31,7 @@ inline void
 mass_matrix_diagonal(const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
                      const AffineConstraints<Number> &hanging_node_constraints,
                      const unsigned int               dof_index,
+                     const unsigned int               quad_index,
                      DiagonalPreconditioner<double> & preconditioner)
 {
   LinearAlgebra::distributed::Vector<Number> diagonal;
@@ -40,13 +41,13 @@ mass_matrix_diagonal(const MatrixFree<dim, Number, VectorizedArrayType> &matrix_
   const auto &fe          = dof_handler.get_fe();
   const auto &mapping     = *matrix_free.get_mapping_info().mapping;
 
-  const unsigned int concentration_subdivisions = fe.tensor_degree();
-
   {
     diagonal = 0;
-    QIterated<dim> quadrature(QGauss<1>(2), concentration_subdivisions);
-    FEValues<dim>  fe_values(mapping, fe, quadrature, update_values | update_JxW_values);
-    Vector<Number> local_rhs(fe.dofs_per_cell);
+    FEValues<dim>                        fe_values(mapping,
+                            fe,
+                            matrix_free.get_quadrature(quad_index),
+                            update_values | update_JxW_values);
+    Vector<Number>                       local_rhs(fe.dofs_per_cell);
     std::vector<types::global_dof_index> local_dof_indices(fe.dofs_per_cell);
 
     for (const auto &cell : dof_handler.active_cell_iterators())
@@ -56,7 +57,7 @@ mass_matrix_diagonal(const MatrixFree<dim, Number, VectorizedArrayType> &matrix_
           for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
             {
               Number value = 0;
-              for (unsigned int q = 0; q < quadrature.size(); ++q)
+              for (const auto q : fe_values.quadrature_point_indices())
                 value += fe_values.shape_value(i, q) * fe_values.shape_value(i, q) *
                          fe_values.JxW(q);
               local_rhs(i) = value;
