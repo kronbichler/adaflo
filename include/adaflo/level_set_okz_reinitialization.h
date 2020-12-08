@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2008 - 2016 by the adaflo authors
+// Copyright (C) 2020 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
