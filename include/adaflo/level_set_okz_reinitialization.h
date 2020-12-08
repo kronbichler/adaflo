@@ -69,27 +69,30 @@ template <int dim>
 class LevelSetOKZSolverReinitialization
 {
 public:
+  using VectorType      = LinearAlgebra::distributed::Vector<double>;
+  using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
+
   LevelSetOKZSolverReinitialization(
-    LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
-    const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
-    const AlignedVector<VectorizedArray<double>> &         cell_diameters,
-    const double &                                         epsilon_used,
-    const double &                                         minimal_edge_length,
-    const AffineConstraints<double> &                      constraints,
-    LinearAlgebra::distributed::BlockVector<double> &      solution_update,
-    LinearAlgebra::distributed::BlockVector<double> &      solution,
-    LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
-    const ConditionalOStream &                             pcout,
-    const DiagonalPreconditioner<double> &                 preconditioner,
-    const std::pair<double, double> &                      last_concentration_range,
-    const LevelSetOKZSolverReinitializationParameter &     parameters,
-    bool &                                                 first_reinit_step,
-    const MatrixFree<dim, double> &                        matrix_free)
+    LevelSetOKZSolverComputeNormal<dim> &             normal_operator,
+    const BlockVectorType &                           normal_vector_field,
+    const AlignedVector<VectorizedArray<double>> &    cell_diameters,
+    const double &                                    epsilon_used,
+    const double &                                    minimal_edge_length,
+    const AffineConstraints<double> &                 constraints,
+    VectorType &                                      solution_update,
+    VectorType &                                      solution,
+    VectorType &                                      system_rhs,
+    const ConditionalOStream &                        pcout,
+    const DiagonalPreconditioner<double> &            preconditioner,
+    const std::pair<double, double> &                 last_concentration_range,
+    const LevelSetOKZSolverReinitializationParameter &parameters,
+    bool &                                            first_reinit_step,
+    const MatrixFree<dim, double> &                   matrix_free)
     : parameters(parameters)
     , normal_operator(normal_operator)
-    , solution(solution.block(0))
-    , solution_update(solution_update.block(0))
-    , system_rhs(system_rhs.block(0))
+    , solution(solution)
+    , solution_update(solution_update)
+    , system_rhs(system_rhs)
     , normal_vector_field(normal_vector_field)
     , matrix_free(matrix_free)
     , constraints(constraints)
@@ -111,24 +114,24 @@ public:
                const bool         diffuse_cells_with_large_curvature_only = false);
 
   void
-  reinitialization_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const bool diffuse_only) const;
+  reinitialization_vmult(VectorType &      dst,
+                         const VectorType &src,
+                         const bool        diffuse_only) const;
 
 private:
   template <int ls_degree, bool diffuse_only>
   void
-  local_reinitialize(const MatrixFree<dim, double> &                   data,
-                     LinearAlgebra::distributed::Vector<double> &      dst,
-                     const LinearAlgebra::distributed::Vector<double> &src,
-                     const std::pair<unsigned int, unsigned int> &     cell_range) const;
+  local_reinitialize(const MatrixFree<dim, double> &              data,
+                     VectorType &                                 dst,
+                     const VectorType &                           src,
+                     const std::pair<unsigned int, unsigned int> &cell_range) const;
 
   template <int ls_degree, bool diffuse_only>
   void
-  local_reinitialize_rhs(const MatrixFree<dim, double> &                   data,
-                         LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const std::pair<unsigned int, unsigned int> &     cell_range);
+  local_reinitialize_rhs(const MatrixFree<dim, double> &              data,
+                         VectorType &                                 dst,
+                         const VectorType &                           src,
+                         const std::pair<unsigned int, unsigned int> &cell_range);
 
   /**
    * Parameters
@@ -143,11 +146,11 @@ private:
   /**
    * Vector section
    */
-  LinearAlgebra::distributed::Vector<double> &solution;        // [o]
-  LinearAlgebra::distributed::Vector<double> &solution_update; // [-]
-  LinearAlgebra::distributed::Vector<double> &system_rhs;      // [-]
+  VectorType &solution;        // [o]
+  VectorType &solution_update; // [-]
+  VectorType &system_rhs;      // [-]
 
-  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field; // [i];
+  const BlockVectorType &normal_vector_field; // [i];
 
   /**
    * MatrixFree

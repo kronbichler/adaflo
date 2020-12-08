@@ -41,10 +41,10 @@ template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
 LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
+  const MatrixFree<dim, double> &              data,
+  VectorType &                                 dst,
+  const VectorType &                           src,
+  const std::pair<unsigned int, unsigned int> &cell_range) const
 {
   const double dtau_inv = std::max(0.95 / (1. / (dim * dim) * this->minimal_edge_length /
                                            this->parameters.concentration_subdivisions),
@@ -94,9 +94,9 @@ template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
 LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
-  const MatrixFree<dim, double> &             data,
-  LinearAlgebra::distributed::Vector<double> &dst,
-  const LinearAlgebra::distributed::Vector<double> &,
+  const MatrixFree<dim, double> &data,
+  VectorType &                   dst,
+  const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range)
 {
   // The second input argument below refers to which constrains should be used,
@@ -156,9 +156,9 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
 template <int dim>
 void
 LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
-  const LinearAlgebra::distributed::Vector<double> &src,
-  const bool                                        diffuse_only) const
+  VectorType &      dst,
+  const VectorType &src,
+  const bool        diffuse_only) const
 {
   dst = 0.;
   if (diffuse_only)
@@ -199,7 +199,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
 
 
 
-template <int dim>
+template <int dim, typename VectorType>
 struct ReinitializationMatrix
 {
   ReinitializationMatrix(const LevelSetOKZSolverReinitialization<dim> &problem,
@@ -209,8 +209,7 @@ struct ReinitializationMatrix
   {}
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
+  vmult(VectorType &dst, const VectorType &src) const
   {
     problem.reinitialization_vmult(dst, src, diffuse_only);
   }
@@ -260,9 +259,9 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
         normal_operator.compute_normal(true);
 
       // compute right hand side
-      LinearAlgebra::distributed::Vector<double> &rhs       = this->system_rhs;
-      LinearAlgebra::distributed::Vector<double> &increment = this->solution_update;
-      rhs                                                   = 0;
+      VectorType &rhs       = this->system_rhs;
+      VectorType &increment = this->solution_update;
+      rhs                   = 0;
 
       if (tau < actual_diff_steps)
         {
@@ -291,15 +290,15 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
 
       // solve linear system
       {
-        ReinitializationMatrix<dim> matrix(*this, tau < actual_diff_steps);
+        ReinitializationMatrix<dim, VectorType> matrix(*this, tau < actual_diff_steps);
         increment = 0;
 
         // reduce residual by 1e-6. To obtain good interface shapes, it is
         // essential that this tolerance is relative to the rhs
         // (ReductionControl steered solver, last argument determines the
         // solver)
-        ReductionControl solver_control(2000, 1e-50, 1e-6);
-        SolverCG<LinearAlgebra::distributed::Vector<double>> cg(solver_control);
+        ReductionControl     solver_control(2000, 1e-50, 1e-6);
+        SolverCG<VectorType> cg(solver_control);
         cg.solve(matrix, increment, rhs, preconditioner);
         this->constraints.distribute(increment);
         if (!this->parameters.do_iteration)
