@@ -82,7 +82,6 @@ public:
     const AffineConstraints<double> &                      constraints_curvature,
     const AffineConstraints<double> &                      constraints,
     const double &                                         epsilon_used,
-    const std::shared_ptr<TimerOutput> &                   timer,
     LinearAlgebra::distributed::Vector<double> &           system_rhs,
     const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
     LinearAlgebra::distributed::Vector<double> &           solution_curvature,
@@ -146,8 +145,6 @@ private:
    */
   const AlignedVector<VectorizedArray<double>> &cell_diameters; // [i]
   const double &                                epsilon_used;   // [i]
-
-  const std::shared_ptr<TimerOutput> &timer;
 
   /**
    * Solver section

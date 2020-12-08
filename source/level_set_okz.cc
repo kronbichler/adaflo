@@ -123,7 +123,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
       this->constraints_curvature,
       this->constraints,
       this->epsilon_used,
-      this->timer,
       this->system_rhs.block(0),
       params,
       this->solution.block(1),
@@ -556,6 +555,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
+  TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
   curvatur_operator->compute_curvature(diffuse_large_values);
 }
 

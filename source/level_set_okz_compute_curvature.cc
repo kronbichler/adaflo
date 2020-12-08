@@ -44,7 +44,6 @@ LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
   const AffineConstraints<double> &                      constraints_curvature,
   const AffineConstraints<double> &                      constraints,
   const double &                                         epsilon_used,
-  const std::shared_ptr<TimerOutput> &                   timer,
   LinearAlgebra::distributed::Vector<double> &           system_rhs,
   const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
   LinearAlgebra::distributed::Vector<double> &           solution_curvature,
@@ -64,7 +63,6 @@ LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
   , constraints(constraints)
   , cell_diameters(cell_diameters)
   , epsilon_used(epsilon_used)
-  , timer(timer)
   , preconditioner(preconditioner)
   , projection_matrix(projection_matrix)
   , ilu_projection_matrix(ilu_projection_matrix)
@@ -252,8 +250,6 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   // compute the curvature directly from C, but that is less accurate. TODO:
   // include that variant by a parameter
   normal_operator.compute_normal(false);
-
-  TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
 
   // compute right hand side
   rhs = 0;
