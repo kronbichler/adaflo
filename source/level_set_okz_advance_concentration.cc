@@ -84,8 +84,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   const MatrixFree<dim> &                                             matrix_free,
   const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
   double &                                                            global_max_velocity,
-  const DiagonalPreconditioner<double> &                              preconditioner,
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
+  const DiagonalPreconditioner<double> &                              preconditioner)
   : parameters(parameters)
   , solution(solution)
   , solution_old(solution_old)
@@ -103,7 +102,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   , cell_diameters(cell_diameters)
   , boundary(boundary)
   , global_max_velocity(global_max_velocity)
-  , evaluated_convection(evaluated_convection)
   , preconditioner(preconditioner)
 {}
 
@@ -366,6 +364,12 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
 {
   this->time_stepping.set_time_step(dt);
   this->time_stepping.next();
+
+  if (evaluated_convection.size() !=
+      this->matrix_free.n_cell_batches() *
+        this->matrix_free.get_n_q_points(parameters.quad_index))
+    evaluated_convection.resize(this->matrix_free.n_cell_batches() *
+                                this->matrix_free.get_n_q_points(parameters.quad_index));
 
   const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
   const auto &dof_handler = this->matrix_free.get_dof_handler(parameters.dof_index_ls);

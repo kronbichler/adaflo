@@ -66,7 +66,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
                  cell_diameter / static_cast<double>(ls_degree));
 
       const Tensor<1, dim, VectorizedArray<double>> *normal =
-        &evaluated_convection[cell * phi.n_q_points];
+        &evaluated_normal[cell * phi.n_q_points];
       for (unsigned int q = 0; q < phi.n_q_points; ++q)
         if (!diffuse_only)
           {
@@ -125,11 +125,11 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
               {
                 Tensor<1, dim, VectorizedArray<double>> normal = normals.get_value(q);
                 normal /= std::max(make_vectorized_array(1e-4), normal.norm());
-                evaluated_convection[cell * phi.n_q_points + q] = normal;
+                evaluated_normal[cell * phi.n_q_points + q] = normal;
               }
             // take normal as it was for the first reinit step
             Tensor<1, dim, VectorizedArray<double>> normal =
-              evaluated_convection[cell * phi.n_q_points + q];
+              evaluated_normal[cell * phi.n_q_points + q];
             phi.submit_gradient(normal *
                                   (0.5 * (1. - phi.get_value(q) * phi.get_value(q)) -
                                    (normal * grad * diffusion)),
@@ -219,6 +219,11 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
 {
   // This function assembles and solves for a given profile using the approach
   // described in the paper by Olsson, Kreiss, and Zahedi.
+
+  if (evaluated_normal.size() !=
+      this->matrix_free.n_cell_batches() * this->matrix_free.get_n_q_points(2))
+    evaluated_normal.resize(this->matrix_free.n_cell_batches() *
+                            this->matrix_free.get_n_q_points(2));
 
   std::cout.precision(3);
 

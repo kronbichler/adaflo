@@ -34,23 +34,22 @@ class LevelSetOKZSolverReinitialization
 {
 public:
   LevelSetOKZSolverReinitialization(
-    LevelSetOKZSolverComputeNormal<dim> &                   normal_operator,
-    const LinearAlgebra::distributed::BlockVector<double> & normal_vector_field,
-    const AlignedVector<VectorizedArray<double>> &          cell_diameters,
-    const double &                                          epsilon_used,
-    const double &                                          minimal_edge_length,
-    const AffineConstraints<double> &                       constraints,
-    LinearAlgebra::distributed::BlockVector<double> &       solution_update,
-    LinearAlgebra::distributed::BlockVector<double> &       solution,
-    LinearAlgebra::distributed::BlockVector<double> &       system_rhs,
-    const ConditionalOStream &                              pcout,
-    const DiagonalPreconditioner<double> &                  preconditioner,
-    const std::pair<double, double> &                       last_concentration_range,
-    const FlowParameters &                                  parameters,
-    const TimeStepping &                                    time_stepping,
-    bool &                                                  first_reinit_step,
-    const MatrixFree<dim, double> &                         matrix_free,
-    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
+    LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
+    const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
+    const AlignedVector<VectorizedArray<double>> &         cell_diameters,
+    const double &                                         epsilon_used,
+    const double &                                         minimal_edge_length,
+    const AffineConstraints<double> &                      constraints,
+    LinearAlgebra::distributed::BlockVector<double> &      solution_update,
+    LinearAlgebra::distributed::BlockVector<double> &      solution,
+    LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
+    const ConditionalOStream &                             pcout,
+    const DiagonalPreconditioner<double> &                 preconditioner,
+    const std::pair<double, double> &                      last_concentration_range,
+    const FlowParameters &                                 parameters,
+    const TimeStepping &                                   time_stepping,
+    bool &                                                 first_reinit_step,
+    const MatrixFree<dim, double> &                        matrix_free)
     : parameters(parameters)
     , normal_operator(normal_operator)
     , solution(solution.block(0))
@@ -64,7 +63,6 @@ public:
     , minimal_edge_length(minimal_edge_length)
     , last_concentration_range(last_concentration_range)
     , first_reinit_step(first_reinit_step)
-    , evaluated_convection(evaluated_convection)
     , pcout(pcout)
     , time_stepping(time_stepping)
     , preconditioner(preconditioner)
@@ -121,12 +119,12 @@ private:
   const MatrixFree<dim> &          matrix_free; // [i]
   const AffineConstraints<double> &constraints; // [i]
 
-  const AlignedVector<VectorizedArray<double>> &          cell_diameters;           // [i]
-  const double &                                          epsilon_used;             // [i]
-  const double &                                          minimal_edge_length;      // [i]
-  const std::pair<double, double> &                       last_concentration_range; // [i]
-  bool &                                                  first_reinit_step;        // [?]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;     // [i]
+  const AlignedVector<VectorizedArray<double>> &         cell_diameters;           // [i]
+  const double &                                         epsilon_used;             // [i]
+  const double &                                         minimal_edge_length;      // [i]
+  const std::pair<double, double> &                      last_concentration_range; // [i]
+  bool &                                                 first_reinit_step;        // [?]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_normal;         // [-]
 
   /**
    * Utility

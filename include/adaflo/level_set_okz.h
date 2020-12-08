@@ -102,10 +102,9 @@ private:
     std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
     const std::pair<unsigned int, unsigned int> &                     cell_range);
 
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;
-  bool                                                   first_reinit_step;
-  double                                                 global_max_velocity;
-  DiagonalPreconditioner<double>                         preconditioner;
+  bool                           first_reinit_step;
+  double                         global_max_velocity;
+  DiagonalPreconditioner<double> preconditioner;
 
   std::shared_ptr<BlockMatrixExtension> projection_matrix;
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;

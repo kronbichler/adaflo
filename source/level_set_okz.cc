@@ -100,8 +100,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
       this->parameters,
       this->time_stepping,
       this->first_reinit_step,
-      this->matrix_free,
-      this->evaluated_convection);
+      this->matrix_free);
   }
 
   {
@@ -179,8 +178,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
         this->matrix_free,
         params,
         this->global_max_velocity,
-        this->preconditioner,
-        this->evaluated_convection);
+        this->preconditioner);
   }
 }
 
@@ -230,9 +228,6 @@ void
 LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
-
-  evaluated_convection.resize(this->matrix_free.n_cell_batches() *
-                              this->matrix_free.get_n_q_points(2));
 
   // create diagonal preconditioner vector by assembly of mass matrix diagonal
   LinearAlgebra::distributed::Vector<double> diagonal(this->solution_update.block(0));
