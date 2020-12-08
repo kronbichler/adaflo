@@ -90,23 +90,7 @@ public:
     const MatrixFree<dim> &                                matrix_free,
     const DiagonalPreconditioner<double> &                 preconditioner,
     std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
-    std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
-    : parameters(parameters)
-    , normal_operator(normal_operator)
-    , solution_curvature(solution_curvature)
-    , rhs(system_rhs)
-    , solution_ls(solution_ls)
-    , normal_vector_field(normal_vector_field)
-    , matrix_free(matrix_free)
-    , constraints_curvature(constraints_curvature)
-    , constraints(constraints)
-    , cell_diameters(cell_diameters)
-    , epsilon_used(epsilon_used)
-    , timer(timer)
-    , preconditioner(preconditioner)
-    , projection_matrix(projection_matrix)
-    , ilu_projection_matrix(ilu_projection_matrix)
-  {}
+    std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix);
 
   virtual void
   compute_curvature(const bool diffuse_large_values = false);

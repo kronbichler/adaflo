@@ -36,6 +36,40 @@
   else if (ls_degree == 4)                                                    \
     OPERATION(4, 0);
 
+template <int dim>
+LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
+  LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
+  const AlignedVector<VectorizedArray<double>> &         cell_diameters,
+  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
+  const AffineConstraints<double> &                      constraints_curvature,
+  const AffineConstraints<double> &                      constraints,
+  const double &                                         epsilon_used,
+  const std::shared_ptr<TimerOutput> &                   timer,
+  LinearAlgebra::distributed::Vector<double> &           system_rhs,
+  const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
+  LinearAlgebra::distributed::Vector<double> &           solution_curvature,
+  const LinearAlgebra::distributed::Vector<double> &     solution_ls,
+  const MatrixFree<dim> &                                matrix_free,
+  const DiagonalPreconditioner<double> &                 preconditioner,
+  std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
+  std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
+  : parameters(parameters)
+  , normal_operator(normal_operator)
+  , solution_curvature(solution_curvature)
+  , rhs(system_rhs)
+  , solution_ls(solution_ls)
+  , normal_vector_field(normal_vector_field)
+  , matrix_free(matrix_free)
+  , constraints_curvature(constraints_curvature)
+  , constraints(constraints)
+  , cell_diameters(cell_diameters)
+  , epsilon_used(epsilon_used)
+  , timer(timer)
+  , preconditioner(preconditioner)
+  , projection_matrix(projection_matrix)
+  , ilu_projection_matrix(ilu_projection_matrix)
+{}
+
 
 template <int dim>
 template <int ls_degree, int diffusion_setting>
