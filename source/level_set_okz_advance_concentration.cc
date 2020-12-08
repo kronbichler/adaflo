@@ -34,11 +34,16 @@ namespace
    */
   template <int dim, typename VectorType>
   double
-  get_maximal_velocity(const DoFHandler<dim> &dof_handler, const VectorType solution)
+  get_maximal_velocity(const DoFHandler<dim> &dof_handler,
+                       const VectorType &     solution,
+                       const Quadrature<dim> &quad_in)
   {
-    solution.update_ghost_values();
-    const QIterated<dim> quadrature_formula(QTrapez<1>(),
-                                            dof_handler.get_fe().tensor_degree() + 1);
+    // [PM] We use QIterated in the case of hex mesh for backwards compatibility.
+    const Quadrature<dim> quadrature_formula =
+      dof_handler.get_fe().reference_cell_type() == ReferenceCell::get_hypercube(dim) ?
+        Quadrature<dim>(
+          QIterated<dim>(QTrapez<1>(), dof_handler.get_fe().tensor_degree() + 1)) :
+        quad_in;
 
     FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
     std::vector<Tensor<1, dim>> velocity_values(quadrature_formula.size());
@@ -56,8 +61,6 @@ namespace
           for (const auto q : fe_values.quadrature_point_indices())
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
         }
-
-    solution.zero_out_ghosts();
 
     return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
   }
@@ -481,7 +484,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   // compute right hand side
   global_max_velocity =
     get_maximal_velocity(matrix_free.get_dof_handler(parameters.dof_index_vel),
-                         vel_solution);
+                         vel_solution,
+                         matrix_free.get_quadrature(parameters.quad_index));
   rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
