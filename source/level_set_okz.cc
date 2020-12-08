@@ -107,6 +107,15 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
   }
 
   {
+    LevelSetOKZSolverComputeCurvatureParameter params;
+    params.dof_index_curvature        = 3;
+    params.dof_index_normal           = 4;
+    params.quad_index                 = 2;
+    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
+    params.epsilon                    = this->parameters.epsilon;
+    params.approximate_projections    = this->parameters.approximate_projections;
+    params.curvature_correction       = this->parameters.curvature_correction;
+
     this->curvatur_operator = std::make_unique<LevelSetOKZSolverComputeCurvature<dim>>(
       *this->normal_operator,
       this->cell_diameters,
@@ -116,8 +125,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
       this->epsilon_used,
       this->timer,
       this->system_rhs,
-      this->navier_stokes,
-      this->parameters,
+      params,
       this->solution,
       this->matrix_free,
       preconditioner,

@@ -30,6 +30,47 @@
 
 using namespace dealii;
 
+/**
+ * Parameters of the advection-concentration operator.
+ */
+struct LevelSetOKZSolverComputeCurvatureParameter
+{
+  /**
+   * TODO
+   */
+  unsigned int dof_index_curvature = 3;
+
+  /**
+   * TODO
+   */
+  unsigned int dof_index_normal = 4;
+
+  /**
+   * TODO
+   */
+  unsigned int quad_index = 2;
+
+  /**
+   * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
+   */
+  unsigned int concentration_subdivisions;
+
+  /**
+   * TODO
+   */
+  double epsilon;
+
+  /**
+   * TODO
+   */
+  bool approximate_projections;
+
+  /**
+   * TODO
+   */
+  bool curvature_correction;
+};
+
 template <int dim>
 class LevelSetOKZSolverComputeCurvature
 {
@@ -43,8 +84,7 @@ public:
     const double &                                         epsilon_used,
     const std::shared_ptr<TimerOutput> &                   timer,
     LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
-    const NavierStokes<dim> &                              navier_stokes,
-    const FlowParameters &                                 parameters,
+    const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
     LinearAlgebra::distributed::BlockVector<double> &      solution,
     const MatrixFree<dim> &                                matrix_free,
     const DiagonalPreconditioner<double> &                 preconditioner,
@@ -58,7 +98,6 @@ public:
     , epsilon_used(epsilon_used)
     , timer(timer)
     , system_rhs(system_rhs)
-    , navier_stokes(navier_stokes)
     , parameters(parameters)
     , solution(solution)
     , matrix_free(matrix_free)
@@ -109,16 +148,18 @@ private:
 
   const std::shared_ptr<TimerOutput> &             timer;
   LinearAlgebra::distributed::BlockVector<double> &system_rhs;
-  const NavierStokes<dim> &                        navier_stokes;
-  const FlowParameters &                           parameters;
+  const LevelSetOKZSolverComputeCurvatureParameter parameters;
   LinearAlgebra::distributed::BlockVector<double> &solution;
 
 
   const MatrixFree<dim> &matrix_free;
 
-  const DiagonalPreconditioner<double> & preconditioner;
-  std::shared_ptr<BlockMatrixExtension> &projection_matrix;
-  std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix;
+  /**
+   * Solver section
+   */
+  const DiagonalPreconditioner<double> & preconditioner;        // [i]
+  std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
+  std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
 };
 
 #endif

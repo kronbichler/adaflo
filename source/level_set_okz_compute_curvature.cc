@@ -21,7 +21,20 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/level_set_okz_compute_curvature.h>
-#include <adaflo/level_set_okz_template_instantations.h>
+
+
+#define EXPAND_OPERATIONS(OPERATION)                                          \
+  const unsigned int ls_degree = this->parameters.concentration_subdivisions; \
+                                                                              \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());         \
+  if (ls_degree == 1)                                                         \
+    OPERATION(1, 0);                                                          \
+  else if (ls_degree == 2)                                                    \
+    OPERATION(2, 0);                                                          \
+  else if (ls_degree == 3)                                                    \
+    OPERATION(3, 0);                                                          \
+  else if (ls_degree == 4)                                                    \
+    OPERATION(4, 0);
 
 
 template <int dim>
@@ -35,7 +48,9 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
 {
   // The second input argument below refers to which constrains should be used,
   // 3 means constraints_curvature
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> phi(data, 3, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> phi(data,
+                                                     parameters.dof_index_curvature,
+                                                     parameters.quad_index);
   const VectorizedArray<double>                  min_diameter =
     make_vectorized_array(this->epsilon_used / this->parameters.epsilon);
 
@@ -77,8 +92,10 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
 {
   // The second input argument below refers to which constrains should be used,
   // 4 means constraints_normals and 3 constraints_curvature
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(data, 4, 2);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>   curv_values(data, 3, 2);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normal_values(
+    data, parameters.dof_index_normal, parameters.quad_index);
+  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> curv_values(
+    data, parameters.dof_index_curvature, parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
@@ -160,11 +177,15 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature_vmult(
     }
 
   // The numer "3" below is so that constraints_curvature is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(3).size(); ++i)
-    dst.local_element(this->matrix_free.get_constrained_dofs(3)[i]) =
+  for (unsigned int i = 0;
+       i < this->matrix_free.get_constrained_dofs(parameters.dof_index_curvature).size();
+       ++i)
+    dst.local_element(
+      this->matrix_free.get_constrained_dofs(parameters.dof_index_curvature)[i]) =
       preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(3)[i]) *
-      src.local_element(this->matrix_free.get_constrained_dofs(3)[i]);
+        this->matrix_free.get_constrained_dofs(parameters.dof_index_curvature)[i]) *
+      src.local_element(
+        this->matrix_free.get_constrained_dofs(parameters.dof_index_curvature)[i]);
 }
 
 
