@@ -65,67 +65,78 @@ namespace
 
 
 
-#define EXPAND_OPERATIONS(OPERATION)                                                     \
-  const unsigned int degree_u =                                                          \
-    this->matrix_free.get_dof_handler(parameters.dof_index_vel)                          \
-      .get_fe()                                                                          \
-      .tensor_degree();                                                                  \
-  const unsigned int ls_degree =                                                         \
-    this->matrix_free.get_dof_handler(parameters.dof_index_ls).get_fe().tensor_degree(); \
-                                                                                         \
-  AssertThrow(degree_u >= 1 && degree_u <= 5, ExcNotImplemented());                      \
-  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());                    \
-  if (ls_degree == 1)                                                                    \
-    {                                                                                    \
-      if (degree_u == 1)                                                                 \
-        OPERATION(1, 1);                                                                 \
-      else if (degree_u == 2)                                                            \
-        OPERATION(1, 2);                                                                 \
-      else if (degree_u == 3)                                                            \
-        OPERATION(1, 3);                                                                 \
-      else if (degree_u == 4)                                                            \
-        OPERATION(1, 4);                                                                 \
-      else if (degree_u == 5)                                                            \
-        OPERATION(1, 5);                                                                 \
-    }                                                                                    \
-  else if (ls_degree == 2)                                                               \
-    {                                                                                    \
-      if (degree_u == 1)                                                                 \
-        OPERATION(2, 1);                                                                 \
-      else if (degree_u == 2)                                                            \
-        OPERATION(2, 2);                                                                 \
-      else if (degree_u == 3)                                                            \
-        OPERATION(2, 3);                                                                 \
-      else if (degree_u == 4)                                                            \
-        OPERATION(2, 4);                                                                 \
-      else if (degree_u == 5)                                                            \
-        OPERATION(2, 5);                                                                 \
-    }                                                                                    \
-  else if (ls_degree == 3)                                                               \
-    {                                                                                    \
-      if (degree_u == 1)                                                                 \
-        OPERATION(3, 1);                                                                 \
-      else if (degree_u == 2)                                                            \
-        OPERATION(3, 2);                                                                 \
-      else if (degree_u == 3)                                                            \
-        OPERATION(3, 3);                                                                 \
-      else if (degree_u == 4)                                                            \
-        OPERATION(3, 4);                                                                 \
-      else if (degree_u == 5)                                                            \
-        OPERATION(3, 5);                                                                 \
-    }                                                                                    \
-  else if (ls_degree == 4)                                                               \
-    {                                                                                    \
-      if (degree_u == 1)                                                                 \
-        OPERATION(4, 1);                                                                 \
-      else if (degree_u == 2)                                                            \
-        OPERATION(4, 2);                                                                 \
-      else if (degree_u == 3)                                                            \
-        OPERATION(4, 3);                                                                 \
-      else if (degree_u == 4)                                                            \
-        OPERATION(4, 4);                                                                 \
-      else if (degree_u == 5)                                                            \
-        OPERATION(4, 5);                                                                 \
+#define EXPAND_OPERATIONS(OPERATION)                                      \
+  if (this->matrix_free.get_dof_handler(parameters.dof_index_vel)         \
+        .get_fe()                                                         \
+        .reference_cell_type() != ReferenceCell::get_hypercube(dim))      \
+    {                                                                     \
+      OPERATION(-1, -1);                                                  \
+    }                                                                     \
+  else                                                                    \
+    {                                                                     \
+      const unsigned int degree_u =                                       \
+        this->matrix_free.get_dof_handler(parameters.dof_index_vel)       \
+          .get_fe()                                                       \
+          .tensor_degree();                                               \
+      const unsigned int ls_degree =                                      \
+        this->matrix_free.get_dof_handler(parameters.dof_index_ls)        \
+          .get_fe()                                                       \
+          .tensor_degree();                                               \
+                                                                          \
+      AssertThrow(degree_u >= 1 && degree_u <= 5, ExcNotImplemented());   \
+      AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented()); \
+      if (ls_degree == 1)                                                 \
+        {                                                                 \
+          if (degree_u == 1)                                              \
+            OPERATION(1, 1);                                              \
+          else if (degree_u == 2)                                         \
+            OPERATION(1, 2);                                              \
+          else if (degree_u == 3)                                         \
+            OPERATION(1, 3);                                              \
+          else if (degree_u == 4)                                         \
+            OPERATION(1, 4);                                              \
+          else if (degree_u == 5)                                         \
+            OPERATION(1, 5);                                              \
+        }                                                                 \
+      else if (ls_degree == 2)                                            \
+        {                                                                 \
+          if (degree_u == 1)                                              \
+            OPERATION(2, 1);                                              \
+          else if (degree_u == 2)                                         \
+            OPERATION(2, 2);                                              \
+          else if (degree_u == 3)                                         \
+            OPERATION(2, 3);                                              \
+          else if (degree_u == 4)                                         \
+            OPERATION(2, 4);                                              \
+          else if (degree_u == 5)                                         \
+            OPERATION(2, 5);                                              \
+        }                                                                 \
+      else if (ls_degree == 3)                                            \
+        {                                                                 \
+          if (degree_u == 1)                                              \
+            OPERATION(3, 1);                                              \
+          else if (degree_u == 2)                                         \
+            OPERATION(3, 2);                                              \
+          else if (degree_u == 3)                                         \
+            OPERATION(3, 3);                                              \
+          else if (degree_u == 4)                                         \
+            OPERATION(3, 4);                                              \
+          else if (degree_u == 5)                                         \
+            OPERATION(3, 5);                                              \
+        }                                                                 \
+      else if (ls_degree == 4)                                            \
+        {                                                                 \
+          if (degree_u == 1)                                              \
+            OPERATION(4, 1);                                              \
+          else if (degree_u == 2)                                         \
+            OPERATION(4, 2);                                              \
+          else if (degree_u == 3)                                         \
+            OPERATION(4, 3);                                              \
+          else if (degree_u == 4)                                         \
+            OPERATION(4, 4);                                              \
+          else if (degree_u == 5)                                         \
+            OPERATION(4, 5);                                              \
+        }                                                                 \
     }
 
 
@@ -182,9 +193,11 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
 {
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values(data,
-                                                           parameters.dof_index_ls,
-                                                           parameters.quad_index);
+  const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
+
+  FEEvaluation<dim, ls_degree, n_q_points, 1> ls_values(data,
+                                                        parameters.dof_index_ls,
+                                                        parameters.quad_index);
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       const Tensor<1, dim, VectorizedArray<double>> *velocities =
@@ -222,19 +235,23 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function) and 0 means
   // &navier_stokes.get_constraints_u()
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values(data,
-                                                           parameters.dof_index_ls,
-                                                           parameters.quad_index);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values_old(data,
-                                                               parameters.dof_index_ls,
-                                                               parameters.quad_index);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> ls_values_old_old(
-    data, parameters.dof_index_ls, parameters.quad_index);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values(
+  const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
+
+  FEEvaluation<dim, ls_degree, n_q_points, 1>         ls_values(data,
+                                                        parameters.dof_index_ls,
+                                                        parameters.quad_index);
+  FEEvaluation<dim, ls_degree, n_q_points, 1>         ls_values_old(data,
+                                                            parameters.dof_index_ls,
+                                                            parameters.quad_index);
+  FEEvaluation<dim, ls_degree, n_q_points, 1>         ls_values_old_old(data,
+                                                                parameters.dof_index_ls,
+                                                                parameters.quad_index);
+  FEEvaluation<dim, velocity_degree, n_q_points, dim> vel_values(data,
+                                                                 parameters.dof_index_vel,
+                                                                 parameters.quad_index);
+  FEEvaluation<dim, velocity_degree, n_q_points, dim> vel_values_old(
     data, parameters.dof_index_vel, parameters.quad_index);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old(
-    data, parameters.dof_index_vel, parameters.quad_index);
-  FEEvaluation<dim, velocity_degree, 2 * ls_degree, dim> vel_values_old_old(
+  FEEvaluation<dim, velocity_degree, n_q_points, dim> vel_values_old_old(
     data, parameters.dof_index_vel, parameters.quad_index);
 
   typedef VectorizedArray<double> vector_t;
