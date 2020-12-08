@@ -21,7 +21,19 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/level_set_okz_reinitialization.h>
-#include <adaflo/level_set_okz_template_instantations.h>
+
+#define EXPAND_OPERATIONS(OPERATION)                                          \
+  const unsigned int ls_degree = this->parameters.concentration_subdivisions; \
+                                                                              \
+  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());         \
+  if (ls_degree == 1)                                                         \
+    OPERATION(1, 0);                                                          \
+  else if (ls_degree == 2)                                                    \
+    OPERATION(2, 0);                                                          \
+  else if (ls_degree == 3)                                                    \
+    OPERATION(3, 0);                                                          \
+  else if (ls_degree == 4)                                                    \
+    OPERATION(4, 0);
 
 using namespace dealii;
 

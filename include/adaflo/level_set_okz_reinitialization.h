@@ -39,7 +39,6 @@ public:
     const AlignedVector<VectorizedArray<double>> &          cell_diameters,
     const double &                                          epsilon_used,
     const double &                                          minimal_edge_length,
-    const NavierStokes<dim> &                               navier_stokes,
     const AffineConstraints<double> &                       constraints,
     LinearAlgebra::distributed::BlockVector<double> &       solution_update,
     LinearAlgebra::distributed::BlockVector<double> &       solution,
@@ -58,7 +57,6 @@ public:
     , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
-    , navier_stokes(navier_stokes)
     , constraints(constraints)
     , solution_update(solution_update)
     , solution(solution)
@@ -114,8 +112,6 @@ private:
 
   const double &epsilon_used;
   const double &minimal_edge_length;
-
-  const NavierStokes<dim> &navier_stokes;
 
   const AffineConstraints<double> &constraints;
 
