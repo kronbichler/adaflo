@@ -29,6 +29,42 @@
 
 using namespace dealii;
 
+/**
+ * Parameters of the reinitialization operator.
+ */
+struct LevelSetOKZSolverReinitializationParameter
+{
+  /**
+   * TODO
+   */
+  unsigned int dof_index_ls;
+
+  /**
+   * TODO
+   */
+  unsigned int dof_index_vel;
+
+  /**
+   * TODO
+   */
+  unsigned int quad_index;
+
+  /**
+   * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
+   */
+  unsigned int concentration_subdivisions;
+
+  /**
+   * TODO
+   */
+  bool do_iteration;
+
+  /**
+   * TODO
+   */
+  TimeSteppingParameters time;
+};
+
 template <int dim>
 class LevelSetOKZSolverReinitialization
 {
@@ -46,7 +82,7 @@ public:
     const ConditionalOStream &                             pcout,
     const DiagonalPreconditioner<double> &                 preconditioner,
     const std::pair<double, double> &                      last_concentration_range,
-    const FlowParameters &                                 parameters,
+    const LevelSetOKZSolverReinitializationParameter &     parameters,
     const TimeStepping &                                   time_stepping,
     bool &                                                 first_reinit_step,
     const MatrixFree<dim, double> &                        matrix_free)
@@ -97,7 +133,7 @@ private:
   /**
    * Parameters
    */
-  const FlowParameters &parameters;
+  const LevelSetOKZSolverReinitializationParameter parameters;
 
   /**
    * Other operators.

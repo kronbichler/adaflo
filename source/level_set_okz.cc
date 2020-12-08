@@ -84,6 +84,24 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
   }
 
   {
+    LevelSetOKZSolverReinitializationParameter params;
+
+    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
+    params.do_iteration               = this->parameters.do_iteration;
+
+    // set time stepping parameters of level set to correspond with the values from
+    // Navier-Stokes
+    // @todo
+    params.time.time_step_scheme     = this->parameters.time_step_scheme;
+    params.time.start_time           = this->parameters.start_time;
+    params.time.end_time             = this->parameters.end_time;
+    params.time.time_step_size_start = this->parameters.time_step_size_start;
+    params.time.time_stepping_cfl    = this->parameters.time_stepping_cfl;
+    params.time.time_stepping_coef2  = this->parameters.time_stepping_coef2;
+    params.time.time_step_tolerance  = this->parameters.time_step_tolerance;
+    params.time.time_step_size_max   = this->parameters.time_step_size_max;
+    params.time.time_step_size_min   = this->parameters.time_step_size_min;
+
     this->reinit_operator = std::make_unique<LevelSetOKZSolverReinitialization<dim>>(
       *this->normal_operator,
       this->normal_vector_field,
@@ -97,7 +115,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
       this->pcout,
       this->preconditioner,
       this->last_concentration_range,
-      this->parameters,
+      params,
       this->time_stepping,
       this->first_reinit_step,
       this->matrix_free);
