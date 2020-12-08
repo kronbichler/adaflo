@@ -83,18 +83,19 @@ public:
     const AffineConstraints<double> &                      constraints,
     const double &                                         epsilon_used,
     const std::shared_ptr<TimerOutput> &                   timer,
-    LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
+    LinearAlgebra::distributed::Vector<double> &           system_rhs,
     const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
-    LinearAlgebra::distributed::BlockVector<double> &      solution,
+    LinearAlgebra::distributed::Vector<double> &           solution_curvature,
+    const LinearAlgebra::distributed::Vector<double> &     solution_ls,
     const MatrixFree<dim> &                                matrix_free,
     const DiagonalPreconditioner<double> &                 preconditioner,
     std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
     std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
     : parameters(parameters)
     , normal_operator(normal_operator)
-    , solution_curvature(solution.block(1))
-    , rhs(system_rhs.block(0))
-    , solution_ls(solution.block(0))
+    , solution_curvature(solution_curvature)
+    , rhs(system_rhs)
+    , solution_ls(solution_ls)
     , normal_vector_field(normal_vector_field)
     , matrix_free(matrix_free)
     , constraints_curvature(constraints_curvature)
