@@ -59,7 +59,7 @@ namespace
         }
 
     solution.zero_out_ghosts();
-    
+
     return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
   }
 } // namespace
