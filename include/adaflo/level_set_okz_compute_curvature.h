@@ -90,30 +90,22 @@ public:
     const DiagonalPreconditioner<double> &                 preconditioner,
     std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
     std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
-    : normal_operator(normal_operator)
-    , cell_diameters(cell_diameters)
+    : parameters(parameters)
+    , normal_operator(normal_operator)
+    , solution_curvature(solution.block(1))
+    , rhs(system_rhs.block(0))
+    , solution_ls(solution.block(0))
     , normal_vector_field(normal_vector_field)
+    , matrix_free(matrix_free)
     , constraints_curvature(constraints_curvature)
     , constraints(constraints)
+    , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , timer(timer)
-    , rhs(system_rhs.block(0))
-    , parameters(parameters)
-    , solution_ls(solution.block(0))
-    , solution_curvature(solution.block(1))
-    , matrix_free(matrix_free)
     , preconditioner(preconditioner)
     , projection_matrix(projection_matrix)
     , ilu_projection_matrix(ilu_projection_matrix)
   {}
-
-
-
-  //  virtual void
-  //  compute_normal(const bool fast_computation)
-  //  {
-  //    normal_operator.compute_normal(fast_computation);
-  //  }
 
   virtual void
   compute_curvature(const bool diffuse_large_values = false);
@@ -139,22 +131,38 @@ private:
     const LinearAlgebra::distributed::Vector<double> &src,
     const std::pair<unsigned int, unsigned int> &     cell_range) const;
 
+  /**
+   * Parameters
+   */
+  const LevelSetOKZSolverComputeCurvatureParameter parameters; // [i]
 
-  LevelSetOKZSolverComputeNormal<dim> &                  normal_operator;
-  const AlignedVector<VectorizedArray<double>> &         cell_diameters;
-  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
-  const AffineConstraints<double> &                      constraints_curvature;
-  const AffineConstraints<double> &                      constraints;
-  const double &                                         epsilon_used;
+  /**
+   * Other operators.
+   */
+  LevelSetOKZSolverComputeNormal<dim> &normal_operator; // [i]
 
-  const std::shared_ptr<TimerOutput> &              timer;
-  LinearAlgebra::distributed::Vector<double> &      rhs;
-  const LevelSetOKZSolverComputeCurvatureParameter  parameters;
-  const LinearAlgebra::distributed::Vector<double> &solution_ls;
-  LinearAlgebra::distributed::Vector<double> &      solution_curvature;
+  /**
+   * Vector section
+   */
+  LinearAlgebra::distributed::Vector<double> &           solution_curvature;  // [i]
+  LinearAlgebra::distributed::Vector<double> &           rhs;                 // [-]
+  const LinearAlgebra::distributed::Vector<double> &     solution_ls;         // [i]
+  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field; // [i]
 
+  /**
+   * MatrixFree
+   */
+  const MatrixFree<dim> &          matrix_free;           // [i]
+  const AffineConstraints<double> &constraints_curvature; // [i]
+  const AffineConstraints<double> &constraints;           // [i]
 
-  const MatrixFree<dim> &matrix_free;
+  /**
+   * Physics section
+   */
+  const AlignedVector<VectorizedArray<double>> &cell_diameters; // [i]
+  const double &                                epsilon_used;   // [i]
+
+  const std::shared_ptr<TimerOutput> &timer;
 
   /**
    * Solver section
