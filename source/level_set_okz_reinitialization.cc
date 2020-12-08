@@ -240,8 +240,6 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
       if (first_reinit_step)
         normal_operator.compute_normal(true);
 
-      TimerOutput::Scope timer(*this->timer, "LS reinitialization step.");
-
       // compute right hand side
       LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
       LinearAlgebra::distributed::Vector<double> &increment =

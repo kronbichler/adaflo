@@ -43,7 +43,6 @@ public:
     LinearAlgebra::distributed::BlockVector<double> &       solution_update,
     LinearAlgebra::distributed::BlockVector<double> &       solution,
     LinearAlgebra::distributed::BlockVector<double> &       system_rhs,
-    const std::shared_ptr<TimerOutput> &                    timer,
     const ConditionalOStream &                              pcout,
     const DiagonalPreconditioner<double> &                  preconditioner,
     const std::pair<double, double> &                       last_concentration_range,
@@ -61,7 +60,6 @@ public:
     , solution_update(solution_update)
     , solution(solution)
     , system_rhs(system_rhs)
-    , timer(timer)
     , pcout(pcout)
     , preconditioner(preconditioner)
     , last_concentration_range(last_concentration_range)
@@ -113,7 +111,6 @@ private:
   LinearAlgebra::distributed::BlockVector<double> &solution;
   LinearAlgebra::distributed::BlockVector<double> &system_rhs;
 
-  const std::shared_ptr<TimerOutput> &                    timer;
   const ConditionalOStream &                              pcout;
   const DiagonalPreconditioner<double> &                  preconditioner;
   const std::pair<double, double> &                       last_concentration_range;
