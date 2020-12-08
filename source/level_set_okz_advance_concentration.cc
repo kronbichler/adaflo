@@ -291,7 +291,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
              ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =
-              this->matrix_free.get_cell_iterator(mcell, v, 2);
+              this->matrix_free.get_cell_iterator(mcell,
+                                                  v,
+                                                  this->parameters.dof_index_ls);
             cell_rhs = 0;
 
             for (const auto &face : cell->face_iterators())
@@ -323,11 +325,15 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
       dst.compress(VectorOperation::add);
     }
 
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(2).size(); ++i)
-    dst.local_element(this->matrix_free.get_constrained_dofs(2)[i]) =
+  for (unsigned int i = 0;
+       i < this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls).size();
+       ++i)
+    dst.local_element(
+      this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]) =
       preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(2)[i]) *
-      src.local_element(this->matrix_free.get_constrained_dofs(2)[i]);
+        this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]) *
+      src.local_element(
+        this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]);
 }
 
 
@@ -424,7 +430,9 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
              ++v)
           {
             typename DoFHandler<dim>::active_cell_iterator cell =
-              this->matrix_free.get_cell_iterator(mcell, v, 2);
+              this->matrix_free.get_cell_iterator(mcell,
+                                                  v,
+                                                  this->parameters.dof_index_ls);
             cell_rhs = 0;
 
             for (const auto face : cell->face_iterators())
