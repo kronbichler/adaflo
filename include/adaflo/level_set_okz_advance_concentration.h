@@ -49,11 +49,6 @@ struct LevelSetOKZSolverAdvanceConcentrationParameter
   unsigned int quad_index;
 
   /**
-   * TODO: needed? this is equivalent to `fe.tensor_degree()+1`?
-   */
-  unsigned int concentration_subdivisions;
-
-  /**
    * TODO
    */
   bool convection_stabilization;

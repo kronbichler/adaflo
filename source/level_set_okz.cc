@@ -62,12 +62,11 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
 {
   {
     LevelSetOKZSolverComputeNormalParameter params;
-    params.dof_index_ls               = 2;
-    params.dof_index_normal           = 4;
-    params.quad_index                 = 2;
-    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
-    params.epsilon                    = this->parameters.epsilon;
-    params.approximate_projections    = this->parameters.approximate_projections;
+    params.dof_index_ls            = 2;
+    params.dof_index_normal        = 4;
+    params.quad_index              = 2;
+    params.epsilon                 = this->parameters.epsilon;
+    params.approximate_projections = this->parameters.approximate_projections;
 
     this->normal_operator =
       std::make_unique<LevelSetOKZSolverComputeNormal<dim>>(this->normal_vector_field,
@@ -87,11 +86,10 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
   {
     LevelSetOKZSolverReinitializationParameter params;
 
-    params.dof_index_ls               = 2;
-    params.dof_index_normal           = 4;
-    params.quad_index                 = 2;
-    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
-    params.do_iteration               = this->parameters.do_iteration;
+    params.dof_index_ls     = 2;
+    params.dof_index_normal = 4;
+    params.quad_index       = 2;
+    params.do_iteration     = this->parameters.do_iteration;
 
     // set time stepping parameters of level set to correspond with the values from
     // Navier-Stokes
@@ -126,14 +124,13 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
 
   {
     LevelSetOKZSolverComputeCurvatureParameter params;
-    params.dof_index_ls               = 2;
-    params.dof_index_curvature        = 3;
-    params.dof_index_normal           = 4;
-    params.quad_index                 = 2;
-    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
-    params.epsilon                    = this->parameters.epsilon;
-    params.approximate_projections    = this->parameters.approximate_projections;
-    params.curvature_correction       = this->parameters.curvature_correction;
+    params.dof_index_ls            = 2;
+    params.dof_index_curvature     = 3;
+    params.dof_index_normal        = 4;
+    params.quad_index              = 2;
+    params.epsilon                 = this->parameters.epsilon;
+    params.approximate_projections = this->parameters.approximate_projections;
+    params.curvature_correction    = this->parameters.curvature_correction;
 
     this->curvatur_operator = std::make_unique<LevelSetOKZSolverComputeCurvature<dim>>(
       *this->normal_operator,
@@ -156,13 +153,12 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
   {
     LevelSetOKZSolverAdvanceConcentrationParameter params;
 
-    params.dof_index_ls               = 2;
-    params.dof_index_vel              = 0;
-    params.quad_index                 = 2;
-    params.concentration_subdivisions = this->parameters.concentration_subdivisions;
-    params.convection_stabilization   = this->parameters.convection_stabilization;
-    params.do_iteration               = this->parameters.do_iteration;
-    params.tol_nl_iteration           = this->parameters.tol_nl_iteration;
+    params.dof_index_ls             = 2;
+    params.dof_index_vel            = 0;
+    params.quad_index               = 2;
+    params.convection_stabilization = this->parameters.convection_stabilization;
+    params.do_iteration             = this->parameters.do_iteration;
+    params.tol_nl_iteration         = this->parameters.tol_nl_iteration;
 
     LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> bcs;
 
