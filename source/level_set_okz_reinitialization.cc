@@ -213,10 +213,13 @@ struct ReinitializationMatrix
 
 template <int dim>
 void
-LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_steps,
+LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
+                                                     const unsigned int stab_steps,
                                                      const unsigned int diff_steps,
                                                      const bool)
 {
+  this->time_stepping.set_time_step(dt);
+
   // This function assembles and solves for a given profile using the approach
   // described in the paper by Olsson, Kreiss, and Zahedi.
 
@@ -311,6 +314,8 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
 
   if (!this->parameters.do_iteration)
     this->pcout << ")" << std::endl << std::flush;
+
+  this->time_stepping.next();
 }
 
 template class LevelSetOKZSolverReinitialization<2>;

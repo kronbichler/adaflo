@@ -83,7 +83,6 @@ public:
     const DiagonalPreconditioner<double> &                 preconditioner,
     const std::pair<double, double> &                      last_concentration_range,
     const LevelSetOKZSolverReinitializationParameter &     parameters,
-    const TimeStepping &                                   time_stepping,
     bool &                                                 first_reinit_step,
     const MatrixFree<dim, double> &                        matrix_free)
     : parameters(parameters)
@@ -100,13 +99,14 @@ public:
     , last_concentration_range(last_concentration_range)
     , first_reinit_step(first_reinit_step)
     , pcout(pcout)
-    , time_stepping(time_stepping)
+    , time_stepping(parameters.time)
     , preconditioner(preconditioner)
   {}
 
   // performs reinitialization
   virtual void
-  reinitialize(const unsigned int stab_steps,
+  reinitialize(const double       dt,
+               const unsigned int stab_steps,
                const unsigned int diff_steps                              = 0,
                const bool         diffuse_cells_with_large_curvature_only = false);
 
@@ -166,7 +166,7 @@ private:
    * Utility
    */
   const ConditionalOStream &pcout;         // [i]
-  const TimeStepping &      time_stepping; // [?]
+  TimeStepping              time_stepping; // [?]
 
   /**
    * Solver section

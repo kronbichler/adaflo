@@ -116,7 +116,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
       this->preconditioner,
       this->last_concentration_range,
       params,
-      this->time_stepping,
       this->first_reinit_step,
       this->matrix_free);
   }
@@ -646,7 +645,8 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
                                      const bool diffuse_cells_with_large_curvature_only)
 {
   TimerOutput::Scope timer(*this->timer, "LS reinitialization step.");
-  reinit_operator->reinitialize(stab_steps,
+  reinit_operator->reinitialize(this->time_stepping.step_size(),
+                                stab_steps,
                                 diff_steps,
                                 diffuse_cells_with_large_curvature_only);
 }
