@@ -57,9 +57,9 @@ public:
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
     , constraints(constraints)
-    , solution_update(solution_update)
-    , solution(solution)
-    , system_rhs(system_rhs)
+    , solution_update(solution_update.block(0))
+    , solution(solution.block(0))
+    , system_rhs(system_rhs.block(0))
     , pcout(pcout)
     , preconditioner(preconditioner)
     , last_concentration_range(last_concentration_range)
@@ -107,9 +107,9 @@ private:
 
   const AffineConstraints<double> &constraints;
 
-  LinearAlgebra::distributed::BlockVector<double> &solution_update;
-  LinearAlgebra::distributed::BlockVector<double> &solution;
-  LinearAlgebra::distributed::BlockVector<double> &system_rhs;
+  LinearAlgebra::distributed::Vector<double> &solution_update; // [o]
+  LinearAlgebra::distributed::Vector<double> &solution;        // [-]
+  LinearAlgebra::distributed::Vector<double> &system_rhs;      // [-]
 
   const ConditionalOStream &                              pcout;
   const DiagonalPreconditioner<double> &                  preconditioner;

@@ -105,7 +105,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       phi.reinit(cell);
-      phi.read_dof_values_plain(this->solution.block(0));
+      phi.read_dof_values_plain(this->solution);
       phi.evaluate(true, true, false);
 
       normals.reinit(cell);
@@ -241,10 +241,9 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
         normal_operator.compute_normal(true);
 
       // compute right hand side
-      LinearAlgebra::distributed::Vector<double> &rhs = this->system_rhs.block(0);
-      LinearAlgebra::distributed::Vector<double> &increment =
-        this->solution_update.block(0);
-      rhs = 0;
+      LinearAlgebra::distributed::Vector<double> &rhs       = this->system_rhs;
+      LinearAlgebra::distributed::Vector<double> &increment = this->solution_update;
+      rhs                                                   = 0;
 
       if (tau < actual_diff_steps)
         {
@@ -253,7 +252,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
                                 dim>::template local_reinitialize_rhs<c_degree, true>, \
                               this,                                                    \
                               rhs,                                                     \
-                              this->solution.block(0))
+                              this->solution)
 
           EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
@@ -265,7 +264,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
                                 dim>::template local_reinitialize_rhs<c_degree, false>, \
                               this,                                                     \
                               rhs,                                                      \
-                              this->solution.block(0))
+                              this->solution)
 
           EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
@@ -293,8 +292,8 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const unsigned int stab_ste
           }
       }
 
-      this->solution.block(0) += increment;
-      this->solution.block(0).update_ghost_values();
+      this->solution += increment;
+      this->solution.update_ghost_values();
 
       // check residual
       const double update_norm = increment.l2_norm();
