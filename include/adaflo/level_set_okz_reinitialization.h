@@ -51,23 +51,23 @@ public:
     bool &                                                  first_reinit_step,
     const MatrixFree<dim, double> &                         matrix_free,
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection)
-    : normal_operator(normal_operator)
+    : parameters(parameters)
+    , normal_operator(normal_operator)
+    , solution(solution.block(0))
+    , solution_update(solution_update.block(0))
+    , system_rhs(system_rhs.block(0))
     , normal_vector_field(normal_vector_field)
+    , matrix_free(matrix_free)
+    , constraints(constraints)
     , cell_diameters(cell_diameters)
     , epsilon_used(epsilon_used)
     , minimal_edge_length(minimal_edge_length)
-    , constraints(constraints)
-    , solution_update(solution_update.block(0))
-    , solution(solution.block(0))
-    , system_rhs(system_rhs.block(0))
-    , pcout(pcout)
-    , preconditioner(preconditioner)
     , last_concentration_range(last_concentration_range)
-    , parameters(parameters)
-    , time_stepping(time_stepping)
     , first_reinit_step(first_reinit_step)
-    , matrix_free(matrix_free)
     , evaluated_convection(evaluated_convection)
+    , pcout(pcout)
+    , time_stepping(time_stepping)
+    , preconditioner(preconditioner)
   {}
 
   // performs reinitialization
@@ -96,29 +96,48 @@ private:
                          const LinearAlgebra::distributed::Vector<double> &src,
                          const std::pair<unsigned int, unsigned int> &     cell_range);
 
+  /**
+   * Parameters
+   */
+  const FlowParameters &parameters;
+
+  /**
+   * Other operators.
+   */
   LevelSetOKZSolverComputeNormal<dim> &normal_operator;
 
-  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field;
-
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;
-
-  const double &epsilon_used;
-  const double &minimal_edge_length;
-
-  const AffineConstraints<double> &constraints;
-
-  LinearAlgebra::distributed::Vector<double> &solution_update; // [o]
-  LinearAlgebra::distributed::Vector<double> &solution;        // [-]
+  /**
+   * Vector section
+   */
+  LinearAlgebra::distributed::Vector<double> &solution;        // [o]
+  LinearAlgebra::distributed::Vector<double> &solution_update; // [-]
   LinearAlgebra::distributed::Vector<double> &system_rhs;      // [-]
 
-  const ConditionalOStream &                              pcout;
-  const DiagonalPreconditioner<double> &                  preconditioner;
-  const std::pair<double, double> &                       last_concentration_range;
-  const FlowParameters &                                  parameters;
-  const TimeStepping &                                    time_stepping;
-  bool &                                                  first_reinit_step;
-  const MatrixFree<dim> &                                 matrix_free;
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;
+  const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field; // [i];
+
+  /**
+   * MatrixFree
+   */
+  const MatrixFree<dim> &          matrix_free; // [i]
+  const AffineConstraints<double> &constraints; // [i]
+
+  const AlignedVector<VectorizedArray<double>> &          cell_diameters;           // [i]
+  const double &                                          epsilon_used;             // [i]
+  const double &                                          minimal_edge_length;      // [i]
+  const std::pair<double, double> &                       last_concentration_range; // [i]
+  bool &                                                  first_reinit_step;        // [?]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &evaluated_convection;     // [i]
+
+  /**
+   * Utility
+   */
+  const ConditionalOStream &pcout;         // [i]
+  const TimeStepping &      time_stepping; // [?]
+
+  /**
+   * Solver section
+   */
+  const DiagonalPreconditioner<double> &preconditioner; // [i]
 };
 
 #endif
