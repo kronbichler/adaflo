@@ -174,51 +174,213 @@ initialize_projection_matrix(
       std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>>,
       unsigned int>(
       [&](const auto &data, auto &scratch_data, const auto &, const auto cell_range) {
-        FEEvaluation<dim, -1, 0, 1, double> phi(data, 4, 2);
-        AssemblyData::Data &                scratch = scratch_data->get();
-
-        const VectorizedArray<double> min_diameter =
-          make_vectorized_array(epsilon_used / epsilon);
-
-        for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+        const unsigned int ls_degree = concentration_subdivisions;
+        if (ls_degree == 1)
           {
-            phi.reinit(cell);
-            const VectorizedArray<double> damping =
-              4. *
-              Utilities::fixed_power<2>(
-                std::max(min_diameter,
-                         cell_diameters[cell] / static_cast<double>(fe.tensor_degree())));
+            FEEvaluation<dim, 1, 2, 1, double> phi(data, 4, 2);
+            AssemblyData::Data &               scratch = scratch_data->get();
 
-            for (unsigned int i = 0; i < phi.dofs_per_cell; ++i)
+            const VectorizedArray<double> min_diameter =
+              make_vectorized_array(epsilon_used / epsilon);
+
+            for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
               {
-                for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
-                  phi.begin_dof_values()[j] = VectorizedArray<double>();
-                phi.begin_dof_values()[i] = 1.;
-                phi.evaluate(true, true);
-                for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                phi.reinit(cell);
+                const VectorizedArray<double> damping =
+                  4. * Utilities::fixed_power<2>(
+                         std::max(min_diameter,
+                                  cell_diameters[cell] /
+                                    static_cast<double>(fe.tensor_degree())));
+
+                for (unsigned int i = 0; i < phi.dofs_per_cell; ++i)
                   {
-                    phi.submit_value(phi.get_value(q), q);
-                    phi.submit_gradient(phi.get_gradient(q) * damping, q);
+                    for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                      phi.begin_dof_values()[j] = VectorizedArray<double>();
+                    phi.begin_dof_values()[i] = 1.;
+                    phi.evaluate(true, true);
+                    for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                      {
+                        phi.submit_value(phi.get_value(q), q);
+                        phi.submit_gradient(phi.get_gradient(q) * damping, q);
+                      }
+                    phi.integrate(true, true);
+                    for (unsigned int v = 0;
+                         v < data.n_active_entries_per_cell_batch(cell);
+                         ++v)
+                      for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                        scratch.matrices[v](
+                          phi.get_shape_info().lexicographic_numbering[j],
+                          phi.get_shape_info().lexicographic_numbering[i]) =
+                          phi.begin_dof_values()[j][v];
                   }
-                phi.integrate(true, true);
                 for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell);
                      ++v)
-                  for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
-                    scratch.matrices[v](phi.get_shape_info().lexicographic_numbering[j],
-                                        phi.get_shape_info().lexicographic_numbering[i]) =
-                      phi.begin_dof_values()[j][v];
-              }
-            for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell); ++v)
-              {
-                typename DoFHandler<dim>::active_cell_iterator dcell =
-                  matrix_free.get_cell_iterator(cell, v, 2);
-                dcell->get_dof_indices(scratch.dof_indices);
-                constraints_normals.distribute_local_to_global(
-                  scratch.matrices[v],
-                  scratch.dof_indices,
-                  static_cast<TrilinosWrappers::SparseMatrix &>(projection_matrix));
+                  {
+                    typename DoFHandler<dim>::active_cell_iterator dcell =
+                      matrix_free.get_cell_iterator(cell, v, 2);
+                    dcell->get_dof_indices(scratch.dof_indices);
+                    constraints_normals.distribute_local_to_global(
+                      scratch.matrices[v],
+                      scratch.dof_indices,
+                      static_cast<TrilinosWrappers::SparseMatrix &>(projection_matrix));
+                  }
               }
           }
+        else if (ls_degree == 2)
+          {
+            FEEvaluation<dim, 2, 4, 1, double> phi(data, 4, 2);
+            AssemblyData::Data &               scratch = scratch_data->get();
+
+            const VectorizedArray<double> min_diameter =
+              make_vectorized_array(epsilon_used / epsilon);
+
+            for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+              {
+                phi.reinit(cell);
+                const VectorizedArray<double> damping =
+                  4. * Utilities::fixed_power<2>(
+                         std::max(min_diameter,
+                                  cell_diameters[cell] /
+                                    static_cast<double>(fe.tensor_degree())));
+
+                for (unsigned int i = 0; i < phi.dofs_per_cell; ++i)
+                  {
+                    for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                      phi.begin_dof_values()[j] = VectorizedArray<double>();
+                    phi.begin_dof_values()[i] = 1.;
+                    phi.evaluate(true, true);
+                    for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                      {
+                        phi.submit_value(phi.get_value(q), q);
+                        phi.submit_gradient(phi.get_gradient(q) * damping, q);
+                      }
+                    phi.integrate(true, true);
+                    for (unsigned int v = 0;
+                         v < data.n_active_entries_per_cell_batch(cell);
+                         ++v)
+                      for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                        scratch.matrices[v](
+                          phi.get_shape_info().lexicographic_numbering[j],
+                          phi.get_shape_info().lexicographic_numbering[i]) =
+                          phi.begin_dof_values()[j][v];
+                  }
+                for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell);
+                     ++v)
+                  {
+                    typename DoFHandler<dim>::active_cell_iterator dcell =
+                      matrix_free.get_cell_iterator(cell, v, 2);
+                    dcell->get_dof_indices(scratch.dof_indices);
+                    constraints_normals.distribute_local_to_global(
+                      scratch.matrices[v],
+                      scratch.dof_indices,
+                      static_cast<TrilinosWrappers::SparseMatrix &>(projection_matrix));
+                  }
+              }
+          }
+        else if (ls_degree == 3)
+          {
+            FEEvaluation<dim, 3, 6, 1, double> phi(data, 4, 2);
+            AssemblyData::Data &               scratch = scratch_data->get();
+
+            const VectorizedArray<double> min_diameter =
+              make_vectorized_array(epsilon_used / epsilon);
+
+            for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+              {
+                phi.reinit(cell);
+                const VectorizedArray<double> damping =
+                  4. * Utilities::fixed_power<2>(
+                         std::max(min_diameter,
+                                  cell_diameters[cell] /
+                                    static_cast<double>(fe.tensor_degree())));
+
+                for (unsigned int i = 0; i < phi.dofs_per_cell; ++i)
+                  {
+                    for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                      phi.begin_dof_values()[j] = VectorizedArray<double>();
+                    phi.begin_dof_values()[i] = 1.;
+                    phi.evaluate(true, true);
+                    for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                      {
+                        phi.submit_value(phi.get_value(q), q);
+                        phi.submit_gradient(phi.get_gradient(q) * damping, q);
+                      }
+                    phi.integrate(true, true);
+                    for (unsigned int v = 0;
+                         v < data.n_active_entries_per_cell_batch(cell);
+                         ++v)
+                      for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                        scratch.matrices[v](
+                          phi.get_shape_info().lexicographic_numbering[j],
+                          phi.get_shape_info().lexicographic_numbering[i]) =
+                          phi.begin_dof_values()[j][v];
+                  }
+                for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell);
+                     ++v)
+                  {
+                    typename DoFHandler<dim>::active_cell_iterator dcell =
+                      matrix_free.get_cell_iterator(cell, v, 2);
+                    dcell->get_dof_indices(scratch.dof_indices);
+                    constraints_normals.distribute_local_to_global(
+                      scratch.matrices[v],
+                      scratch.dof_indices,
+                      static_cast<TrilinosWrappers::SparseMatrix &>(projection_matrix));
+                  }
+              }
+          }
+        else if (ls_degree == 4)
+          {
+            FEEvaluation<dim, 4, 8, 1, double> phi(data, 4, 2);
+            AssemblyData::Data &               scratch = scratch_data->get();
+
+            const VectorizedArray<double> min_diameter =
+              make_vectorized_array(epsilon_used / epsilon);
+
+            for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
+              {
+                phi.reinit(cell);
+                const VectorizedArray<double> damping =
+                  4. * Utilities::fixed_power<2>(
+                         std::max(min_diameter,
+                                  cell_diameters[cell] /
+                                    static_cast<double>(fe.tensor_degree())));
+
+                for (unsigned int i = 0; i < phi.dofs_per_cell; ++i)
+                  {
+                    for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                      phi.begin_dof_values()[j] = VectorizedArray<double>();
+                    phi.begin_dof_values()[i] = 1.;
+                    phi.evaluate(true, true);
+                    for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                      {
+                        phi.submit_value(phi.get_value(q), q);
+                        phi.submit_gradient(phi.get_gradient(q) * damping, q);
+                      }
+                    phi.integrate(true, true);
+                    for (unsigned int v = 0;
+                         v < data.n_active_entries_per_cell_batch(cell);
+                         ++v)
+                      for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
+                        scratch.matrices[v](
+                          phi.get_shape_info().lexicographic_numbering[j],
+                          phi.get_shape_info().lexicographic_numbering[i]) =
+                          phi.begin_dof_values()[j][v];
+                  }
+                for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell);
+                     ++v)
+                  {
+                    typename DoFHandler<dim>::active_cell_iterator dcell =
+                      matrix_free.get_cell_iterator(cell, v, 2);
+                    dcell->get_dof_indices(scratch.dof_indices);
+                    constraints_normals.distribute_local_to_global(
+                      scratch.matrices[v],
+                      scratch.dof_indices,
+                      static_cast<TrilinosWrappers::SparseMatrix &>(projection_matrix));
+                  }
+              }
+          }
+        else
+          AssertThrow(false, ExcNotImplemented());
       },
       scratch_local,
       dummy);
