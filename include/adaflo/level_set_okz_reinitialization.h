@@ -169,7 +169,7 @@ private:
    * Utility
    */
   const ConditionalOStream &pcout;         // [i]
-  TimeStepping              time_stepping; // [?]
+  TimeStepping              time_stepping; // [-]
 
   /**
    * Solver section
