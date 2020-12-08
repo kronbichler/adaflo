@@ -217,32 +217,6 @@ LevelSetOKZSolver<dim>::transform_distance_function(
 }
 
 
-
-namespace AssemblyData
-{
-  struct Data
-  {
-    Data()
-    {
-      AssertThrow(false, ExcNotImplemented());
-    }
-
-    Data(const unsigned int size)
-      : matrices(VectorizedArray<double>::size(), FullMatrix<double>(size, size))
-      , dof_indices(size)
-    {}
-
-    Data(const Data &other)
-      : matrices(other.matrices)
-      , dof_indices(other.dof_indices)
-    {}
-
-    std::vector<FullMatrix<double>>      matrices;
-    std::vector<types::global_dof_index> dof_indices;
-  };
-} // namespace AssemblyData
-
-
 // @sect4{LevelSetOKZSolver::make_grid_and_dofs}
 template <int dim>
 void
@@ -250,68 +224,22 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
-  mass_matrix_diagonal(
+  initialize_mass_matrix_diagonal(
     this->matrix_free, this->hanging_node_constraints, 2, 2, preconditioner);
 
-  // create sparse matrix for projection systems.
-  //
-  // First off is the creation of a mask that only adds those entries of
-  // FE_Q_iso_Q0 that are going to have a non-zero matrix entry -> this
-  // ensures as compact a matrix as for Q1 on the fine mesh. To find them,
-  // check terms in a mass matrix.
-  Table<2, bool> dof_mask(this->fe->dofs_per_cell, this->fe->dofs_per_cell);
-  {
-    QIterated<dim> quadrature(QGauss<1>(1), this->parameters.concentration_subdivisions);
-    FEValues<dim>  fe_values(this->mapping, *this->fe, quadrature, update_values);
-    fe_values.reinit(this->dof_handler.begin());
-    for (unsigned int i = 0; i < this->fe->dofs_per_cell; ++i)
-      for (unsigned int j = 0; j < this->fe->dofs_per_cell; ++j)
-        {
-          double sum = 0;
-          for (unsigned int q = 0; q < quadrature.size(); ++q)
-            sum += fe_values.shape_value(i, q) * fe_values.shape_value(j, q);
-          if (sum != 0)
-            dof_mask(i, j) = true;
-        }
-  }
-  {
-    IndexSet relevant_dofs;
-    DoFTools::extract_locally_relevant_dofs(this->dof_handler, relevant_dofs);
-    TrilinosWrappers::SparsityPattern csp;
-    csp.reinit(this->dof_handler.locally_owned_dofs(),
-               this->dof_handler.locally_owned_dofs(),
-               relevant_dofs,
-               get_communicator(this->triangulation));
-    std::vector<types::global_dof_index> local_dof_indices(this->fe->dofs_per_cell);
-    typename DoFHandler<dim>::active_cell_iterator cell =
-                                                     this->dof_handler.begin_active(),
-                                                   endc = this->dof_handler.end();
-    for (; cell != endc; ++cell)
-      if (cell->is_locally_owned())
-        {
-          cell->get_dof_indices(local_dof_indices);
-          this->constraints_normals.add_entries_local_to_global(local_dof_indices,
-                                                                csp,
-                                                                false,
-                                                                dof_mask);
-        }
-    csp.compress();
-    projection_matrix = std::make_shared<BlockMatrixExtension>();
-    projection_matrix->reinit(csp);
-  }
-  {
-    AssemblyData::Data scratch_data(this->fe->dofs_per_cell);
-    auto               scratch_local =
-      std::make_shared<Threads::ThreadLocalStorage<AssemblyData::Data>>(scratch_data);
-    unsigned int dummy = 0;
-    this->matrix_free.cell_loop(&LevelSetOKZSolver<dim>::local_projection_matrix,
-                                this,
-                                scratch_local,
-                                dummy);
-    projection_matrix->compress(VectorOperation::add);
-    ilu_projection_matrix = std::make_shared<BlockILUExtension>();
-    ilu_projection_matrix->initialize(*projection_matrix);
-  }
+  projection_matrix     = std::make_shared<BlockMatrixExtension>();
+  ilu_projection_matrix = std::make_shared<BlockILUExtension>();
+
+  initialize_projection_matrix(this->matrix_free,
+                               this->constraints_normals,
+                               2,
+                               2,
+                               this->parameters.concentration_subdivisions,
+                               this->epsilon_used,
+                               this->parameters.epsilon,
+                               this->cell_diameters,
+                               *projection_matrix,
+                               *ilu_projection_matrix);
 }
 
 
