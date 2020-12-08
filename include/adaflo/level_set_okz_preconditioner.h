@@ -108,7 +108,6 @@ initialize_projection_matrix(
   const AffineConstraints<Number> &                   constraints_normals,
   const unsigned int                                  dof_index,
   const unsigned int                                  quad_index,
-  const unsigned int                                  concentration_subdivisions,
   const Number &                                      epsilon_used,
   const Number &                                      epsilon,
   const AlignedVector<VectorizedArrayType> &          cell_diameters,

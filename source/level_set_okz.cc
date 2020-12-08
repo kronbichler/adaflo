@@ -234,7 +234,6 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
                                this->constraints_normals,
                                2,
                                2,
-                               this->parameters.concentration_subdivisions,
                                this->epsilon_used,
                                this->parameters.epsilon,
                                this->cell_diameters,
