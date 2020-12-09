@@ -36,6 +36,8 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
+#include <deal.II/simplex/fe_lib.h>
+
 #include <adaflo/level_set_base.h>
 #include <adaflo/util.h>
 
@@ -51,8 +53,12 @@ template <int dim>
 LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &parameters_in,
                                                   Triangulation<dim> &  tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
-                               std::make_shared<FE_Q_iso_Q1<dim>>(
-                                 parameters_in.concentration_subdivisions),
+                               parameters_in.use_simplex_mesh ?
+                                 std::shared_ptr<FiniteElement<dim>>(
+                                   new Simplex::FE_P<dim>(
+                                     parameters_in.concentration_subdivisions)) :
+                                 std::shared_ptr<FiniteElement<dim>>(new FE_Q_iso_Q1<dim>(
+                                   parameters_in.concentration_subdivisions)),
                                tria_in)
   , old_residual(std::numeric_limits<double>::max())
   , last_smoothing_step(0)
@@ -63,33 +69,71 @@ LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &paramete
   {
     interpolation_concentration_pressure.reinit(
       this->navier_stokes.get_fe_p().dofs_per_cell, this->fe->dofs_per_cell);
-    const FE_Q_iso_Q1<dim> &fe_mine = dynamic_cast<const FE_Q_iso_Q1<dim> &>(*this->fe);
-    const std::vector<unsigned int> lexicographic_ls =
-      fe_mine.get_poly_space_numbering_inverse();
-    if (const FE_Q<dim> *fe_p =
-          dynamic_cast<const FE_Q<dim> *>(&this->navier_stokes.get_fe_p()))
+    if (this->parameters.use_simplex_mesh)
       {
+        const auto fe_mine = dynamic_cast<const Simplex::FE_P<dim> *>(this->fe.get());
+        const auto fe_p =
+          dynamic_cast<const Simplex::FE_P<dim> *>(&this->navier_stokes.get_fe_p());
+
+        Assert(fe_mine, ExcNotImplemented());
+        Assert(fe_p, ExcNotImplemented());
+
+        /*
+        const std::vector<unsigned int> lexicographic_ls =
+          fe_mine->get_poly_space_numbering_inverse();
+
         const std::vector<unsigned int> lexicographic_p =
           fe_p->get_poly_space_numbering_inverse();
+        */
+
+        std::vector<unsigned int> lexicographic_ls(fe_mine->dofs_per_cell);
+        std::vector<unsigned int> lexicographic_p(fe_p->dofs_per_cell);
+
+        for (unsigned int j = 0; j < fe_mine->dofs_per_cell; ++j)
+          lexicographic_ls[j] = j;
+
+        for (unsigned int j = 0; j < fe_p->dofs_per_cell; ++j)
+          lexicographic_p[j] = j;
+
         for (unsigned int j = 0; j < fe_p->dofs_per_cell; ++j)
           {
             const Point<dim> p = fe_p->get_unit_support_points()[lexicographic_p[j]];
-            for (unsigned int i = 0; i < fe_mine.dofs_per_cell; ++i)
+            for (unsigned int i = 0; i < fe_mine->dofs_per_cell; ++i)
               interpolation_concentration_pressure(j, i) =
                 this->fe->shape_value(lexicographic_ls[i], p);
           }
       }
-    else if (const FE_Q_DG0<dim> *fe_p =
-               dynamic_cast<const FE_Q_DG0<dim> *>(&this->navier_stokes.get_fe_p()))
+    else
       {
-        const std::vector<unsigned int> lexicographic_p =
-          fe_p->get_poly_space_numbering_inverse();
-        for (unsigned int j = 0; j < fe_p->dofs_per_cell - 1; ++j)
+        const FE_Q_iso_Q1<dim> &fe_mine =
+          dynamic_cast<const FE_Q_iso_Q1<dim> &>(*this->fe);
+        const std::vector<unsigned int> lexicographic_ls =
+          fe_mine.get_poly_space_numbering_inverse();
+        if (const FE_Q<dim> *fe_p =
+              dynamic_cast<const FE_Q<dim> *>(&this->navier_stokes.get_fe_p()))
           {
-            const Point<dim> p = fe_p->get_unit_support_points()[lexicographic_p[j]];
-            for (unsigned int i = 0; i < fe_mine.dofs_per_cell; ++i)
-              interpolation_concentration_pressure(j, i) =
-                this->fe->shape_value(lexicographic_ls[i], p);
+            const std::vector<unsigned int> lexicographic_p =
+              fe_p->get_poly_space_numbering_inverse();
+            for (unsigned int j = 0; j < fe_p->dofs_per_cell; ++j)
+              {
+                const Point<dim> p = fe_p->get_unit_support_points()[lexicographic_p[j]];
+                for (unsigned int i = 0; i < fe_mine.dofs_per_cell; ++i)
+                  interpolation_concentration_pressure(j, i) =
+                    this->fe->shape_value(lexicographic_ls[i], p);
+              }
+          }
+        else if (const FE_Q_DG0<dim> *fe_p =
+                   dynamic_cast<const FE_Q_DG0<dim> *>(&this->navier_stokes.get_fe_p()))
+          {
+            const std::vector<unsigned int> lexicographic_p =
+              fe_p->get_poly_space_numbering_inverse();
+            for (unsigned int j = 0; j < fe_p->dofs_per_cell - 1; ++j)
+              {
+                const Point<dim> p = fe_p->get_unit_support_points()[lexicographic_p[j]];
+                for (unsigned int i = 0; i < fe_mine.dofs_per_cell; ++i)
+                  interpolation_concentration_pressure(j, i) =
+                    this->fe->shape_value(lexicographic_ls[i], p);
+              }
           }
       }
   }

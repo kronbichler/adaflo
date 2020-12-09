@@ -17,9 +17,11 @@
 // zero but where we actually get some velocities which are due to
 // inaccuracies in the scheme
 
-#include <deal.II/distributed/tria.h>
+#include <deal.II/distributed/shared_tria.h>
 
 #include <deal.II/grid/grid_generator.h>
+
+#include <deal.II/simplex/grid_generator.h>
 
 #include <adaflo/level_set_okz.h>
 #include <adaflo/level_set_okz_matrix.h>
@@ -80,28 +82,39 @@ template <int dim>
 class MicroFluidicProblem
 {
 public:
-  MicroFluidicProblem(const TwoPhaseParameters &parameters);
+  MicroFluidicProblem(TwoPhaseParameters &parameters);
   void
   run();
+
+  unsigned int
+  fix_n_refinements(FlowParameters &parameters)
+  {
+    unsigned int temp = parameters.global_refinements;
+
+    parameters.global_refinements = 0;
+
+    return temp;
+  }
 
 private:
   MPI_Comm           mpi_communicator;
   ConditionalOStream pcout;
 
-  TwoPhaseParameters                        parameters;
-  parallel::distributed::Triangulation<dim> triangulation;
+  const unsigned int                   n_refinements;
+  TwoPhaseParameters                   parameters;
+  parallel::shared::Triangulation<dim> triangulation;
+
 
   std::unique_ptr<TwoPhaseBaseAlgorithm<dim>> solver;
 };
 
 
 template <int dim>
-MicroFluidicProblem<dim>::MicroFluidicProblem(const TwoPhaseParameters &parameters)
+MicroFluidicProblem<dim>::MicroFluidicProblem(TwoPhaseParameters &parameters)
   : mpi_communicator(MPI_COMM_WORLD)
   , pcout(std::cout, Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-  ,
-
-  parameters(parameters)
+  , n_refinements(fix_n_refinements(parameters))
+  , parameters(parameters)
   , triangulation(mpi_communicator)
 {
   if (parameters.solver_method == "level set okz")
@@ -121,29 +134,37 @@ void
 MicroFluidicProblem<dim>::run()
 {
   // create mesh
-  std::vector<unsigned int> subdivisions(dim, 5);
-  subdivisions[dim - 1] = 10;
+  const unsigned int        n = Utilities::pow(2, n_refinements);
+  std::vector<unsigned int> subdivisions(dim, 5 * n);
+  subdivisions[dim - 1] = 10 * n;
 
   const Point<dim> bottom_left;
   const Point<dim> top_right = (dim == 2 ? Point<dim>(1, 2) : Point<dim>(1, 1, 2));
-  GridGenerator::subdivided_hyper_rectangle(triangulation,
-                                            subdivisions,
-                                            bottom_left,
-                                            top_right);
+
+  if (parameters.use_simplex_mesh)
+    {
+      GridGenerator::subdivided_hyper_rectangle_with_simplices(triangulation,
+                                                               subdivisions,
+                                                               bottom_left,
+                                                               top_right);
+    }
+  else
+    {
+      GridGenerator::subdivided_hyper_rectangle(triangulation,
+                                                subdivisions,
+                                                bottom_left,
+                                                top_right);
+    }
+
 
   // set boundary indicator to 2 on left and right face -> symmetry boundary
-  typename parallel::distributed::Triangulation<dim>::active_cell_iterator
-    cell = triangulation.begin(),
-    endc = triangulation.end();
+  for (const auto &cell : triangulation.active_cell_iterators())
+    for (const auto &face : cell->face_iterators())
+      if (face->at_boundary() && (std::fabs(face->center()[0] - 1) < 1e-14 ||
+                                  std::fabs(face->center()[0]) < 1e-14))
+        face->set_boundary_id(2);
 
-  for (; cell != endc; ++cell)
-    for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-      if (cell->face(face)->at_boundary() &&
-          (std::fabs(cell->face(face)->center()[0] - 1) < 1e-14 ||
-           std::fabs(cell->face(face)->center()[0]) < 1e-14))
-        cell->face(face)->set_boundary_id(2);
-
-  AssertThrow(parameters.global_refinements < 12, ExcInternalError());
+  AssertDimension(parameters.global_refinements, 0);
 
   solver->set_no_slip_boundary(0);
   solver->fix_pressure_constant(0);
@@ -152,52 +173,12 @@ MicroFluidicProblem<dim>::run()
   solver->setup_problem(Functions::ZeroFunction<dim>(dim), InitialValuesLS<dim>());
   solver->output_solution(parameters.output_filename);
 
-  std::vector<std::vector<double>> solution_data;
-  solution_data.push_back(solver->compute_bubble_statistics(0));
-
   // time loop
-  bool first_output = true;
   while (solver->get_time_stepping().at_end() == false)
     {
       solver->advance_time_step();
 
-      solver->output_solution(parameters.output_filename);
-
-      solver->refine_grid();
-
-      solution_data.push_back(solver->compute_bubble_statistics());
-
-      if (solution_data.size() > 0 &&
-          Utilities::MPI::this_mpi_process(triangulation.get_communicator()) == 0 &&
-          solver->get_time_stepping().at_tick(parameters.output_frequency))
-        {
-          const int time_step = 1.000001e4 * solver->get_time_stepping().step_size();
-
-          std::ostringstream filename3;
-          filename3 << parameters.output_filename << "-"
-                    << Utilities::int_to_string((int)parameters.adaptive_refinements, 1)
-                    << "-" << Utilities::int_to_string(parameters.global_refinements, 3)
-                    << "-" << Utilities::int_to_string(time_step, 4) << ".txt";
-
-          std::fstream output_positions3(filename3.str().c_str(),
-                                         first_output ? std::ios::out :
-                                                        std::ios::out | std::ios::app);
-
-          output_positions3.precision(14);
-          if (first_output)
-            output_positions3
-              << "#    time        area      perimeter   circularity   bubble_xvel   bubble_yvel   bubble_xpos    bubble_ypos"
-              << std::endl;
-          for (unsigned int i = 0; i < solution_data.size(); ++i)
-            {
-              output_positions3 << " ";
-              for (unsigned int j = 0; j < solution_data[i].size(); ++j)
-                output_positions3 << solution_data[i][j] << "   ";
-              output_positions3 << std::endl;
-            }
-          solution_data.clear();
-          first_output = false;
-        }
+      solver->output_solution(parameters.output_filename, 2);
     }
 }
 

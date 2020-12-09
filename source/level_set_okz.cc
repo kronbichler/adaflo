@@ -330,10 +330,13 @@ LevelSetOKZSolver<dim>::local_compute_force(
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function), 3 means constraints_curvature and so
   // an
-  FEEvaluation<dim, ls_degree, velocity_degree + 1, 1>           ls_values(data, 2, 0);
-  FEEvaluation<dim, ls_degree, velocity_degree + 1, 1>           curv_values(data, 3, 0);
-  FEEvaluation<dim, velocity_degree, velocity_degree + 1, dim>   vel_values(data, 0, 0);
-  FEEvaluation<dim, velocity_degree - 1, velocity_degree + 1, 1> pre_values(data, 1, 0);
+  const unsigned int n_q_points = ls_degree == -1 ? 0 : (velocity_degree + 1);
+  FEEvaluation<dim, ls_degree, n_q_points, 1> ls_values(data, 2, 0);
+  FEEvaluation<dim, ls_degree, n_q_points, 1> curv_values(data, 3, 0);
+  FEEvaluation<dim, ls_degree == -1 ? -1 : velocity_degree, n_q_points, dim> vel_values(
+    data, 0, 0);
+  FEEvaluation<dim, ls_degree == -1 ? -1 : (velocity_degree - 1), n_q_points, 1>
+    pre_values(data, 1, 0);
 
   typedef VectorizedArray<double> vector_t;
   const bool                      use_variable_parameters =

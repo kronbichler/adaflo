@@ -22,19 +22,30 @@
 
 #include <adaflo/level_set_okz_reinitialization.h>
 
-#define EXPAND_OPERATIONS(OPERATION)                                                     \
-  const unsigned int ls_degree =                                                         \
-    this->matrix_free.get_dof_handler(parameters.dof_index_ls).get_fe().tensor_degree(); \
-                                                                                         \
-  AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());                    \
-  if (ls_degree == 1)                                                                    \
-    OPERATION(1, 0);                                                                     \
-  else if (ls_degree == 2)                                                               \
-    OPERATION(2, 0);                                                                     \
-  else if (ls_degree == 3)                                                               \
-    OPERATION(3, 0);                                                                     \
-  else if (ls_degree == 4)                                                               \
-    OPERATION(4, 0);
+#define EXPAND_OPERATIONS(OPERATION)                                      \
+  if (this->matrix_free.get_dof_handler(parameters.dof_index_ls)          \
+        .get_fe()                                                         \
+        .reference_cell_type() != ReferenceCell::get_hypercube(dim))      \
+    {                                                                     \
+      OPERATION(-1, 0);                                                   \
+    }                                                                     \
+  else                                                                    \
+    {                                                                     \
+      const unsigned int ls_degree =                                      \
+        this->matrix_free.get_dof_handler(parameters.dof_index_ls)        \
+          .get_fe()                                                       \
+          .tensor_degree();                                               \
+                                                                          \
+      AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented()); \
+      if (ls_degree == 1)                                                 \
+        OPERATION(1, 0);                                                  \
+      else if (ls_degree == 2)                                            \
+        OPERATION(2, 0);                                                  \
+      else if (ls_degree == 3)                                            \
+        OPERATION(3, 0);                                                  \
+      else if (ls_degree == 4)                                            \
+        OPERATION(4, 0);                                                  \
+    }
 
 using namespace dealii;
 
@@ -56,9 +67,10 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
 
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function)
-  FEEvaluation<dim, ls_degree, 2 * ls_degree> phi(data,
-                                                  parameters.dof_index_ls,
-                                                  parameters.quad_index);
+  const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
+  FEEvaluation<dim, ls_degree, n_q_points> phi(data,
+                                               parameters.dof_index_ls,
+                                               parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
@@ -105,12 +117,14 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
 {
   // The second input argument below refers to which constrains should be used,
   // 2 means constraints (for LS-function) and 4 means constraints_normals
-  FEEvaluation<dim, ls_degree, 2 * ls_degree>      phi(data,
-                                                  parameters.dof_index_ls,
-                                                  parameters.quad_index);
-  FEEvaluation<dim, ls_degree, 2 * ls_degree, dim> normals(data,
-                                                           parameters.dof_index_normal,
-                                                           parameters.quad_index);
+  const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
+
+  FEEvaluation<dim, ls_degree, n_q_points>      phi(data,
+                                               parameters.dof_index_ls,
+                                               parameters.quad_index);
+  FEEvaluation<dim, ls_degree, n_q_points, dim> normals(data,
+                                                        parameters.dof_index_normal,
+                                                        parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {

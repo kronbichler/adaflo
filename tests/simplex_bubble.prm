@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------
 #
-# Copyright (C) 2020 by the adaflo authors
+# Copyright (C) 2013 - 2016 by the adaflo authors
 #
 # This file is part of the adaflo library.
 #
@@ -13,33 +13,49 @@
 #
 # --------------------------------------------------------------------------
 # Listing of Parameters
+#
+# mpirun: 2
+subsection Problem-specific
+  set two-phase method = level set okz
+end
+subsection Two phase
+  set density              = 1.
+  set density difference   = -0.9
+  set viscosity            = 0.01
+  set viscosity difference = -0.009
+  set surface tension      = 0.0245
+  set epsilon              = 1.5
+  set gravity              = 0.98
+  set concentration subdivisions = 1
+  set grad pressure compatible = 1
+  set localize surface tension = 1
+  set curvature correction = 1
+  set number reinit steps = 2
+  set number initial reinit steps = 2
+end
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 5.
+  set end time         = 1
   set step size        = 0.02
 end
 subsection Navier-Stokes
-  set physical type      = incompressible
-  set dimension          = 2
-  set global refinements = 2
-  set velocity degree    = 2
-  set viscosity          = 0.005
+  set dimension            = 2
+  set global refinements   = 3
+  set adaptive refinements = 0
+  set velocity degree      = 2
   set simplex mesh       = 1
   subsection Solver
-    set linearization scheme         = coupled implicit Newton
     set NL max iterations            = 10
     set NL tolerance                 = 1.e-9
     set lin max iterations           = 30
-    set lin tolerance                = 1.e-5
-    set lin relative tolerance       = 1
-    set lin velocity preconditioner  = ilu scalar
-    set lin pressure mass preconditioner = ilu
-    set lin its before inner solvers = 30
+    set lin tolerance                = 1.e-4
+    set lin velocity preconditioner  = ilu
+    set lin its before inner solvers = 50
   end
 end
 subsection Output options
-  set output verbosity = 2
-  set output frequency = 1
-  set output filename  = output-simplex_channel/data
-  set output vtk files = 0
+  set output filename  = output-simplex_bubble/data
+  set output verbosity = 1
+  set output frequency = 0.1
+  set output vtk files = 1
 end

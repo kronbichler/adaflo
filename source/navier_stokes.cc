@@ -261,11 +261,13 @@ NavierStokes<dim>::initialize_data_structures()
   VectorTools::compute_no_normal_flux_constraints(dof_handler_u,
                                                   0,
                                                   this->boundary->symmetry,
-                                                  hanging_node_constraints_u);
+                                                  hanging_node_constraints_u,
+                                                  this->mapping);
   VectorTools::compute_normal_flux_constraints(dof_handler_u,
                                                0,
                                                this->boundary->normal_flux,
-                                               hanging_node_constraints_u);
+                                               hanging_node_constraints_u,
+                                               this->mapping);
 
   // Now generate the rest of the constraints for the velocity
   constraints_u.merge(hanging_node_constraints_u);
