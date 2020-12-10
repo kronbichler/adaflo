@@ -35,12 +35,12 @@ subsection Two phase
 end
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 1
+  set end time         = 2
   set step size        = 0.02
 end
 subsection Navier-Stokes
   set dimension            = 2
-  set global refinements   = 3
+  set global refinements   = 4
   set adaptive refinements = 0
   set velocity degree      = 2
   set simplex mesh       = 1

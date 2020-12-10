@@ -20,6 +20,7 @@
 #include <deal.II/distributed/shared_tria.h>
 
 #include <deal.II/grid/grid_generator.h>
+#include <deal.II/grid/grid_in.h>
 
 #include <deal.II/simplex/grid_generator.h>
 
@@ -143,10 +144,21 @@ MicroFluidicProblem<dim>::run()
 
   if (parameters.use_simplex_mesh)
     {
-      GridGenerator::subdivided_hyper_rectangle_with_simplices(triangulation,
-                                                               subdivisions,
-                                                               bottom_left,
-                                                               top_right);
+      if (false)
+        {
+          GridGenerator::subdivided_hyper_rectangle_with_simplices(triangulation,
+                                                                   subdivisions,
+                                                                   bottom_left,
+                                                                   top_right);
+        }
+      else
+        {
+          GridIn<dim> grid_in;
+          grid_in.attach_triangulation(triangulation);
+          std::ifstream input_file("simplex_bubble_" + std::to_string(n_refinements) +
+                                   ".msh");
+          grid_in.read_msh(input_file);
+        }
     }
   else
     {
