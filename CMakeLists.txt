@@ -79,7 +79,7 @@ INCLUDE_DIRECTORIES(include)
 
 PROJECT(adaflo)
 
-ADD_LIBRARY(adaflo  ${TARGET_SRC})
+ADD_LIBRARY(adaflo SHARED ${TARGET_SRC})
 
 
 # Define custom targets to easily switch the build type:
