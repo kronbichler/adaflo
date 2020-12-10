@@ -65,7 +65,11 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   const std::shared_ptr<FiniteElement<dim>> fe_in,
   Triangulation<dim> &                      tria_in,
   TimerOutput *                             timer_in)
-  : pcout(std::cout, Utilities::MPI::this_mpi_process(get_communicator(tria_in)) == 0)
+  : solution_update(2)
+  , solution(2)
+  , solution_old(2)
+  , solution_old_old(2)
+  , pcout(std::cout, Utilities::MPI::this_mpi_process(get_communicator(tria_in)) == 0)
   , timer((timer_in == 0 ?
              new TimerOutput(pcout,
                              parameters_in.output_wall_times ? TimerOutput::summary :
@@ -77,6 +81,7 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   , navier_stokes(parameters_in, triangulation, timer.get(), this->boundary)
   , fe(fe_in)
   , dof_handler(triangulation)
+  , system_rhs(2)
   , time_stepping(navier_stokes.time_stepping)
   , parameters(navier_stokes.get_parameters())
   , epsilon_used(0)

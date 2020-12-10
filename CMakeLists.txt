@@ -55,7 +55,12 @@ DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 # Set the source files to be compiled
 SET( TARGET_SRC
+     source/level_set_okz_preconditioner.cc
+     source/level_set_okz_compute_curvature.cc
+     source/level_set_okz_advance_concentration.cc
+     source/level_set_okz_compute_normal.cc
      source/level_set_okz.cc
+     source/level_set_okz_reinitialization.cc
      source/phase_field.cc
      source/phase_field_local.cc
      source/navier_stokes_matrix.cc

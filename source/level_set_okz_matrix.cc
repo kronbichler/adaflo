@@ -377,18 +377,9 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration()
   // apply boundary values
   {
     std::map<types::boundary_id, const Function<dim> *> dirichlet;
-    Functions::ConstantFunction<dim>                    plus_func(1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_plus.begin();
-         it != this->boundary->fluid_type_plus.end();
-         ++it)
-      dirichlet[*it] = &plus_func;
-    Functions::ConstantFunction<dim> minus_func(-1., 1);
-    for (typename std::set<types::boundary_id>::const_iterator it =
-           this->boundary->fluid_type_minus.begin();
-         it != this->boundary->fluid_type_minus.end();
-         ++it)
-      dirichlet[*it] = &minus_func;
+
+    for (const auto &b : this->boundary->fluid_type)
+      dirichlet[b.first] = b.second.get();
 
     std::map<types::global_dof_index, double> boundary_values;
     VectorTools::interpolate_boundary_values(this->dof_handler,
@@ -502,7 +493,7 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration()
           {
             const Tensor<1, dim> &velocity = velocity_values[q];
             double old_value = -this->time_stepping.weight_old() * old_values[q];
-            if (this->time_stepping.scheme() == TimeStepping::bdf_2 &&
+            if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
                 this->time_stepping.step_no() > 1)
               old_value -= this->time_stepping.weight_old_old() * old_old_values[q];
 

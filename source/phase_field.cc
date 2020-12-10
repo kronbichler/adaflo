@@ -118,16 +118,9 @@ PhaseFieldSolver<dim>::initialize_data_structures()
   // conditions on open boundaries
   Functions::ZeroFunction<dim>                        zero_func(1);
   std::map<types::boundary_id, const Function<dim> *> homogeneous_dirichlet;
-  for (typename std::set<types::boundary_id>::const_iterator it =
-         this->boundary->fluid_type_plus.begin();
-       it != this->boundary->fluid_type_plus.end();
-       ++it)
-    homogeneous_dirichlet[*it] = &zero_func;
-  for (typename std::set<types::boundary_id>::const_iterator it =
-         this->boundary->fluid_type_minus.begin();
-       it != this->boundary->fluid_type_minus.end();
-       ++it)
-    homogeneous_dirichlet[*it] = &zero_func;
+  for (const auto &it : this->boundary->fluid_type)
+    homogeneous_dirichlet[it.first] = &zero_func;
+
   VectorTools::interpolate_boundary_values(this->dof_handler,
                                            homogeneous_dirichlet,
                                            this->constraints);

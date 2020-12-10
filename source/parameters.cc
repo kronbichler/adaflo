@@ -576,13 +576,13 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
 
   const std::string schem = prm.get("scheme");
   if (schem == std::string("implicit_euler"))
-    time_step_scheme = TimeStepping::implicit_euler;
+    time_step_scheme = TimeSteppingParameters::Scheme::implicit_euler;
   else if (schem == std::string("explicit_euler"))
-    time_step_scheme = TimeStepping::explicit_euler;
+    time_step_scheme = TimeSteppingParameters::Scheme::explicit_euler;
   else if (schem == std::string("crank_nicolson"))
-    time_step_scheme = TimeStepping::crank_nicolson;
+    time_step_scheme = TimeSteppingParameters::Scheme::crank_nicolson;
   else if (schem == std::string("bdf_2"))
-    time_step_scheme = TimeStepping::bdf_2;
+    time_step_scheme = TimeSteppingParameters::Scheme::bdf_2;
   else
     // parameter handler should make sure that we
     // never end up here

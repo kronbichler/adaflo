@@ -86,10 +86,12 @@ FlowBaseAlgorithm<dim>::set_velocity_dirichlet_boundary(
       case 0:
         break;
       case 1:
-        boundary->fluid_type_plus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(1, 1);
         break;
       case -1:
-        boundary->fluid_type_minus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(-1, 1);
         break;
       default:
         AssertThrow(false, ExcMessage("Unknown fluid type"));
@@ -120,10 +122,12 @@ FlowBaseAlgorithm<dim>::set_open_boundary(
       case 0:
         break;
       case 1:
-        boundary->fluid_type_plus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(1, 1);
         break;
       case -1:
-        boundary->fluid_type_minus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(-1, 1);
         break;
       default:
         AssertThrow(false, ExcMessage("Unknown fluid type"));
@@ -155,10 +159,12 @@ FlowBaseAlgorithm<dim>::set_open_boundary_with_normal_flux(
       case 0:
         break;
       case 1:
-        boundary->fluid_type_plus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(1, 1);
         break;
       case -1:
-        boundary->fluid_type_minus.insert(boundary_id);
+        boundary->fluid_type[boundary_id] =
+          std::make_shared<Functions::ConstantFunction<dim>>(-1, 1);
         break;
       default:
         AssertThrow(false, ExcMessage("Unknown fluid type"));

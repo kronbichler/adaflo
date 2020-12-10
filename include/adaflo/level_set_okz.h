@@ -19,7 +19,10 @@
 
 #include <adaflo/diagonal_preconditioner.h>
 #include <adaflo/level_set_base.h>
-
+#include <adaflo/level_set_okz_advance_concentration.h>
+#include <adaflo/level_set_okz_compute_curvature.h>
+#include <adaflo/level_set_okz_compute_normal.h>
+#include <adaflo/level_set_okz_reinitialization.h>
 
 using namespace dealii;
 
@@ -41,29 +44,6 @@ public:
   LevelSetOKZSolver(const FlowParameters &parameters, Triangulation<dim> &triangulation);
   virtual ~LevelSetOKZSolver()
   {}
-
-  void
-  advance_concentration_vmult(
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src) const;
-
-  void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<double> &sr) const;
-
-  void
-  compute_normal_vmult(LinearAlgebra::distributed::BlockVector<float> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<float> &sr) const;
-
-  void
-  compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                          const LinearAlgebra::distributed::Vector<double> &srcc,
-                          const bool apply_diffusion) const;
-
-  void
-  reinitialization_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const bool diffuse_only) const;
 
   virtual void
   initialize_data_structures();
@@ -108,63 +88,6 @@ private:
                       const LinearAlgebra::distributed::Vector<double> &src,
                       const std::pair<unsigned int, unsigned int> &     cell_range);
 
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration_rhs(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range);
-  template <int ls_degree, typename Number>
-  void
-  local_compute_normal(const MatrixFree<dim, Number> &                        data,
-                       LinearAlgebra::distributed::BlockVector<Number> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<Number> &src,
-                       const std::pair<unsigned int, unsigned int> &cell_range) const;
-  template <int ls_degree>
-  void
-  local_compute_normal_rhs(const MatrixFree<dim, double> &                   data,
-                           LinearAlgebra::distributed::BlockVector<double> & dst,
-                           const LinearAlgebra::distributed::Vector<double> &src,
-                           const std::pair<unsigned int, unsigned int> &cell_range) const;
-
-  // diffusion_setting: 0: both terms, 1: only mass, 2: only diffusion
-  template <int ls_degree, int diffusion_setting>
-  void
-  local_compute_curvature(const MatrixFree<dim, double> &                   data,
-                          LinearAlgebra::distributed::Vector<double> &      dst,
-                          const LinearAlgebra::distributed::Vector<double> &src,
-                          const std::pair<unsigned int, unsigned int> &cell_range) const;
-  template <int ls_degree>
-  void
-  local_compute_curvature_rhs(
-    const MatrixFree<dim, double> &                   data,
-    LinearAlgebra::distributed::Vector<double> &      dst,
-    const LinearAlgebra::distributed::Vector<double> &src,
-    const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize(const MatrixFree<dim, double> &                   data,
-                     LinearAlgebra::distributed::Vector<double> &      dst,
-                     const LinearAlgebra::distributed::Vector<double> &src,
-                     const std::pair<unsigned int, unsigned int> &     cell_range) const;
-
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize_rhs(const MatrixFree<dim, double> &                   data,
-                         LinearAlgebra::distributed::Vector<double> &      dst,
-                         const LinearAlgebra::distributed::Vector<double> &src,
-                         const std::pair<unsigned int, unsigned int> &     cell_range);
-
   void
   local_projection_matrix(
     const MatrixFree<dim, double> &                                   data,
@@ -179,20 +102,17 @@ private:
     std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
     const std::pair<unsigned int, unsigned int> &                     cell_range);
 
-  AlignedVector<VectorizedArray<double>>                 artificial_viscosities;
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;
-  bool                                                   first_reinit_step;
-  double                                                 global_max_velocity;
-  DiagonalPreconditioner<double>                         preconditioner;
-
-  // In case we can better combine float/double solvers at some point...
-  MatrixFree<dim, float>                matrix_free_float;
-  AlignedVector<VectorizedArray<float>> cell_diameters_float;
-  // GrowingVectorMemory<LinearAlgebra::distributed::BlockVector<float> >
-  // vectors_normal; DiagonalPreconditioner<float> preconditioner_float;
+  bool                           first_reinit_step;
+  double                         global_max_velocity;
+  DiagonalPreconditioner<double> preconditioner;
 
   std::shared_ptr<BlockMatrixExtension> projection_matrix;
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
+
+  std::unique_ptr<LevelSetOKZSolverComputeNormal<dim>>        normal_operator;
+  std::unique_ptr<LevelSetOKZSolverComputeCurvature<dim>>     curvatur_operator;
+  std::unique_ptr<LevelSetOKZSolverReinitialization<dim>>     reinit_operator;
+  std::unique_ptr<LevelSetOKZSolverAdvanceConcentration<dim>> advection_operator;
 };
 
 

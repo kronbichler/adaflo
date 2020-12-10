@@ -96,16 +96,15 @@ struct FlowParameters
   unsigned int print_solution_fields;
   bool         output_wall_times;
 
-  TimeStepping::Scheme time_step_scheme;
-  double               start_time;
-  double               end_time;
-  double               time_step_size_start;
-  double               time_stepping_cfl;
-  double               time_stepping_coef2;
-  double               time_step_tolerance;
-  double               time_step_size_max;
-  double               time_step_size_min;
-
+  TimeSteppingParameters::Scheme time_step_scheme;
+  double                         start_time;
+  double                         end_time;
+  double                         time_step_size_start;
+  double                         time_stepping_cfl;
+  double                         time_stepping_coef2;
+  double                         time_step_tolerance;
+  double                         time_step_size_max;
+  double                         time_step_size_min;
 
   // Two-phase specific parameters
   double density_diff;
