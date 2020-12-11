@@ -116,7 +116,10 @@ MicroFluidicProblem<dim>::MicroFluidicProblem(TwoPhaseParameters &parameters)
   , pcout(std::cout, Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
   , n_refinements(fix_n_refinements(parameters))
   , parameters(parameters)
-  , triangulation(mpi_communicator)
+  , triangulation(mpi_communicator,
+                  ::Triangulation<dim>::none,
+                  true,
+                  parallel::shared::Triangulation<dim>::partition_zorder)
 {
   if (parameters.solver_method == "level set okz")
     solver = std::make_unique<LevelSetOKZSolver<dim>>(parameters, triangulation);
@@ -155,8 +158,15 @@ MicroFluidicProblem<dim>::run()
         {
           GridIn<dim> grid_in;
           grid_in.attach_triangulation(triangulation);
-          std::ifstream input_file("simplex_bubble_" + std::to_string(n_refinements) +
-                                   ".msh");
+
+          std::string file_name;
+
+          if (dim == 2)
+            file_name = "simplex_bubble_" + std::to_string(n_refinements) + ".msh";
+          else
+            file_name = "simplex_bubble_3D_" + std::to_string(n_refinements) + ".msh";
+
+          std::ifstream input_file(file_name);
           grid_in.read_msh(input_file);
         }
     }
@@ -183,7 +193,7 @@ MicroFluidicProblem<dim>::run()
   solver->set_symmetry_boundary(2);
 
   solver->setup_problem(Functions::ZeroFunction<dim>(dim), InitialValuesLS<dim>());
-  solver->output_solution(parameters.output_filename);
+  solver->output_solution(parameters.output_filename, 2);
 
   // time loop
   while (solver->get_time_stepping().at_end() == false)
