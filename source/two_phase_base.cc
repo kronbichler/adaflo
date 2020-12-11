@@ -20,6 +20,7 @@
 #include <deal.II/dofs/dof_tools.h>
 
 #include <deal.II/fe/fe_values.h>
+#include <deal.II/fe/mapping_fe.h>
 
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_tools.h>
@@ -31,6 +32,9 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/numerics/vector_tools.h>
+
+#include <deal.II/simplex/fe_lib.h>
+#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/two_phase_base.h>
 #include <adaflo/util.h>
@@ -65,7 +69,11 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   const std::shared_ptr<FiniteElement<dim>> fe_in,
   Triangulation<dim> &                      tria_in,
   TimerOutput *                             timer_in)
-  : solution_update(2)
+  : FlowBaseAlgorithm<dim>(
+      parameters_in.use_simplex_mesh ?
+        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+        std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
+  , solution_update(2)
   , solution(2)
   , solution_old(2)
   , solution_old_old(2)
@@ -245,13 +253,23 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
   constraint.push_back(&constraints_curvature);
   constraint.push_back(&constraints_normals);
 
-  std::vector<Quadrature<1>> quadratures;
-  quadratures.push_back(QGauss<1>(parameters.velocity_degree + 1));
-  quadratures.push_back(QGauss<1>(parameters.velocity_degree));
-  if (fe->get_name().find("FE_Q_iso_Q1") != std::string::npos)
-    quadratures.push_back(QIterated<1>(QGauss<1>(2), fe->degree));
+  std::vector<Quadrature<dim>> quadratures;
+  if (parameters.use_simplex_mesh)
+    {
+      quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree + 1));
+      quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree));
+      quadratures.push_back(Simplex::QGauss<dim>(fe->degree + 1));
+    }
   else
-    quadratures.push_back(QGauss<1>(fe->degree + 1));
+    {
+      quadratures.push_back(QGauss<dim>(parameters.velocity_degree + 1));
+      quadratures.push_back(QGauss<dim>(parameters.velocity_degree));
+      if (fe->get_name().find("FE_Q_iso_Q1") != std::string::npos)
+        quadratures.push_back(QIterated<dim>(QGauss<1>(2), fe->degree));
+      else
+        quadratures.push_back(QGauss<dim>(fe->degree + 1));
+    }
+
   matrix_free.reinit(this->mapping, dof_handlers, constraint, quadratures, data);
 
   navier_stokes.initialize_matrix_free(&matrix_free);

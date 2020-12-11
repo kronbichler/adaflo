@@ -1,0 +1,405 @@
+
+Number of active cells: 1792.
+Number of Navier-Stokes degrees of freedom: 8347 (7394 + 953).
+Number of level set degrees of freedom: 953.
+Mesh size (largest/smallest element length at finest level): 0.0777163 / 0.0263957
+  reinitialize (17 + 17)
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.02 (dt = 0.02). 
+  Concentration advance: advect [0/0] and reinitialize (17 + 18)
+  Residual/iterations: [0.0374/ILU/9] [7.29e-06/11] [3.54e-10/conv.]
+
+Time step #2, advancing from t_n-1 = 0.02 to t = 0.04 (dt = 0.02). 
+  Concentration advance: advect [0.00142/10] and reinitialize (18 + 18)
+  Residual/iterations: [0.011/ILU/5] [6.79e-06/10] [3.09e-10/conv.]
+
+Time step #3, advancing from t_n-1 = 0.04 to t = 0.06 (dt = 0.02). 
+  Concentration advance: advect [0.00228/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000303/8] [2.46e-08/4] [3.53e-10/conv.]
+
+Time step #4, advancing from t_n-1 = 0.06 to t = 0.08 (dt = 0.02). 
+  Concentration advance: advect [0.00189/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000272/8] [2.01e-08/3] [4.48e-10/conv.]
+
+Time step #5, advancing from t_n-1 = 0.08 to t = 0.1 (dt = 0.02). 
+  Concentration advance: advect [0.00184/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000257/8] [1.94e-08/4] [2.18e-10/conv.]
+
+Time step #6, advancing from t_n-1 = 0.1 to t = 0.12 (dt = 0.02). 
+  Concentration advance: advect [0.00195/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000243/8] [1.99e-08/4] [2.57e-10/conv.]
+
+Time step #7, advancing from t_n-1 = 0.12 to t = 0.14 (dt = 0.02). 
+  Concentration advance: advect [0.00214/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000231/8] [2.24e-08/4] [3.15e-10/conv.]
+
+Time step #8, advancing from t_n-1 = 0.14 to t = 0.16 (dt = 0.02). 
+  Concentration advance: advect [0.00238/10] and reinitialize (16 + 17)
+  Residual/iterations: [0.000222/9] [1.25e-08/3] [4.64e-10/conv.]
+
+Time step #9, advancing from t_n-1 = 0.16 to t = 0.18 (dt = 0.02). 
+  Concentration advance: advect [0.00265/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/9] [1.67e-08/4] [1.86e-10/conv.]
+
+Time step #10, advancing from t_n-1 = 0.18 to t = 0.2 (dt = 0.02). 
+  Concentration advance: advect [0.00295/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000208/10] [9.87e-09/3] [3.54e-10/conv.]
+
+Time step #11, advancing from t_n-1 = 0.2 to t = 0.22 (dt = 0.02). 
+  Concentration advance: advect [0.0033/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000203/10] [1.43e-08/4] [2.7e-10/conv.]
+
+Time step #12, advancing from t_n-1 = 0.22 to t = 0.24 (dt = 0.02). 
+  Concentration advance: advect [0.0037/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000198/11] [8.95e-09/4] [3.13e-10/conv.]
+
+Time step #13, advancing from t_n-1 = 0.24 to t = 0.26 (dt = 0.02). 
+  Concentration advance: advect [0.00411/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000195/11] [1.26e-08/4] [4.98e-10/conv.]
+
+Time step #14, advancing from t_n-1 = 0.26 to t = 0.28 (dt = 0.02). 
+  Concentration advance: advect [0.00451/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000192/11] [1.85e-08/6] [3.48e-10/conv.]
+
+Time step #15, advancing from t_n-1 = 0.28 to t = 0.3 (dt = 0.02). 
+  Concentration advance: advect [0.00489/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000191/12] [1.62e-08/6] [4.14e-10/conv.]
+
+Time step #16, advancing from t_n-1 = 0.3 to t = 0.32 (dt = 0.02). 
+  Concentration advance: advect [0.00522/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.00019/ILU/8] [1.46e-08/3] [3.24e-10/conv.]
+
+Time step #17, advancing from t_n-1 = 0.32 to t = 0.34 (dt = 0.02). 
+  Concentration advance: advect [0.00553/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000189/8] [1.6e-08/3] [4.72e-10/conv.]
+
+Time step #18, advancing from t_n-1 = 0.34 to t = 0.36 (dt = 0.02). 
+  Concentration advance: advect [0.00583/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000189/8] [1.77e-08/4] [2.14e-10/conv.]
+
+Time step #19, advancing from t_n-1 = 0.36 to t = 0.38 (dt = 0.02). 
+  Concentration advance: advect [0.00614/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.00019/9] [1.08e-08/4] [1.63e-10/conv.]
+
+Time step #20, advancing from t_n-1 = 0.38 to t = 0.4 (dt = 0.02). 
+  Concentration advance: advect [0.00646/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.00019/9] [1.87e-08/4] [3.75e-10/conv.]
+
+Time step #21, advancing from t_n-1 = 0.4 to t = 0.42 (dt = 0.02). 
+  Concentration advance: advect [0.00678/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000192/10] [1.61e-08/5] [3.12e-10/conv.]
+
+Time step #22, advancing from t_n-1 = 0.42 to t = 0.44 (dt = 0.02). 
+  Concentration advance: advect [0.00711/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000193/ILU/8] [1.23e-08/3] [4.31e-10/conv.]
+
+Time step #23, advancing from t_n-1 = 0.44 to t = 0.46 (dt = 0.02). 
+  Concentration advance: advect [0.00745/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000195/8] [1.59e-08/4] [2.41e-10/conv.]
+
+Time step #24, advancing from t_n-1 = 0.46 to t = 0.48 (dt = 0.02). 
+  Concentration advance: advect [0.00779/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000198/9] [1.13e-08/3] [4.55e-10/conv.]
+
+Time step #25, advancing from t_n-1 = 0.48 to t = 0.5 (dt = 0.02). 
+  Concentration advance: advect [0.00812/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000201/10] [1.18e-08/4] [3.05e-10/conv.]
+
+Time step #26, advancing from t_n-1 = 0.5 to t = 0.52 (dt = 0.02). 
+  Concentration advance: advect [0.00848/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000204/ILU/8] [1.66e-08/4] [3.06e-10/conv.]
+
+Time step #27, advancing from t_n-1 = 0.52 to t = 0.54 (dt = 0.02). 
+  Concentration advance: advect [0.0089/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000206/9] [9.12e-09/3] [3.94e-10/conv.]
+
+Time step #28, advancing from t_n-1 = 0.54 to t = 0.56 (dt = 0.02). 
+  Concentration advance: advect [0.00936/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000208/9] [1.62e-08/4] [3.24e-10/conv.]
+
+Time step #29, advancing from t_n-1 = 0.56 to t = 0.58 (dt = 0.02). 
+  Concentration advance: advect [0.00983/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000209/11] [8.78e-09/3] [4.91e-10/conv.]
+
+Time step #30, advancing from t_n-1 = 0.58 to t = 0.6 (dt = 0.02). 
+  Concentration advance: advect [0.0101/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000211/11] [1.72e-08/5] [3.71e-10/conv.]
+
+Time step #31, advancing from t_n-1 = 0.6 to t = 0.62 (dt = 0.02). 
+  Concentration advance: advect [0.0103/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000212/ILU/8] [1.74e-08/4] [3.61e-10/conv.]
+
+Time step #32, advancing from t_n-1 = 0.62 to t = 0.64 (dt = 0.02). 
+  Concentration advance: advect [0.0106/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000213/9] [9.99e-09/3] [4.89e-10/conv.]
+
+Time step #33, advancing from t_n-1 = 0.64 to t = 0.66 (dt = 0.02). 
+  Concentration advance: advect [0.011/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000214/10] [9.73e-09/4] [2.59e-10/conv.]
+
+Time step #34, advancing from t_n-1 = 0.66 to t = 0.68 (dt = 0.02). 
+  Concentration advance: advect [0.0114/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000214/11] [1.16e-08/4] [4.23e-10/conv.]
+
+Time step #35, advancing from t_n-1 = 0.68 to t = 0.7 (dt = 0.02). 
+  Concentration advance: advect [0.0117/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/ILU/9] [1.2e-08/4] [3.19e-10/conv.]
+
+Time step #36, advancing from t_n-1 = 0.7 to t = 0.72 (dt = 0.02). 
+  Concentration advance: advect [0.0119/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/9] [1.77e-08/4] [3.73e-10/conv.]
+
+Time step #37, advancing from t_n-1 = 0.72 to t = 0.74 (dt = 0.02). 
+  Concentration advance: advect [0.0121/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/10] [1.35e-08/4] [3.33e-10/conv.]
+
+Time step #38, advancing from t_n-1 = 0.74 to t = 0.76 (dt = 0.02). 
+  Concentration advance: advect [0.0123/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/11] [1.51e-08/5] [2.65e-10/conv.]
+
+Time step #39, advancing from t_n-1 = 0.76 to t = 0.78 (dt = 0.02). 
+  Concentration advance: advect [0.0125/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/ILU/9] [1.53e-08/4] [4.16e-10/conv.]
+
+Time step #40, advancing from t_n-1 = 0.78 to t = 0.8 (dt = 0.02). 
+  Concentration advance: advect [0.0127/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/9] [2.07e-08/4] [4.41e-10/conv.]
+
+Time step #41, advancing from t_n-1 = 0.8 to t = 0.82 (dt = 0.02). 
+  Concentration advance: advect [0.013/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000215/10] [1.85e-08/4] [4.01e-10/conv.]
+
+Time step #42, advancing from t_n-1 = 0.82 to t = 0.84 (dt = 0.02). 
+  Concentration advance: advect [0.0132/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000214/12] [1.34e-08/5] [2.72e-10/conv.]
+
+Time step #43, advancing from t_n-1 = 0.84 to t = 0.86 (dt = 0.02). 
+  Concentration advance: advect [0.0136/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000211/ILU/9] [1.59e-08/4] [4.58e-10/conv.]
+
+Time step #44, advancing from t_n-1 = 0.86 to t = 0.88 (dt = 0.02). 
+  Concentration advance: advect [0.014/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000208/10] [1.1e-08/4] [3.28e-10/conv.]
+
+Time step #45, advancing from t_n-1 = 0.88 to t = 0.9 (dt = 0.02). 
+  Concentration advance: advect [0.0142/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000205/10] [2.07e-08/4] [3.89e-10/conv.]
+
+Time step #46, advancing from t_n-1 = 0.9 to t = 0.92 (dt = 0.02). 
+  Concentration advance: advect [0.0143/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000203/12] [1.57e-08/5] [2.42e-10/conv.]
+
+Time step #47, advancing from t_n-1 = 0.92 to t = 0.94 (dt = 0.02). 
+  Concentration advance: advect [0.0145/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.0002/ILU/9] [1.5e-08/4] [4.3e-10/conv.]
+
+Time step #48, advancing from t_n-1 = 0.94 to t = 0.96 (dt = 0.02). 
+  Concentration advance: advect [0.0147/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000196/10] [1.11e-08/4] [2.37e-10/conv.]
+
+Time step #49, advancing from t_n-1 = 0.96 to t = 0.98 (dt = 0.02). 
+  Concentration advance: advect [0.015/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000192/10] [1.95e-08/4] [3.44e-10/conv.]
+
+Time step #50, advancing from t_n-1 = 0.98 to t = 1 (dt = 0.02). 
+  Concentration advance: advect [0.0152/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000188/12] [1.51e-08/5] [2.34e-10/conv.]
+
+Time step #51, advancing from t_n-1 = 1 to t = 1.02 (dt = 0.02). 
+  Concentration advance: advect [0.0153/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000185/ILU/10] [8.67e-09/3] [3.73e-10/conv.]
+
+Time step #52, advancing from t_n-1 = 1.02 to t = 1.04 (dt = 0.02). 
+  Concentration advance: advect [0.0154/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000181/10] [1.32e-08/3] [3.99e-10/conv.]
+
+Time step #53, advancing from t_n-1 = 1.04 to t = 1.06 (dt = 0.02). 
+  Concentration advance: advect [0.0154/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000177/11] [1.28e-08/4] [2.87e-10/conv.]
+
+Time step #54, advancing from t_n-1 = 1.06 to t = 1.08 (dt = 0.02). 
+  Concentration advance: advect [0.0154/9] and reinitialize (17 + 16)
+  Residual/iterations: [0.000174/12] [1.64e-08/5] [3.46e-10/conv.]
+
+Time step #55, advancing from t_n-1 = 1.08 to t = 1.1 (dt = 0.02). 
+  Concentration advance: advect [0.0155/9] and reinitialize (17 + 16)
+  Residual/iterations: [0.000174/ILU/9] [1.73e-08/4] [2.69e-10/conv.]
+
+Time step #56, advancing from t_n-1 = 1.1 to t = 1.12 (dt = 0.02). 
+  Concentration advance: advect [0.0157/9] and reinitialize (17 + 16)
+  Residual/iterations: [0.000175/10] [1.44e-08/4] [2.05e-10/conv.]
+
+Time step #57, advancing from t_n-1 = 1.12 to t = 1.14 (dt = 0.02). 
+  Concentration advance: advect [0.0158/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000172/11] [1.67e-08/4] [4.68e-10/conv.]
+
+Time step #58, advancing from t_n-1 = 1.14 to t = 1.16 (dt = 0.02). 
+  Concentration advance: advect [0.0161/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000168/13] [1.05e-08/5] [2.85e-10/conv.]
+
+Time step #59, advancing from t_n-1 = 1.16 to t = 1.18 (dt = 0.02). 
+  Concentration advance: advect [0.0164/9] and reinitialize (16 + 16)
+  Residual/iterations: [0.000165/ILU/10] [7.23e-09/3] [4.95e-10/conv.]
+
+Time step #60, advancing from t_n-1 = 1.18 to t = 1.2 (dt = 0.02). 
+  Concentration advance: advect [0.0165/11] and reinitialize (16 + 16)
+  Residual/iterations: [0.000162/10] [1.63e-08/4] [2.98e-10/conv.]
+
+Time step #61, advancing from t_n-1 = 1.2 to t = 1.22 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000159/12] [7.02e-09/4] [2.84e-10/conv.]
+
+Time step #62, advancing from t_n-1 = 1.22 to t = 1.24 (dt = 0.02). 
+  Concentration advance: advect [0.0166/10] and reinitialize (16 + 15)
+  Residual/iterations: [0.000158/ILU/10] [9.94e-09/4] [2.75e-10/conv.]
+
+Time step #63, advancing from t_n-1 = 1.24 to t = 1.26 (dt = 0.02). 
+  Concentration advance: advect [0.0167/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000158/11] [7.11e-09/4] [2.96e-10/conv.]
+
+Time step #64, advancing from t_n-1 = 1.26 to t = 1.28 (dt = 0.02). 
+  Concentration advance: advect [0.0168/9] and reinitialize (16 + 15)
+  Residual/iterations: [0.000157/12] [9.14e-09/4] [3.37e-10/conv.]
+
+Time step #65, advancing from t_n-1 = 1.28 to t = 1.3 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000154/13] [1.41e-08/5] [3.07e-10/conv.]
+
+Time step #66, advancing from t_n-1 = 1.3 to t = 1.32 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000151/ILU/10] [1.01e-08/4] [3.4e-10/conv.]
+
+Time step #67, advancing from t_n-1 = 1.32 to t = 1.34 (dt = 0.02). 
+  Concentration advance: advect [0.0166/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.00015/11] [7.32e-09/4] [3.6e-10/conv.]
+
+Time step #68, advancing from t_n-1 = 1.34 to t = 1.36 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (16 + 16)
+  Residual/iterations: [0.000154/12] [8.61e-09/4] [3.64e-10/conv.]
+
+Time step #69, advancing from t_n-1 = 1.36 to t = 1.38 (dt = 0.02). 
+  Concentration advance: advect [0.0164/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.00016/14] [7.73e-09/4] [4.49e-10/conv.]
+
+Time step #70, advancing from t_n-1 = 1.38 to t = 1.4 (dt = 0.02). 
+  Concentration advance: advect [0.0164/10] and reinitialize (17 + 16)
+  Residual/iterations: [0.000159/ILU/10] [1.21e-08/4] [3.06e-10/conv.]
+
+Time step #71, advancing from t_n-1 = 1.4 to t = 1.42 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (17 + 16)
+  Residual/iterations: [0.000155/11] [8.19e-09/4] [2.71e-10/conv.]
+
+Time step #72, advancing from t_n-1 = 1.42 to t = 1.44 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000159/12] [9.94e-09/4] [3.22e-10/conv.]
+
+Time step #73, advancing from t_n-1 = 1.44 to t = 1.46 (dt = 0.02). 
+  Concentration advance: advect [0.017/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.00016/14] [7.91e-09/4] [4.74e-10/conv.]
+
+Time step #74, advancing from t_n-1 = 1.46 to t = 1.48 (dt = 0.02). 
+  Concentration advance: advect [0.0171/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000158/ILU/10] [7.8e-09/3] [4.26e-10/conv.]
+
+Time step #75, advancing from t_n-1 = 1.48 to t = 1.5 (dt = 0.02). 
+  Concentration advance: advect [0.017/10] and reinitialize (17 + 16)
+  Residual/iterations: [0.000162/11] [8.06e-09/3] [4.84e-10/conv.]
+
+Time step #76, advancing from t_n-1 = 1.5 to t = 1.52 (dt = 0.02). 
+  Concentration advance: advect [0.017/10] and reinitialize (17 + 16)
+  Residual/iterations: [0.00016/12] [1.14e-08/4] [3.48e-10/conv.]
+
+Time step #77, advancing from t_n-1 = 1.52 to t = 1.54 (dt = 0.02). 
+  Concentration advance: advect [0.017/10] and reinitialize (17 + 16)
+  Residual/iterations: [0.00016/ILU/10] [1.24e-08/4] [3.41e-10/conv.]
+
+Time step #78, advancing from t_n-1 = 1.54 to t = 1.56 (dt = 0.02). 
+  Concentration advance: advect [0.0169/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.00016/11] [9.49e-09/4] [3.49e-10/conv.]
+
+Time step #79, advancing from t_n-1 = 1.56 to t = 1.58 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.00016/12] [8.2e-09/4] [4.43e-10/conv.]
+
+Time step #80, advancing from t_n-1 = 1.58 to t = 1.6 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000166/13] [1.66e-08/5] [4.75e-10/conv.]
+
+Time step #81, advancing from t_n-1 = 1.6 to t = 1.62 (dt = 0.02). 
+  Concentration advance: advect [0.0164/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000175/ILU/10] [1.39e-08/4] [4.25e-10/conv.]
+
+Time step #82, advancing from t_n-1 = 1.62 to t = 1.64 (dt = 0.02). 
+  Concentration advance: advect [0.0162/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000173/11] [1.05e-08/4] [3.24e-10/conv.]
+
+Time step #83, advancing from t_n-1 = 1.64 to t = 1.66 (dt = 0.02). 
+  Concentration advance: advect [0.0162/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000164/13] [5.39e-09/4] [3.27e-10/conv.]
+
+Time step #84, advancing from t_n-1 = 1.66 to t = 1.68 (dt = 0.02). 
+  Concentration advance: advect [0.0162/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000164/ILU/10] [1.08e-08/3] [3.76e-10/conv.]
+
+Time step #85, advancing from t_n-1 = 1.68 to t = 1.7 (dt = 0.02). 
+  Concentration advance: advect [0.0162/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.00018/11] [8.37e-09/3] [3.07e-10/conv.]
+
+Time step #86, advancing from t_n-1 = 1.7 to t = 1.72 (dt = 0.02). 
+  Concentration advance: advect [0.0165/9] and reinitialize (17 + 17)
+  Residual/iterations: [0.000189/12] [1.2e-08/4] [3.74e-10/conv.]
+
+Time step #87, advancing from t_n-1 = 1.72 to t = 1.74 (dt = 0.02). 
+  Concentration advance: advect [0.0168/9] and reinitialize (17 + 17)
+  Residual/iterations: [0.000179/ILU/10] [1.44e-08/3] [4e-10/conv.]
+
+Time step #88, advancing from t_n-1 = 1.74 to t = 1.76 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000178/10] [1.78e-08/4] [3.19e-10/conv.]
+
+Time step #89, advancing from t_n-1 = 1.76 to t = 1.78 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000172/12] [8.33e-09/4] [2.53e-10/conv.]
+
+Time step #90, advancing from t_n-1 = 1.78 to t = 1.8 (dt = 0.02). 
+  Concentration advance: advect [0.0167/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000169/ILU/10] [9.29e-09/4] [2.03e-10/conv.]
+
+Time step #91, advancing from t_n-1 = 1.8 to t = 1.82 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000182/11] [1.19e-08/4] [2.96e-10/conv.]
+
+Time step #92, advancing from t_n-1 = 1.82 to t = 1.84 (dt = 0.02). 
+  Concentration advance: advect [0.0162/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000195/12] [1.9e-08/5] [3.81e-10/conv.]
+
+Time step #93, advancing from t_n-1 = 1.84 to t = 1.86 (dt = 0.02). 
+  Concentration advance: advect [0.016/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000187/ILU/10] [1.1e-08/4] [2.59e-10/conv.]
+
+Time step #94, advancing from t_n-1 = 1.86 to t = 1.88 (dt = 0.02). 
+  Concentration advance: advect [0.0159/10] and reinitialize (17 + 17)
+  Residual/iterations: [0.000184/11] [9.73e-09/4] [2.69e-10/conv.]
+
+Time step #95, advancing from t_n-1 = 1.88 to t = 1.9 (dt = 0.02). 
+  Concentration advance: advect [0.0158/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000187/12] [1.78e-08/4] [4.11e-10/conv.]
+
+Time step #96, advancing from t_n-1 = 1.9 to t = 1.92 (dt = 0.02). 
+  Concentration advance: advect [0.0158/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000211/13] [1.92e-08/5] [3.69e-10/conv.]
+
+Time step #97, advancing from t_n-1 = 1.92 to t = 1.94 (dt = 0.02). 
+  Concentration advance: advect [0.0159/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000224/ILU/10] [1.31e-08/3] [3.87e-10/conv.]
+
+Time step #98, advancing from t_n-1 = 1.94 to t = 1.96 (dt = 0.02). 
+  Concentration advance: advect [0.0159/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000194/10] [1.52e-08/4] [2.44e-10/conv.]
+
+Time step #99, advancing from t_n-1 = 1.96 to t = 1.98 (dt = 0.02). 
+  Concentration advance: advect [0.0161/10] and reinitialize (18 + 17)
+  Residual/iterations: [0.000189/12] [1.14e-08/4] [3.49e-10/conv.]
+
+Time step #100, advancing from t_n-1 = 1.98 to t = 2 (dt = 0.02). 
+  Concentration advance: advect [0.0165/10] and reinitialize (18 + 17)
