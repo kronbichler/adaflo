@@ -37,6 +37,7 @@
 #include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/block_matrix_extension.h>
+#include <adaflo/navier_stokes.h>
 #include <adaflo/navier_stokes_preconditioner.h>
 #include <adaflo/util.h>
 #include <ml_MultiLevelPreconditioner.h>
@@ -371,7 +372,7 @@ public:
       {
         const types::global_dof_index glob_i =
           ns_matrix.get_matrix_free()
-            .get_dof_handler(1)
+            .get_dof_handler(ns_matrix.dof_index_p)
             .locally_owned_dofs()
             .nth_index_in_set(constraints_schur_complement_only[i]);
         constrained_diagonal_values[i] = tri_mat.el(glob_i, glob_i);
@@ -614,7 +615,7 @@ NavierStokesPreconditioner<dim>::vmult(
           // become 1 in those entries, so the correct way to apply the
           // preconditioner is to also apply the one here.
           const std::vector<unsigned int> &ns_constrained_dofs =
-            matrix->get_matrix_free().get_constrained_dofs(0);
+            matrix->get_matrix_free().get_constrained_dofs(flow_algorithm.dof_index_u);
           for (unsigned int i = 0; i < ns_constrained_dofs.size(); ++i)
             dst.block(0).local_element(ns_constrained_dofs[i]) =
               src.block(0).local_element(ns_constrained_dofs[i]);
@@ -914,7 +915,8 @@ NavierStokesPreconditioner<dim>::compute()
       uu_amg->initialize(*uu_amg_mat,
                          constant_modes_u,
                          true,
-                         get_nodal_points(matrix->get_matrix_free().get_dof_handler(0),
+                         get_nodal_points(matrix->get_matrix_free().get_dof_handler(
+                                            flow_algorithm.dof_index_u),
                                           flow_algorithm.mapping));
     }
 
@@ -932,7 +934,7 @@ NavierStokesPreconditioner<dim>::compute()
                              constant_modes_p,
                              false,
                              get_nodal_points(matrix->get_matrix_free().get_dof_handler(
-                                                1),
+                                                flow_algorithm.dof_index_p),
                                               flow_algorithm.mapping));
     }
 
@@ -968,7 +970,7 @@ NavierStokesPreconditioner<dim>::compute()
 template <int dim>
 NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
   const FlowParameters &           parameters,
-  const FlowBaseAlgorithm<dim> &   flow_algorithm,
+  const NavierStokes<dim> &        flow_algorithm,
   const Triangulation<dim> &       tria,
   const AffineConstraints<double> &constraints_u)
   : do_inner_solves(false)
@@ -1713,7 +1715,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
   const unsigned int dofs_per_u_component = integration_helper.local_ordering_u[0].size();
   const unsigned int dofs_per_cell_p      = data.local_dof_indices_p.size();
   const unsigned int n_q_points           = data.fe_values_u.get_quadrature().size();
-  AssertDimension(n_q_points, matrix_free.get_n_q_points(0));
+  AssertDimension(n_q_points, matrix_free.get_n_q_points(flow_algorithm.quad_index_u));
 
   typedef VectorizedArray<double>               vector_t;
   const std::vector<std::vector<unsigned int>> &local_ordering_u =
@@ -1742,7 +1744,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
   const double              factor_jacobian_u = data.fe_values_u.get_fe().degree;
   const double              factor_jacobian_p = data.fe_values_p.get_fe().degree;
   const Triangulation<dim> &triangulation =
-    matrix_free.get_dof_handler(0).get_triangulation();
+    matrix_free.get_dof_handler(flow_algorithm.dof_index_u).get_triangulation();
 
   for (unsigned int mcell = cell_range.first; mcell < cell_range.second; ++mcell)
     {
@@ -1750,8 +1752,10 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
            ++vec)
         {
           typename DoFHandler<dim>::active_cell_iterator
-            cell_u = matrix_free.get_cell_iterator(mcell, vec, 0),
-            cell_p = matrix_free.get_cell_iterator(mcell, vec, 1);
+            cell_u =
+              matrix_free.get_cell_iterator(mcell, vec, flow_algorithm.dof_index_u),
+            cell_p =
+              matrix_free.get_cell_iterator(mcell, vec, flow_algorithm.dof_index_p);
           typename Triangulation<dim>::active_cell_iterator cell(&triangulation,
                                                                  cell_u->level(),
                                                                  cell_u->index());
@@ -2330,8 +2334,10 @@ NavierStokesPreconditioner<dim>::assemble_matrices()
   pp_poisson.reset();
   pp_mass.reset();
 
-  matrix->get_matrix_free().initialize_dof_vector(temp_vector, 1);
-  matrix->get_matrix_free().initialize_dof_vector(temp_vector2, 1);
+  matrix->get_matrix_free().initialize_dof_vector(temp_vector,
+                                                  flow_algorithm.dof_index_p);
+  matrix->get_matrix_free().initialize_dof_vector(temp_vector2,
+                                                  flow_algorithm.dof_index_p);
 
   matrix_u = 0;
 
@@ -2352,8 +2358,8 @@ NavierStokesPreconditioner<dim>::assemble_matrices()
   AssemblyData::Preconditioner<dim> scratch_data(
     *this,
     flow_algorithm.mapping,
-    matrix->get_matrix_free().get_dof_handler(0).get_fe(),
-    matrix->get_matrix_free().get_dof_handler(1).get_fe());
+    matrix->get_matrix_free().get_dof_handler(flow_algorithm.dof_index_u).get_fe(),
+    matrix->get_matrix_free().get_dof_handler(flow_algorithm.dof_index_p).get_fe());
   auto scratch_local =
     std::make_shared<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim>>>(
       scratch_data);
@@ -2389,7 +2395,9 @@ NavierStokesPreconditioner<dim>::assemble_matrices()
     }
   else
     {
-      IndexSet index = matrix->get_matrix_free().get_dof_handler(0).locally_owned_dofs();
+      IndexSet index = matrix->get_matrix_free()
+                         .get_dof_handler(flow_algorithm.dof_index_u)
+                         .locally_owned_dofs();
       for (unsigned int i = 0; i < index.n_elements(); ++i)
         {
           const types::global_dof_index idx = index.nth_index_in_set(i);

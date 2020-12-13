@@ -57,11 +57,14 @@ namespace dealii
 } // namespace dealii
 
 template <int dim>
+class NavierStokes;
+
+template <int dim>
 class NavierStokesPreconditioner
 {
 public:
   NavierStokesPreconditioner(const FlowParameters &           parameters,
-                             const FlowBaseAlgorithm<dim> &   base_algorithm,
+                             const NavierStokes<dim> &        base_algorithm,
                              const Triangulation<dim> &       tria,
                              const AffineConstraints<double> &constraints_u);
 
@@ -211,8 +214,8 @@ private:
 
   IntegrationHelper integration_helper;
 
-  const FlowParameters &        parameters;
-  const FlowBaseAlgorithm<dim> &flow_algorithm;
+  const FlowParameters &   parameters;
+  const NavierStokes<dim> &flow_algorithm;
 
   // A table containing variable densities on faces for face integrals in
   // augmented Taylor--Hood

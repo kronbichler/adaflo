@@ -247,11 +247,13 @@ private:
   const TimeStepping *   time_stepping;
   const FlowParameters & parameters;
 
+public:
   const unsigned int dof_index_u;
   const unsigned int dof_index_p;
   const unsigned int quad_index_u;
   const unsigned int quad_index_p;
 
+private:
   mutable AlignedVector<VectorizedArray<double>> variable_densities;
   mutable AlignedVector<VectorizedArray<double>> variable_viscosities;
   mutable AlignedVector<velocity_stored>         linearized_velocities;
