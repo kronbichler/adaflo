@@ -388,8 +388,17 @@ NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
 
 template <int dim>
 void
-NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *external_matrix_free)
+NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_free,
+                                          const unsigned int dof_index_u,
+                                          const unsigned int dof_index_p,
+                                          const unsigned int quad_index_u,
+                                          const unsigned int quad_index_p)
 {
+  this->dof_index_u  = dof_index_u;
+  this->dof_index_p  = dof_index_p;
+  this->quad_index_u = quad_index_u;
+  this->quad_index_p = quad_index_p;
+
   if (external_matrix_free != 0)
     {
       matrix_free.reset(const_cast<MatrixFree<dim> *>(external_matrix_free),
