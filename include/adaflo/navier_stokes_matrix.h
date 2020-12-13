@@ -55,10 +55,10 @@ public:
     velocity_stored;
   NavierStokesMatrix(
     const FlowParameters &                                 parameters,
-    const unsigned int                                     dof_index_u,
-    const unsigned int                                     dof_index_p,
-    const unsigned int                                     quad_index_u,
-    const unsigned int                                     quad_index_p,
+    const unsigned int &                                   dof_index_u,
+    const unsigned int &                                   dof_index_p,
+    const unsigned int &                                   quad_index_u,
+    const unsigned int &                                   quad_index_p,
     const LinearAlgebra::distributed::BlockVector<double> &solution_old,
     const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
 
@@ -248,10 +248,10 @@ private:
   const FlowParameters & parameters;
 
 public:
-  const unsigned int dof_index_u;
-  const unsigned int dof_index_p;
-  const unsigned int quad_index_u;
-  const unsigned int quad_index_p;
+  const unsigned int &dof_index_u;
+  const unsigned int &dof_index_p;
+  const unsigned int &quad_index_u;
+  const unsigned int &quad_index_p;
 
 private:
   mutable AlignedVector<VectorizedArray<double>> variable_densities;

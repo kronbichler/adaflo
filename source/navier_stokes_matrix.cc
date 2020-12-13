@@ -40,10 +40,10 @@
 template <int dim>
 NavierStokesMatrix<dim>::NavierStokesMatrix(
   const FlowParameters &                                 parameters,
-  const unsigned int                                     dof_index_u,
-  const unsigned int                                     dof_index_p,
-  const unsigned int                                     quad_index_u,
-  const unsigned int                                     quad_index_p,
+  const unsigned int &                                   dof_index_u,
+  const unsigned int &                                   dof_index_p,
+  const unsigned int &                                   quad_index_u,
+  const unsigned int &                                   quad_index_p,
   const LinearAlgebra::distributed::BlockVector<double> &solution_old,
   const LinearAlgebra::distributed::BlockVector<double> &solution_old_old)
   : matrix_free(0)
