@@ -46,6 +46,13 @@ template <int dim>
 class NavierStokes : public FlowBaseAlgorithm<dim>
 {
 public:
+  NavierStokes(const Mapping<dim> &                              mapping,
+               const FlowParameters &                            parameters,
+               Triangulation<dim> &                              triangulation,
+               TimerOutput *                                     external_timer = 0,
+               std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor =
+                 std::shared_ptr<helpers::BoundaryDescriptor<dim>>());
+
   NavierStokes(const FlowParameters &                            parameters,
                Triangulation<dim> &                              triangulation,
                TimerOutput *                                     external_timer = 0,
