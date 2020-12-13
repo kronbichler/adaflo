@@ -153,6 +153,7 @@ LidDrivenCavityProblem<dim>::output_results() const
   navier_stokes.write_data_output(navier_stokes.get_parameters().output_filename,
                                   navier_stokes.time_stepping,
                                   navier_stokes.get_parameters().output_frequency,
+                                  this->triangulation,
                                   data_out);
 
   // Also write out the velocity along two lines at the middle of the cavity

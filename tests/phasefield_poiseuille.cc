@@ -531,6 +531,7 @@ ChannelProblem<dim>::output_results() const
       twophase_flow.write_data_output(parameters.output_filename,
                                       navier_stokes.time_stepping,
                                       parameters.output_frequency,
+                                      triangulation,
                                       data_out);
     }
 

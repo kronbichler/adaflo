@@ -672,6 +672,7 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
   this->write_data_output(output_name,
                           this->time_stepping,
                           this->parameters.output_frequency,
+                          this->triangulation,
                           data_out);
 }
 
