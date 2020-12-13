@@ -46,6 +46,11 @@ template <int dim>
 class NavierStokes : public FlowBaseAlgorithm<dim>
 {
 public:
+  static const unsigned int dof_index_u  = 0;
+  static const unsigned int dof_index_p  = 1;
+  static const unsigned int quad_index_u = 0;
+  static const unsigned int quad_index_p = 1;
+
   NavierStokes(const Mapping<dim> &                              mapping,
                const FlowParameters &                            parameters,
                Triangulation<dim> &                              triangulation,

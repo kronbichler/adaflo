@@ -55,6 +55,10 @@ public:
     velocity_stored;
   NavierStokesMatrix(
     const FlowParameters &                                 parameters,
+    const unsigned int                                     dof_index_u,
+    const unsigned int                                     dof_index_p,
+    const unsigned int                                     quad_index_u,
+    const unsigned int                                     quad_index_p,
     const LinearAlgebra::distributed::BlockVector<double> &solution_old,
     const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
 
@@ -69,31 +73,31 @@ public:
   unsigned int
   n_dofs_p() const
   {
-    return matrix_free->get_dof_handler(1).n_dofs();
+    return matrix_free->get_dof_handler(dof_index_p).n_dofs();
   }
 
   void
   initialize_u_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
-    matrix_free->initialize_dof_vector(vec, 0);
+    matrix_free->initialize_dof_vector(vec, dof_index_u);
   }
 
   void
   initialize_p_vector(LinearAlgebra::distributed::Vector<double> &vec) const
   {
-    matrix_free->initialize_dof_vector(vec, 1);
+    matrix_free->initialize_dof_vector(vec, dof_index_p);
   }
 
   unsigned int
   n_dofs_u() const
   {
-    return matrix_free->get_dof_handler(0).n_dofs();
+    return matrix_free->get_dof_handler(dof_index_u).n_dofs();
   }
 
   unsigned int
   pressure_degree() const
   {
-    return matrix_free->get_dof_handler(1).get_fe().degree;
+    return matrix_free->get_dof_handler(dof_index_p).get_fe().degree;
   }
 
   const MatrixFree<dim> &
@@ -239,9 +243,15 @@ private:
     const unsigned int &,
     const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  const MatrixFree<dim> *                        matrix_free;
-  const TimeStepping *                           time_stepping;
-  const FlowParameters &                         parameters;
+  const MatrixFree<dim> *matrix_free;
+  const TimeStepping *   time_stepping;
+  const FlowParameters & parameters;
+
+  const unsigned int dof_index_u;
+  const unsigned int dof_index_p;
+  const unsigned int quad_index_u;
+  const unsigned int quad_index_p;
+
   mutable AlignedVector<VectorizedArray<double>> variable_densities;
   mutable AlignedVector<VectorizedArray<double>> variable_viscosities;
   mutable AlignedVector<velocity_stored>         linearized_velocities;
@@ -273,8 +283,9 @@ NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell) const
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
   AssertDimension(variable_densities.size(),
-                  matrix_free->n_cell_batches() * matrix_free->get_n_q_points(0));
-  return &variable_densities[matrix_free->get_n_q_points(0) * macro_cell];
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_densities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
 }
 
 
@@ -285,8 +296,9 @@ NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell)
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
   AssertDimension(variable_densities.size(),
-                  matrix_free->n_cell_batches() * matrix_free->get_n_q_points(0));
-  return &variable_densities[matrix_free->get_n_q_points(0) * macro_cell];
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_densities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
 }
 
 
@@ -297,8 +309,9 @@ NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell) const
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
   AssertDimension(variable_viscosities.size(),
-                  matrix_free->n_cell_batches() * matrix_free->get_n_q_points(0));
-  return &variable_viscosities[matrix_free->get_n_q_points(0) * macro_cell];
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_viscosities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
 }
 
 
@@ -309,8 +322,9 @@ NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell)
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
   AssertDimension(variable_viscosities.size(),
-                  matrix_free->n_cell_batches() * matrix_free->get_n_q_points(0));
-  return &variable_viscosities[matrix_free->get_n_q_points(0) * macro_cell];
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_viscosities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
 }
 
 
@@ -333,8 +347,9 @@ NavierStokesMatrix<dim>::begin_linearized_velocities(const unsigned int macro_ce
 
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
   AssertDimension(linearized_velocities.size(),
-                  matrix_free->n_cell_batches() * matrix_free->get_n_q_points(0));
-  return &linearized_velocities[matrix_free->get_n_q_points(0) * macro_cell];
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &linearized_velocities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
 }
 
 

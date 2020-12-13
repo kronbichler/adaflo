@@ -104,7 +104,13 @@ NavierStokes<dim>::NavierStokes(
          1)
   , dof_handler_u(triangulation)
   , dof_handler_p(triangulation)
-  , navier_stokes_matrix(parameters, solution_old, solution_old_old)
+  , navier_stokes_matrix(parameters,
+                         dof_index_u,
+                         dof_index_p,
+                         quad_index_u,
+                         quad_index_p,
+                         solution_old,
+                         solution_old_old)
   , system_rhs(2)
   , const_rhs(2)
   , preconditioner(parameters, *this, triangulation, constraints_u)
@@ -407,22 +413,23 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *external_matrix_free)
       else
         data.tasks_block_size = 2;
       data.store_plain_indices = true;
-      std::vector<const DoFHandler<dim> *> dof_handlers;
-      dof_handlers.push_back(&dof_handler_u);
-      dof_handlers.push_back(&dof_handler_p);
-      std::vector<const AffineConstraints<double> *> constraints;
-      constraints.push_back(&constraints_u);
-      constraints.push_back(&constraints_p);
-      std::vector<Quadrature<dim>> quadratures;
+      std::vector<const DoFHandler<dim> *> dof_handlers(2);
+      dof_handlers[dof_index_u] = &dof_handler_u;
+      dof_handlers[dof_index_p] = &dof_handler_p;
+      std::vector<const AffineConstraints<double> *> constraints(2);
+      constraints[dof_index_u] = &constraints_u;
+      constraints[dof_index_p] = &constraints_p;
+      std::vector<Quadrature<dim>> quadratures(2);
       if (parameters.use_simplex_mesh)
         {
-          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree + 1));
-          quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree));
+          quadratures[quad_index_u] =
+            Simplex::QGauss<dim>(parameters.velocity_degree + 1);
+          quadratures[quad_index_p] = Simplex::QGauss<dim>(parameters.velocity_degree);
         }
       else
         {
-          quadratures.push_back(QGauss<dim>(parameters.velocity_degree + 1));
-          quadratures.push_back(QGauss<dim>(parameters.velocity_degree));
+          quadratures[quad_index_u] = QGauss<dim>(parameters.velocity_degree + 1);
+          quadratures[quad_index_p] = QGauss<dim>(parameters.velocity_degree);
         }
       matrix_free->reinit(this->mapping, dof_handlers, constraints, quadratures, data);
     }
@@ -432,8 +439,8 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *external_matrix_free)
   preconditioner.set_system_matrix(navier_stokes_matrix);
 
   solution_update.reinit(2);
-  matrix_free->initialize_dof_vector(solution_update.block(0), 0);
-  matrix_free->initialize_dof_vector(solution_update.block(1), 1);
+  matrix_free->initialize_dof_vector(solution_update.block(0), dof_index_u);
+  matrix_free->initialize_dof_vector(solution_update.block(1), dof_index_p);
   solution_update.collect_sizes();
 
   solution.reinit(solution_update);
@@ -1147,7 +1154,7 @@ NavierStokes<dim>::compute_initial_stokes_field()
               VectorizedArray<double> *visc =
                 navier_stokes_matrix.begin_viscosities(cell);
               VectorizedArray<double> *dens = navier_stokes_matrix.begin_densities(cell);
-              for (unsigned int q = 0; q < matrix_free->get_n_q_points(0); ++q)
+              for (unsigned int q = 0; q < matrix_free->get_n_q_points(quad_index_u); ++q)
                 {
                   visc[q] = viscosity;
                   dens[q] = VectorizedArray<double>();

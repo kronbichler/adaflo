@@ -40,34 +40,43 @@
 template <int dim>
 NavierStokesMatrix<dim>::NavierStokesMatrix(
   const FlowParameters &                                 parameters,
+  const unsigned int                                     dof_index_u,
+  const unsigned int                                     dof_index_p,
+  const unsigned int                                     quad_index_u,
+  const unsigned int                                     quad_index_p,
   const LinearAlgebra::distributed::BlockVector<double> &solution_old,
   const LinearAlgebra::distributed::BlockVector<double> &solution_old_old)
   : matrix_free(0)
   , time_stepping(0)
   , parameters(parameters)
+  , dof_index_u(dof_index_u)
+  , dof_index_p(dof_index_p)
+  , quad_index_u(quad_index_u)
+  , quad_index_p(quad_index_p)
   , solution_old(solution_old)
   , solution_old_old(solution_old_old)
 {}
 
 
 
-#define EXPAND_OPERATIONS(OPERATION)                                             \
-  const unsigned int degree_p = matrix_free->get_dof_handler(1).get_fe().degree; \
-                                                                                 \
-  AssertThrow(degree_p >= 1 && degree_p <= 5, ExcNotImplemented());              \
-  if (parameters.use_simplex_mesh)                                               \
-    OPERATION(-1);                                                               \
-  else if (degree_p == 1)                                                        \
-    OPERATION(1);                                                                \
-  else if (degree_p == 2)                                                        \
-    OPERATION(2);                                                                \
-  else if (degree_p == 3)                                                        \
-    OPERATION(3);                                                                \
-  else if (degree_p == 4)                                                        \
-    OPERATION(4);                                                                \
-  else if (degree_p == 5)                                                        \
-    OPERATION(5);                                                                \
-  else                                                                           \
+#define EXPAND_OPERATIONS(OPERATION)                                \
+  const unsigned int degree_p =                                     \
+    matrix_free->get_dof_handler(dof_index_p).get_fe().degree;      \
+                                                                    \
+  AssertThrow(degree_p >= 1 && degree_p <= 5, ExcNotImplemented()); \
+  if (parameters.use_simplex_mesh)                                  \
+    OPERATION(-1);                                                  \
+  else if (degree_p == 1)                                           \
+    OPERATION(1);                                                   \
+  else if (degree_p == 2)                                           \
+    OPERATION(2);                                                   \
+  else if (degree_p == 3)                                           \
+    OPERATION(3);                                                   \
+  else if (degree_p == 4)                                           \
+    OPERATION(4);                                                   \
+  else if (degree_p == 5)                                           \
+    OPERATION(5);                                                   \
+  else                                                              \
     AssertThrow(false, ExcNotImplemented());
 
 
@@ -80,7 +89,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
   matrix_free                       = &matrix_free_in;
   time_stepping                     = &time_stepping_in;
   const unsigned int n_cell_batches = matrix_free->n_cell_batches();
-  const unsigned int n_q_points     = matrix_free->get_n_q_points(0);
+  const unsigned int n_q_points     = matrix_free->get_n_q_points(quad_index_u);
   const unsigned int size           = n_cell_batches * n_q_points;
 
   const bool use_variable_coefficients =
@@ -105,7 +114,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
   if (pressure_average_fix == true || parameters.augmented_taylor_hood)
     {
       LinearAlgebra::distributed::Vector<double> pres_mass;
-      matrix_free->initialize_dof_vector(pres_mass, 1);
+      matrix_free->initialize_dof_vector(pres_mass, dof_index_p);
       {
         unsigned int dummy = 0;
 #define OPERATION(degree_p)                                                  \
@@ -120,7 +129,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
       }
 
       std::vector<std::vector<bool>> constant_modes;
-      DoFTools::extract_constant_modes(matrix_free->get_dof_handler(1),
+      DoFTools::extract_constant_modes(matrix_free->get_dof_handler(dof_index_p),
                                        std::vector<bool>(1, true),
                                        constant_modes);
 
@@ -131,8 +140,9 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
           if (mode == 1 && !parameters.augmented_taylor_hood)
             continue;
 
-          matrix_free->initialize_dof_vector(pressure_constant_modes[mode], 1);
-          matrix_free->initialize_dof_vector(pressure_constant_mode_weights[mode], 1);
+          matrix_free->initialize_dof_vector(pressure_constant_modes[mode], dof_index_p);
+          matrix_free->initialize_dof_vector(pressure_constant_mode_weights[mode],
+                                             dof_index_p);
           AssertDimension(pressure_constant_modes[mode].local_size(),
                           constant_modes[mode].size());
           for (unsigned int i = 0; i < pressure_constant_modes[mode].local_size(); ++i)
@@ -144,8 +154,8 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
               }
           // delete constrained degrees of freedom from pressure constant modes
           for (std::vector<unsigned int>::const_iterator it =
-                 matrix_free->get_constrained_dofs(1).begin();
-               it != matrix_free->get_constrained_dofs(1).end();
+                 matrix_free->get_constrained_dofs(dof_index_p).begin();
+               it != matrix_free->get_constrained_dofs(dof_index_p).end();
                ++it)
             pressure_constant_modes[mode].local_element(*it) = 0;
 
@@ -233,7 +243,7 @@ NavierStokesMatrix<dim>::vmult(
     {
       // diagonal values of constrained degrees of freedom set to 1
       const std::vector<unsigned int> &constrained_dofs =
-        matrix_free->get_constrained_dofs(block);
+        matrix_free->get_constrained_dofs(block == 0 ? dof_index_u : dof_index_p);
       const double sign = block == 0 ? 1. : -1.;
       for (unsigned int i = 0; i < constrained_dofs.size(); ++i)
         dst.block(block).local_element(constrained_dofs[i]) =
@@ -358,7 +368,7 @@ NavierStokesMatrix<dim>::velocity_vmult(
 
   // diagonal values of constrained degrees of freedom set to 1
   const std::vector<unsigned int> &constrained_dofs =
-    matrix_free->get_constrained_dofs(0);
+    matrix_free->get_constrained_dofs(dof_index_u);
   for (unsigned int i = 0; i < constrained_dofs.size(); ++i)
     dst.local_element(constrained_dofs[i]) = src.local_element(constrained_dofs[i]);
 }
@@ -393,7 +403,7 @@ NavierStokesMatrix<dim>::pressure_poisson_vmult(
 
   // diagonal values of constrained degrees of freedom set to 1
   const std::vector<unsigned int> &constrained_dofs =
-    matrix_free->get_constrained_dofs(1);
+    matrix_free->get_constrained_dofs(dof_index_p);
   for (unsigned int i = 0; i < constrained_dofs.size(); ++i)
     dst.local_element(constrained_dofs[i]) = src.local_element(constrained_dofs[i]);
 }
@@ -424,7 +434,7 @@ NavierStokesMatrix<dim>::pressure_mass_vmult(
     variable_viscosities.swap(variable_viscosities_preconditioner);
 
   const std::vector<unsigned int> &constrained_dofs =
-    matrix_free->get_constrained_dofs(1);
+    matrix_free->get_constrained_dofs(dof_index_p);
   for (unsigned int i = 0; i < constrained_dofs.size(); ++i)
     dst.local_element(constrained_dofs[i]) = src.local_element(constrained_dofs[i]);
 
@@ -459,7 +469,7 @@ NavierStokesMatrix<dim>::pressure_convdiff_vmult(
 #undef OPERATION
 
   const std::vector<unsigned int> &constrained_dofs =
-    matrix_free->get_constrained_dofs(1);
+    matrix_free->get_constrained_dofs(dof_index_p);
   for (unsigned int i = 0; i < constrained_dofs.size(); ++i)
     dst.local_element(constrained_dofs[i]) = src.local_element(constrained_dofs[i]);
 }
