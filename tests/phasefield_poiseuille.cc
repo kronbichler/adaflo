@@ -223,8 +223,8 @@ ChannelProblem<dim>::output_results() const
   std::cout.precision(5);
   const FiniteElement<dim> &fe       = twophase_flow.get_dof_handler().get_fe();
   const unsigned int        lsdegree = fe.degree;
-  const QIterated<dim>      quadrature_formula(QTrapez<1>(), lsdegree + 2);
-  const QTrapez<dim - 1>    quadrature_formula_faces;
+  const QIterated<dim>      quadrature_formula(QTrapezoid<1>(), lsdegree + 2);
+  const QTrapezoid<dim - 1> quadrature_formula_faces;
   const QGauss<dim - 1>     quadrature_formula_face2(lsdegree + 2);
   const unsigned int        n_q_points = quadrature_formula.size();
 
