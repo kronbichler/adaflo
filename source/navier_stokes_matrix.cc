@@ -601,12 +601,13 @@ NavierStokesMatrix<dim>::local_operation(
 {
   typedef VectorizedArray<double>                                            vector_t;
   FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> velocity(
-    data, 0);
-  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1);
+    data, dof_index_u, quad_index_u);
+  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, dof_index_p, quad_index_u);
 
-  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old(data, 0);
-  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old_old(data,
-                                                                                     0);
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old(
+    data, dof_index_u, quad_index_u);
+  FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> old_old(
+    data, dof_index_u, quad_index_u);
 
   // get variables for the time step
   const vector_t time_step_weight = make_vectorized_array<double>(
@@ -885,8 +886,8 @@ NavierStokesMatrix<dim>::local_divergence(
   const std::pair<unsigned int, unsigned int> &     cell_range) const
 {
   FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> velocity(
-    data, 0);
-  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1);
+    data, dof_index_u, quad_index_u);
+  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, dof_index_p, quad_index_u);
 
   const VectorizedArray<double> *mu_values =
     variable_viscosities.empty() ? 0 : begin_viscosities(cell_range.first);
@@ -937,7 +938,9 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
   if (use_variable_coefficients &&
       parameters.physical_type != FlowParameters::incompressible_stationary)
     {
-      FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1, 0);
+      FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data,
+                                                            dof_index_p,
+                                                            quad_index_u);
 
       for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
         {
@@ -957,7 +960,9 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
     }
   else
     {
-      FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data, 1, 1);
+      FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data,
+                                                            dof_index_p,
+                                                            quad_index_p);
 
       for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
         {
@@ -997,7 +1002,7 @@ NavierStokesMatrix<dim>::local_pressure_mass(
   const std::pair<unsigned int, unsigned int> &     cell_range) const
 {
   typedef VectorizedArray<double>              vector_t;
-  FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data, 1, 1);
+  FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data, dof_index_p, quad_index_p);
 
   const bool use_variable_coefficients = variable_viscosities.size() > 0;
 
@@ -1035,7 +1040,7 @@ NavierStokesMatrix<dim>::local_pressure_mass_weight(
   const unsigned int &,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
-  FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data, 1, 1);
+  FEEvaluation<dim, degree_p, degree_p + 1, 1> pressure(data, dof_index_p, quad_index_p);
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       pressure.reinit(cell);
@@ -1060,7 +1065,7 @@ NavierStokesMatrix<dim>::local_pressure_convdiff(
   const std::pair<unsigned int, unsigned int> &     cell_range) const
 {
   typedef VectorizedArray<double>              vector_t;
-  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, 1);
+  FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, dof_index_p, quad_index_u);
 
   Assert(linearized_velocities.size() > 0, ExcNotImplemented());
 
