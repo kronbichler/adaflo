@@ -57,10 +57,25 @@ NavierStokes<dim>::NavierStokes(
   Triangulation<dim> &                              triangulation_in,
   TimerOutput *                                     external_timer,
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
-  : FlowBaseAlgorithm<dim>(
-      parameters.use_simplex_mesh ?
-        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
-        std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
+  : NavierStokes(parameters.use_simplex_mesh ?
+                   static_cast<const Mapping<dim> &>(
+                     MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+                   static_cast<const Mapping<dim> &>(MappingQ<dim>(3)),
+                 parameters,
+                 triangulation_in,
+                 external_timer,
+                 boundary_descriptor)
+{}
+
+
+template <int dim>
+NavierStokes<dim>::NavierStokes(
+  const Mapping<dim> &                              mapping,
+  const FlowParameters &                            parameters,
+  Triangulation<dim> &                              triangulation_in,
+  TimerOutput *                                     external_timer,
+  std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
+  : FlowBaseAlgorithm<dim>(std::shared_ptr<Mapping<dim>>(mapping.clone()))
   , user_rhs(2)
   , solution(2)
   , solution_old(2)
