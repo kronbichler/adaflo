@@ -357,6 +357,7 @@ BeltramiProblem<dim>::output_results() const
   navier_stokes.write_data_output(navier_stokes.get_parameters().output_filename,
                                   navier_stokes.time_stepping,
                                   navier_stokes.get_parameters().output_frequency,
+                                  triangulation,
                                   data_out);
 
   timer.leave_subsection();

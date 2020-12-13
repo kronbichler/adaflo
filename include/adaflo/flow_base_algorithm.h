@@ -280,10 +280,11 @@ struct FlowBaseAlgorithm
    * vectors that are not done by the standard solvers.
    */
   void
-  write_data_output(const std::string & output_base_name,
-                    const TimeStepping &time_stepping,
-                    const double        output_frequency,
-                    DataOut<dim> &      data_out) const;
+  write_data_output(const std::string &       output_base_name,
+                    const TimeStepping &      time_stepping,
+                    const double              output_frequency,
+                    const Triangulation<dim> &triangulation,
+                    DataOut<dim> &            data_out) const;
 
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary;
 

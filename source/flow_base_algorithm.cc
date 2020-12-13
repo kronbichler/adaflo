@@ -221,16 +221,16 @@ FlowBaseAlgorithm<dim>::set_periodic_direction(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::write_data_output(const std::string & output_name,
-                                          const TimeStepping &time_stepping,
-                                          const double        output_frequency,
-                                          DataOut<dim> &      data_out) const
+FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
+                                          const TimeStepping &      time_stepping,
+                                          const double              output_frequency,
+                                          const Triangulation<dim> &tria,
+                                          DataOut<dim> &            data_out) const
 {
   std::ostringstream filename;
   std::ostringstream filename_time;
 
   // append time step and processor count to given output base name
-  const auto &tria = data_out.first_cell()->get_triangulation();
 
   const unsigned int no_time_steps =
     (time_stepping.final() - time_stepping.start()) / output_frequency + 1;

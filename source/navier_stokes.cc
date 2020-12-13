@@ -1401,6 +1401,7 @@ NavierStokes<dim>::output_solution(const std::string  output_name,
   this->write_data_output(output_name,
                           time_stepping,
                           parameters.output_frequency,
+                          this->triangulation,
                           data_out);
 }
 
