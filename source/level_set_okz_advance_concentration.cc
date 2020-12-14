@@ -211,9 +211,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
 
       for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
         {
-          const VectorizedArray<double>                 ls_val = ls_values.get_value(q);
-          const Tensor<1, dim, VectorizedArray<double>> ls_grad =
-            ls_values.get_gradient(q);
+          const auto ls_val  = ls_values.get_value(q);
+          const auto ls_grad = ls_values.get_gradient(q);
           ls_values.submit_value(ls_val * this->time_stepping.weight() +
                                    ls_grad * velocities[q],
                                  q);
@@ -223,6 +222,32 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
       ls_values.integrate_scatter(true, this->parameters.convection_stabilization, dst);
     }
 }
+
+
+namespace
+{
+  template <typename Number, int dim>
+  Number
+  dot(const Tensor<1, dim, Number> &t1, const Tensor<1, dim, Number> &t2)
+  {
+    return t1 * t2;
+  }
+
+  template <typename Number>
+  Number
+  dot(const Tensor<1, 1, Number> &t1, const Number &t2)
+  {
+    return t1[0] * t2;
+  }
+
+  template <typename Number>
+  Number
+  dot(const Number &t1, const Tensor<1, 1, Number> &t2)
+  {
+    return t1 * t2[0];
+  }
+
+} // namespace
 
 
 
@@ -288,14 +313,15 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
           for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
             {
               // compute residual of concentration equation
-              Tensor<1, dim, vector_t> u =
+              const auto u =
                 (vel_values_old.get_value(q) + vel_values_old_old.get_value(q));
               vector_t dc_dt =
                 (ls_values_old.get_value(q) - ls_values_old_old.get_value(q)) /
                 this->time_stepping.old_step_size();
               vector_t residual = std::abs(
                 dc_dt +
-                u * (ls_values_old.get_gradient(q) + ls_values_old_old.get_gradient(q)) *
+                dot(u,
+                    (ls_values_old.get_gradient(q) + ls_values_old_old.get_gradient(q))) *
                   0.25);
               max_residual = std::max(residual, max_residual);
               max_velocity = std::max(std::sqrt(u * u), max_velocity);
@@ -314,16 +340,15 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
       for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
         {
           // compute right hand side
-          vector_t old_value =
-            this->time_stepping.weight_old() * ls_values_old.get_value(q);
+          auto old_value = this->time_stepping.weight_old() * ls_values_old.get_value(q);
           if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
               this->time_stepping.step_no() > 1)
             old_value +=
               this->time_stepping.weight_old_old() * ls_values_old_old.get_value(q);
-          const vector_t                 ls_val  = ls_values.get_value(q);
-          const Tensor<1, dim, vector_t> ls_grad = ls_values.get_gradient(q);
-          vector_t residual = -(ls_val * this->time_stepping.weight() +
-                                vel_values.get_value(q) * ls_grad + old_value);
+          const auto ls_val   = ls_values.get_value(q);
+          const auto ls_grad  = ls_values.get_gradient(q);
+          const auto residual = -(ls_val * this->time_stepping.weight() +
+                                  dot(vel_values.get_value(q), ls_grad) + old_value);
           ls_values.submit_value(residual, q);
           if (this->parameters.convection_stabilization)
             ls_values.submit_gradient(-artificial_viscosities[cell] * ls_grad, q);
@@ -589,5 +614,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
 }
 
 
+template class LevelSetOKZSolverAdvanceConcentration<1>;
 template class LevelSetOKZSolverAdvanceConcentration<2>;
 template class LevelSetOKZSolverAdvanceConcentration<3>;
