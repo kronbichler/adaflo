@@ -46,6 +46,11 @@ template <int dim>
 class NavierStokes : public FlowBaseAlgorithm<dim>
 {
 public:
+  unsigned int dof_index_u  = 0;
+  unsigned int dof_index_p  = 1;
+  unsigned int quad_index_u = 0;
+  unsigned int quad_index_p = 1;
+
   NavierStokes(const Mapping<dim> &                              mapping,
                const FlowParameters &                            parameters,
                Triangulation<dim> &                              triangulation,
@@ -94,7 +99,11 @@ public:
     const Function<dim> &initial_velocity_field,
     const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
   void
-  initialize_matrix_free(MatrixFree<dim> *external_matrix_free = 0);
+  initialize_matrix_free(MatrixFree<dim> *  external_matrix_free = 0,
+                         const unsigned int dof_index_u          = 0,
+                         const unsigned int dof_index_p          = 1,
+                         const unsigned int quad_index_u         = 0,
+                         const unsigned int quad_index_p         = 1);
 
   void
   init_time_advance(const bool print_time_info = true);

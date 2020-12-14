@@ -265,12 +265,13 @@ void
 FlowPastCylinder<dim>::run()
 {
   timer.enter_subsection("Setup grid and initial condition.");
+
+  create_triangulation(triangulation, use_simplex_mesh, n_refinements);
+
   pcout << "Running a " << dim << "D flow past a cylinder "
         << "using " << navier_stokes.time_stepping.name() << ", Q"
         << navier_stokes.get_fe_u().degree << "/Q" << navier_stokes.get_fe_p().degree
         << " elements" << std::endl;
-
-  create_triangulation(triangulation, use_simplex_mesh, n_refinements);
 
   for (unsigned int i = 2; i < 2 * dim; ++i)
     navier_stokes.set_no_slip_boundary(i);
