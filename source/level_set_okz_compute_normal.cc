@@ -89,7 +89,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
   // The second input argument below refers to which constrains should be used,
   // 4 means constraints_normals
   const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
-  FEEvaluation<dim, ls_degree, n_q_points, dim, Number> phi(data, 4, 2);
+  FEEvaluation<dim, ls_degree, n_q_points, dim, Number> phi(data, parameters.dof_index_normal, parameters.quad_index);
   const VectorizedArray<Number>                         min_diameter =
     make_vectorized_array<Number>(this->epsilon_used / this->parameters.epsilon);
   // cast avoids compile errors, but we always use the path without casting
@@ -128,8 +128,8 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
   // The second input argument below refers to which constrains should be used,
   // 4 means constraints_normals and 2 means constraints (for LS-function)
   const unsigned int n_q_points = ls_degree == -1 ? 0 : 2 * ls_degree;
-  FEEvaluation<dim, ls_degree, n_q_points, dim> normal_values(data, 4, 2);
-  FEEvaluation<dim, ls_degree, n_q_points, 1>   ls_values(data, 2, 2);
+  FEEvaluation<dim, ls_degree, n_q_points, dim> normal_values(data, parameters.dof_index_normal, parameters.quad_index);
+  FEEvaluation<dim, ls_degree, n_q_points, 1>   ls_values(data, parameters.dof_index_ls, parameters.quad_index);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
