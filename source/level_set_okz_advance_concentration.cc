@@ -64,6 +64,36 @@ namespace
 
     return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
   }
+
+  template <int dim, int spacedim>
+  double
+  diameter_on_coarse_grid(const Triangulation<dim, spacedim> &tria)
+  {
+    const std::vector<Point<spacedim>> &vertices = tria.get_vertices();
+    std::vector<bool>                   boundary_vertices(vertices.size(), false);
+
+    for (const auto &cell : tria.cell_iterators_on_level(0))
+      for (const unsigned int face : cell->face_indices())
+        if (cell->face(face)->at_boundary())
+          for (unsigned int i = 0; i < cell->face(face)->n_vertices(); ++i)
+            boundary_vertices[cell->face(face)->vertex_index(i)] = true;
+
+    // now traverse the list of boundary vertices and check distances.
+    // since distances are symmetric, we only have to check one half
+    double                            max_distance_sqr = 0;
+    std::vector<bool>::const_iterator pi               = boundary_vertices.begin();
+    const unsigned int                N                = boundary_vertices.size();
+    for (unsigned int i = 0; i < N; ++i, ++pi)
+      {
+        std::vector<bool>::const_iterator pj = pi + 1;
+        for (unsigned int j = i + 1; j < N; ++j, ++pj)
+          if ((*pi == true) && (*pj == true) &&
+              ((vertices[i] - vertices[j]).norm_square() > max_distance_sqr))
+            max_distance_sqr = (vertices[i] - vertices[j]).norm_square();
+      }
+
+    return std::sqrt(max_distance_sqr);
+  }
 } // namespace
 
 
@@ -154,7 +184,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   const VectorType &                            vel_solution,
   const VectorType &                            vel_solution_old,
   const VectorType &                            vel_solution_old_old,
-  const double &                                global_omega_diameter,
   const AlignedVector<VectorizedArray<double>> &cell_diameters,
   const AffineConstraints<double> &             constraints,
   const ConditionalOStream &                    pcout,
@@ -175,7 +204,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   , constraints(constraints)
   , pcout(pcout)
   , time_stepping(parameters.time)
-  , global_omega_diameter(global_omega_diameter)
+  , global_omega_diameter(0.0)
   , cell_diameters(cell_diameters)
   , boundary(boundary)
   , preconditioner(preconditioner)
@@ -471,6 +500,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
 {
   this->time_stepping.set_time_step(dt);
   this->time_stepping.next();
+
+  if (global_omega_diameter == 0.0)
+    global_omega_diameter =
+      diameter_on_coarse_grid(matrix_free.get_dof_handler().get_triangulation());
 
   if (evaluated_convection.size() !=
       this->matrix_free.n_cell_batches() *

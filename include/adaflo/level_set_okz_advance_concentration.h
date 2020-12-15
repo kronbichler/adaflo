@@ -101,7 +101,6 @@ public:
     const VectorType &                            vel_solution,
     const VectorType &                            vel_solution_old,
     const VectorType &                            vel_solution_old_old,
-    const double &                                global_omega_diameter,
     const AlignedVector<VectorizedArray<double>> &cell_diameters,
     const AffineConstraints<double> &             constraints,
     const ConditionalOStream &                    pcout,
@@ -166,7 +165,7 @@ private:
   /**
    * Physics section
    */
-  const double &                                global_omega_diameter;           // [i]
+  double                                        global_omega_diameter;           // [i]
   const AlignedVector<VectorizedArray<double>> &cell_diameters;                  // [i]
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
   AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
