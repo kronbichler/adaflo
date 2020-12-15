@@ -270,5 +270,6 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
     }
 }
 
+template class LevelSetOKZSolverComputeNormal<1>;
 template class LevelSetOKZSolverComputeNormal<2>;
 template class LevelSetOKZSolverComputeNormal<3>;
