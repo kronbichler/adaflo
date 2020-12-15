@@ -332,5 +332,6 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 
 
 
+template class LevelSetOKZSolverComputeCurvature<1>;
 template class LevelSetOKZSolverComputeCurvature<2>;
 template class LevelSetOKZSolverComputeCurvature<3>;
