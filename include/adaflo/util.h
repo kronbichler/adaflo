@@ -101,7 +101,7 @@ compute_cell_diameters(const MatrixFree<dim, double> &         matrix_free,
       for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell); ++v)
         {
           typename DoFHandler<dim>::active_cell_iterator dcell =
-            matrix_free.get_cell_iterator(cell, v, 1);
+            matrix_free.get_cell_iterator(cell, v, dof_index);
           fe_values.reinit(dcell);
           for (unsigned int q = 0; q < fe_values.n_quadrature_points; ++q)
             {
