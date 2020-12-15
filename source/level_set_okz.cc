@@ -195,7 +195,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
         bcs,
         this->matrix_free,
         params,
-        this->global_max_velocity,
         this->preconditioner);
   }
 }

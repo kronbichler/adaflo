@@ -108,8 +108,7 @@ public:
     const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
     const MatrixFree<dim> &                                             matrix_free,
     const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-    double &                              global_max_velocity,
-    const DiagonalPreconditioner<double> &preconditioner);
+    const DiagonalPreconditioner<double> &                              preconditioner);
 
   virtual void
   advance_concentration(const double dt);
@@ -171,7 +170,7 @@ private:
   const AlignedVector<VectorizedArray<double>> &cell_diameters;                  // [i]
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
   AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
-  double &                                               global_max_velocity;    // [o]
+  double                                                 global_max_velocity;    // [o]
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;   // [o]
 
   /**

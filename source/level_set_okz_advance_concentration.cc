@@ -161,7 +161,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
   const MatrixFree<dim> &                                             matrix_free,
   const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-  double &                                                            global_max_velocity,
   const DiagonalPreconditioner<double> &                              preconditioner)
   : parameters(parameters)
   , solution(solution)
@@ -179,7 +178,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
   , global_omega_diameter(global_omega_diameter)
   , cell_diameters(cell_diameters)
   , boundary(boundary)
-  , global_max_velocity(global_max_velocity)
   , preconditioner(preconditioner)
 {}
 
