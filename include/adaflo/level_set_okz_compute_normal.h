@@ -56,8 +56,11 @@ struct LevelSetOKZSolverComputeNormalParameter
   /**
    * TODO
    */
-
   bool approximate_projections;
+  /**
+   * TODO
+   */
+  double damping_scale_factor = 4.0;
 };
 
 template <int dim>
