@@ -52,7 +52,7 @@ template <int dim>
 LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
   BlockVectorType &                              normal_vector_field,
   BlockVectorType &                              normal_vector_rhs,
-  VectorType &                                   solution,
+  const VectorType &                             level_set_field,
   const AlignedVector<VectorizedArray<double>> & cell_diameters,
   const double &                                 epsilon_used,
   const double &                                 minimal_edge_length,
@@ -65,7 +65,7 @@ LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
   : parameters(parameters)
   , normal_vector_field(normal_vector_field)
   , normal_vector_rhs(normal_vector_rhs)
-  , vel_solution(solution)
+  , level_set_solution(level_set_field)
   , matrix_free(matrix_free)
   , constraints_normals(constraints_normals)
   , cell_diameters(cell_diameters)
@@ -142,7 +142,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
       normal_values.reinit(cell);
       ls_values.reinit(cell);
 
-      ls_values.read_dof_values_plain(this->vel_solution);
+      ls_values.read_dof_values_plain(this->level_set_solution);
       ls_values.evaluate(false, true, false);
 
       for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
@@ -218,7 +218,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
     &LevelSetOKZSolverComputeNormal<dim>::template local_compute_normal_rhs<c_degree>, \
     this,                                                                              \
     this->normal_vector_rhs,                                                           \
-    this->vel_solution)
+    this->level_set_solution)
 
   EXPAND_OPERATIONS(OPERATION);
 #undef OPERATION
