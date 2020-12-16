@@ -23,7 +23,6 @@
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/diagonal_preconditioner.h>
-#include <adaflo/level_set_okz_compute_normal.h>
 #include <adaflo/navier_stokes.h>
 #include <adaflo/time_stepping.h>
 #include <adaflo/util.h>
@@ -76,7 +75,6 @@ class LevelSetOKZSolverComputeCurvature
 {
 public:
   LevelSetOKZSolverComputeCurvature(
-    LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
     const AlignedVector<VectorizedArray<double>> &         cell_diameters,
     const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
     const AffineConstraints<double> &                      constraints_curvature,
@@ -119,11 +117,6 @@ private:
    * Parameters
    */
   const LevelSetOKZSolverComputeCurvatureParameter parameters; // [i]
-
-  /**
-   * Other operators.
-   */
-  LevelSetOKZSolverComputeNormal<dim> &normal_operator; // [i]
 
   /**
    * Vector section

@@ -50,7 +50,6 @@
 
 template <int dim>
 LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
-  LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
   const AlignedVector<VectorizedArray<double>> &         cell_diameters,
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
   const AffineConstraints<double> &                      constraints_curvature,
@@ -65,7 +64,6 @@ LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
   std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
   std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
   : parameters(parameters)
-  , normal_operator(normal_operator)
   , solution_curvature(solution_curvature)
   , rhs(system_rhs)
   , solution_ls(solution_ls)
@@ -327,11 +325,6 @@ template <int dim>
 void
 LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 {
-  // This function computes the curvature from the normal field. Could also
-  // compute the curvature directly from C, but that is less accurate. TODO:
-  // include that variant by a parameter
-  normal_operator.compute_normal(false);
-
   // compute right hand side
   rhs = 0;
 

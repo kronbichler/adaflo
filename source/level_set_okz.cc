@@ -133,7 +133,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
     params.curvature_correction    = this->parameters.curvature_correction;
 
     this->curvatur_operator = std::make_unique<LevelSetOKZSolverComputeCurvature<dim>>(
-      *this->normal_operator,
       this->cell_diameters,
       this->normal_vector_field,
       this->constraints_curvature,
@@ -462,8 +461,17 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
-  TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
-  curvatur_operator->compute_curvature(diffuse_large_values);
+  // This function computes the curvature from the normal field. Could also
+  // compute the curvature directly from C, but that is less accurate. TODO:
+  // include that variant by a parameter
+  {
+    TimerOutput::Scope timer(*this->timer, "LS compute normal.");
+    this->compute_normal(false);
+  }
+  {
+    TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
+    curvatur_operator->compute_curvature(diffuse_large_values);
+  }
 }
 
 
