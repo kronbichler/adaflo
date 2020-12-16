@@ -258,10 +258,11 @@ struct ReinitializationMatrix
 
 template <int dim>
 void
-LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
-                                                     const unsigned int stab_steps,
-                                                     const unsigned int diff_steps,
-                                                     const bool)
+LevelSetOKZSolverReinitialization<dim>::reinitialize(
+  const double                     dt,
+  const unsigned int               stab_steps,
+  const unsigned int               diff_steps,
+  const std::function<void(bool)> &compute_normal)
 {
   this->time_stepping.set_time_step(dt);
 
@@ -292,7 +293,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
     {
       first_reinit_step = (tau == actual_diff_steps);
       if (first_reinit_step)
-        normal_operator.compute_normal(true);
+        compute_normal(true);
 
       // compute right hand side
       VectorType &rhs       = this->system_rhs;

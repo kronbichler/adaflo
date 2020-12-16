@@ -105,7 +105,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
     params.time.time_step_size_min   = this->parameters.time_step_size_min;
 
     this->reinit_operator = std::make_unique<LevelSetOKZSolverReinitialization<dim>>(
-      *this->normal_operator,
       this->normal_vector_field,
       this->cell_diameters,
       this->epsilon_used,
@@ -549,11 +548,15 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
                                      const unsigned int diff_steps,
                                      const bool diffuse_cells_with_large_curvature_only)
 {
+  (void)diffuse_cells_with_large_curvature_only;
+
   TimerOutput::Scope timer(*this->timer, "LS reinitialization step.");
   reinit_operator->reinitialize(this->time_stepping.step_size(),
                                 stab_steps,
                                 diff_steps,
-                                diffuse_cells_with_large_curvature_only);
+                                [&](const bool fast_computation) {
+                                  this->compute_normal(fast_computation);
+                                });
 }
 
 
