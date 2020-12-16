@@ -100,7 +100,7 @@ public:
   {}
 
   // performs reinitialization
-  virtual void
+  void
   reinitialize(const double                     dt,
                const unsigned int               stab_steps,
                const unsigned int               diff_steps     = 0,
