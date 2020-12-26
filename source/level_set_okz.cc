@@ -464,7 +464,6 @@ LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
   // compute the curvature directly from C, but that is less accurate. TODO:
   // include that variant by a parameter
   {
-    TimerOutput::Scope timer(*this->timer, "LS compute normal.");
     this->compute_normal(false);
   }
   {
