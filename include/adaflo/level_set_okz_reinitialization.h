@@ -68,7 +68,6 @@ public:
   using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
   LevelSetOKZSolverReinitialization(
-    LevelSetOKZSolverComputeNormal<dim> &             normal_operator,
     const BlockVectorType &                           normal_vector_field,
     const AlignedVector<VectorizedArray<double>> &    cell_diameters,
     const double &                                    epsilon_used,
@@ -84,7 +83,6 @@ public:
     bool &                                            first_reinit_step,
     const MatrixFree<dim, double> &                   matrix_free)
     : parameters(parameters)
-    , normal_operator(normal_operator)
     , solution(solution)
     , solution_update(solution_update)
     , system_rhs(system_rhs)
@@ -102,11 +100,11 @@ public:
   {}
 
   // performs reinitialization
-  virtual void
-  reinitialize(const double       dt,
-               const unsigned int stab_steps,
-               const unsigned int diff_steps                              = 0,
-               const bool         diffuse_cells_with_large_curvature_only = false);
+  void
+  reinitialize(const double                     dt,
+               const unsigned int               stab_steps,
+               const unsigned int               diff_steps     = 0,
+               const std::function<void(bool)> &compute_normal = [](const bool) {});
 
   void
   reinitialization_vmult(VectorType &      dst,
@@ -132,11 +130,6 @@ private:
    * Parameters
    */
   const LevelSetOKZSolverReinitializationParameter parameters;
-
-  /**
-   * Other operators.
-   */
-  LevelSetOKZSolverComputeNormal<dim> &normal_operator;
 
   /**
    * Vector section

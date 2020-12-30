@@ -18,6 +18,8 @@
 
 #include <deal.II/distributed/tria.h>
 
+#include <deal.II/matrix_free/matrix_free.h>
+
 using namespace dealii;
 
 /**
@@ -50,6 +52,80 @@ locally_owned_subdomain(const MeshType &mesh)
     &(mesh.get_triangulation()));
 
   return tria_parallel != nullptr ? tria_parallel->locally_owned_subdomain() : 0;
+}
+
+template <int dim>
+void
+compute_cell_diameters(const MatrixFree<dim, double> &         matrix_free,
+                       const unsigned int                      dof_index,
+                       AlignedVector<VectorizedArray<double>> &cell_diameters,
+                       double &                                cell_diameter_min,
+                       double &                                cell_diameter_max)
+{
+  cell_diameters.resize(matrix_free.n_cell_batches());
+
+  cell_diameter_min = std::numeric_limits<double>::max();
+  cell_diameter_max = 0.0;
+
+  // to find the cell diameters, we compute the maximum and minimum eigenvalue
+  // of the Jacobian transformation from the unit to the real cell. We check
+  // all face centers and the center of the cell and take the respective
+  // minimum and maximum there to cover most of the cell geometry
+  std::vector<Point<dim>> face_centers;
+  {
+    Point<dim> center;
+    for (unsigned int d = 0; d < dim; ++d)
+      center[d] = 0.5;
+    for (unsigned int d = 0; d < dim; ++d)
+      {
+        Point<dim> p1 = center;
+        p1[d]         = 0;
+        face_centers.push_back(p1);
+        p1[d] = 1.;
+        face_centers.push_back(p1);
+      }
+    face_centers.push_back(center);
+  }
+
+  const auto &dof_handler   = matrix_free.get_dof_handler(dof_index);
+  const auto &triangulation = dof_handler.get_triangulation();
+
+  LAPACKFullMatrix<double> mat(dim, dim);
+  FEValues<dim>            fe_values(*matrix_free.get_mapping_info().mapping,
+                          dof_handler.get_fe(),
+                          Quadrature<dim>(face_centers),
+                          update_jacobians);
+  for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
+    {
+      VectorizedArray<double> diameter = VectorizedArray<double>();
+      for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell); ++v)
+        {
+          typename DoFHandler<dim>::active_cell_iterator dcell =
+            matrix_free.get_cell_iterator(cell, v, dof_index);
+          fe_values.reinit(dcell);
+          for (unsigned int q = 0; q < fe_values.n_quadrature_points; ++q)
+            {
+              mat = 0;
+              for (unsigned int d = 0; d < dim; ++d)
+                for (unsigned int e = 0; e < dim; ++e)
+                  mat(d, e) = fe_values.jacobian(q)[d][e];
+              mat.compute_eigenvalues();
+              for (unsigned int d = 0; d < dim; ++d)
+                {
+                  diameter[v] = std::max(diameter[v], std::abs(mat.eigenvalue(d)));
+                  cell_diameter_min =
+                    std::min(cell_diameter_min, std::abs(mat.eigenvalue(d)));
+                }
+            }
+          if (1U + dcell->level() == triangulation.n_global_levels())
+            cell_diameter_max = std::max(diameter[v], cell_diameter_max);
+        }
+      cell_diameters[cell] = diameter;
+    }
+  cell_diameter_min =
+    -Utilities::MPI::max(-cell_diameter_min, get_communicator(triangulation));
+  cell_diameter_max =
+    Utilities::MPI::max(cell_diameter_max, get_communicator(triangulation));
 }
 
 #endif

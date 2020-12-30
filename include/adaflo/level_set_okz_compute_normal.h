@@ -56,8 +56,11 @@ struct LevelSetOKZSolverComputeNormalParameter
   /**
    * TODO
    */
-
   bool approximate_projections;
+  /**
+   * TODO
+   */
+  double damping_scale_factor = 4.0;
 };
 
 template <int dim>
@@ -70,7 +73,7 @@ public:
   LevelSetOKZSolverComputeNormal(
     BlockVectorType &                              normal_vector_field,
     BlockVectorType &                              normal_vector_rhs,
-    VectorType &                                   solution,
+    const VectorType &                             level_set_field,
     const AlignedVector<VectorizedArray<double>> & cell_diameters,
     const double &                                 epsilon_used,
     const double &                                 minimal_edge_length,
@@ -112,7 +115,7 @@ private:
    */
   BlockVectorType & normal_vector_field; // [o]
   BlockVectorType & normal_vector_rhs;   // [-]
-  const VectorType &vel_solution;        // [i]
+  const VectorType &level_set_solution;  // [i]
 
   /**
    * MatrixFree

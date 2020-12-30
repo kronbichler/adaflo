@@ -279,66 +279,11 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
 
   // find relevant epsilon for smoothing by taking the largest mesh size of
   // cells close to the interface (here: cells on finest level)
-  epsilon_used        = 0;
-  minimal_edge_length = global_omega_diameter;
-  cell_diameters.resize(this->matrix_free.n_cell_batches());
-
-  // to find the cell diameters, we compute the maximum and minimum eigenvalue
-  // of the Jacobian transformation from the unit to the real cell. We check
-  // all face centers and the center of the cell and take the respective
-  // minimum and maximum there to cover most of the cell geometry
-  std::vector<Point<dim>> face_centers;
-  {
-    Point<dim> center;
-    for (unsigned int d = 0; d < dim; ++d)
-      center[d] = 0.5;
-    for (unsigned int d = 0; d < dim; ++d)
-      {
-        Point<dim> p1 = center;
-        p1[d]         = 0;
-        face_centers.push_back(p1);
-        p1[d] = 1.;
-        face_centers.push_back(p1);
-      }
-    face_centers.push_back(center);
-  }
-  LAPACKFullMatrix<double> mat(dim, dim);
-  FEValues<dim>            fe_values(this->mapping,
-                          navier_stokes.get_fe_p(),
-                          Quadrature<dim>(face_centers),
-                          update_jacobians);
-  for (unsigned int cell = 0; cell < this->matrix_free.n_cell_batches(); ++cell)
-    {
-      VectorizedArray<double> diameter = VectorizedArray<double>();
-      for (unsigned int v = 0;
-           v < this->matrix_free.n_active_entries_per_cell_batch(cell);
-           ++v)
-        {
-          typename DoFHandler<dim>::active_cell_iterator dcell =
-            this->matrix_free.get_cell_iterator(cell, v, 1);
-          fe_values.reinit(dcell);
-          for (unsigned int q = 0; q < fe_values.n_quadrature_points; ++q)
-            {
-              mat = 0;
-              for (unsigned int d = 0; d < dim; ++d)
-                for (unsigned int e = 0; e < dim; ++e)
-                  mat(d, e) = fe_values.jacobian(q)[d][e];
-              mat.compute_eigenvalues();
-              for (unsigned int d = 0; d < dim; ++d)
-                {
-                  diameter[v] = std::max(diameter[v], std::abs(mat.eigenvalue(d)));
-                  minimal_edge_length =
-                    std::min(minimal_edge_length, std::abs(mat.eigenvalue(d)));
-                }
-            }
-          if (1U + dcell->level() == this->triangulation.n_global_levels())
-            epsilon_used = std::max(diameter[v], epsilon_used);
-        }
-      cell_diameters[cell] = diameter;
-    }
-  minimal_edge_length =
-    -Utilities::MPI::max(-minimal_edge_length, get_communicator(triangulation));
-  epsilon_used = Utilities::MPI::max(epsilon_used, get_communicator(triangulation));
+  compute_cell_diameters(this->matrix_free,
+                         1 /*dof_index_p*/,
+                         cell_diameters,
+                         minimal_edge_length,
+                         epsilon_used);
 
   this->pcout << "Mesh size (largest/smallest element length at finest level): "
               << epsilon_used << " / " << minimal_edge_length << std::endl;

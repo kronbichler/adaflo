@@ -50,7 +50,6 @@
 
 template <int dim>
 LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
-  LevelSetOKZSolverComputeNormal<dim> &                  normal_operator,
   const AlignedVector<VectorizedArray<double>> &         cell_diameters,
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
   const AffineConstraints<double> &                      constraints_curvature,
@@ -65,7 +64,6 @@ LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
   std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
   std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
   : parameters(parameters)
-  , normal_operator(normal_operator)
   , solution_curvature(solution_curvature)
   , rhs(system_rhs)
   , solution_ls(solution_ls)
@@ -124,6 +122,81 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
     }
 }
 
+namespace
+{
+  template <typename number>
+  VectorizedArray<number>
+  normalize(const VectorizedArray<number> &in, bool &all_zero)
+  {
+    VectorizedArray<number> vec;
+
+    for (unsigned int v = 0; v < VectorizedArray<number>::size(); ++v)
+      vec[v] = in[v] >= 1e-2 ? 1.0 : (in[v] <= -1e-2 ? -1.0 : 0.0);
+
+    all_zero = false; // TODO?
+
+    return vec;
+  }
+
+  template <int dim, typename number>
+  static Tensor<1, dim, VectorizedArray<number>>
+  normalize(const Tensor<1, dim, VectorizedArray<number>> &normal, bool &all_zero)
+  {
+    Tensor<1, dim, VectorizedArray<number>> vec = normal;
+
+    const VectorizedArray<double> normal_norm = normal.norm();
+    for (unsigned int d = 0; d < VectorizedArray<double>::size(); ++d)
+      if (normal_norm[d] > 1e-2)
+        {
+          all_zero = false;
+          for (unsigned int e = 0; e < dim; ++e)
+            vec[e][d] /= normal_norm[d];
+        }
+      else
+        for (unsigned int e = 0; e < dim; ++e)
+          vec[e][d] = 0;
+
+    return vec;
+  }
+
+  template <int dim,
+            int fe_degree,
+            int n_q_points_1d,
+            int n_components_,
+            typename Number,
+            typename VectorizedArrayType>
+  static VectorizedArray<Number>
+  get_divergence(const FEEvaluation<dim,
+                                    fe_degree,
+                                    n_q_points_1d,
+                                    n_components_,
+                                    Number,
+                                    VectorizedArrayType> &phi,
+                 const unsigned int                       q)
+  {
+    return phi.get_divergence(q);
+  }
+
+  template <int fe_degree,
+            int n_q_points_1d,
+            int n_components_,
+            typename Number,
+            typename VectorizedArrayType>
+  static VectorizedArray<Number>
+  get_divergence(const FEEvaluation<1,
+                                    fe_degree,
+                                    n_q_points_1d,
+                                    n_components_,
+                                    Number,
+                                    VectorizedArrayType> &phi,
+                 const unsigned int                       q)
+  {
+    (void)q;
+    (void)phi;
+    return 0.0;
+  }
+} // namespace
+
 
 
 template <int dim>
@@ -159,26 +232,16 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
       bool all_zero = true;
       for (unsigned int i = 0; i < normal_values.dofs_per_component; ++i)
         {
-          Tensor<1, dim, VectorizedArray<double>> normal = normal_values.get_dof_value(i);
-          const VectorizedArray<double>           normal_norm = normal.norm();
-          for (unsigned int d = 0; d < VectorizedArray<double>::size(); ++d)
-            if (normal_norm[d] > 1e-2)
-              {
-                all_zero = false;
-                for (unsigned int e = 0; e < dim; ++e)
-                  normal[e][d] /= normal_norm[d];
-              }
-            else
-              for (unsigned int e = 0; e < dim; ++e)
-                normal[e][d] = 0;
-          normal_values.submit_dof_value(normal, i);
+          normal_values.submit_dof_value(normalize(normal_values.get_dof_value(i),
+                                                   all_zero),
+                                         i);
         }
 
       if (all_zero == false)
         {
           normal_values.evaluate(false, true, false);
           for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
-            curv_values.submit_value(-normal_values.get_divergence(q), q);
+            curv_values.submit_value(-get_divergence(normal_values, q), q);
           curv_values.integrate(true, false);
           curv_values.distribute_local_to_global(dst);
         }
@@ -262,11 +325,6 @@ template <int dim>
 void
 LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 {
-  // This function computes the curvature from the normal field. Could also
-  // compute the curvature directly from C, but that is less accurate. TODO:
-  // include that variant by a parameter
-  normal_operator.compute_normal(false);
-
   // compute right hand side
   rhs = 0;
 
@@ -332,5 +390,6 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 
 
 
+template class LevelSetOKZSolverComputeCurvature<1>;
 template class LevelSetOKZSolverComputeCurvature<2>;
 template class LevelSetOKZSolverComputeCurvature<3>;

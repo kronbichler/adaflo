@@ -105,7 +105,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
     params.time.time_step_size_min   = this->parameters.time_step_size_min;
 
     this->reinit_operator = std::make_unique<LevelSetOKZSolverReinitialization<dim>>(
-      *this->normal_operator,
       this->normal_vector_field,
       this->cell_diameters,
       this->epsilon_used,
@@ -133,7 +132,6 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
     params.curvature_correction    = this->parameters.curvature_correction;
 
     this->curvatur_operator = std::make_unique<LevelSetOKZSolverComputeCurvature<dim>>(
-      *this->normal_operator,
       this->cell_diameters,
       this->normal_vector_field,
       this->constraints_curvature,
@@ -188,14 +186,12 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
         this->navier_stokes.solution.block(0),
         this->navier_stokes.solution_old.block(0),
         this->navier_stokes.solution_old_old.block(0),
-        this->global_omega_diameter,
         this->cell_diameters,
         this->constraints,
         this->pcout,
         bcs,
         this->matrix_free,
         params,
-        this->global_max_velocity,
         this->preconditioner);
   }
 }
@@ -464,8 +460,16 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
-  TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
-  curvatur_operator->compute_curvature(diffuse_large_values);
+  // This function computes the curvature from the normal field. Could also
+  // compute the curvature directly from C, but that is less accurate. TODO:
+  // include that variant by a parameter
+  {
+    this->compute_normal(false);
+  }
+  {
+    TimerOutput::Scope timer(*this->timer, "LS compute curvature.");
+    curvatur_operator->compute_curvature(diffuse_large_values);
+  }
 }
 
 
@@ -543,11 +547,15 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
                                      const unsigned int diff_steps,
                                      const bool diffuse_cells_with_large_curvature_only)
 {
+  (void)diffuse_cells_with_large_curvature_only;
+
   TimerOutput::Scope timer(*this->timer, "LS reinitialization step.");
   reinit_operator->reinitialize(this->time_stepping.step_size(),
                                 stab_steps,
                                 diff_steps,
-                                diffuse_cells_with_large_curvature_only);
+                                [&](const bool fast_computation) {
+                                  this->compute_normal(fast_computation);
+                                });
 }
 
 

@@ -105,6 +105,24 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
 }
 
 
+namespace
+{
+  template <typename number>
+  VectorizedArray<number>
+  normalize(const VectorizedArray<number> &in)
+  {
+    return std::abs(in);
+  }
+
+  template <int dim, typename number>
+  static VectorizedArray<number>
+  normalize(const Tensor<1, dim, VectorizedArray<number>> &in)
+  {
+    return in.norm();
+  }
+} // namespace
+
+
 
 template <int dim>
 template <int ls_degree, bool diffuse_only>
@@ -147,8 +165,8 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
             Tensor<1, dim, VectorizedArray<double>> grad = phi.get_gradient(q);
             if (first_reinit_step)
               {
-                Tensor<1, dim, VectorizedArray<double>> normal = normals.get_value(q);
-                normal /= std::max(make_vectorized_array(1e-4), normal.norm());
+                auto normal = normals.get_value(q);
+                normal /= std::max(make_vectorized_array(1e-4), normalize(normal));
                 evaluated_normal[cell * phi.n_q_points + q] = normal;
               }
             // take normal as it was for the first reinit step
@@ -240,10 +258,11 @@ struct ReinitializationMatrix
 
 template <int dim>
 void
-LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
-                                                     const unsigned int stab_steps,
-                                                     const unsigned int diff_steps,
-                                                     const bool)
+LevelSetOKZSolverReinitialization<dim>::reinitialize(
+  const double                     dt,
+  const unsigned int               stab_steps,
+  const unsigned int               diff_steps,
+  const std::function<void(bool)> &compute_normal)
 {
   this->time_stepping.set_time_step(dt);
 
@@ -274,7 +293,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
     {
       first_reinit_step = (tau == actual_diff_steps);
       if (first_reinit_step)
-        normal_operator.compute_normal(true);
+        compute_normal(true);
 
       // compute right hand side
       VectorType &rhs       = this->system_rhs;
@@ -346,5 +365,6 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(const double       dt,
   this->time_stepping.next();
 }
 
+template class LevelSetOKZSolverReinitialization<1>;
 template class LevelSetOKZSolverReinitialization<2>;
 template class LevelSetOKZSolverReinitialization<3>;

@@ -178,6 +178,17 @@ initialize_projection_matrix(
     ilu_projection_matrix.initialize(projection_matrix);
   }
 }
+template void
+initialize_projection_matrix<1, double, VectorizedArray<double>>(
+  const MatrixFree<1, double, VectorizedArray<double>> &matrix_free,
+  const AffineConstraints<double> &                     constraints_normals,
+  const unsigned int                                    dof_index,
+  const unsigned int                                    quad_index,
+  const double &                                        epsilon_used,
+  const double &                                        epsilon,
+  const AlignedVector<VectorizedArray<double>> &        cell_diameters,
+  BlockMatrixExtension &                                projection_matrix,
+  BlockILUExtension &                                   ilu_projection_matrix);
 
 template void
 initialize_projection_matrix<2, double, VectorizedArray<double>>(
