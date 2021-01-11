@@ -40,7 +40,7 @@ subsection Time stepping
 end
 subsection Navier-Stokes
   set dimension            = 2
-  set global refinements   = 4
+  set global refinements   = 3
   set adaptive refinements = 0
   set velocity degree      = 2
   set simplex mesh       = 1
