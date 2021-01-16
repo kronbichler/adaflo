@@ -29,11 +29,11 @@
 
 using namespace dealii;
 
-const double domain_length = 15.0e-3;
-const double diameter = 4.2e-3;
-const double film_height = 0.5 * diameter;
+const double domain_length      = 15.0e-3;
+const double diameter           = 4.2e-3;
+const double film_height        = 0.5 * diameter;
 const double distance_film_drop = 0.1 * diameter;
-const double drop_height = film_height + 0.5 * diameter + distance_film_drop;
+const double drop_height        = film_height + 0.5 * diameter + distance_film_drop;
 
 struct TwoPhaseParameters : public FlowParameters
 {
@@ -70,12 +70,16 @@ public:
   double
   value(const Point<dim> &p, const unsigned int /*component*/) const
   {
-    if(p[1] < film_height + 0.5 * distance_film_drop) {
-      return - film_height + p[1];
-    } else {
-      Point<dim> origin = (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, drop_height, 0.0));
-      return - 0.5 * diameter + p.distance(origin);
-    }
+    if (p[dim - 1] < film_height + 0.5 * distance_film_drop)
+      {
+        return -film_height + p[dim - 1];
+      }
+    else
+      {
+        Point<dim> origin =
+          (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, 0.0, drop_height));
+        return -0.5 * diameter + p.distance(origin);
+      }
   }
 };
 
@@ -91,12 +95,16 @@ public:
   double
   value(const Point<dim> &p, const unsigned int component) const
   {
-    Point<dim> origin = (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, drop_height, 0.0));
-    if( 0.5 * diameter - p.distance(origin) > 0.0 ) {
-      return component==1 ? - 5.1 : 0.0;
-    } else {
-      return 0.0;
-    }
+    Point<dim> origin =
+      (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, 0.0, drop_height));
+    if (0.5 * diameter - p.distance(origin) > 0.0)
+      {
+        return component == (dim - 1) ? -5.1 : 0.0;
+      }
+    else
+      {
+        return 0.0;
+      }
   }
 };
 
@@ -153,25 +161,36 @@ MicroFluidicProblem<dim>::run()
   const double width  = 2 * domain_length;
   const double height = 1 * domain_length;
 
-  subdivisions[0] *= std::round(width / height);
+  for (unsigned int d = 0; d < dim - 1; ++d)
+    subdivisions[d] *= std::round(width / height);
 
-  const Point<dim> p0 =
-    (dim == 2 ? Point<dim>(-domain_length, 0.0) : Point<dim>(-domain_length, 0.0, -domain_length));
+  const Point<dim> p0 = (dim == 2 ? Point<dim>(-domain_length, 0.0) :
+                                    Point<dim>(-domain_length, -domain_length, 0.0));
   const Point<dim> p1 =
-    (dim == 2 ? Point<dim>(domain_length, domain_length) : Point<dim>(domain_length, domain_length, domain_length));
+    (dim == 2 ? Point<dim>(domain_length, domain_length) :
+                Point<dim>(domain_length, domain_length, domain_length));
   GridGenerator::subdivided_hyper_rectangle(triangulation, subdivisions, p0, p1, true);
-
 
 
 
   AssertThrow(parameters.global_refinements < 12, ExcInternalError());
 
-  solver->set_no_slip_boundary(0);
-  solver->set_no_slip_boundary(1);
-  solver->set_no_slip_boundary(2);
-  solver->set_open_boundary(3);
-  solver->set_no_slip_boundary(4);
-  solver->set_no_slip_boundary(5);
+  if (dim == 2)
+    {
+      solver->set_no_slip_boundary(0);
+      solver->set_no_slip_boundary(1);
+      solver->set_no_slip_boundary(2);
+      solver->set_open_boundary(3);
+    }
+  else
+    {
+      solver->set_no_slip_boundary(0);
+      solver->set_no_slip_boundary(1);
+      solver->set_no_slip_boundary(2);
+      solver->set_no_slip_boundary(3);
+      solver->set_no_slip_boundary(4);
+      solver->set_open_boundary(5);
+    }
 
 
   solver->setup_problem(BCVelocityField<dim>(), InitialValuesLS<dim>());

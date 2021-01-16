@@ -30,18 +30,18 @@ subsection Two phase
   set grad pressure compatible = 1
   set localize surface tension = 1
   set curvature correction = 1
-  set number reinit steps = 2
-  set number initial reinit steps = 2
+  set number reinit steps = 5
+  set number initial reinit steps = 5
 end
 subsection Time stepping
   set scheme           = bdf_2
   set end time         = 7.5e-3
-  set step size        = 2.5e-5
+  set step size        = 1.0e-5
 end
 subsection Navier-Stokes
-  set dimension            = 2
+  set dimension            = 3
   set global refinements   = 1
-  set adaptive refinements = 1
+  set adaptive refinements = 2
   set velocity degree      = 2
   subsection Solver
     set NL max iterations            = 10
