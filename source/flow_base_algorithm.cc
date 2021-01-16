@@ -18,6 +18,8 @@
 #include <adaflo/flow_base_algorithm.h>
 #include <adaflo/util.h>
 
+#include <filesystem>
+
 using namespace dealii;
 
 
@@ -221,60 +223,25 @@ FlowBaseAlgorithm<dim>::set_periodic_direction(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
-                                          const TimeStepping &      time_stepping,
-                                          const double              output_frequency,
-                                          const Triangulation<dim> &tria,
-                                          DataOut<dim> &            data_out) const
+FlowBaseAlgorithm<dim>::write_data_output(const std::string & output_name,
+                                          const TimeStepping &time_stepping,
+                                          const double        output_frequency,
+                                          const Triangulation<dim> &,
+                                          DataOut<dim> &data_out) const
 {
-  std::ostringstream filename;
-  std::ostringstream filename_time;
-
   // append time step and processor count to given output base name
 
   const unsigned int no_time_steps =
     (time_stepping.final() - time_stepping.start()) / output_frequency + 1;
   const unsigned int digits_steps = std::log10((double)no_time_steps) + 1;
-  const unsigned int n_procs = Utilities::MPI::n_mpi_processes(get_communicator(tria));
-  const unsigned int digits_procs = std::log10(n_procs) + 1;
 
   const unsigned int cycle = time_stepping.now() / output_frequency + 0.51;
   data_out.set_flags(DataOutBase::VtkFlags(time_stepping.now(), cycle));
 
-  filename_time << output_name << "-" << Utilities::int_to_string(cycle, digits_steps);
-  filename << filename_time.str();
-  if (n_procs > 1)
-    filename << "-"
-             << Utilities::int_to_string(locally_owned_subdomain(tria), digits_procs);
-  filename << ".vtu";
+  std::filesystem::path path(output_name);
 
-  std::ofstream output(filename.str().c_str());
-  data_out.write_vtu(output);
-
-  // At this point, all processors have written their own files to disk.  We
-  // could visualize them individually in Visit or Paraview, but in reality we
-  // of course want to visualize the whole set of files at once. To this end,
-  // we create a master on the zeroth processor that describes how the
-  // individual files are defining the global data set. Of course, we do not
-  // need a master file when only one processor is working.
-  if (n_procs > 1 && Utilities::MPI::this_mpi_process(get_communicator(tria)) == 0)
-    {
-      std::vector<std::string> filenames;
-      // remove possible directory names
-      std::string base_name = filename_time.str();
-      if (base_name.find_last_of('/') != std::string::npos)
-        base_name.erase(0, base_name.find_last_of('/') + 1);
-
-      for (unsigned int i = 0;
-           i < Utilities::MPI::n_mpi_processes(get_communicator(tria));
-           ++i)
-        filenames.push_back(base_name + "-" + Utilities::int_to_string(i, digits_procs) +
-                            ".vtu");
-
-      const std::string pvtu_master_filename = (filename_time.str() + ".pvtu");
-      std::ofstream     pvtu_master(pvtu_master_filename.c_str());
-      data_out.write_pvtu_record(pvtu_master, filenames);
-    }
+  data_out.write_vtu_with_pvtu_record(
+    path.relative_path(), path.filename(), cycle, MPI_COMM_WORLD, digits_steps, 1);
 }
 
 
