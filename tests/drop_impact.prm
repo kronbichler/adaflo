@@ -19,13 +19,13 @@ subsection Problem-specific
   set two-phase method = level set okz
 end
 subsection Two phase
-  set density              = 1.0
-  set density difference   = 1.0
-  set viscosity            = 10.0
+  set density              = 1.2
+  set density difference   = 1198.8
+  set viscosity            = 0.022
   set viscosity difference = 0.0
-  set surface tension      = 1.0
+  set surface tension      = 0.0652
   set epsilon              = 1.5
-  set gravity              = 0.0
+  set gravity              = -9.81
   set concentration subdivisions = 4
   set grad pressure compatible = 1
   set localize surface tension = 1
@@ -35,13 +35,13 @@ subsection Two phase
 end
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 3
-  set step size        = 0.02
+  set end time         = 7.5e-3
+  set step size        = 2.5e-5
 end
 subsection Navier-Stokes
   set dimension            = 2
   set global refinements   = 1
-  set adaptive refinements = 3
+  set adaptive refinements = 1
   set velocity degree      = 2
   subsection Solver
     set NL max iterations            = 10
@@ -55,6 +55,6 @@ end
 subsection Output options
   set output filename  = output-drop_impact/data
   set output verbosity = 2
-  set output frequency = 0.1
+  set output frequency = 2.5e-5
   set output vtk files = 1
 end

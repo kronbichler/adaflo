@@ -29,6 +29,11 @@
 
 using namespace dealii;
 
+const double domain_length = 15.0e-3;
+const double diameter = 4.2e-3;
+const double film_height = 0.5 * diameter;
+const double distance_film_drop = 0.1 * diameter;
+const double drop_height = film_height + 0.5 * diameter + distance_film_drop;
 
 struct TwoPhaseParameters : public FlowParameters
 {
@@ -65,9 +70,12 @@ public:
   double
   value(const Point<dim> &p, const unsigned int /*component*/) const
   {
-    const double radius = 1.0;
-    Point<dim>   origin;
-    return p.distance(origin) - radius;
+    if(p[1] < film_height + 0.5 * distance_film_drop) {
+      return - film_height + p[1];
+    } else {
+      Point<dim> origin = (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, drop_height, 0.0));
+      return - 0.5 * diameter + p.distance(origin);
+    }
   }
 };
 
@@ -83,10 +91,12 @@ public:
   double
   value(const Point<dim> &p, const unsigned int component) const
   {
-    if (component == 0)
-      return p[1];
-    else
+    Point<dim> origin = (dim == 2 ? Point<dim>(0.0, drop_height) : Point<dim>(0.0, drop_height, 0.0));
+    if( 0.5 * diameter - p.distance(origin) > 0.0 ) {
+      return component==1 ? - 5.1 : 0.0;
+    } else {
       return 0.0;
+    }
   }
 };
 
@@ -140,51 +150,28 @@ MicroFluidicProblem<dim>::run()
   // create mesh
   std::vector<unsigned int> subdivisions(dim, 5);
 
-  const double width  = 8;
-  const double height = 4;
+  const double width  = 2 * domain_length;
+  const double height = 1 * domain_length;
 
   subdivisions[0] *= std::round(width / height);
 
   const Point<dim> p0 =
-    (dim == 2 ? Point<dim>(-width, -height) : Point<dim>(-width, -height, -height));
+    (dim == 2 ? Point<dim>(-domain_length, 0.0) : Point<dim>(-domain_length, 0.0, -domain_length));
   const Point<dim> p1 =
-    (dim == 2 ? Point<dim>(+width, +height) : Point<dim>(+width, +height, +height));
-  GridGenerator::subdivided_hyper_rectangle(triangulation, subdivisions, p0, p1);
+    (dim == 2 ? Point<dim>(domain_length, domain_length) : Point<dim>(domain_length, domain_length, domain_length));
+  GridGenerator::subdivided_hyper_rectangle(triangulation, subdivisions, p0, p1, true);
 
-  // set boundary indicator to 2 on left and right face -> symmetry boundary
-  typename parallel::distributed::Triangulation<dim>::active_cell_iterator
-    cell = triangulation.begin(),
-    endc = triangulation.end();
 
-  for (; cell != endc; ++cell)
-    for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-      {
-        if (cell->face(face)->at_boundary() == false)
-          continue;
 
-        if (std::fabs(cell->face(face)->center()[0] - p0[0]) < 1e-14)
-          cell->face(face)->set_boundary_id(1);
-        if (std::fabs(cell->face(face)->center()[0] - p1[0]) < 1e-14)
-          cell->face(face)->set_boundary_id(2);
-        if (dim == 3 && std::fabs(cell->face(face)->center()[2] - p0[2]) < 1e-14)
-          cell->face(face)->set_boundary_id(3);
-        if (dim == 3 && std::fabs(cell->face(face)->center()[2] - p1[2]) < 1e-14)
-          cell->face(face)->set_boundary_id(4);
-      }
 
   AssertThrow(parameters.global_refinements < 12, ExcInternalError());
 
-  solver->set_velocity_dirichlet_boundary(0, std::make_shared<BCVelocityField<dim>>());
-
-#if false
-  solver->set_periodic_direction(0, 1, 2);
-  solver->fix_pressure_constant(0);
-#else
-  solver->set_open_boundary(1);
-  solver->set_open_boundary(2);
+  solver->set_no_slip_boundary(0);
+  solver->set_no_slip_boundary(1);
+  solver->set_no_slip_boundary(2);
   solver->set_open_boundary(3);
-  solver->set_open_boundary(4);
-#endif
+  solver->set_no_slip_boundary(4);
+  solver->set_no_slip_boundary(5);
 
 
   solver->setup_problem(BCVelocityField<dim>(), InitialValuesLS<dim>());
