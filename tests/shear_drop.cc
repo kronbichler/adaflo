@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2010 - 2016 by the adaflo authors
+// Copyright (C) 2021 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -13,9 +13,7 @@
 //
 // --------------------------------------------------------------------------
 
-// runs a simulation on a static bubble where the velocities ideally should be
-// zero but where we actually get some velocities which are due to
-// inaccuracies in the scheme
+// runs the "shear drop" test case
 
 #include <deal.II/distributed/tria.h>
 
