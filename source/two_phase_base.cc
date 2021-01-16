@@ -563,6 +563,10 @@ TwoPhaseBaseAlgorithm<dim>::output_solution(const std::string  output_name,
 
   DataOut<dim> data_out;
 
+  DataOutBase::VtkFlags flags;
+  flags.write_higher_order_cells = true;
+  data_out.set_flags(flags);
+
   data_out.add_data_vector(
     navier_stokes.get_dof_handler_u(),
     navier_stokes.solution.block(0),
