@@ -167,9 +167,15 @@ MicroFluidicProblem<dim>::run()
   AssertThrow(parameters.global_refinements < 12, ExcInternalError());
 
   solver->set_velocity_dirichlet_boundary(0, std::make_shared<BCVelocityField<dim>>());
-  solver->set_periodic_direction(0, 1, 2);
 
+#if false
+  solver->set_periodic_direction(0, 1, 2);
   solver->fix_pressure_constant(0);
+#else
+  solver->set_open_boundary(1);
+  solver->set_open_boundary(2);
+#endif
+
 
   solver->setup_problem(BCVelocityField<dim>(), InitialValuesLS<dim>());
   solver->output_solution(parameters.output_filename);
