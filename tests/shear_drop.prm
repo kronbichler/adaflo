@@ -40,8 +40,8 @@ subsection Time stepping
 end
 subsection Navier-Stokes
   set dimension            = 2
-  set global refinements   = 2
-  set adaptive refinements = 1
+  set global refinements   = 1
+  set adaptive refinements = 3
   set velocity degree      = 2
   subsection Solver
     set NL max iterations            = 10

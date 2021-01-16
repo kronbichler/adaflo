@@ -66,7 +66,7 @@ public:
   value(const Point<dim> &p, const unsigned int /*component*/) const
   {
     const double radius = 1.0;
-    Point<dim>   origin(4.0, 4.0);
+    Point<dim>   origin;
     return p.distance(origin) - radius;
   }
 };
@@ -84,7 +84,7 @@ public:
   value(const Point<dim> &p, const unsigned int component) const
   {
     if (component == 0)
-      return p[1] - 4.0;
+      return p[1];
     else
       return 0.0;
   }
@@ -140,12 +140,16 @@ MicroFluidicProblem<dim>::run()
   // create mesh
   std::vector<unsigned int> subdivisions(dim, 5);
 
-  const Point<dim> bottom_left;
-  const Point<dim> top_right = (dim == 2 ? Point<dim>(8, 8) : Point<dim>(8, 8, 8));
-  GridGenerator::subdivided_hyper_rectangle(triangulation,
-                                            subdivisions,
-                                            bottom_left,
-                                            top_right);
+  const double width  = 8;
+  const double height = 4;
+
+  subdivisions[0] *= std::round(width / height);
+
+  const Point<dim> p0 =
+    (dim == 2 ? Point<dim>(-width, -height) : Point<dim>(-width, -height, -height));
+  const Point<dim> p1 =
+    (dim == 2 ? Point<dim>(+width, +height) : Point<dim>(+width, +height, +height));
+  GridGenerator::subdivided_hyper_rectangle(triangulation, subdivisions, p0, p1);
 
   // set boundary indicator to 2 on left and right face -> symmetry boundary
   typename parallel::distributed::Triangulation<dim>::active_cell_iterator
@@ -158,10 +162,14 @@ MicroFluidicProblem<dim>::run()
         if (cell->face(face)->at_boundary() == false)
           continue;
 
-        if (std::fabs(cell->face(face)->center()[0] - 8) < 1e-14)
+        if (std::fabs(cell->face(face)->center()[0] - p0[0]) < 1e-14)
           cell->face(face)->set_boundary_id(1);
-        if (std::fabs(cell->face(face)->center()[0]) < 1e-14)
+        if (std::fabs(cell->face(face)->center()[0] - p1[0]) < 1e-14)
           cell->face(face)->set_boundary_id(2);
+        if (dim == 3 && std::fabs(cell->face(face)->center()[2] - p0[2]) < 1e-14)
+          cell->face(face)->set_boundary_id(3);
+        if (dim == 3 && std::fabs(cell->face(face)->center()[2] - p1[2]) < 1e-14)
+          cell->face(face)->set_boundary_id(4);
       }
 
   AssertThrow(parameters.global_refinements < 12, ExcInternalError());
@@ -174,6 +182,8 @@ MicroFluidicProblem<dim>::run()
 #else
   solver->set_open_boundary(1);
   solver->set_open_boundary(2);
+  solver->set_open_boundary(3);
+  solver->set_open_boundary(4);
 #endif
 
 

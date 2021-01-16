@@ -240,8 +240,12 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string & output_name,
 
   std::filesystem::path path(output_name);
 
-  data_out.write_vtu_with_pvtu_record(
-    path.relative_path(), path.filename(), cycle, MPI_COMM_WORLD, digits_steps, 1);
+  data_out.write_vtu_with_pvtu_record(path.parent_path().string() + "/",
+                                      path.filename(),
+                                      cycle,
+                                      MPI_COMM_WORLD,
+                                      digits_steps,
+                                      1);
 }
 
 
