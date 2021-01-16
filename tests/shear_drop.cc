@@ -65,11 +65,28 @@ public:
   double
   value(const Point<dim> &p, const unsigned int /*component*/) const
   {
-    const double radius               = 0.25;
-    Point<dim>   distance_from_origin = p;
-    for (unsigned int i = 0; i < dim; ++i)
-      distance_from_origin[i] = 0.5;
-    return p.distance(distance_from_origin) - radius;
+    const double radius = 1.0;
+    Point<dim>   origin(4.0, 4.0);
+    return p.distance(origin) - radius;
+  }
+};
+
+
+template <int dim>
+class BCVelocityField : public Function<dim>
+{
+public:
+  BCVelocityField()
+    : Function<dim>(dim, 0)
+  {}
+
+  double
+  value(const Point<dim> &p, const unsigned int component) const
+  {
+    if (component == 0)
+      return p[1] - 4.0;
+    else
+      return 0.0;
   }
 };
 
@@ -122,10 +139,9 @@ MicroFluidicProblem<dim>::run()
 {
   // create mesh
   std::vector<unsigned int> subdivisions(dim, 5);
-  subdivisions[dim - 1] = 10;
 
   const Point<dim> bottom_left;
-  const Point<dim> top_right = (dim == 2 ? Point<dim>(1, 2) : Point<dim>(1, 1, 2));
+  const Point<dim> top_right = (dim == 2 ? Point<dim>(8, 8) : Point<dim>(8, 8, 8));
   GridGenerator::subdivided_hyper_rectangle(triangulation,
                                             subdivisions,
                                             bottom_left,
@@ -138,18 +154,24 @@ MicroFluidicProblem<dim>::run()
 
   for (; cell != endc; ++cell)
     for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-      if (cell->face(face)->at_boundary() &&
-          (std::fabs(cell->face(face)->center()[0] - 1) < 1e-14 ||
-           std::fabs(cell->face(face)->center()[0]) < 1e-14))
-        cell->face(face)->set_boundary_id(2);
+      {
+        if (cell->face(face)->at_boundary() == false)
+          continue;
+
+        if (std::fabs(cell->face(face)->center()[0] - 8) < 1e-14)
+          cell->face(face)->set_boundary_id(1);
+        if (std::fabs(cell->face(face)->center()[0]) < 1e-14)
+          cell->face(face)->set_boundary_id(2);
+      }
 
   AssertThrow(parameters.global_refinements < 12, ExcInternalError());
 
-  solver->set_no_slip_boundary(0);
-  solver->fix_pressure_constant(0);
-  solver->set_symmetry_boundary(2);
+  solver->set_velocity_dirichlet_boundary(0, std::make_shared<BCVelocityField<dim>>());
+  solver->set_periodic_direction(0, 1, 2);
 
-  solver->setup_problem(Functions::ZeroFunction<dim>(dim), InitialValuesLS<dim>());
+  solver->fix_pressure_constant(0);
+
+  solver->setup_problem(BCVelocityField<dim>(), InitialValuesLS<dim>());
   solver->output_solution(parameters.output_filename);
 
   std::vector<std::vector<double>> solution_data;
