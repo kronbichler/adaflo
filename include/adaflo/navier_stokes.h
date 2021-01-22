@@ -271,8 +271,10 @@ private:
   // ourselves (when calling the function
   // setup()) without argument, or we get it
   // from outside and share it.
+public:
   std::shared_ptr<MatrixFree<dim>> matrix_free;
 
+private:
   bool dofs_distributed;
   bool system_is_setup;
 

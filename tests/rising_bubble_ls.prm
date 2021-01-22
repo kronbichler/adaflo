@@ -23,7 +23,7 @@ subsection Two phase
   set density difference   = -0.9
   set viscosity            = 0.01
   set viscosity difference = -0.009
-  set surface tension      = 0.0245
+  set surface tension      = 0
   set epsilon              = 1.5
   set gravity              = 0.98
   set concentration subdivisions = 4
@@ -55,6 +55,6 @@ end
 subsection Output options
   set output filename  = output-rising_bubble_ls/data
   set output verbosity = 1
-  set output frequency = 0.1
-  set output vtk files = 0
+  set output frequency = 0.02
+  set output vtk files = 1
 end

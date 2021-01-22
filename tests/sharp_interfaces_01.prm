@@ -14,9 +14,7 @@
 # --------------------------------------------------------------------------
 # Listing of Parameters
 #
-subsection Problem-specific
-  set two-phase method = level set okz
-end
+# mpirun: 2
 subsection Two phase
   set density              = 1.
   set density difference   = 0.
@@ -51,7 +49,7 @@ subsection Navier-Stokes
   end
 end
 subsection Output options
-  set output filename = output-spurious_currents_ls/data
+  set output filename  = output-sharp_interfaces_01/data
   set output verbosity = 1
   set output frequency = 0.01
   set output vtk files = 1

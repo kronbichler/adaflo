@@ -14,45 +14,47 @@
 # --------------------------------------------------------------------------
 # Listing of Parameters
 #
+# mpirun: 2
 subsection Problem-specific
-  set two-phase method = level set okz
+  set two-phase method = mixed level set
 end
 subsection Two phase
   set density              = 1.
-  set density difference   = 0.
-  set viscosity            = 0.1
-  set viscosity difference = 0
-  set surface tension      = 1.0
+  set density difference   = -0.9
+  set viscosity            = 0.01
+  set viscosity difference = -0.009
+  set surface tension      = 0.0245
   set epsilon              = 1.5
-  set gravity              = 0.
-  set concentration subdivisions = 3
+  set gravity              = 0.98
+  set concentration subdivisions = 4
   set grad pressure compatible = 1
   set localize surface tension = 1
   set curvature correction = 1
   set number reinit steps = 2
-  set number initial reinit steps = 0
+  set number initial reinit steps = 2
 end
 subsection Time stepping
   set scheme           = bdf_2
-  set end time         = 0.3
-  set step size        = 0.01
+  set end time         = 1
+  set step size        = 0.02
 end
 subsection Navier-Stokes
   set dimension            = 2
-  set global refinements   = 80
+  set global refinements   = 3
   set adaptive refinements = 0
   set velocity degree      = 2
   subsection Solver
     set NL max iterations            = 10
     set NL tolerance                 = 1.e-9
-    set lin max iterations           = 500
-    set lin tolerance                = 1.e-6
+    set lin max iterations           = 30
+    set lin tolerance                = 1.e-4
+    set lin velocity preconditioner  = ilu
     set lin its before inner solvers = 50
   end
 end
 subsection Output options
-  set output filename = output-spurious_currents_ls/data
+  set output filename  = output-sharp_interfaces_04/data
   set output verbosity = 1
-  set output frequency = 0.01
+  set output frequency = 0.02
   set output vtk files = 1
 end

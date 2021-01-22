@@ -525,7 +525,11 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
                 {
                   if (joint_fe.system_to_base_index(i).first.second == 0)
                     joint_solution(local_joint_dof_indices[i]) =
+#if true
                       this->navier_stokes.solution.block(0)(local_vel_dof_indices[index]);
+#else
+                      this->navier_stokes.user_rhs.block(0)(local_vel_dof_indices[index]);
+#endif
                 }
               else if (joint_fe.system_to_base_index(i).first.first == 1)
                 {
@@ -572,7 +576,11 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
   }
   joint_solution.update_ghost_values();
 
+#if true
   std::vector<std::string> joint_solution_names(dim, "velocity");
+#else
+  std::vector<std::string> joint_solution_names(dim, "user_rhs");
+#endif
   joint_solution_names.push_back("pressure");
   joint_solution_names.push_back("heaviside");
   joint_solution_names.push_back("level_set");
