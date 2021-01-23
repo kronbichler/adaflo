@@ -19,7 +19,7 @@
 
 #define EXPAND_OPERATIONS(OPERATION)                                              \
   if (this->navier_stokes.get_dof_handler_u().get_fe().reference_cell_type() !=   \
-      ReferenceCell::get_hypercube(dim))                                          \
+      ReferenceCell::Type::get_hypercube<dim>())                                  \
     {                                                                             \
       OPERATION(-1, -1);                                                          \
     }                                                                             \
