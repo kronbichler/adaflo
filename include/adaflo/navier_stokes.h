@@ -80,10 +80,15 @@ public:
   get_dof_handler_u() const;
   const AffineConstraints<double> &
   get_constraints_u() const;
+  const AffineConstraints<double> &
+  get_hanging_node_constraints_u() const;
+
   const DoFHandler<dim> &
   get_dof_handler_p() const;
   const AffineConstraints<double> &
   get_constraints_p() const;
+  const AffineConstraints<double> &
+  get_hanging_node_constraints_p() const;
 
   AffineConstraints<double> &
   modify_constraints_u();
@@ -372,9 +377,27 @@ NavierStokes<dim>::modify_constraints_u()
 
 template <int dim>
 inline const AffineConstraints<double> &
+NavierStokes<dim>::get_hanging_node_constraints_u() const
+{
+  return hanging_node_constraints_u;
+}
+
+
+
+template <int dim>
+inline const AffineConstraints<double> &
 NavierStokes<dim>::get_constraints_p() const
 {
   return constraints_p;
+}
+
+
+
+template <int dim>
+inline const AffineConstraints<double> &
+NavierStokes<dim>::get_hanging_node_constraints_p() const
+{
+  return hanging_node_constraints_p;
 }
 
 
