@@ -18,8 +18,8 @@
 #define __adaflo_level_set_okz_template_instantiations_h
 
 #define EXPAND_OPERATIONS(OPERATION)                                              \
-  if (this->navier_stokes.get_dof_handler_u().get_fe().reference_cell_type() !=   \
-      ReferenceCell::Type::get_hypercube<dim>())                                  \
+  if (this->navier_stokes.get_dof_handler_u().get_fe().reference_cell() !=        \
+      ReferenceCells::get_hypercube<dim>())                                       \
     {                                                                             \
       OPERATION(-1, -1);                                                          \
     }                                                                             \
