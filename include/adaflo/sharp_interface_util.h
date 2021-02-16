@@ -327,6 +327,24 @@ namespace dealii
       static Quadrature<dim>
       create_qudrature_rule(const unsigned int n_subdivisions)
       {
+        /** Example: n_subdivisions = 2
+         *
+         *  x,y in [0,1]x[0,1]
+         *
+         *      ^
+         *    y |
+         *
+         *     (6)   (7)    (8)
+         *      +_____+_____+
+         *      | (11) (12) |
+         *      |  * (4) *  |
+         *   (3)+     +     +(5)
+         *      | (9)  (10) |
+         *      |  *     *  |
+         *      +_____+_____+ --> x
+         *      (0)   (1)  (2)
+         */
+
         std::vector<Point<dim>> quadrature_points;
 
         for (unsigned int j = 0; j <= n_subdivisions; ++j)
@@ -355,7 +373,8 @@ namespace dealii
           c += (ls_values[mask[i]] > 0) * scale;
 
         if (c == 0 || c == 15)
-          return; // nothing to do
+          return; // nothing to do since the level set function is constant within the
+                  // sub_cell
 
         const auto process_points = [&](const auto &lines) {
           const double w0 = std::abs(ls_values[mask[lines[0]]]);
@@ -380,6 +399,10 @@ namespace dealii
           vertices.emplace_back(p1);
         };
 
+        // Check if the isoline for level set values larger than zero is the element's
+        // diagonal and level set values on both sides from the diagonal are smaller than
+        // zero. In this case, the level set would be a "hat"-function which does not make
+        // sense.
         if (c == 5 || c == 10)
           {
             Assert(false, ExcNotImplemented());
@@ -392,19 +415,19 @@ namespace dealii
           {{X, X}},
           {{0, 2}},
           {{1, 2}},
-          {{0, 1}}, //  0- 3
+          {{0, 1}}, //  c=0-3
           {{1, 3}},
           {{X, X}},
           {{2, 3}},
-          {{0, 3}}, //  4- 7
+          {{0, 3}}, //  c=4-7
           {{0, 3}},
           {{2, 3}},
           {{X, X}},
-          {{1, 3}}, //  8-11
+          {{1, 3}}, //  c=8-11
           {{0, 1}},
           {{2, 1}},
           {{0, 2}},
-          {{X, X}} // 12-15
+          {{X, X}} //   c=12-15
         }};
 
         process_lines(table[c]);
