@@ -23,7 +23,7 @@ subsection Two phase
   set density difference   = -0.9
   set viscosity            = 0.01
   set viscosity difference = -0.009
-  set surface tension      = 0
+  set surface tension      = 0.0245
   set epsilon              = 1.5
   set gravity              = 0.98
   set concentration subdivisions = 4
