@@ -369,7 +369,7 @@ test(const std::string &parameter_filename)
 
   std::cout << force_vector_regularized.l2_norm() << std::endl;
 
-  //  compute force vector with a share-interface approach
+  //  compute force vector with a sharp-interface approach
   Triangulation<dim - 1, dim> surface_mesh;
   create_surface_mesh(surface_mesh);
 
@@ -424,7 +424,10 @@ test(const std::string &parameter_filename)
     data_out.add_data_vector(dof_handler_dim, force_vector_sharp_interface, "force_si_");
 
     data_out.build_patches(mapping, fe_degree + 1);
-    data_out.write_vtu_with_pvtu_record("./", "sharp_interface_01", 0, MPI_COMM_WORLD);
+    data_out.write_vtu_with_pvtu_record("./",
+                                        "output-sharp_interfaces_01/sharp_interface_01",
+                                        0,
+                                        MPI_COMM_WORLD);
   }
 
   {
@@ -529,7 +532,7 @@ test(const std::string &parameter_filename)
 
         data_out.build_patches(mapping, fe_degree + 1);
         data_out.write_vtu_with_pvtu_record("./",
-                                            "sharp_interface_01_temp",
+                                            parameters.output_filename + "_temp",
                                             i,
                                             MPI_COMM_WORLD);
       }
@@ -547,7 +550,7 @@ test(const std::string &parameter_filename)
           DataOut<dim - 1,
                   DoFHandler<dim - 1, dim>>::CurvedCellRegion::curved_inner_cells);
         data_out.write_vtu_with_pvtu_record("./",
-                                            "sharp_interface_01_surf",
+                                            parameters.output_filename + "_surf",
                                             i,
                                             MPI_COMM_WORLD);
       }

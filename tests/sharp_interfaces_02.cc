@@ -141,7 +141,7 @@ test()
       fe_degree + 1,
       DataOut<dim, DoFHandler<dim, spacedim>>::CurvedCellRegion::curved_inner_cells);
     data_out.write_vtu_with_pvtu_record("./",
-                                        "sharp_interface_02_surface",
+                                        "output-sharp_interfaces_02/data_surface",
                                         0,
                                         MPI_COMM_WORLD);
   }
@@ -159,7 +159,7 @@ test()
 
     data_out.build_patches(background_mapping, background_fe_degree + 1);
     data_out.write_vtu_with_pvtu_record("./",
-                                        "sharp_interface_02_background",
+                                        "output-sharp_interfaces_02/data_background",
                                         0,
                                         MPI_COMM_WORLD);
   }

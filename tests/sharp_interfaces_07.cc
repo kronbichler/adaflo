@@ -75,12 +75,12 @@ test()
     data_out.add_data_vector(dof_handler, ls_vector, "ls");
     data_out.build_patches(mapping, 4);
 
-    std::ofstream out("sharp_interfaces_07_a.vtk");
+    std::ofstream out("output-sharp_interfaces_07/sharp_interfaces_07_a.vtk");
     data_out.write_vtk(out);
   }
 
   {
-    std::ofstream out("sharp_interfaces_07_b.vtk");
+    std::ofstream out("output-sharp_interfaces_07/sharp_interfaces_07_b.vtk");
     GridOut       grid_out;
     grid_out.write_vtk(tria_interface, out);
   }

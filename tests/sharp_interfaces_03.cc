@@ -82,12 +82,12 @@ test()
   background_dof_handler.distribute_dofs(background_fe);
 
   // determine if quadrature points of background mesh are within codim-1 mesh
-  VectorType force_vector_sharp_interface(background_dof_handler.n_dofs());
+  VectorType quad_within_surface_mesh(background_dof_handler.n_dofs());
   GridTools::within(mapping,
                     dof_handler,
                     background_mapping,
                     background_dof_handler,
-                    force_vector_sharp_interface);
+                    quad_within_surface_mesh);
 
   // print result
   {
@@ -102,7 +102,7 @@ test()
       fe_degree + 1,
       DataOut<dim, DoFHandler<dim, spacedim>>::CurvedCellRegion::curved_inner_cells);
     data_out.write_vtu_with_pvtu_record("./",
-                                        "sharp_interface_03_surface",
+                                        "output-sharp_interfaces_03/data_surface",
                                         0,
                                         MPI_COMM_WORLD);
   }
@@ -114,12 +114,12 @@ test()
     data_out.set_flags(flags);
     data_out.attach_dof_handler(background_dof_handler);
     data_out.add_data_vector(background_dof_handler,
-                             force_vector_sharp_interface,
-                             "force");
+                             quad_within_surface_mesh,
+                             "quad_point_is_within_surface_mesh");
 
     data_out.build_patches(background_mapping, background_fe_degree + 1);
     data_out.write_vtu_with_pvtu_record("./",
-                                        "sharp_interface_03_background",
+                                        "output-sharp_interfaces_03/data_background",
                                         0,
                                         MPI_COMM_WORLD);
   }
