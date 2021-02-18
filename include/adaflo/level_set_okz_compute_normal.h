@@ -84,6 +84,8 @@ public:
     const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
     const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix);
 
+  virtual ~LevelSetOKZSolverComputeNormal() = default;
+
   virtual void
   compute_normal(const bool fast_computation);
 

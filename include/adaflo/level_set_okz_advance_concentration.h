@@ -109,6 +109,8 @@ public:
     const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
     const DiagonalPreconditioner<double> &                              preconditioner);
 
+  virtual ~LevelSetOKZSolverAdvanceConcentration() = default;
+
   virtual void
   advance_concentration(const double dt);
 
