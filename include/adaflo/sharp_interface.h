@@ -307,15 +307,15 @@ public:
     for (unsigned int i = 0; i < ls_solution.local_size(); i++)
       ls_solution.local_element(i) =
         -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
+
+    velocity_solution_old     = velocity_solution;
+    velocity_solution_old_old = velocity_solution;
   }
 
   void
   initialize()
   {
     reinitialize(true);
-
-    velocity_solution_old     = velocity_solution;
-    velocity_solution_old_old = velocity_solution;
   }
 
   void
@@ -817,6 +817,8 @@ public:
   {
     // initialize
     evaluate_velocity_at_quadrature_points();
+    evaluate_level_set_and_curvature_at_quadrature_points(); // TODO: to init data
+                                                             // structures
 
     level_set_solver.initialize();
 
@@ -878,14 +880,14 @@ public:
             phi.reinit(cell);
             phi.gather_evaluate(src,
                                 EvaluationFlags::values | EvaluationFlags::gradients);
+            phi_curvature.reinit(cell);
+            phi_curvature.gather_evaluate(src, EvaluationFlags::values);
 
-            for (unsigned int q = 0; q < phi.n_q_points; ++q)
+            for (unsigned int q = 0; q < n_q_points; ++q)
               {
-                level_set_values[phi.n_q_points * cell + q] =
-                  (phi.get_value(q) + 1.0) / 2.0;
-                level_set_gradients[phi.n_q_points * cell + q] =
-                  phi.get_gradient(q) / 2.0;
-                curvature_values[phi.n_q_points * cell + q] = phi_curvature.get_value(q);
+                level_set_values[n_q_points * cell + q] = (phi.get_value(q) + 1.0) / 2.0;
+                level_set_gradients[n_q_points * cell + q] = phi.get_gradient(q) / 2.0;
+                curvature_values[n_q_points * cell + q]    = phi_curvature.get_value(q);
               }
           }
       },
@@ -904,30 +906,30 @@ public:
 
     op.velocity_at_quadrature_points_given = true;
 
-    const unsigned int n_q_points = level_set_solver.get_matrix_free()
-                                      .get_quadrature(LevelSetSolver<dim>::quad_index_vel)
-                                      .size();
+    const unsigned int n_q_points =
+      navier_stokes_solver.matrix_free->get_quadrature(navier_stokes_solver.quad_index_u)
+        .size();
     const unsigned int n_q_points_total =
-      n_q_points * level_set_solver.get_matrix_free().n_cell_batches();
+      n_q_points * navier_stokes_solver.matrix_free->n_cell_batches();
 
     op.evaluated_vel.resize(n_q_points_total);
     op.evaluated_vel_old.resize(n_q_points_total);
     op.evaluated_vel_old_old.resize(n_q_points_total);
 
-    level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
-      [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, 1, double> vel_values(
+    navier_stokes_solver.matrix_free->template cell_loop<double, double>(
+      [&](const auto &matrix_free, auto &, const auto &, auto macro_cells) {
+        FEEvaluation<dim, -1, 0, dim, double> vel_values(
           matrix_free,
-          LevelSetSolver<dim>::dof_index_velocity,
-          LevelSetSolver<dim>::quad_index_vel);
-        FEEvaluation<dim, -1, 0, 1, double> vel_values_old(
+          navier_stokes_solver.dof_index_u,
+          navier_stokes_solver.quad_index_u);
+        FEEvaluation<dim, -1, 0, dim, double> vel_values_old(
           matrix_free,
-          LevelSetSolver<dim>::dof_index_velocity,
-          LevelSetSolver<dim>::quad_index_vel);
-        FEEvaluation<dim, -1, 0, 1, double> vel_values_old_old(
+          navier_stokes_solver.dof_index_u,
+          navier_stokes_solver.quad_index_u);
+        FEEvaluation<dim, -1, 0, dim, double> vel_values_old_old(
           matrix_free,
-          LevelSetSolver<dim>::dof_index_velocity,
-          LevelSetSolver<dim>::quad_index_vel);
+          navier_stokes_solver.dof_index_u,
+          navier_stokes_solver.quad_index_u);
 
         for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
           {
@@ -935,22 +937,24 @@ public:
             vel_values_old.reinit(cell);
             vel_values_old_old.reinit(cell);
 
-            vel_values.gather_evaluate(src, EvaluationFlags::values);
-            vel_values_old.gather_evaluate(src, EvaluationFlags::values);
-            vel_values_old_old.gather_evaluate(src, EvaluationFlags::values);
+            vel_values.gather_evaluate(navier_stokes_solver.solution.block(0),
+                                       EvaluationFlags::values);
+            vel_values_old.gather_evaluate(navier_stokes_solver.solution_old.block(0),
+                                           EvaluationFlags::values);
+            vel_values_old_old.gather_evaluate(
+              navier_stokes_solver.solution_old_old.block(0), EvaluationFlags::values);
 
             for (unsigned int q = 0; q < n_q_points; ++q)
               {
-                op.evaluated_vel[n_q_points * cell + q] = vel_values.get_value(q);
-                op.evaluated_vel_old[n_q_points * cell + q] =
-                  vel_values_old.get_gradient(q);
+                op.evaluated_vel[n_q_points * cell + q]     = vel_values.get_value(q);
+                op.evaluated_vel_old[n_q_points * cell + q] = vel_values_old.get_value(q);
                 op.evaluated_vel_old_old[n_q_points * cell + q] =
                   vel_values_old_old.get_value(q);
               }
           }
       },
       dummy,
-      level_set_solver.get_level_set_vector());
+      dummy);
   }
 
   void
