@@ -413,6 +413,7 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_fre
       // writing into an Epetra_FECrsMatrix is not thread-safe (non-local
       // data), so do not allow parallelism in case we use more than one
       // processor
+      data.mapping_update_flags = data.mapping_update_flags | update_quadrature_points;
       data.tasks_parallel_scheme =
         Utilities::MPI::n_mpi_processes(get_communicator(triangulation)) > 1 ?
           MatrixFree<dim>::AdditionalData::none :

@@ -1504,14 +1504,14 @@ namespace AssemblyData
     const Mapping<dim> &                   mapping,
     const FiniteElement<dim> &             fe_u,
     const FiniteElement<dim> &             fe_p)
-    : fe_values_u(
-        mapping,
-        fe_u.base_element(0),
-        // TODO: not particular nice to distinguish here
-        fe_u.reference_cell_type() == ReferenceCell::Type::get_hypercube<dim>() ?
-          static_cast<const Quadrature<dim> &>(QGauss<dim>(fe_u.degree + 1)) :
-          static_cast<const Quadrature<dim> &>(Simplex::QGauss<dim>(fe_u.degree + 1)),
-        update_values | update_gradients | update_JxW_values)
+    : fe_values_u(mapping,
+                  fe_u.base_element(0),
+                  // TODO: not particular nice to distinguish here
+                  fe_u.reference_cell() == ReferenceCells::get_hypercube<dim>() ?
+                    static_cast<const Quadrature<dim> &>(QGauss<dim>(fe_u.degree + 1)) :
+                    static_cast<const Quadrature<dim> &>(
+                      Simplex::QGauss<dim>(fe_u.degree + 1)),
+                  update_values | update_gradients | update_JxW_values)
     , fe_values_p(mapping,
                   fe_p,
                   fe_values_u.get_quadrature(),
@@ -1520,7 +1520,7 @@ namespace AssemblyData
         mapping,
         fe_p,
         // TODO: not particular nice to distinguish here
-        fe_p.reference_cell_type() == ReferenceCell::Type::get_hypercube<dim>() ?
+        fe_p.reference_cell() == ReferenceCells::get_hypercube<dim>() ?
           static_cast<const Quadrature<dim - 1> &>(QGauss<dim - 1>(fe_p.degree + 1)) :
           static_cast<const Quadrature<dim - 1> &>(
             Simplex::QGauss<dim - 1>(fe_p.degree + 1)),

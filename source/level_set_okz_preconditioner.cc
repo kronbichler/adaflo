@@ -25,30 +25,30 @@
 
 
 
-#define EXPAND_OPERATIONS(OPERATION)                                         \
-  if (fe.reference_cell_type() != ReferenceCell::Type::get_hypercube<dim>()) \
-    {                                                                        \
-      OPERATION(-1, -1);                                                     \
-    }                                                                        \
-  else                                                                       \
-    {                                                                        \
-      AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented());    \
-      if (ls_degree == 1)                                                    \
-        {                                                                    \
-          OPERATION(1, 0);                                                   \
-        }                                                                    \
-      else if (ls_degree == 2)                                               \
-        {                                                                    \
-          OPERATION(2, 0);                                                   \
-        }                                                                    \
-      else if (ls_degree == 3)                                               \
-        {                                                                    \
-          OPERATION(3, 0);                                                   \
-        }                                                                    \
-      else if (ls_degree == 4)                                               \
-        {                                                                    \
-          OPERATION(4, 0);                                                   \
-        }                                                                    \
+#define EXPAND_OPERATIONS(OPERATION)                                      \
+  if (fe.reference_cell() != ReferenceCells::get_hypercube<dim>())        \
+    {                                                                     \
+      OPERATION(-1, -1);                                                  \
+    }                                                                     \
+  else                                                                    \
+    {                                                                     \
+      AssertThrow(ls_degree >= 1 && ls_degree <= 4, ExcNotImplemented()); \
+      if (ls_degree == 1)                                                 \
+        {                                                                 \
+          OPERATION(1, 0);                                                \
+        }                                                                 \
+      else if (ls_degree == 2)                                            \
+        {                                                                 \
+          OPERATION(2, 0);                                                \
+        }                                                                 \
+      else if (ls_degree == 3)                                            \
+        {                                                                 \
+          OPERATION(3, 0);                                                \
+        }                                                                 \
+      else if (ls_degree == 4)                                            \
+        {                                                                 \
+          OPERATION(4, 0);                                                \
+        }                                                                 \
     }
 
 template <int dim, typename Number, typename VectorizedArrayType>
