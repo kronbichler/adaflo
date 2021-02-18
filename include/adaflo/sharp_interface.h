@@ -854,6 +854,15 @@ public:
 
     double dummy;
 
+    const unsigned int n_q_points = level_set_solver.get_matrix_free()
+                                      .get_quadrature(LevelSetSolver<dim>::quad_index_vel)
+                                      .size();
+    const unsigned int n_q_points_total =
+      n_q_points * level_set_solver.get_matrix_free().n_cell_batches();
+    level_set_values.resize(n_q_points_total);
+    level_set_gradients.resize(n_q_points_total);
+    curvature_values.resize(n_q_points_total);
+
     level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
       [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
         FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
@@ -895,6 +904,16 @@ public:
 
     op.velocity_at_quadrature_points_given = true;
 
+    const unsigned int n_q_points = level_set_solver.get_matrix_free()
+                                      .get_quadrature(LevelSetSolver<dim>::quad_index_vel)
+                                      .size();
+    const unsigned int n_q_points_total =
+      n_q_points * level_set_solver.get_matrix_free().n_cell_batches();
+
+    op.evaluated_vel.resize(n_q_points_total);
+    op.evaluated_vel_old.resize(n_q_points_total);
+    op.evaluated_vel_old_old.resize(n_q_points_total);
+
     level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
       [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
         FEEvaluation<dim, -1, 0, 1, double> vel_values(
@@ -920,13 +939,12 @@ public:
             vel_values_old.gather_evaluate(src, EvaluationFlags::values);
             vel_values_old_old.gather_evaluate(src, EvaluationFlags::values);
 
-            for (unsigned int q = 0; q < vel_values.n_q_points; ++q)
+            for (unsigned int q = 0; q < n_q_points; ++q)
               {
-                op.evaluated_vel[vel_values.n_q_points * cell + q] =
-                  vel_values.get_value(q);
-                op.evaluated_vel_old[vel_values.n_q_points * cell + q] =
+                op.evaluated_vel[n_q_points * cell + q] = vel_values.get_value(q);
+                op.evaluated_vel_old[n_q_points * cell + q] =
                   vel_values_old.get_gradient(q);
-                op.evaluated_vel_old_old[vel_values.n_q_points * cell + q] =
+                op.evaluated_vel_old_old[n_q_points * cell + q] =
                   vel_values_old_old.get_value(q);
               }
           }
