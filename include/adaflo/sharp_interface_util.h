@@ -1119,4 +1119,46 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
     true);
 }
 
+
+
+template <int dim, typename VectorType2>
+void
+compute_force_vector_regularized(
+  const MatrixFree<dim, double> &                               matrix_free,
+  const AlignedVector<Tensor<1, dim, VectorizedArray<double>>> &level_set_gradients,
+  const AlignedVector<VectorizedArray<double>> &                curvature_values,
+  VectorType2 &                                                 force_rhs,
+  const unsigned int                                            dof_index_normal,
+  const unsigned int                                            quad_index)
+{
+  const double surface_tension_coefficient = 1.0;
+
+  int dummy;
+
+  matrix_free.template cell_loop<VectorType2, int>(
+    [&](const auto &matrix_free, auto &force_rhs, const auto &, auto macro_cells) {
+      FEEvaluation<dim, -1, 0, dim, double> surface_tension(matrix_free,
+                                                            dof_index_normal,
+                                                            quad_index);
+
+      for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+        {
+          surface_tension.reinit(cell);
+
+          for (unsigned int q_index = 0; q_index < surface_tension.n_q_points; ++q_index)
+            {
+              surface_tension.submit_value(
+                surface_tension_coefficient *
+                  level_set_gradients[surface_tension.n_q_points * cell + q_index] *
+                  curvature_values[surface_tension.n_q_points * cell + q_index],
+                q_index);
+            }
+          surface_tension.integrate_scatter(true, false, force_rhs);
+        }
+    },
+    force_rhs,
+    dummy,
+    true);
+}
+
 #endif

@@ -792,6 +792,12 @@ public:
   {
     level_set_solver.solve();
 
+    if (decoupled_meshes)
+      {
+        Assert(false, ExcNotImplemented());
+        // TODO: evaluate level_set_values, level_set_gradients, curvature_values
+      }
+
     if (use_auxiliary_surface_mesh)
       this->move_surface_mesh();
     this->update_phases();
@@ -801,6 +807,13 @@ public:
     navier_stokes_solver.get_constraints_u().set_zero(
       navier_stokes_solver.user_rhs.block(0));
     navier_stokes_solver.advance_time_step();
+
+    if (decoupled_meshes)
+      {
+        Assert(false, ExcNotImplemented());
+        // TODO: evaluate navier_stokes_solver.solution, solution_old, solution_old_old
+        //   and move information to LevelSetOKZSolverAdvanceConcentration
+      }
   }
 
   void
@@ -909,34 +922,62 @@ private:
     if (density_diff == 0.0 && viscosity_diff == 0.0)
       return; // nothing to do
 
-    double dummy;
+    if (!decoupled_meshes)
+      {
+        double dummy;
 
-    // TODO: select proper MatrixFree object and set right dof/quad index
-    level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
-      [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
-                                                LevelSetSolver<dim>::dof_index_ls,
-                                                LevelSetSolver<dim>::quad_index_vel);
+        // TODO: select proper MatrixFree object and set right dof/quad index
+        level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
+            FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
+                                                    LevelSetSolver<dim>::dof_index_ls,
+                                                    LevelSetSolver<dim>::quad_index_vel);
 
-        for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
-          {
-            phi.reinit(cell);
-            phi.gather_evaluate(src, EvaluationFlags::values);
-
-            for (unsigned int q = 0; q < phi.n_q_points; ++q)
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
               {
-                const auto indicator =
-                  (phi.get_value(q) + 1.0) / 2.0; // TODO: fix indicator -> Heaviside
+                phi.reinit(cell);
+                phi.gather_evaluate(src, EvaluationFlags::values);
 
-                navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
-                  density + density_diff * indicator;
-                navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
-                  viscosity + viscosity_diff * indicator;
+                for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                  {
+                    const auto indicator =
+                      (phi.get_value(q) + 1.0) / 2.0; // TODO: fix indicator -> Heaviside
+
+                    navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
+                      density + density_diff * indicator;
+                    navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
+                      viscosity + viscosity_diff * indicator;
+                  }
               }
-          }
-      },
-      dummy,
-      level_set_solver.get_level_set_vector());
+          },
+          dummy,
+          level_set_solver.get_level_set_vector());
+      }
+    else
+      {
+        double dummy;
+
+        navier_stokes_solver.matrix_free->template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &, auto macro_cells) {
+            const unsigned int n_q_points =
+              matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
+
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+              {
+                for (unsigned int q = 0; q < n_q_points; ++q)
+                  {
+                    const auto indicator = level_set_values[n_q_points * cell + q];
+
+                    navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
+                      density + density_diff * indicator;
+                    navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
+                      viscosity + viscosity_diff * indicator;
+                  }
+              }
+          },
+          dummy,
+          dummy);
+      }
   }
 
   void
@@ -963,7 +1004,7 @@ private:
                                            level_set_solver.get_curvature_vector(),
                                            level_set_solver.get_level_set_vector(),
                                            navier_stokes_solver.user_rhs.block(0));
-    else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
+    else if (!use_auxiliary_surface_mesh && !use_sharp_interface && !decoupled_meshes)
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
                                        level_set_solver.get_level_set_vector(),
                                        level_set_solver.get_curvature_vector(),
@@ -972,6 +1013,13 @@ private:
                                        LevelSetSolver<dim>::dof_index_curvature,
                                        LevelSetSolver<dim>::dof_index_velocity,
                                        LevelSetSolver<dim>::quad_index_vel);
+    else if (!use_auxiliary_surface_mesh && !use_sharp_interface && decoupled_meshes)
+      compute_force_vector_regularized(*navier_stokes_solver.matrix_free,
+                                       level_set_gradients,
+                                       curvature_values,
+                                       navier_stokes_solver.user_rhs.block(0),
+                                       navier_stokes_solver.dof_index_u,
+                                       navier_stokes_solver.quad_index_u);
     else
       AssertThrow(false, ExcNotImplemented());
   }
@@ -1012,6 +1060,12 @@ private:
       nullptr,
       zero_out);
   }
+
+  const bool decoupled_meshes = true;
+
+  AlignedVector<VectorizedArray<double>>                 level_set_values;
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> level_set_gradients;
+  AlignedVector<VectorizedArray<double>>                 curvature_values;
 
   const bool use_auxiliary_surface_mesh;
   const bool use_sharp_interface;

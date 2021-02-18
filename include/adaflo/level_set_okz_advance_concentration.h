@@ -170,7 +170,9 @@ private:
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
   AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
   double                                                 global_max_velocity;    // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;   // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel;          // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old;      // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old_old;  // [o]
 
   /**
    * Solver section
