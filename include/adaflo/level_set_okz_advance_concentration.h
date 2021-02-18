@@ -165,14 +165,17 @@ private:
   /**
    * Physics section
    */
-  double                                        global_omega_diameter;           // [i]
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;                  // [i]
-  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
-  AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
-  double                                                 global_max_velocity;    // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel;          // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old;      // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old_old;  // [o]
+  double                                        global_omega_diameter;         // [i]
+  const AlignedVector<VectorizedArray<double>> &cell_diameters;                // [i]
+  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary; // [i]
+  AlignedVector<VectorizedArray<double>> artificial_viscosities;               // [-]
+  double                                 global_max_velocity;                  // [o]
+
+public:
+  bool velocity_at_quadrature_points_given = false;
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel;         // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old;     // [o]
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_vel_old_old; // [o]
 
   /**
    * Solver section

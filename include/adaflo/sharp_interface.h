@@ -458,9 +458,11 @@ private:
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
 
   // Operators
-  std::unique_ptr<LevelSetOKZSolverComputeNormal<dim>>        normal_operator;
-  std::unique_ptr<LevelSetOKZSolverReinitialization<dim>>     reinit;
-  std::unique_ptr<LevelSetOKZSolverComputeCurvature<dim>>     curvature_operator;
+  std::unique_ptr<LevelSetOKZSolverComputeNormal<dim>>    normal_operator;
+  std::unique_ptr<LevelSetOKZSolverReinitialization<dim>> reinit;
+  std::unique_ptr<LevelSetOKZSolverComputeCurvature<dim>> curvature_operator;
+
+public:
   std::unique_ptr<LevelSetOKZSolverAdvanceConcentration<dim>> advection_operator;
 };
 
@@ -792,10 +794,39 @@ public:
   {
     level_set_solver.solve();
 
-    if (decoupled_meshes)
+    if (decoupled_meshes) // TODO: actually decouple^^
       {
-        Assert(false, ExcNotImplemented());
-        // TODO: evaluate level_set_values, level_set_gradients, curvature_values
+        double dummy;
+
+        level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
+            FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
+                                                    LevelSetSolver<dim>::dof_index_ls,
+                                                    LevelSetSolver<dim>::quad_index_vel);
+            FEEvaluation<dim, -1, 0, 1, double> phi_curvature(
+              matrix_free,
+              LevelSetSolver<dim>::dof_index_curvature,
+              LevelSetSolver<dim>::quad_index_vel);
+
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+              {
+                phi.reinit(cell);
+                phi.gather_evaluate(src,
+                                    EvaluationFlags::values | EvaluationFlags::gradients);
+
+                for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                  {
+                    level_set_values[phi.n_q_points * cell + q] =
+                      (phi.get_value(q) + 1.0) / 2.0;
+                    level_set_gradients[phi.n_q_points * cell + q] =
+                      phi.get_gradient(q) / 2.0;
+                    curvature_values[phi.n_q_points * cell + q] =
+                      phi_curvature.get_value(q);
+                  }
+              }
+          },
+          dummy,
+          level_set_solver.get_level_set_vector());
       }
 
     if (use_auxiliary_surface_mesh)
@@ -810,9 +841,50 @@ public:
 
     if (decoupled_meshes)
       {
-        Assert(false, ExcNotImplemented());
-        // TODO: evaluate navier_stokes_solver.solution, solution_old, solution_old_old
-        //   and move information to LevelSetOKZSolverAdvanceConcentration
+        auto &op = *level_set_solver.advection_operator;
+
+        double dummy;
+
+        op.velocity_at_quadrature_points_given = true;
+
+        level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
+            FEEvaluation<dim, -1, 0, 1, double> vel_values(
+              matrix_free,
+              LevelSetSolver<dim>::dof_index_velocity,
+              LevelSetSolver<dim>::quad_index_vel);
+            FEEvaluation<dim, -1, 0, 1, double> vel_values_old(
+              matrix_free,
+              LevelSetSolver<dim>::dof_index_velocity,
+              LevelSetSolver<dim>::quad_index_vel);
+            FEEvaluation<dim, -1, 0, 1, double> vel_values_old_old(
+              matrix_free,
+              LevelSetSolver<dim>::dof_index_velocity,
+              LevelSetSolver<dim>::quad_index_vel);
+
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+              {
+                vel_values.reinit(cell);
+                vel_values_old.reinit(cell);
+                vel_values_old_old.reinit(cell);
+
+                vel_values.gather_evaluate(src, EvaluationFlags::values);
+                vel_values_old.gather_evaluate(src, EvaluationFlags::values);
+                vel_values_old_old.gather_evaluate(src, EvaluationFlags::values);
+
+                for (unsigned int q = 0; q < vel_values.n_q_points; ++q)
+                  {
+                    op.evaluated_vel[vel_values.n_q_points * cell + q] =
+                      vel_values.get_value(q);
+                    op.evaluated_vel_old[vel_values.n_q_points * cell + q] =
+                      vel_values_old.get_gradient(q);
+                    op.evaluated_vel_old_old[vel_values.n_q_points * cell + q] =
+                      vel_values_old_old.get_value(q);
+                  }
+              }
+          },
+          dummy,
+          level_set_solver.get_level_set_vector());
       }
   }
 

@@ -313,7 +313,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
-      const bool velocity_at_quadrature_points_given = false;
       if (velocity_at_quadrature_points_given == false)
         {
           vel_values.reinit(cell);
