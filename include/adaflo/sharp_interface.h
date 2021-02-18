@@ -741,6 +741,7 @@ public:
                       const Function<dim> &        initial_values_ls)
     : use_auxiliary_surface_mesh(true)
     , use_sharp_interface(true)
+    , decoupled_meshes(false)
     , navier_stokes_solver(navier_stokes_solver)
     , level_set_solver(navier_stokes_solver.get_dof_handler_u().get_triangulation(),
                        initial_values_ls,
@@ -753,6 +754,8 @@ public:
                        navier_stokes_solver.boundary->symmetry)
     , euler_dofhandler(surface_mesh)
   {
+    level_set_solver.initialize();
+
     const unsigned int fe_degree = 1;
 
     FESystem<dim - 1, dim> surface_fe_dim(FE_Q<dim - 1, dim>(fe_degree), dim);
@@ -776,6 +779,7 @@ public:
                       const bool           use_sharp_interface = true)
     : use_auxiliary_surface_mesh(false)
     , use_sharp_interface(use_sharp_interface)
+    , decoupled_meshes(false)
     , navier_stokes_solver(navier_stokes_solver)
     , level_set_solver(navier_stokes_solver.get_dof_handler_u().get_triangulation(),
                        initial_values_ls,
@@ -787,9 +791,32 @@ public:
                        navier_stokes_solver.boundary->fluid_type,
                        navier_stokes_solver.boundary->symmetry)
   {
+    level_set_solver.initialize();
+
+    this->update_phases();
+    this->update_gravity_force();
+    this->update_surface_tension();
+  }
+
+  MixedLevelSetSolver(NavierStokes<dim> &                        navier_stokes_solver,
+                      parallel::distributed::Triangulation<dim> &tria,
+                      const Function<dim> &                      initial_values_ls)
+    : use_auxiliary_surface_mesh(false)
+    , use_sharp_interface(false)
+    , decoupled_meshes(true)
+    , navier_stokes_solver(navier_stokes_solver)
+    , level_set_solver(tria,
+                       initial_values_ls,
+                       navier_stokes_solver.get_parameters(),
+                       navier_stokes_solver.time_stepping,
+                       navier_stokes_solver.solution.block(0),
+                       navier_stokes_solver.solution_old.block(0),
+                       navier_stokes_solver.solution_old_old.block(0),
+                       navier_stokes_solver.boundary->fluid_type,
+                       navier_stokes_solver.boundary->symmetry)
+  {
     // initialize
-    if (decoupled_meshes)
-      evaluate_velocity_at_quadrature_points();
+    evaluate_velocity_at_quadrature_points();
 
     level_set_solver.initialize();
 
@@ -1153,7 +1180,6 @@ private:
       zero_out);
   }
 
-  const bool decoupled_meshes = true;
 
   AlignedVector<VectorizedArray<double>>                 level_set_values;
   AlignedVector<Tensor<1, dim, VectorizedArray<double>>> level_set_gradients;
@@ -1161,6 +1187,7 @@ private:
 
   const bool use_auxiliary_surface_mesh;
   const bool use_sharp_interface;
+  const bool decoupled_meshes;
 
   // background mesh
   NavierStokes<dim> & navier_stokes_solver;

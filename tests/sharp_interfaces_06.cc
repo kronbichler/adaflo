@@ -42,11 +42,12 @@ struct TwoPhaseParameters : public FlowParameters
     ParameterHandler prm;
     FlowParameters::declare_parameters(prm);
     prm.enter_subsection("Problem-specific");
-    prm.declare_entry("two-phase method",
-                      "front tracking",
-                      Patterns::Selection(
-                        "front tracking|mixed level set|sharp level set|level set"),
-                      "Defines the two-phase method to be used");
+    prm.declare_entry(
+      "two-phase method",
+      "front tracking",
+      Patterns::Selection(
+        "front tracking|mixed level set|sharp level set|level set|level set 2"),
+      "Defines the two-phase method to be used");
     prm.leave_subsection();
     check_for_file(parameter_filename, prm);
     parse_parameters(parameter_filename, prm);
@@ -144,6 +145,10 @@ MicroFluidicProblem<dim>::run()
     solver = std::make_unique<MixedLevelSetSolver<dim>>(navier_stokes_solver,
                                                         InitialValuesLS<dim>(),
                                                         false);
+  else if (parameters.solver_method == "level set 2")
+    solver = std::make_unique<MixedLevelSetSolver<dim>>(navier_stokes_solver,
+                                                        triangulation,
+                                                        InitialValuesLS<dim>());
   else
     AssertThrow(false, ExcNotImplemented());
 
