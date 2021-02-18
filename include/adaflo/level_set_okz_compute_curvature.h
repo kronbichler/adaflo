@@ -89,6 +89,8 @@ public:
     std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
     std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix);
 
+  virtual ~LevelSetOKZSolverComputeCurvature() = default;
+
   virtual void
   compute_curvature(const bool diffuse_large_values = false);
 
