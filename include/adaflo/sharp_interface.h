@@ -902,8 +902,6 @@ public:
 
     auto &op = *level_set_solver.advection_operator;
 
-    double dummy;
-
     op.velocity_at_quadrature_points_given = true;
 
     const unsigned int n_q_points =
@@ -916,45 +914,112 @@ public:
     op.evaluated_vel_old.resize(n_q_points_total);
     op.evaluated_vel_old_old.resize(n_q_points_total);
 
-    navier_stokes_solver.matrix_free->template cell_loop<double, double>(
-      [&](const auto &matrix_free, auto &, const auto &, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, dim, double> vel_values(
-          matrix_free,
-          navier_stokes_solver.dof_index_u,
-          navier_stokes_solver.quad_index_u);
-        FEEvaluation<dim, -1, 0, dim, double> vel_values_old(
-          matrix_free,
-          navier_stokes_solver.dof_index_u,
-          navier_stokes_solver.quad_index_u);
-        FEEvaluation<dim, -1, 0, dim, double> vel_values_old_old(
-          matrix_free,
-          navier_stokes_solver.dof_index_u,
-          navier_stokes_solver.quad_index_u);
+    const auto &matrix_free = *navier_stokes_solver.matrix_free;
 
-        for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+    FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
+                                                     navier_stokes_solver.dof_index_u,
+                                                     navier_stokes_solver.quad_index_u);
+
+    std::vector<Point<dim>> evaluation_points;
+
+    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
+      {
+        vel_values.reinit(cell);
+
+        for (unsigned int q = 0; n_q_points; ++q)
           {
-            vel_values.reinit(cell);
-            vel_values_old.reinit(cell);
-            vel_values_old_old.reinit(cell);
-
-            vel_values.gather_evaluate(navier_stokes_solver.solution.block(0),
-                                       EvaluationFlags::values);
-            vel_values_old.gather_evaluate(navier_stokes_solver.solution_old.block(0),
-                                           EvaluationFlags::values);
-            vel_values_old_old.gather_evaluate(
-              navier_stokes_solver.solution_old_old.block(0), EvaluationFlags::values);
-
-            for (unsigned int q = 0; q < n_q_points; ++q)
+            const auto points = vel_values.quadrature_point(q);
+            for (unsigned int v = 0;
+                 v < matrix_free.n_active_entries_per_cell_batch(cell);
+                 ++v)
               {
-                op.evaluated_vel[n_q_points * cell + q]     = vel_values.get_value(q);
-                op.evaluated_vel_old[n_q_points * cell + q] = vel_values_old.get_value(q);
-                op.evaluated_vel_old_old[n_q_points * cell + q] =
-                  vel_values_old_old.get_value(q);
+                Point<dim> point;
+
+                for (int i = 0; i < dim; ++i)
+                  point[i] = points[i][v];
+
+                evaluation_points.push_back(point);
               }
           }
-      },
-      dummy,
-      dummy);
+      }
+
+    const auto evaluation_point_results = [&] {
+      Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
+
+      eval.reinit(evaluation_points,
+                  navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+                  navier_stokes_solver.mapping);
+
+      FEPointEvaluation<dim, dim> evaluator(
+        navier_stokes_solver.mapping, navier_stokes_solver.get_dof_handler_u().get_fe());
+
+      std::vector<double> solution_values;
+
+      std::array<VectorType *, 3> vectors = {
+        {&navier_stokes_solver.solution.block(0),
+         &navier_stokes_solver.solution_old.block(0),
+         &navier_stokes_solver.solution_old_old.block(0)}};
+
+      const auto fu = [&](auto &values, const auto &quadrature_points) {
+        unsigned int i = 0;
+
+        for (const auto &cells_and_n : std::get<0>(quadrature_points))
+          {
+            typename DoFHandler<dim>::active_cell_iterator cell = {
+              &navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+              cells_and_n.first.first,
+              cells_and_n.first.second,
+              &navier_stokes_solver.get_dof_handler_u()};
+
+            const ArrayView<const Point<dim>> unit_points(
+              std::get<1>(quadrature_points).data() + i, cells_and_n.second);
+            solution_values.resize(cell->get_fe().n_dofs_per_cell());
+
+            for (unsigned int v = 0; v < vectors.size(); ++v)
+              {
+                cell->get_dof_values(*vectors[v],
+                                     solution_values.begin(),
+                                     solution_values.end());
+
+                evaluator.evaluate(cell,
+                                   unit_points,
+                                   solution_values,
+                                   EvaluationFlags::values);
+
+                for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
+                  values[std::get<2>(quadrature_points)[i]][v] = evaluator.get_value(q);
+              }
+          }
+      };
+
+      using T = std::array<Tensor<1, dim>, 3>;
+
+      std::vector<T> evaluation_point_results;
+      std::vector<T> buffer;
+
+      eval.template process<T>(evaluation_point_results, buffer, fu);
+
+      return evaluation_point_results;
+    }();
+
+
+    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
+      {
+        vel_values.reinit(cell);
+
+        for (unsigned int q = 0, c = 0; n_q_points; ++q)
+          for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
+               ++v, ++c)
+            for (unsigned int d = 0; d < dim; ++d)
+              {
+                op.evaluated_vel[n_q_points * cell + q][v][d] =
+                  evaluation_point_results[c][0][d];
+                op.evaluated_vel_old[n_q_points * cell + q][v][d] =
+                  evaluation_point_results[c][1][d];
+                op.evaluated_vel_old_old[n_q_points * cell + q][v][d] =
+                  evaluation_point_results[c][2][d];
+              }
+      }
   }
 
   void
