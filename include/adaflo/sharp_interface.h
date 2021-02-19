@@ -213,6 +213,7 @@ public:
 
       typename MatrixFree<dim>::AdditionalData data;
 
+      data.mapping_update_flags = data.mapping_update_flags | update_quadrature_points;
       data.tasks_parallel_scheme =
         Utilities::MPI::n_mpi_processes(get_communicator(dof_handler)) > 1 ?
           MatrixFree<dim>::AdditionalData::none :
@@ -949,10 +950,20 @@ public:
                                          EvaluationFlags::values);
 
             for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
-              values[std::get<2>(quadrature_points)[i]] = {evaluator.get_value(q),
-                                                           evaluator.get_gradient(q),
-                                                           evaluator_curvature.get_value(
-                                                             q)};
+              {
+                values[std::get<2>(quadrature_points)[i]] = {
+                  (evaluator.get_value(q) + 1.0) / 2.0,
+                  evaluator.get_gradient(q) / 2.0,
+                  evaluator_curvature.get_value(q)};
+                // std::cout << evaluator.get_value(q) << " "
+                //          << std::get<0>(values[std::get<2>(quadrature_points)[i]])<<
+                //          std::endl;
+                // std::cout
+                //        << std::get<0>(values[std::get<2>(quadrature_points)[i]]) << " "
+                //        << std::get<1>(values[std::get<2>(quadrature_points)[i]]) << " "
+                //        << std::get<2>(values[std::get<2>(quadrature_points)[i]]) <<
+                //        std::endl;
+              }
           }
       };
 
@@ -967,8 +978,8 @@ public:
     }();
 
     // 4) write back the result on NS side
-    for (unsigned int cell = 0; cell < n_cells; ++cell)
-      for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
+    for (unsigned int cell = 0, c = 0; cell < n_cells; ++cell)
+      for (unsigned int q = 0; q < n_q_points; ++q)
         for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
              ++v, ++c)
           {
@@ -988,9 +999,9 @@ public:
     Assert(decoupled_meshes, ExcNotImplemented());
 
     // 1) allocate memory
-    const auto &       matrix_free = *navier_stokes_solver.matrix_free;
+    const auto &       matrix_free = level_set_solver.get_matrix_free();
     const unsigned int n_q_points =
-      matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
+      matrix_free.get_quadrature(LevelSetSolver<dim>::quad_index_vel).size();
     const unsigned int n_cells = matrix_free.n_cell_batches();
 
     auto &op                               = *level_set_solver.advection_operator;
@@ -1001,9 +1012,10 @@ public:
 
     // 2) determine quadrature points on LS side
     const auto evaluation_points = [&]() {
-      FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
-                                                       navier_stokes_solver.dof_index_u,
-                                                       navier_stokes_solver.quad_index_u);
+      FEEvaluation<dim, -1, 0, dim, double> vel_values(
+        matrix_free,
+        LevelSetSolver<dim>::dof_index_ls,
+        LevelSetSolver<dim>::quad_index_vel);
 
       std::vector<Point<dim>> evaluation_points;
 
@@ -1092,8 +1104,8 @@ public:
     }();
 
     // 4) write back the result on LS side
-    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
-      for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
+    for (unsigned int cell = 0, c = 0; cell < matrix_free.n_cell_batches(); ++cell)
+      for (unsigned int q = 0; q < n_q_points; ++q)
         for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
              ++v, ++c)
           for (unsigned int d = 0; d < dim; ++d)
