@@ -920,10 +920,10 @@ public:
         for (const auto &cells_and_n : std::get<0>(quadrature_points))
           {
             typename DoFHandler<dim>::active_cell_iterator cell = {
-              &navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+              &level_set_solver.get_dof_handler().get_triangulation(),
               cells_and_n.first.first,
               cells_and_n.first.second,
-              &navier_stokes_solver.get_dof_handler_u()};
+              &level_set_solver.get_dof_handler()};
 
             const ArrayView<const Point<dim>> unit_points(
               std::get<1>(quadrature_points).data() + i, cells_and_n.second);
@@ -939,7 +939,7 @@ public:
                                solution_values,
                                EvaluationFlags::values | EvaluationFlags::gradients);
 
-            cell->get_dof_values(level_set_solver.get_level_set_vector(),
+            cell->get_dof_values(level_set_solver.get_curvature_vector(),
                                  solution_values_curvature.begin(),
                                  solution_values_curvature.end());
 
