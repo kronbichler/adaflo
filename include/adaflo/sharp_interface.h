@@ -974,8 +974,44 @@ public:
 
       eval.template process<T>(evaluation_point_results, buffer, fu);
 
-      return evaluation_point_results;
+      const auto unique_evaluation_point_results = [&]() {
+        const unsigned int modus = 0;
+        if (eval.is_unique_mapping())
+          {
+            return evaluation_point_results;
+          }
+        else
+          {
+            std::vector<T> unique_evaluation_point_results(evaluation_points.size());
+
+            const auto reduce = [modus](const auto &values) {
+              switch (modus)
+                {
+                  default:
+                    return values[0];
+                }
+            };
+
+            const auto &ptr = eval.get_quadrature_points_ptr();
+
+            for (unsigned int i = 0; i < evaluation_points.size(); ++i)
+              {
+                const auto n_entries = ptr[i + 1] - ptr[i];
+                if (n_entries == 0)
+                  continue;
+
+                unique_evaluation_point_results[i] =
+                  reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
+                                            n_entries));
+              }
+
+            return unique_evaluation_point_results;
+          }
+      }();
+      return unique_evaluation_point_results;
     }();
+
+    AssertDimension(evaluation_point_results.size(), evaluation_points.size());
 
     // 4) write back the result on NS side
     for (unsigned int cell = 0, c = 0; cell < n_cells; ++cell)
@@ -1100,8 +1136,44 @@ public:
 
       eval.template process<T>(evaluation_point_results, buffer, fu);
 
-      return evaluation_point_results;
+      const auto unique_evaluation_point_results = [&]() {
+        const unsigned int modus = 0;
+        if (eval.is_unique_mapping())
+          {
+            return evaluation_point_results;
+          }
+        else
+          {
+            std::vector<T> unique_evaluation_point_results(evaluation_points.size());
+
+            const auto reduce = [modus](const auto &values) {
+              switch (modus)
+                {
+                  default:
+                    return values[0];
+                }
+            };
+
+            const auto &ptr = eval.get_quadrature_points_ptr();
+
+            for (unsigned int i = 0; i < evaluation_points.size(); ++i)
+              {
+                const auto n_entries = ptr[i + 1] - ptr[i];
+                if (n_entries == 0)
+                  continue;
+
+                unique_evaluation_point_results[i] =
+                  reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
+                                            n_entries));
+              }
+
+            return unique_evaluation_point_results;
+          }
+      }();
+      return unique_evaluation_point_results;
     }();
+
+    AssertDimension(evaluation_point_results.size(), evaluation_points.size());
 
     // 4) write back the result on LS side
     for (unsigned int cell = 0, c = 0; cell < matrix_free.n_cell_batches(); ++cell)

@@ -68,39 +68,45 @@ create_annulus(Triangulation<dim> &tria, const unsigned int n_refinements)
   if (n_refinements == 0)
     return;
 
-  for (int i = 0; i < static_cast<int>(n_refinements) - 3; i++)
+  for (int i = 0; i < static_cast<int>(n_refinements) - 4; i++)
     tria.refine_global();
 
   Point<dim> center;
   for (unsigned int d = 0; d < dim; ++d)
     center[d] = 0.02 + 0.01 * d;
 
-  if (n_refinements >= 1)
-    {
-      for (auto cell : tria.active_cell_iterators())
-        if (cell->is_locally_owned())
-          if ((cell->center() - center).norm() < 0.5)
+  const auto fu = [&]() {
+    for (auto cell : tria.active_cell_iterators())
+      if (cell->is_locally_owned())
+        {
+          bool p = false;
+          bool m = false;
+
+          for (const auto v : cell->vertex_indices())
+            {
+              if ((cell->vertex(v) - center).norm() < 0.5)
+                m = true;
+              if ((cell->vertex(v) - center).norm() >= 0.5)
+                p = true;
+            }
+
+          if (p && m)
             cell->set_refine_flag();
-      tria.execute_coarsening_and_refinement();
-    }
+        }
+    tria.execute_coarsening_and_refinement();
+  };
+
+  if (n_refinements >= 1)
+    fu();
 
   if (n_refinements >= 2)
-    {
-      for (auto cell : tria.active_cell_iterators())
-        if (cell->is_locally_owned())
-          if ((cell->center() - center).norm() < 0.5)
-            cell->set_refine_flag();
-      tria.execute_coarsening_and_refinement();
-    }
+    fu();
 
   if (n_refinements >= 3)
-    {
-      for (auto cell : tria.active_cell_iterators())
-        if (cell->is_locally_owned())
-          if ((cell->center() - center).norm() < 0.5)
-            cell->set_refine_flag();
-      tria.execute_coarsening_and_refinement();
-    }
+    fu();
+
+  if (n_refinements >= 4)
+    fu();
 }
 
 
@@ -167,7 +173,7 @@ MicroFluidicProblem<dim>::run()
     }
   else
     {
-      create_annulus(triangulation_ls, parameters.global_refinements);
+      create_annulus(triangulation_ls, parameters.global_refinements + 1);
     }
 
   NavierStokes<dim> navier_stokes_solver(parameters, triangulation, &timer);
