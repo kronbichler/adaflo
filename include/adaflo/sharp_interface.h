@@ -1123,57 +1123,130 @@ public:
   output_solution(const std::string &output_filename) override
   {
     // background mesh
-    {
-      DataOutBase::VtkFlags flags;
-      flags.write_higher_order_cells = true;
+    if (!decoupled_meshes)
+      {
+        DataOutBase::VtkFlags flags;
+        flags.write_higher_order_cells = true;
 
-      DataOut<dim> data_out;
-      data_out.set_flags(flags);
+        DataOut<dim> data_out;
+        data_out.set_flags(flags);
 
-      std::vector<DataComponentInterpretation::DataComponentInterpretation>
-        vector_component_interpretation(
-          dim, DataComponentInterpretation::component_is_part_of_vector);
+        std::vector<DataComponentInterpretation::DataComponentInterpretation>
+          vector_component_interpretation(
+            dim, DataComponentInterpretation::component_is_part_of_vector);
 
-      navier_stokes_solver.solution.update_ghost_values();
+        navier_stokes_solver.solution.update_ghost_values();
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
-                               navier_stokes_solver.solution.block(0),
-                               std::vector<std::string>(dim, "velocity"),
-                               vector_component_interpretation);
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                 navier_stokes_solver.solution.block(0),
+                                 std::vector<std::string>(dim, "velocity"),
+                                 vector_component_interpretation);
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
-                               navier_stokes_solver.user_rhs.block(0),
-                               std::vector<std::string>(dim, "user_rhs"),
-                               vector_component_interpretation);
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                 navier_stokes_solver.user_rhs.block(0),
+                                 std::vector<std::string>(dim, "user_rhs"),
+                                 vector_component_interpretation);
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
-                               navier_stokes_solver.solution.block(1),
-                               "pressure");
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
+                                 navier_stokes_solver.solution.block(1),
+                                 "pressure");
 
-      data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                               level_set_solver.get_level_set_vector(),
-                               "level_set");
-
-      data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                               level_set_solver.get_curvature_vector(),
-                               "curvature");
-
-      for (unsigned int i = 0; i < dim; ++i)
         data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                                 level_set_solver.get_normal_vector().block(i),
-                                 "normal_" + std::to_string(i));
+                                 level_set_solver.get_level_set_vector(),
+                                 "level_set");
 
-      data_out.build_patches(navier_stokes_solver.mapping,
-                             navier_stokes_solver.get_dof_handler_u().get_fe().degree +
-                               1);
+        data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                 level_set_solver.get_curvature_vector(),
+                                 "curvature");
 
-      navier_stokes_solver.write_data_output(
-        output_filename,
-        navier_stokes_solver.time_stepping,
-        navier_stokes_solver.get_parameters().output_frequency,
-        navier_stokes_solver.get_dof_handler_u().get_triangulation(),
-        data_out);
-    }
+        for (unsigned int i = 0; i < dim; ++i)
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_normal_vector().block(i),
+                                   "normal_" + std::to_string(i));
+
+        data_out.build_patches(navier_stokes_solver.mapping,
+                               navier_stokes_solver.get_dof_handler_u().get_fe().degree +
+                                 1);
+
+        navier_stokes_solver.write_data_output(
+          output_filename,
+          navier_stokes_solver.time_stepping,
+          navier_stokes_solver.get_parameters().output_frequency,
+          navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+          data_out);
+      }
+    else
+      {
+        {
+          DataOutBase::VtkFlags flags;
+          flags.write_higher_order_cells = true;
+
+          DataOut<dim> data_out;
+          data_out.set_flags(flags);
+
+          std::vector<DataComponentInterpretation::DataComponentInterpretation>
+            vector_component_interpretation(
+              dim, DataComponentInterpretation::component_is_part_of_vector);
+
+          navier_stokes_solver.solution.update_ghost_values();
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                   navier_stokes_solver.solution.block(0),
+                                   std::vector<std::string>(dim, "velocity"),
+                                   vector_component_interpretation);
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                   navier_stokes_solver.user_rhs.block(0),
+                                   std::vector<std::string>(dim, "user_rhs"),
+                                   vector_component_interpretation);
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
+                                   navier_stokes_solver.solution.block(1),
+                                   "pressure");
+
+          data_out.build_patches(
+            navier_stokes_solver.mapping,
+            navier_stokes_solver.get_dof_handler_u().get_fe().degree + 1);
+
+          navier_stokes_solver.write_data_output(
+            output_filename + "_ns",
+            navier_stokes_solver.time_stepping,
+            navier_stokes_solver.get_parameters().output_frequency,
+            navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+            data_out);
+        }
+        {
+          DataOutBase::VtkFlags flags;
+          flags.write_higher_order_cells = true;
+
+          DataOut<dim> data_out;
+          data_out.set_flags(flags);
+
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_level_set_vector(),
+                                   "level_set");
+
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_curvature_vector(),
+                                   "curvature");
+
+          for (unsigned int i = 0; i < dim; ++i)
+            data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                     level_set_solver.get_normal_vector().block(i),
+                                     "normal_" + std::to_string(i));
+
+          data_out.build_patches(
+            navier_stokes_solver.mapping,
+            navier_stokes_solver.get_dof_handler_u().get_fe().degree + 1);
+
+          navier_stokes_solver.write_data_output(
+            output_filename + "_ls",
+            navier_stokes_solver.time_stepping,
+            navier_stokes_solver.get_parameters().output_frequency,
+            navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+            data_out);
+        }
+      }
 
     // surface mesh
     if (use_auxiliary_surface_mesh)

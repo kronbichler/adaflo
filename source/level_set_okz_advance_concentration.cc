@@ -547,10 +547,24 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   }
 
   // compute right hand side
-  global_max_velocity =
-    get_maximal_velocity(matrix_free.get_dof_handler(parameters.dof_index_vel),
-                         vel_solution,
-                         matrix_free.get_quadrature(parameters.quad_index));
+  if (velocity_at_quadrature_points_given == false)
+    global_max_velocity =
+      get_maximal_velocity(matrix_free.get_dof_handler(parameters.dof_index_vel),
+                           vel_solution,
+                           matrix_free.get_quadrature(parameters.quad_index));
+  else
+    {
+      global_max_velocity = 0;
+
+      for (const auto &i : evaluated_vel)
+        {
+          const auto ii = i.norm();
+
+          for (const auto &iii : ii)
+            global_max_velocity = std::max(iii, global_max_velocity);
+        }
+    }
+
   rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
