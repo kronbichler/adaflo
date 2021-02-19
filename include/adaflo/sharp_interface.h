@@ -966,7 +966,7 @@ public:
       return evaluation_point_results;
     }();
 
-    // 4) write back the result
+    // 4) write back the result on NS side
     for (unsigned int cell = 0; cell < n_cells; ++cell)
       for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
         for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
@@ -987,49 +987,50 @@ public:
   {
     Assert(decoupled_meshes, ExcNotImplemented());
 
-    auto &op = *level_set_solver.advection_operator;
-
-    op.velocity_at_quadrature_points_given = true;
-
+    // 1) allocate memory
+    const auto &       matrix_free = *navier_stokes_solver.matrix_free;
     const unsigned int n_q_points =
-      navier_stokes_solver.matrix_free->get_quadrature(navier_stokes_solver.quad_index_u)
-        .size();
-    const unsigned int n_q_points_total =
-      n_q_points * navier_stokes_solver.matrix_free->n_cell_batches();
+      matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
+    const unsigned int n_cells = matrix_free.n_cell_batches();
 
-    op.evaluated_vel.resize(n_q_points_total);
-    op.evaluated_vel_old.resize(n_q_points_total);
-    op.evaluated_vel_old_old.resize(n_q_points_total);
+    auto &op                               = *level_set_solver.advection_operator;
+    op.velocity_at_quadrature_points_given = true;
+    op.evaluated_vel.resize(n_q_points * n_cells);
+    op.evaluated_vel_old.resize(n_q_points * n_cells);
+    op.evaluated_vel_old_old.resize(n_q_points * n_cells);
 
-    const auto &matrix_free = *navier_stokes_solver.matrix_free;
+    // 2) determine quadrature points on LS side
+    const auto evaluation_points = [&]() {
+      FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
+                                                       navier_stokes_solver.dof_index_u,
+                                                       navier_stokes_solver.quad_index_u);
 
-    FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
-                                                     navier_stokes_solver.dof_index_u,
-                                                     navier_stokes_solver.quad_index_u);
+      std::vector<Point<dim>> evaluation_points;
 
-    std::vector<Point<dim>> evaluation_points;
+      for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
+        {
+          vel_values.reinit(cell);
 
-    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
-      {
-        vel_values.reinit(cell);
+          for (unsigned int q = 0; q < n_q_points; ++q)
+            {
+              const auto points = vel_values.quadrature_point(q);
+              for (unsigned int v = 0;
+                   v < matrix_free.n_active_entries_per_cell_batch(cell);
+                   ++v)
+                {
+                  Point<dim> point;
 
-        for (unsigned int q = 0; q < n_q_points; ++q)
-          {
-            const auto points = vel_values.quadrature_point(q);
-            for (unsigned int v = 0;
-                 v < matrix_free.n_active_entries_per_cell_batch(cell);
-                 ++v)
-              {
-                Point<dim> point;
+                  for (int i = 0; i < dim; ++i)
+                    point[i] = points[i][v];
 
-                for (int i = 0; i < dim; ++i)
-                  point[i] = points[i][v];
+                  evaluation_points.push_back(point);
+                }
+            }
+        }
+      return evaluation_points;
+    }();
 
-                evaluation_points.push_back(point);
-              }
-          }
-      }
-
+    // 3) evaluate velocity in quadrature points on NS side
     const auto evaluation_point_results = [&] {
       Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
 
@@ -1090,24 +1091,20 @@ public:
       return evaluation_point_results;
     }();
 
-
+    // 4) write back the result on LS side
     for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
-      {
-        vel_values.reinit(cell);
-
-        for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
-          for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
-               ++v, ++c)
-            for (unsigned int d = 0; d < dim; ++d)
-              {
-                op.evaluated_vel[n_q_points * cell + q][d][v] =
-                  evaluation_point_results[c][0][d];
-                op.evaluated_vel_old[n_q_points * cell + q][d][v] =
-                  evaluation_point_results[c][1][d];
-                op.evaluated_vel_old_old[n_q_points * cell + q][d][v] =
-                  evaluation_point_results[c][2][d];
-              }
-      }
+      for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
+        for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
+             ++v, ++c)
+          for (unsigned int d = 0; d < dim; ++d)
+            {
+              op.evaluated_vel[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][0][d];
+              op.evaluated_vel_old[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][1][d];
+              op.evaluated_vel_old_old[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][2][d];
+            }
   }
 
   void
