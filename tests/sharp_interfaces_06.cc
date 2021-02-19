@@ -167,9 +167,10 @@ MicroFluidicProblem<dim>::run()
 {
   GridGenerator::hyper_cube(triangulation, -2.5, 2.5);
 
-  if (false)
+  if (true)
     {
       GridGenerator::hyper_cube(triangulation_ls, -2.5, 2.5);
+      triangulation_ls.refine_global(parameters.global_refinements + 1);
     }
   else
     {

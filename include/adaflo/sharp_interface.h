@@ -865,168 +865,282 @@ public:
     level_set_gradients.resize(n_q_points * n_cells);
     curvature_values.resize(n_q_points * n_cells);
 
-    // 2) determine quadrature points on NS side
-    const auto evaluation_points = [&]() {
-      std::vector<Point<dim>>               evaluation_points;
-      FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
-                                                       navier_stokes_solver.dof_index_u,
-                                                       navier_stokes_solver.quad_index_u);
+    if (false)
+      {
+        // 2) determine quadrature points on NS side
+        const auto evaluation_points = [&]() {
+          std::vector<Point<dim>>               evaluation_points;
+          FEEvaluation<dim, -1, 0, dim, double> vel_values(
+            matrix_free,
+            navier_stokes_solver.dof_index_u,
+            navier_stokes_solver.quad_index_u);
 
 
-      for (unsigned int cell = 0; cell < n_cells; ++cell)
-        {
-          vel_values.reinit(cell);
-
-          for (unsigned int q = 0; q < n_q_points; ++q)
+          for (unsigned int cell = 0; cell < n_cells; ++cell)
             {
-              const auto points = vel_values.quadrature_point(q);
-              for (unsigned int v = 0;
-                   v < matrix_free.n_active_entries_per_cell_batch(cell);
-                   ++v)
+              vel_values.reinit(cell);
+
+              for (unsigned int q = 0; q < n_q_points; ++q)
                 {
-                  Point<dim> point;
+                  const auto points = vel_values.quadrature_point(q);
+                  for (unsigned int v = 0;
+                       v < matrix_free.n_active_entries_per_cell_batch(cell);
+                       ++v)
+                    {
+                      Point<dim> point;
 
-                  for (int i = 0; i < dim; ++i)
-                    point[i] = points[i][v];
+                      for (int i = 0; i < dim; ++i)
+                        point[i] = points[i][v];
 
-                  evaluation_points.push_back(point);
+                      evaluation_points.push_back(point);
+                    }
                 }
             }
-        }
 
-      return evaluation_points;
-    }();
+          return evaluation_points;
+        }();
 
-    // 3) evaluate LS and curvature in quadrature points on LS side
-    const auto evaluation_point_results = [&] {
-      Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
+        using T = std::tuple<double, Tensor<1, dim>, double>;
 
-      eval.reinit(evaluation_points,
-                  level_set_solver.get_dof_handler().get_triangulation(),
-                  navier_stokes_solver.mapping /*TODO*/);
+        // 3) evaluate LS and curvature in quadrature points on LS side
+        std::vector<T> evaluation_point_results;
 
-      FEPointEvaluation<1, dim> evaluator(navier_stokes_solver.mapping /*TODO*/,
-                                          level_set_solver.get_dof_handler().get_fe());
+        evaluation_point_results = [&] {
+          Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
 
-      FEPointEvaluation<1, dim> evaluator_curvature(
-        navier_stokes_solver.mapping /*TODO*/,
-        level_set_solver.get_dof_handler().get_fe());
+          eval.reinit(evaluation_points,
+                      level_set_solver.get_dof_handler().get_triangulation(),
+                      navier_stokes_solver.mapping /*TODO*/);
 
-      std::vector<double> solution_values;
-      std::vector<double> solution_values_curvature;
+          FEPointEvaluation<1, dim> evaluator(
+            navier_stokes_solver.mapping /*TODO*/,
+            level_set_solver.get_dof_handler().get_fe());
 
-      const auto fu = [&](auto &values, const auto &quadrature_points) {
-        unsigned int i = 0;
+          FEPointEvaluation<1, dim> evaluator_curvature(
+            navier_stokes_solver.mapping /*TODO*/,
+            level_set_solver.get_dof_handler().get_fe());
 
-        for (const auto &cells_and_n : std::get<0>(quadrature_points))
-          {
-            typename DoFHandler<dim>::active_cell_iterator cell = {
-              &level_set_solver.get_dof_handler().get_triangulation(),
-              cells_and_n.first.first,
-              cells_and_n.first.second,
-              &level_set_solver.get_dof_handler()};
+          std::vector<double> solution_values;
+          std::vector<double> solution_values_curvature;
 
-            const ArrayView<const Point<dim>> unit_points(
-              std::get<1>(quadrature_points).data() + i, cells_and_n.second);
-            solution_values.resize(cell->get_fe().n_dofs_per_cell());
-            solution_values_curvature.resize(cell->get_fe().n_dofs_per_cell());
+          const auto fu = [&](auto &values, const auto &quadrature_points) {
+            unsigned int i = 0;
 
-            cell->get_dof_values(level_set_solver.get_level_set_vector(),
-                                 solution_values.begin(),
-                                 solution_values.end());
-
-            evaluator.evaluate(cell,
-                               unit_points,
-                               solution_values,
-                               EvaluationFlags::values | EvaluationFlags::gradients);
-
-            cell->get_dof_values(level_set_solver.get_curvature_vector(),
-                                 solution_values_curvature.begin(),
-                                 solution_values_curvature.end());
-
-            evaluator_curvature.evaluate(cell,
-                                         unit_points,
-                                         solution_values_curvature,
-                                         EvaluationFlags::values);
-
-            for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
+            for (const auto &cells_and_n : std::get<0>(quadrature_points))
               {
-                values[std::get<2>(quadrature_points)[i]] = {
-                  (evaluator.get_value(q) + 1.0) / 2.0,
-                  evaluator.get_gradient(q) / 2.0,
-                  evaluator_curvature.get_value(q)};
-                // std::cout << evaluator.get_value(q) << " "
-                //          << std::get<0>(values[std::get<2>(quadrature_points)[i]])<<
-                //          std::endl;
-                // std::cout
-                //        << std::get<0>(values[std::get<2>(quadrature_points)[i]]) << " "
-                //        << std::get<1>(values[std::get<2>(quadrature_points)[i]]) << " "
-                //        << std::get<2>(values[std::get<2>(quadrature_points)[i]]) <<
-                //        std::endl;
+                typename DoFHandler<dim>::active_cell_iterator cell = {
+                  &level_set_solver.get_dof_handler().get_triangulation(),
+                  cells_and_n.first.first,
+                  cells_and_n.first.second,
+                  &level_set_solver.get_dof_handler()};
+
+                const ArrayView<const Point<dim>> unit_points(
+                  std::get<1>(quadrature_points).data() + i, cells_and_n.second);
+                solution_values.resize(cell->get_fe().n_dofs_per_cell());
+                solution_values_curvature.resize(cell->get_fe().n_dofs_per_cell());
+
+                cell->get_dof_values(level_set_solver.get_level_set_vector(),
+                                     solution_values.begin(),
+                                     solution_values.end());
+
+                evaluator.evaluate(cell,
+                                   unit_points,
+                                   solution_values,
+                                   EvaluationFlags::values | EvaluationFlags::gradients);
+
+                cell->get_dof_values(level_set_solver.get_curvature_vector(),
+                                     solution_values_curvature.begin(),
+                                     solution_values_curvature.end());
+
+                evaluator_curvature.evaluate(cell,
+                                             unit_points,
+                                             solution_values_curvature,
+                                             EvaluationFlags::values);
+
+                for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
+                  {
+                    values[std::get<2>(quadrature_points)[i]] = {
+                      (evaluator.get_value(q) + 1.0) / 2.0,
+                      evaluator.get_gradient(q) / 2.0,
+                      evaluator_curvature.get_value(q)};
+                    // std::cout << evaluator.get_value(q) << " "
+                    //          <<
+                    //          std::get<0>(values[std::get<2>(quadrature_points)[i]])<<
+                    //          std::endl;
+                    // std::cout
+                    //        << std::get<0>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        " "
+                    //        << std::get<1>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        " "
+                    //        << std::get<2>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        std::endl;
+                  }
+              }
+          };
+
+          std::vector<T> evaluation_point_results;
+          std::vector<T> buffer;
+
+          eval.template process<T>(evaluation_point_results, buffer, fu);
+
+          const auto unique_evaluation_point_results = [&]() {
+            const unsigned int modus = 0;
+            if (eval.is_unique_mapping())
+              {
+                return evaluation_point_results;
+              }
+            else
+              {
+                std::vector<T> unique_evaluation_point_results(evaluation_points.size());
+
+                const auto reduce = [modus](const auto &values) {
+                  switch (modus)
+                    {
+                      default:
+                        return values[0];
+                    }
+                };
+
+                const auto &ptr = eval.get_quadrature_points_ptr();
+
+                for (unsigned int i = 0; i < evaluation_points.size(); ++i)
+                  {
+                    const auto n_entries = ptr[i + 1] - ptr[i];
+                    if (n_entries == 0)
+                      continue;
+
+                    unique_evaluation_point_results[i] =
+                      reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
+                                                n_entries));
+                  }
+
+                return unique_evaluation_point_results;
+              }
+          }();
+          return unique_evaluation_point_results;
+        }();
+
+        AssertDimension(evaluation_point_results.size(), evaluation_points.size());
+
+        // 4) write back the result on NS side
+        unsigned int c = 0;
+        for (unsigned int cell = 0; cell < n_cells; ++cell)
+          for (unsigned int q = 0; q < n_q_points; ++q)
+            for (unsigned int v = 0;
+                 v < matrix_free.n_active_entries_per_cell_batch(cell);
+                 ++v, ++c)
+              {
+                level_set_values[n_q_points * cell + q][v] =
+                  std::get<0>(evaluation_point_results[c]);
+                for (unsigned int d = 0; d < dim; ++d)
+                  level_set_gradients[n_q_points * cell + q][d][v] =
+                    std::get<1>(evaluation_point_results[c])[d];
+                curvature_values[n_q_points * cell + q][v] =
+                  std::get<2>(evaluation_point_results[c]);
+              }
+
+        AssertDimension(evaluation_point_results.size(), c);
+      }
+    else
+      {
+        const std::vector<bool>          marked_vertices;
+        const GridTools::Cache<dim, dim> cache(
+          level_set_solver.get_dof_handler().get_triangulation(),
+          navier_stokes_solver.mapping);
+        const double tolerance = 1e-6;
+        auto         cell_hint =
+          level_set_solver.get_dof_handler().get_triangulation().begin_active();
+
+        std::vector<double> solution_values;
+        std::vector<double> solution_values_curvature;
+
+        FEPointEvaluation<1, dim> evaluator(navier_stokes_solver.mapping /*TODO*/,
+                                            level_set_solver.get_dof_handler().get_fe());
+
+        FEPointEvaluation<1, dim> evaluator_curvature(
+          navier_stokes_solver.mapping /*TODO*/,
+          level_set_solver.get_dof_handler().get_fe());
+
+
+        FEEvaluation<dim, -1, 0, dim, double> vel_values(
+          matrix_free,
+          navier_stokes_solver.dof_index_u,
+          navier_stokes_solver.quad_index_u);
+
+        for (unsigned int cell = 0; cell < n_cells; ++cell)
+          {
+            vel_values.reinit(cell);
+
+            for (unsigned int q = 0; q < n_q_points; ++q)
+              {
+                const auto points = vel_values.quadrature_point(q);
+                for (unsigned int v = 0;
+                     v < matrix_free.n_active_entries_per_cell_batch(cell);
+                     ++v)
+                  {
+                    Point<dim> point;
+
+                    for (int i = 0; i < dim; ++i)
+                      point[i] = points[i][v];
+
+                    // evaluation_points.push_back(point);
+
+                    /*
+            const auto cell_and_reference_coordinate =
+                  GridTools::find_active_cell_around_point(cache,
+                                                           point,
+                                                           cell_hint,
+                                                           marked_vertices,
+                                                           tolerance);
+                     */
+
+                    const auto cell_and_reference_coordinate =
+                      GridTools::find_active_cell_around_point(
+                        navier_stokes_solver.mapping,
+                        level_set_solver.get_dof_handler(),
+                        point);
+
+                    typename DoFHandler<dim>::active_cell_iterator cell_ = {
+                      &level_set_solver.get_dof_handler().get_triangulation(),
+                      cell_and_reference_coordinate.first->level(),
+                      cell_and_reference_coordinate.first->index(),
+                      &level_set_solver.get_dof_handler()};
+
+                    const ArrayView<const Point<dim>> unit_points(
+                      &cell_and_reference_coordinate.second, 1);
+                    solution_values.resize(cell_->get_fe().n_dofs_per_cell());
+                    solution_values_curvature.resize(cell_->get_fe().n_dofs_per_cell());
+
+                    cell_->get_dof_values(level_set_solver.get_level_set_vector(),
+                                          solution_values.begin(),
+                                          solution_values.end());
+
+                    evaluator.evaluate(cell_,
+                                       unit_points,
+                                       solution_values,
+                                       EvaluationFlags::values |
+                                         EvaluationFlags::gradients);
+
+                    cell_->get_dof_values(level_set_solver.get_curvature_vector(),
+                                          solution_values_curvature.begin(),
+                                          solution_values_curvature.end());
+
+                    evaluator_curvature.evaluate(cell_,
+                                                 unit_points,
+                                                 solution_values_curvature,
+                                                 EvaluationFlags::values);
+
+                    level_set_values[n_q_points * cell + q][v] =
+                      (evaluator.get_value(0) + 1.0) / 2.0;
+                    for (unsigned int d = 0; d < dim; ++d)
+                      level_set_gradients[n_q_points * cell + q][d][v] =
+                        (evaluator.get_gradient(0) / 2.0)[d];
+                    curvature_values[n_q_points * cell + q][v] =
+                      evaluator_curvature.get_value(0);
+                  }
               }
           }
-      };
-
-      using T = std::tuple<double, Tensor<1, dim>, double>;
-
-      std::vector<T> evaluation_point_results;
-      std::vector<T> buffer;
-
-      eval.template process<T>(evaluation_point_results, buffer, fu);
-
-      const auto unique_evaluation_point_results = [&]() {
-        const unsigned int modus = 0;
-        if (eval.is_unique_mapping())
-          {
-            return evaluation_point_results;
-          }
-        else
-          {
-            std::vector<T> unique_evaluation_point_results(evaluation_points.size());
-
-            const auto reduce = [modus](const auto &values) {
-              switch (modus)
-                {
-                  default:
-                    return values[0];
-                }
-            };
-
-            const auto &ptr = eval.get_quadrature_points_ptr();
-
-            for (unsigned int i = 0; i < evaluation_points.size(); ++i)
-              {
-                const auto n_entries = ptr[i + 1] - ptr[i];
-                if (n_entries == 0)
-                  continue;
-
-                unique_evaluation_point_results[i] =
-                  reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
-                                            n_entries));
-              }
-
-            return unique_evaluation_point_results;
-          }
-      }();
-      return unique_evaluation_point_results;
-    }();
-
-    AssertDimension(evaluation_point_results.size(), evaluation_points.size());
-
-    // 4) write back the result on NS side
-    for (unsigned int cell = 0, c = 0; cell < n_cells; ++cell)
-      for (unsigned int q = 0; q < n_q_points; ++q)
-        for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
-             ++v, ++c)
-          {
-            level_set_values[n_q_points * cell + q][v] =
-              std::get<0>(evaluation_point_results[c]);
-            for (unsigned int d = 0; d < dim; ++d)
-              level_set_gradients[n_q_points * cell + q][d][v] =
-                std::get<1>(evaluation_point_results[c])[d];
-            curvature_values[n_q_points * cell + q][v] =
-              std::get<2>(evaluation_point_results[c]);
-          }
+      }
   }
 
   void

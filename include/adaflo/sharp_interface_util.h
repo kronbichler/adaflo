@@ -1139,6 +1139,13 @@ compute_force_vector_regularized(
 
   int dummy;
 
+  AssertDimension(level_set_gradients.size(),
+                  matrix_free.get_quadrature(quad_index).size() *
+                    matrix_free.n_cell_batches());
+  AssertDimension(curvature_values.size(),
+                  matrix_free.get_quadrature(quad_index).size() *
+                    matrix_free.n_cell_batches());
+
   matrix_free.template cell_loop<VectorType2, int>(
     [&](const auto &matrix_free, auto &force_rhs, const auto &, auto macro_cells) {
       FEEvaluation<dim, -1, 0, dim, double> surface_tension(matrix_free,
@@ -1276,7 +1283,7 @@ namespace dealii
 
                   const auto active_cells_around_point =
                     GridTools::find_all_active_cells_around_point(
-                      mapping, tria, point, tolerance, first_cell);
+                      mapping, tria, point, tolerance /*, first_cell*/);
 
                   locally_owned_active_cells_around_point.reserve(
                     active_cells_around_point.size());
