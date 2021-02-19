@@ -926,7 +926,7 @@ public:
       {
         vel_values.reinit(cell);
 
-        for (unsigned int q = 0; n_q_points; ++q)
+        for (unsigned int q = 0; q < n_q_points; ++q)
           {
             const auto points = vel_values.quadrature_point(q);
             for (unsigned int v = 0;
@@ -986,9 +986,10 @@ public:
                                    solution_values,
                                    EvaluationFlags::values);
 
-                for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
+                for (unsigned int q = 0; q < unit_points.size(); ++q)
                   values[std::get<2>(quadrature_points)[i]][v] = evaluator.get_value(q);
               }
+            i += unit_points.size();
           }
       };
 
@@ -1007,16 +1008,16 @@ public:
       {
         vel_values.reinit(cell);
 
-        for (unsigned int q = 0, c = 0; n_q_points; ++q)
+        for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
           for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
                ++v, ++c)
             for (unsigned int d = 0; d < dim; ++d)
               {
-                op.evaluated_vel[n_q_points * cell + q][v][d] =
+                op.evaluated_vel[n_q_points * cell + q][d][v] =
                   evaluation_point_results[c][0][d];
-                op.evaluated_vel_old[n_q_points * cell + q][v][d] =
+                op.evaluated_vel_old[n_q_points * cell + q][d][v] =
                   evaluation_point_results[c][1][d];
-                op.evaluated_vel_old_old[n_q_points * cell + q][v][d] =
+                op.evaluated_vel_old_old[n_q_points * cell + q][d][v] =
                   evaluation_point_results[c][2][d];
               }
       }
