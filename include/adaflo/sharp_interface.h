@@ -854,44 +854,49 @@ public:
   {
     Assert(decoupled_meshes, ExcNotImplemented());
 
-    const unsigned int n_q_points = level_set_solver.get_matrix_free()
-                                      .get_quadrature(LevelSetSolver<dim>::quad_index_vel)
-                                      .size();
-    const unsigned int n_q_points_total =
-      n_q_points * level_set_solver.get_matrix_free().n_cell_batches();
-    level_set_values.resize(n_q_points_total);
-    level_set_gradients.resize(n_q_points_total);
-    curvature_values.resize(n_q_points_total);
+    // 1) allocate memory
+    const auto &       matrix_free = *navier_stokes_solver.matrix_free;
+    const unsigned int n_cells     = matrix_free.n_cell_batches();
+    const unsigned int n_q_points =
+      matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
 
-    const auto &matrix_free = *navier_stokes_solver.matrix_free;
+    level_set_values.resize(n_q_points * n_cells);
+    level_set_gradients.resize(n_q_points * n_cells);
+    curvature_values.resize(n_q_points * n_cells);
 
-    FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
-                                                     navier_stokes_solver.dof_index_u,
-                                                     navier_stokes_solver.quad_index_u);
+    // 2) determine quadrature points on NS side
+    const auto evaluation_points = [&]() {
+      std::vector<Point<dim>>               evaluation_points;
+      FEEvaluation<dim, -1, 0, dim, double> vel_values(matrix_free,
+                                                       navier_stokes_solver.dof_index_u,
+                                                       navier_stokes_solver.quad_index_u);
 
-    std::vector<Point<dim>> evaluation_points;
 
-    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
-      {
-        vel_values.reinit(cell);
+      for (unsigned int cell = 0; cell < n_cells; ++cell)
+        {
+          vel_values.reinit(cell);
 
-        for (unsigned int q = 0; q < n_q_points; ++q)
-          {
-            const auto points = vel_values.quadrature_point(q);
-            for (unsigned int v = 0;
-                 v < matrix_free.n_active_entries_per_cell_batch(cell);
-                 ++v)
-              {
-                Point<dim> point;
+          for (unsigned int q = 0; q < n_q_points; ++q)
+            {
+              const auto points = vel_values.quadrature_point(q);
+              for (unsigned int v = 0;
+                   v < matrix_free.n_active_entries_per_cell_batch(cell);
+                   ++v)
+                {
+                  Point<dim> point;
 
-                for (int i = 0; i < dim; ++i)
-                  point[i] = points[i][v];
+                  for (int i = 0; i < dim; ++i)
+                    point[i] = points[i][v];
 
-                evaluation_points.push_back(point);
-              }
-          }
-      }
+                  evaluation_points.push_back(point);
+                }
+            }
+        }
 
+      return evaluation_points;
+    }();
+
+    // 3) evaluate LS and curvature in quadrature points on LS side
     const auto evaluation_point_results = [&] {
       Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
 
@@ -961,24 +966,20 @@ public:
       return evaluation_point_results;
     }();
 
-
-    for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
-      {
-        vel_values.reinit(cell);
-
-        for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
-          for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
-               ++v, ++c)
-            {
-              level_set_values[n_q_points * cell + q][v] =
-                std::get<0>(evaluation_point_results[c]);
-              for (unsigned int d = 0; d < dim; ++d)
-                level_set_gradients[n_q_points * cell + q][d][v] =
-                  std::get<1>(evaluation_point_results[c])[d];
-              curvature_values[n_q_points * cell + q][v] =
-                std::get<2>(evaluation_point_results[c]);
-            }
-      }
+    // 4) write back the result
+    for (unsigned int cell = 0; cell < n_cells; ++cell)
+      for (unsigned int q = 0, c = 0; q < n_q_points; ++q)
+        for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
+             ++v, ++c)
+          {
+            level_set_values[n_q_points * cell + q][v] =
+              std::get<0>(evaluation_point_results[c]);
+            for (unsigned int d = 0; d < dim; ++d)
+              level_set_gradients[n_q_points * cell + q][d][v] =
+                std::get<1>(evaluation_point_results[c])[d];
+            curvature_values[n_q_points * cell + q][v] =
+              std::get<2>(evaluation_point_results[c]);
+          }
   }
 
   void
