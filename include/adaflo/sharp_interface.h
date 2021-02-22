@@ -490,6 +490,7 @@ public:
     , surface_dofhandler_dim(surface_mesh)
     , surface_dofhandler(surface_mesh)
   {
+    // Degree for FE at surface mesh
     const unsigned int fe_degree      = 3;
     const unsigned int mapping_degree = fe_degree;
 
@@ -621,7 +622,7 @@ private:
 
     navier_stokes_solver.matrix_free->template cell_loop<double, double>(
       [&](const auto &matrix_free, auto &, const auto &, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free, 0, 0);
+        FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free, 0, 0); 
 
         for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
           {
@@ -747,6 +748,7 @@ public:
                        navier_stokes_solver.boundary->symmetry)
     , euler_dofhandler(surface_mesh)
   {
+    // Degree for FE at surface mesh
     const unsigned int fe_degree = 1;
 
     FESystem<dim - 1, dim> surface_fe_dim(FE_Q<dim - 1, dim>(fe_degree), dim);
@@ -942,6 +944,7 @@ private:
   void
   update_surface_tension()
   {
+    // mixed level set
     if (use_auxiliary_surface_mesh && use_sharp_interface)
       compute_force_vector_sharp_interface<dim>(euler_dofhandler.get_triangulation(),
                                                 *euler_mapping,
@@ -954,6 +957,7 @@ private:
                                                 level_set_solver.get_normal_vector(),
                                                 level_set_solver.get_curvature_vector(),
                                                 navier_stokes_solver.user_rhs.block(0));
+    // sharp interface method                                            
     else if (!use_auxiliary_surface_mesh && use_sharp_interface)
       compute_force_vector_sharp_interface(QGauss<dim - 1>(2 /*TODO*/),
                                            navier_stokes_solver.mapping,
@@ -963,6 +967,7 @@ private:
                                            level_set_solver.get_curvature_vector(),
                                            level_set_solver.get_level_set_vector(),
                                            navier_stokes_solver.user_rhs.block(0));
+    // level set
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
                                        level_set_solver.get_level_set_vector(),
@@ -1027,3 +1032,4 @@ private:
 };
 
 #endif
+

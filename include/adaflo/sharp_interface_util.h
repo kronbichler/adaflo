@@ -217,6 +217,7 @@ namespace dealii
       const Point<dim> &point)
     {
       boost::geometry::model::d2::point_xy<double> p(point[0], point[1]);
+      // true if geometry1 is completely contained within geometry2, else false 
       return boost::geometry::within(p, polygon);
     }
 
@@ -311,6 +312,7 @@ namespace dealii
         for (unsigned int j = 0; j < n_subdivisions; ++j)
           for (unsigned int i = 0; i < n_subdivisions; ++i)
             {
+              // Question: ??
               std::vector<unsigned int> mask{(n_subdivisions + 1) * (j + 0) + (i + 0),
                                              (n_subdivisions + 1) * (j + 0) + (i + 1),
                                              (n_subdivisions + 1) * (j + 1) + (i + 1),
@@ -327,24 +329,6 @@ namespace dealii
       static Quadrature<dim>
       create_qudrature_rule(const unsigned int n_subdivisions)
       {
-        /** Example: n_subdivisions = 2
-         *
-         *  x,y in [0,1]x[0,1]
-         *
-         *      ^
-         *    y |
-         *
-         *     (6)   (7)    (8)
-         *      +_____+_____+
-         *      | (11) (12) |
-         *      |  * (4) *  |
-         *   (3)+     +     +(5)
-         *      | (9)  (10) |
-         *      |  *     *  |
-         *      +_____+_____+ --> x
-         *      (0)   (1)  (2)
-         */
-
         std::vector<Point<dim>> quadrature_points;
 
         for (unsigned int j = 0; j <= n_subdivisions; ++j)
@@ -373,8 +357,7 @@ namespace dealii
           c += (ls_values[mask[i]] > 0) * scale;
 
         if (c == 0 || c == 15)
-          return; // nothing to do since the level set function is constant within the
-                  // sub_cell
+          return; // nothing to do
 
         const auto process_points = [&](const auto &lines) {
           const double w0 = std::abs(ls_values[mask[lines[0]]]);
@@ -383,7 +366,7 @@ namespace dealii
           return points[mask[lines[0]]] * (w1 / (w0 + w1)) +
                  points[mask[lines[1]]] * (w0 / (w0 + w1));
         };
-
+        // Question: What exactly is handed over? point
         const auto process_lines = [&](const auto &lines) {
           std::array<std::array<unsigned int, 2>, 4> table{
             {{{0, 3}}, {{1, 2}}, {{0, 1}}, {{3, 2}}}};
@@ -399,10 +382,6 @@ namespace dealii
           vertices.emplace_back(p1);
         };
 
-        // Check if the isoline for level set values larger than zero is the element's
-        // diagonal and level set values on both sides from the diagonal are smaller than
-        // zero. In this case, the level set would be a "hat"-function which does not make
-        // sense.
         if (c == 5 || c == 10)
           {
             Assert(false, ExcNotImplemented());
@@ -410,24 +389,25 @@ namespace dealii
           }
 
         static const unsigned int X = -1;
-
+        // cases
+        // Question: What do numbers mean? line
         std::array<std::array<unsigned int, 2>, 16> table{{
           {{X, X}},
           {{0, 2}},
           {{1, 2}},
-          {{0, 1}}, //  c=0-3
+          {{0, 1}}, //  0- 3
           {{1, 3}},
           {{X, X}},
           {{2, 3}},
-          {{0, 3}}, //  c=4-7
+          {{0, 3}}, //  4- 7
           {{0, 3}},
           {{2, 3}},
           {{X, X}},
-          {{1, 3}}, //  c=8-11
+          {{1, 3}}, //  8-11
           {{0, 1}},
           {{2, 1}},
           {{0, 2}},
-          {{X, X}} //   c=12-15
+          {{X, X}} // 12-15
         }};
 
         process_lines(table[c]);
@@ -474,15 +454,19 @@ collect_integration_points(
     {
       try
         {
+          // step 1: find cell in which specific integration point lies
           const auto first_cell = GridTools::find_active_cell_around_point(
             cache, point_and_weight.first, cell_hint, marked_vertices, tolerance);
 
+          //Q: Why?Not used again
           cell_hint = first_cell.first;
 
+          // step 2: find all neighbor cells around first_cell
           const auto active_cells_around_point =
             GridTools::find_all_active_cells_around_point(
               mapping, tria, point_and_weight.first, tolerance, first_cell);
 
+          // step 3: put all information together??
           for (const auto &cell_and_reference_coordinate : active_cells_around_point)
             info.emplace_back(
               cell_and_reference_coordinate.second,
@@ -494,6 +478,7 @@ collect_integration_points(
         {}
     }
 
+  // Question: How does compression works? sort/get/..?
   // step 4: compress data structures
   std::sort(info.begin(), info.end(), [](const auto &a, const auto &b) {
     return std::get<2>(a) < std::get<2>(b);
@@ -523,7 +508,11 @@ collect_integration_points(
 }
 
 
-
+/* front tracking:
+    - no level-set. 
+    - two meshs: Interface at codim-1 mesh, NSE at background mesh
+    - normal and curvature from geometric configuration of surface mesh
+*/
 template <int dim, int spacedim, typename VectorType>
 void
 compute_force_vector_sharp_interface(
@@ -579,7 +568,7 @@ compute_force_vector_sharp_interface(
             for (unsigned int i = 0; i < spacedim; ++i)
               result[i] = -curvature_values[q] * normal_values[q][i] * fe_eval.JxW(q) *
                           surface_tension;
-
+              // f = kappa * n * JxW * sigma
             integration_points.push_back(fe_eval.quadrature_point(q));
             integration_values.push_back(result);
           }
@@ -608,8 +597,10 @@ compute_force_vector_sharp_interface(
 
       cell->get_dof_indices(local_dof_indices);
 
+      // Question: number of integration points?
       const unsigned int n_points = ptrs[i + 1] - ptrs[i];
 
+      // Question: + ptrs[i]???
       const ArrayView<const Point<spacedim>> unit_points(points.data() + ptrs[i],
                                                          n_points);
       const ArrayView<const Tensor<1, spacedim, double>> JxW(weights.data() + ptrs[i],
@@ -618,14 +609,16 @@ compute_force_vector_sharp_interface(
       for (unsigned int q = 0; q < n_points; ++q)
         phi_normal_force.submit_value(JxW[q], q);
 
+      // integrate values with test function and store in buffer?
       phi_normal_force.integrate(cell, unit_points, buffer, EvaluationFlags::values);
-
+      //local buffert into global force vector
       constraints.distribute_local_to_global(buffer, local_dof_indices, force_vector);
     }
 }
 
 
-
+// routine to compute normal from actual interface at surface mesh
+// for front-tracking method
 template <int dim, int spacedim, typename VectorType>
 void
 compute_normal(const Mapping<dim, spacedim> &   mapping,
@@ -661,7 +654,8 @@ compute_normal(const Mapping<dim, spacedim> &   mapping,
 }
 
 
-
+// routine to compute curvature from actual interface at surface mesh
+// for front-tracking method
 template <int dim, int spacedim, typename VectorType>
 void
 compute_curvature(const Mapping<dim, spacedim> &   mapping,
@@ -684,6 +678,7 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
 
   for (const auto &cell : dof_handler.active_cell_iterators())
     {
+      //Question: cell->level()?
       TriaIterator<DoFCellAccessor<dim, spacedim, false>> dof_cell_dim(
         &dof_handler_dim.get_triangulation(),
         cell->level(),
@@ -704,6 +699,7 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
         {
           double curvature = 0.0;
 
+          //Question: why 2D gradient??  
           for (unsigned c = 0; c < spacedim; ++c)
             curvature += normal_gradients[q][c][c];
 
@@ -715,7 +711,8 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
 }
 
 
-
+// 
+//used for mixed level set method
 template <int dim, int spacedim>
 std::tuple<std::vector<std::pair<int, int>>,
            std::vector<unsigned int>,
@@ -802,7 +799,10 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 }
 
 
-
+// mixed level set
+// background mesh at which NS and level set is solved
+// normal and curvature from level set are used for interface
+// surface mesh is for codim1 Interface, to determine quadrature point, moved with velocity from NSE
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_mesh,
@@ -860,6 +860,7 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
 
       cell->get_dof_indices(local_dof_indices);
 
+      //Question: ?
       const unsigned int n_points = ptrs[i + 1] - ptrs[i];
 
       const ArrayView<const Point<dim>> unit_points(points.data() + ptrs[i], n_points);
@@ -896,6 +897,7 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
         {
           Assert(phi_normal.get_value(q).norm() > 0, ExcNotImplemented());
           const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
+          // Question: surface_tenstion_coefficient??
           phi_force.submit_value(normal * phi_curvature.get_value(q) * JxW[q], q);
         }
 
@@ -912,7 +914,10 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
 }
 
 
-
+// sharp level set
+// - only one mesh for NS and level set
+// - interface is calculated with normal and curvature from level set
+// - Marching square/cube algorithm is used to generate interface contour in cells which are cut by interface
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
@@ -1037,6 +1042,8 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
         {
           Assert(phi_normal.get_value(q).norm() > 0, ExcNotImplemented());
           const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
+          // Question: surfae tension coefficient???? 
+          //phi_force.submit_value(surface_tension_coefficient *normal * phi_curvature.get_value(q) * JxW[q], q);
           phi_force.submit_value(normal * phi_curvature.get_value(q) * JxW[q], q);
         }
 
@@ -1073,6 +1080,7 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
   level_set_as_heaviside.add(1.0);
   level_set_as_heaviside *= 0.5;
 
+  // TODO: input global in .prm
   const double surface_tension_coefficient = 1.0;
 
   matrix_free.template cell_loop<VectorType2, VectorType1>(
