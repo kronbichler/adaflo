@@ -90,6 +90,9 @@ public:
   run();
 
 private:
+  void
+  evaluate_spurious_velocities(NavierStokes<dim> &navier_stokes_solver);
+
   MPI_Comm           mpi_communicator;
   ConditionalOStream pcout;
 
