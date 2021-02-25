@@ -42,8 +42,6 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/vector_tools.h>
 
-#include <deal.II/simplex/grid_generator.h>
-
 #include <adaflo/navier_stokes.h>
 #include <adaflo/time_stepping.h>
 

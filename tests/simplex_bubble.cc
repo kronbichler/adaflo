@@ -22,8 +22,6 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_in.h>
 
-#include <deal.II/simplex/grid_generator.h>
-
 #include <adaflo/level_set_okz.h>
 #include <adaflo/level_set_okz_matrix.h>
 #include <adaflo/parameters.h>

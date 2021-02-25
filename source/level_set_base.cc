@@ -24,6 +24,7 @@
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
+#include <deal.II/fe/fe_simplex_p.h>
 
 #include <deal.II/grid/tria.h>
 
@@ -35,8 +36,6 @@
 #include <deal.II/lac/sparsity_tools.h>
 
 #include <deal.II/numerics/vector_tools.h>
-
-#include <deal.II/simplex/fe_lib.h>
 
 #include <adaflo/level_set_base.h>
 #include <adaflo/util.h>
@@ -54,9 +53,8 @@ LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &paramete
                                                   Triangulation<dim> &  tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                parameters_in.use_simplex_mesh ?
-                                 std::shared_ptr<FiniteElement<dim>>(
-                                   new Simplex::FE_P<dim>(
-                                     parameters_in.concentration_subdivisions)) :
+                                 std::shared_ptr<FiniteElement<dim>>(new FE_SimplexP<dim>(
+                                   parameters_in.concentration_subdivisions)) :
                                  std::shared_ptr<FiniteElement<dim>>(new FE_Q_iso_Q1<dim>(
                                    parameters_in.concentration_subdivisions)),
                                tria_in)
@@ -71,9 +69,9 @@ LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &paramete
       this->navier_stokes.get_fe_p().dofs_per_cell, this->fe->dofs_per_cell);
     if (this->parameters.use_simplex_mesh)
       {
-        const auto fe_mine = dynamic_cast<const Simplex::FE_P<dim> *>(this->fe.get());
+        const auto fe_mine = dynamic_cast<const FE_SimplexP<dim> *>(this->fe.get());
         const auto fe_p =
-          dynamic_cast<const Simplex::FE_P<dim> *>(&this->navier_stokes.get_fe_p());
+          dynamic_cast<const FE_SimplexP<dim> *>(&this->navier_stokes.get_fe_p());
 
         Assert(fe_mine, ExcNotImplemented());
         Assert(fe_p, ExcNotImplemented());

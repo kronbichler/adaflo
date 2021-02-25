@@ -15,6 +15,7 @@
 
 #include <deal.II/base/conditional_ostream.h>
 #include <deal.II/base/index_set.h>
+#include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/utilities.h>
 
 #include <deal.II/dofs/dof_renumbering.h>
@@ -33,8 +34,6 @@
 #include <deal.II/lac/trilinos_sparsity_pattern.h>
 
 #include <deal.II/numerics/vector_tools.h>
-
-#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/block_matrix_extension.h>
 #include <adaflo/navier_stokes.h>
@@ -1027,8 +1026,8 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
   else
     {
       // needed for setup of FEValues
-      integration_helper.quadrature_sub_u = std::make_unique<Simplex::QGauss<dim>>(1);
-      integration_helper.quadrature_sub_p = std::make_unique<Simplex::QGauss<dim>>(1);
+      integration_helper.quadrature_sub_u = std::make_unique<QGaussSimplex<dim>>(1);
+      integration_helper.quadrature_sub_p = std::make_unique<QGaussSimplex<dim>>(1);
     }
 
   // For scalar ILU, need to distributed DoFs and fill in the various
@@ -1510,7 +1509,7 @@ namespace AssemblyData
                   fe_u.reference_cell() == ReferenceCells::get_hypercube<dim>() ?
                     static_cast<const Quadrature<dim> &>(QGauss<dim>(fe_u.degree + 1)) :
                     static_cast<const Quadrature<dim> &>(
-                      Simplex::QGauss<dim>(fe_u.degree + 1)),
+                      QGaussSimplex<dim>(fe_u.degree + 1)),
                   update_values | update_gradients | update_JxW_values)
     , fe_values_p(mapping,
                   fe_p,
@@ -1523,7 +1522,7 @@ namespace AssemblyData
         fe_p.reference_cell() == ReferenceCells::get_hypercube<dim>() ?
           static_cast<const Quadrature<dim - 1> &>(QGauss<dim - 1>(fe_p.degree + 1)) :
           static_cast<const Quadrature<dim - 1> &>(
-            Simplex::QGauss<dim - 1>(fe_p.degree + 1)),
+            QGaussSimplex<dim - 1>(fe_p.degree + 1)),
         update_values | update_gradients | update_JxW_values | update_normal_vectors)
     , fe_subface_values_p(mapping,
                           fe_p,
