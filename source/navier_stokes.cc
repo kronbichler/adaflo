@@ -24,6 +24,7 @@
 
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_q_dg0.h>
+#include <deal.II/fe/fe_simplex_p.h>
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/mapping_fe.h>
 #include <deal.II/fe/mapping_q1.h>
@@ -38,9 +39,6 @@
 
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
-
-#include <deal.II/simplex/fe_lib.h>
-#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/navier_stokes.h>
 #include <adaflo/util.h>
@@ -59,7 +57,7 @@ NavierStokes<dim>::NavierStokes(
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
   : NavierStokes(parameters.use_simplex_mesh ?
                    static_cast<const Mapping<dim> &>(
-                     MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+                     MappingFE<dim>(FE_SimplexP<dim>(1))) :
                    static_cast<const Mapping<dim> &>(MappingQ<dim>(3)),
                  parameters,
                  triangulation_in,
@@ -89,13 +87,13 @@ NavierStokes<dim>::NavierStokes(
   , triangulation(triangulation_in)
   , fe_u(parameters.use_simplex_mesh ?
            static_cast<const FiniteElement<dim> &>(
-             Simplex::FE_P<dim>(parameters.velocity_degree)) :
+             FE_SimplexP<dim>(parameters.velocity_degree)) :
            static_cast<const FiniteElement<dim> &>(
              FE_Q<dim>(QGaussLobatto<1>(parameters.velocity_degree + 1))),
          dim)
   , fe_p(parameters.use_simplex_mesh ?
            static_cast<const FiniteElement<dim> &>(
-             Simplex::FE_P<dim>(parameters.velocity_degree - 1)) :
+             FE_SimplexP<dim>(parameters.velocity_degree - 1)) :
            (parameters.augmented_taylor_hood ?
               static_cast<const FiniteElement<dim> &>(
                 FE_Q_DG0<dim>(parameters.velocity_degree - 1)) :
@@ -432,9 +430,8 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_fre
       std::vector<Quadrature<dim>> quadratures(2);
       if (parameters.use_simplex_mesh)
         {
-          quadratures[quad_index_u] =
-            Simplex::QGauss<dim>(parameters.velocity_degree + 1);
-          quadratures[quad_index_p] = Simplex::QGauss<dim>(parameters.velocity_degree);
+          quadratures[quad_index_u] = QGaussSimplex<dim>(parameters.velocity_degree + 1);
+          quadratures[quad_index_p] = QGaussSimplex<dim>(parameters.velocity_degree);
         }
       else
         {
@@ -1245,7 +1242,7 @@ NavierStokes<dim>::apply_boundary_conditions()
       Quadrature<dim - 1> face_quadrature;
 
       if (parameters.use_simplex_mesh)
-        face_quadrature = Simplex::QGauss<dim - 1>(fe_u.degree + 1);
+        face_quadrature = QGaussSimplex<dim - 1>(fe_u.degree + 1);
       else
         face_quadrature = QGauss<dim - 1>(fe_u.degree + 1);
 

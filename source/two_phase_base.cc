@@ -13,12 +13,14 @@
 //
 // --------------------------------------------------------------------------
 
+#include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/utilities.h>
 
 #include <deal.II/dofs/dof_accessor.h>
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/dofs/dof_tools.h>
 
+#include <deal.II/fe/fe_simplex_p.h>
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/mapping_fe.h>
 
@@ -32,9 +34,6 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/numerics/vector_tools.h>
-
-#include <deal.II/simplex/fe_lib.h>
-#include <deal.II/simplex/quadrature_lib.h>
 
 #include <adaflo/two_phase_base.h>
 #include <adaflo/util.h>
@@ -71,7 +70,7 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   TimerOutput *                             timer_in)
   : FlowBaseAlgorithm<dim>(
       parameters_in.use_simplex_mesh ?
-        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(Simplex::FE_P<dim>(1))) :
+        std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(FE_SimplexP<dim>(1))) :
         std::shared_ptr<Mapping<dim>>(new MappingQ<dim>(3)))
   , solution_update(2)
   , solution(2)
@@ -256,9 +255,9 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
   std::vector<Quadrature<dim>> quadratures;
   if (parameters.use_simplex_mesh)
     {
-      quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree + 1));
-      quadratures.push_back(Simplex::QGauss<dim>(parameters.velocity_degree));
-      quadratures.push_back(Simplex::QGauss<dim>(fe->degree + 1));
+      quadratures.push_back(QGaussSimplex<dim>(parameters.velocity_degree + 1));
+      quadratures.push_back(QGaussSimplex<dim>(parameters.velocity_degree));
+      quadratures.push_back(QGaussSimplex<dim>(fe->degree + 1));
     }
   else
     {
