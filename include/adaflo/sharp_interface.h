@@ -17,6 +17,8 @@
 #define __adaflo_block_sharp_inteface_h
 
 
+#include <deal.II/dofs/dof_tools.h>
+
 #include <deal.II/fe/fe_point_evaluation.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
 #include <deal.II/fe/mapping_fe_field.h>
@@ -236,6 +238,12 @@ public:
                                                  i.first,
                                                  Functions::ConstantFunction<dim>(0.0),
                                                  constraints);
+
+      DoFTools::make_hanging_node_constraints(dof_handler, hanging_node_constraints);
+      constraints.merge(hanging_node_constraints);
+      constraints_curvature.merge(hanging_node_constraints);
+      constraints_normals.merge(hanging_node_constraints);
+
 
       constraints.close();
       constraints_curvature.close();

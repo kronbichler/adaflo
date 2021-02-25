@@ -68,7 +68,7 @@ create_annulus(Triangulation<dim> &tria, const unsigned int n_refinements)
   if (n_refinements == 0)
     return;
 
-  for (int i = 0; i < static_cast<int>(n_refinements) - 4; i++)
+  for (int i = 0; i < static_cast<int>(n_refinements) - 5; i++)
     tria.refine_global();
 
   Point<dim> center;
@@ -90,7 +90,7 @@ create_annulus(Triangulation<dim> &tria, const unsigned int n_refinements)
                 p = true;
             }
 
-          if (p && m)
+          if (/*p &&*/ m)
             cell->set_refine_flag();
         }
     tria.execute_coarsening_and_refinement();
@@ -106,6 +106,9 @@ create_annulus(Triangulation<dim> &tria, const unsigned int n_refinements)
     fu();
 
   if (n_refinements >= 4)
+    fu();
+
+  if (n_refinements >= 5)
     fu();
 }
 
@@ -167,14 +170,14 @@ MicroFluidicProblem<dim>::run()
 {
   GridGenerator::hyper_cube(triangulation, -2.5, 2.5);
 
-  if (true)
+  if (false)
     {
       GridGenerator::hyper_cube(triangulation_ls, -2.5, 2.5);
       triangulation_ls.refine_global(parameters.global_refinements + 1);
     }
   else
     {
-      create_annulus(triangulation_ls, parameters.global_refinements + 1);
+      create_annulus(triangulation_ls, parameters.global_refinements + 2);
     }
 
   NavierStokes<dim> navier_stokes_solver(parameters, triangulation, &timer);
