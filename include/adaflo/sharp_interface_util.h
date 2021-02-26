@@ -800,9 +800,9 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 
 
 // mixed level set
-// background mesh at which NS and level set is solved
-// normal and curvature from level set are used for interface
-// surface mesh is for codim1 Interface, to determine quadrature point, moved with velocity from NSE
+// - background mesh at which NS and level set is solved
+// - normal and curvature from level set are used for interface
+// - surface mesh is for codim1 Interface, to determine quadrature point, moved with velocity from NSE
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_mesh,

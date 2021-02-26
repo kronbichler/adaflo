@@ -16,7 +16,7 @@
 #
 # mpirun: 2
 subsection Problem-specific
-  set two-phase method = level set
+  set two-phase method = sharp level set
 end
 subsection Two phase
   set density              = 1.
@@ -24,7 +24,7 @@ subsection Two phase
   set viscosity            = 0.1
   set viscosity difference = 0
   set surface tension      = 1.0
-  set epsilon              = 1.5
+  set epsilon              = 0.1
   set gravity              = 0.
   set concentration subdivisions = 3
   set grad pressure compatible = 1
@@ -52,7 +52,7 @@ subsection Navier-Stokes
   end
 end
 subsection Output options
-  set output filename  = output-sharp_interfaces_06/data
+  set output filename  = output-sharp_interfaces_06_sls/data
   set output verbosity = 1
   set output frequency = 0.01
   set output vtk files = 1

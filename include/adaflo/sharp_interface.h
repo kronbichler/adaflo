@@ -209,7 +209,7 @@ public:
       dof_handler.distribute_dofs(fe);
 
       pcout << "Number of level set degrees of freedom: " << dof_handler.n_dofs()
-            << std::endl;
+            << "    fe degree of level set: " << fe.degree << std::endl;
 
       typename MatrixFree<dim>::AdditionalData data;
 
@@ -283,6 +283,9 @@ public:
       epsilon_used =
         parameters.epsilon / parameters.concentration_subdivisions * epsilon_used;
 
+      pcout << "epsilon_used: " << epsilon_used << " epsilon_input: " 
+            << parameters.epsilon << " concentration subd:  " << parameters.concentration_subdivisions << std::endl;
+
       initialize_mass_matrix_diagonal(
         matrix_free, hanging_node_constraints, dof_index_ls, quad_index, preconditioner);
 
@@ -328,6 +331,7 @@ public:
     ls_update                  = ls_solution;
 
     if (step_size_old > 0)
+      // U = sadd(a,b,V)=a*U+b*V
       ls_update.sadd((step_size + step_size_old) / step_size_old,
                      -step_size / step_size_old,
                      ls_solution_old);
