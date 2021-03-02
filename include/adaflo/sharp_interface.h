@@ -17,6 +17,8 @@
 #define __adaflo_block_sharp_inteface_h
 
 
+#include <deal.II/dofs/dof_tools.h>
+
 #include <deal.II/fe/fe_point_evaluation.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
 #include <deal.II/fe/mapping_fe_field.h>
@@ -213,6 +215,7 @@ public:
 
       typename MatrixFree<dim>::AdditionalData data;
 
+      data.mapping_update_flags = data.mapping_update_flags | update_quadrature_points;
       data.tasks_parallel_scheme =
         Utilities::MPI::n_mpi_processes(get_communicator(dof_handler)) > 1 ?
           MatrixFree<dim>::AdditionalData::none :
@@ -235,6 +238,12 @@ public:
                                                  i.first,
                                                  Functions::ConstantFunction<dim>(0.0),
                                                  constraints);
+
+      DoFTools::make_hanging_node_constraints(dof_handler, hanging_node_constraints);
+      constraints.merge(hanging_node_constraints);
+      constraints_curvature.merge(hanging_node_constraints);
+      constraints_normals.merge(hanging_node_constraints);
+
 
       constraints.close();
       constraints_curvature.close();
@@ -308,10 +317,14 @@ public:
       ls_solution.local_element(i) =
         -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
 
-    reinitialize(true);
-
     velocity_solution_old     = velocity_solution;
     velocity_solution_old_old = velocity_solution;
+  }
+
+  void
+  initialize()
+  {
+    reinitialize(true);
   }
 
   void
@@ -458,9 +471,11 @@ private:
   std::shared_ptr<BlockILUExtension>    ilu_projection_matrix;
 
   // Operators
-  std::unique_ptr<LevelSetOKZSolverComputeNormal<dim>>        normal_operator;
-  std::unique_ptr<LevelSetOKZSolverReinitialization<dim>>     reinit;
-  std::unique_ptr<LevelSetOKZSolverComputeCurvature<dim>>     curvature_operator;
+  std::unique_ptr<LevelSetOKZSolverComputeNormal<dim>>    normal_operator;
+  std::unique_ptr<LevelSetOKZSolverReinitialization<dim>> reinit;
+  std::unique_ptr<LevelSetOKZSolverComputeCurvature<dim>> curvature_operator;
+
+public:
   std::unique_ptr<LevelSetOKZSolverAdvanceConcentration<dim>> advection_operator;
 };
 
@@ -735,6 +750,7 @@ public:
                       const Function<dim> &        initial_values_ls)
     : use_auxiliary_surface_mesh(true)
     , use_sharp_interface(true)
+    , decoupled_meshes(false)
     , navier_stokes_solver(navier_stokes_solver)
     , level_set_solver(navier_stokes_solver.get_dof_handler_u().get_triangulation(),
                        initial_values_ls,
@@ -747,6 +763,8 @@ public:
                        navier_stokes_solver.boundary->symmetry)
     , euler_dofhandler(surface_mesh)
   {
+    level_set_solver.initialize();
+
     const unsigned int fe_degree = 1;
 
     FESystem<dim - 1, dim> surface_fe_dim(FE_Q<dim - 1, dim>(fe_degree), dim);
@@ -770,6 +788,7 @@ public:
                       const bool           use_sharp_interface = true)
     : use_auxiliary_surface_mesh(false)
     , use_sharp_interface(use_sharp_interface)
+    , decoupled_meshes(false)
     , navier_stokes_solver(navier_stokes_solver)
     , level_set_solver(navier_stokes_solver.get_dof_handler_u().get_triangulation(),
                        initial_values_ls,
@@ -781,7 +800,37 @@ public:
                        navier_stokes_solver.boundary->fluid_type,
                        navier_stokes_solver.boundary->symmetry)
   {
+    level_set_solver.initialize();
+
+    this->update_phases();
+    this->update_gravity_force();
+    this->update_surface_tension();
+  }
+
+  MixedLevelSetSolver(NavierStokes<dim> &                        navier_stokes_solver,
+                      parallel::distributed::Triangulation<dim> &tria,
+                      const Function<dim> &                      initial_values_ls)
+    : use_auxiliary_surface_mesh(false)
+    , use_sharp_interface(false)
+    , decoupled_meshes(true)
+    , navier_stokes_solver(navier_stokes_solver)
+    , level_set_solver(tria,
+                       initial_values_ls,
+                       navier_stokes_solver.get_parameters(),
+                       navier_stokes_solver.time_stepping,
+                       navier_stokes_solver.solution.block(0),
+                       navier_stokes_solver.solution_old.block(0),
+                       navier_stokes_solver.solution_old_old.block(0),
+                       navier_stokes_solver.boundary->fluid_type,
+                       navier_stokes_solver.boundary->symmetry)
+  {
     // initialize
+    evaluate_velocity_at_quadrature_points();
+    evaluate_level_set_and_curvature_at_quadrature_points(); // TODO: to init data
+                                                             // structures
+
+    level_set_solver.initialize();
+
     this->update_phases();
     this->update_gravity_force();
     this->update_surface_tension();
@@ -792,6 +841,9 @@ public:
   {
     level_set_solver.solve();
 
+    if (decoupled_meshes)
+      evaluate_level_set_and_curvature_at_quadrature_points();
+
     if (use_auxiliary_surface_mesh)
       this->move_surface_mesh();
     this->update_phases();
@@ -801,63 +853,594 @@ public:
     navier_stokes_solver.get_constraints_u().set_zero(
       navier_stokes_solver.user_rhs.block(0));
     navier_stokes_solver.advance_time_step();
+
+    if (decoupled_meshes)
+      evaluate_velocity_at_quadrature_points();
+  }
+
+  void
+  evaluate_level_set_and_curvature_at_quadrature_points()
+  {
+    Assert(decoupled_meshes, ExcNotImplemented());
+
+    // 1) allocate memory
+    const auto &       matrix_free = *navier_stokes_solver.matrix_free;
+    const unsigned int n_cells     = matrix_free.n_cell_batches();
+    const unsigned int n_q_points =
+      matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
+
+    level_set_values.resize(n_q_points * n_cells);
+    level_set_gradients.resize(n_q_points * n_cells);
+    curvature_values.resize(n_q_points * n_cells);
+
+    if (false)
+      {
+        // 2) determine quadrature points on NS side
+        const auto evaluation_points = [&]() {
+          std::vector<Point<dim>>               evaluation_points;
+          FEEvaluation<dim, -1, 0, dim, double> vel_values(
+            matrix_free,
+            navier_stokes_solver.dof_index_u,
+            navier_stokes_solver.quad_index_u);
+
+
+          for (unsigned int cell = 0; cell < n_cells; ++cell)
+            {
+              vel_values.reinit(cell);
+
+              for (unsigned int q = 0; q < n_q_points; ++q)
+                {
+                  const auto points = vel_values.quadrature_point(q);
+                  for (unsigned int v = 0;
+                       v < matrix_free.n_active_entries_per_cell_batch(cell);
+                       ++v)
+                    {
+                      Point<dim> point;
+
+                      for (int i = 0; i < dim; ++i)
+                        point[i] = points[i][v];
+
+                      evaluation_points.push_back(point);
+                    }
+                }
+            }
+
+          return evaluation_points;
+        }();
+
+        using T = std::tuple<double, Tensor<1, dim>, double>;
+
+        // 3) evaluate LS and curvature in quadrature points on LS side
+        std::vector<T> evaluation_point_results;
+
+        evaluation_point_results = [&] {
+          Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
+
+          eval.reinit(evaluation_points,
+                      level_set_solver.get_dof_handler().get_triangulation(),
+                      navier_stokes_solver.mapping /*TODO*/);
+
+          FEPointEvaluation<1, dim> evaluator(
+            navier_stokes_solver.mapping /*TODO*/,
+            level_set_solver.get_dof_handler().get_fe());
+
+          FEPointEvaluation<1, dim> evaluator_curvature(
+            navier_stokes_solver.mapping /*TODO*/,
+            level_set_solver.get_dof_handler().get_fe());
+
+          std::vector<double> solution_values;
+          std::vector<double> solution_values_curvature;
+
+          const auto fu = [&](auto &values, const auto &quadrature_points) {
+            unsigned int i = 0;
+
+            for (const auto &cells_and_n : std::get<0>(quadrature_points))
+              {
+                typename DoFHandler<dim>::active_cell_iterator cell = {
+                  &level_set_solver.get_dof_handler().get_triangulation(),
+                  cells_and_n.first.first,
+                  cells_and_n.first.second,
+                  &level_set_solver.get_dof_handler()};
+
+                const ArrayView<const Point<dim>> unit_points(
+                  std::get<1>(quadrature_points).data() + i, cells_and_n.second);
+                solution_values.resize(cell->get_fe().n_dofs_per_cell());
+                solution_values_curvature.resize(cell->get_fe().n_dofs_per_cell());
+
+                cell->get_dof_values(level_set_solver.get_level_set_vector(),
+                                     solution_values.begin(),
+                                     solution_values.end());
+
+                evaluator.evaluate(cell,
+                                   unit_points,
+                                   solution_values,
+                                   EvaluationFlags::values | EvaluationFlags::gradients);
+
+                cell->get_dof_values(level_set_solver.get_curvature_vector(),
+                                     solution_values_curvature.begin(),
+                                     solution_values_curvature.end());
+
+                evaluator_curvature.evaluate(cell,
+                                             unit_points,
+                                             solution_values_curvature,
+                                             EvaluationFlags::values);
+
+                for (unsigned int q = 0; q < unit_points.size(); ++q, ++i)
+                  {
+                    values[std::get<2>(quadrature_points)[i]] = {
+                      (evaluator.get_value(q) + 1.0) / 2.0,
+                      evaluator.get_gradient(q) / 2.0,
+                      evaluator_curvature.get_value(q)};
+                    // std::cout << evaluator.get_value(q) << " "
+                    //          <<
+                    //          std::get<0>(values[std::get<2>(quadrature_points)[i]])<<
+                    //          std::endl;
+                    // std::cout
+                    //        << std::get<0>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        " "
+                    //        << std::get<1>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        " "
+                    //        << std::get<2>(values[std::get<2>(quadrature_points)[i]]) <<
+                    //        std::endl;
+                  }
+              }
+          };
+
+          std::vector<T> evaluation_point_results;
+          std::vector<T> buffer;
+
+          eval.template process<T>(evaluation_point_results, buffer, fu);
+
+          const auto unique_evaluation_point_results = [&]() {
+            const unsigned int modus = 0;
+            if (eval.is_unique_mapping())
+              {
+                return evaluation_point_results;
+              }
+            else
+              {
+                std::vector<T> unique_evaluation_point_results(evaluation_points.size());
+
+                const auto reduce = [modus](const auto &values) {
+                  switch (modus)
+                    {
+                      default:
+                        return values[0];
+                    }
+                };
+
+                const auto &ptr = eval.get_quadrature_points_ptr();
+
+                for (unsigned int i = 0; i < evaluation_points.size(); ++i)
+                  {
+                    const auto n_entries = ptr[i + 1] - ptr[i];
+                    if (n_entries == 0)
+                      continue;
+
+                    unique_evaluation_point_results[i] =
+                      reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
+                                                n_entries));
+                  }
+
+                return unique_evaluation_point_results;
+              }
+          }();
+          return unique_evaluation_point_results;
+        }();
+
+        AssertDimension(evaluation_point_results.size(), evaluation_points.size());
+
+        // 4) write back the result on NS side
+        unsigned int c = 0;
+        for (unsigned int cell = 0; cell < n_cells; ++cell)
+          for (unsigned int q = 0; q < n_q_points; ++q)
+            for (unsigned int v = 0;
+                 v < matrix_free.n_active_entries_per_cell_batch(cell);
+                 ++v, ++c)
+              {
+                level_set_values[n_q_points * cell + q][v] =
+                  std::get<0>(evaluation_point_results[c]);
+                for (unsigned int d = 0; d < dim; ++d)
+                  level_set_gradients[n_q_points * cell + q][d][v] =
+                    std::get<1>(evaluation_point_results[c])[d];
+                curvature_values[n_q_points * cell + q][v] =
+                  std::get<2>(evaluation_point_results[c]);
+              }
+
+        AssertDimension(evaluation_point_results.size(), c);
+      }
+    else
+      {
+        const std::vector<bool>          marked_vertices;
+        const GridTools::Cache<dim, dim> cache(
+          level_set_solver.get_dof_handler().get_triangulation(),
+          navier_stokes_solver.mapping);
+        const double tolerance = 1e-6;
+        auto         cell_hint =
+          level_set_solver.get_dof_handler().get_triangulation().begin_active();
+
+        std::vector<double> solution_values;
+        std::vector<double> solution_values_curvature;
+
+        FEPointEvaluation<1, dim> evaluator(navier_stokes_solver.mapping /*TODO*/,
+                                            level_set_solver.get_dof_handler().get_fe());
+
+        FEPointEvaluation<1, dim> evaluator_curvature(
+          navier_stokes_solver.mapping /*TODO*/,
+          level_set_solver.get_dof_handler().get_fe());
+
+
+        FEEvaluation<dim, -1, 0, dim, double> vel_values(
+          matrix_free,
+          navier_stokes_solver.dof_index_u,
+          navier_stokes_solver.quad_index_u);
+
+        for (unsigned int cell = 0; cell < n_cells; ++cell)
+          {
+            vel_values.reinit(cell);
+
+            for (unsigned int q = 0; q < n_q_points; ++q)
+              {
+                const auto points = vel_values.quadrature_point(q);
+                for (unsigned int v = 0;
+                     v < matrix_free.n_active_entries_per_cell_batch(cell);
+                     ++v)
+                  {
+                    Point<dim> point;
+
+                    for (int i = 0; i < dim; ++i)
+                      point[i] = points[i][v];
+
+                    // evaluation_points.push_back(point);
+
+                    /*
+            const auto cell_and_reference_coordinate =
+                  GridTools::find_active_cell_around_point(cache,
+                                                           point,
+                                                           cell_hint,
+                                                           marked_vertices,
+                                                           tolerance);
+                     */
+
+                    const auto cell_and_reference_coordinate =
+                      GridTools::find_active_cell_around_point(
+                        navier_stokes_solver.mapping,
+                        level_set_solver.get_dof_handler(),
+                        point);
+
+                    typename DoFHandler<dim>::active_cell_iterator cell_ = {
+                      &level_set_solver.get_dof_handler().get_triangulation(),
+                      cell_and_reference_coordinate.first->level(),
+                      cell_and_reference_coordinate.first->index(),
+                      &level_set_solver.get_dof_handler()};
+
+                    const ArrayView<const Point<dim>> unit_points(
+                      &cell_and_reference_coordinate.second, 1);
+                    solution_values.resize(cell_->get_fe().n_dofs_per_cell());
+                    solution_values_curvature.resize(cell_->get_fe().n_dofs_per_cell());
+
+                    cell_->get_dof_values(level_set_solver.get_level_set_vector(),
+                                          solution_values.begin(),
+                                          solution_values.end());
+
+                    evaluator.evaluate(cell_,
+                                       unit_points,
+                                       solution_values,
+                                       EvaluationFlags::values |
+                                         EvaluationFlags::gradients);
+
+                    cell_->get_dof_values(level_set_solver.get_curvature_vector(),
+                                          solution_values_curvature.begin(),
+                                          solution_values_curvature.end());
+
+                    evaluator_curvature.evaluate(cell_,
+                                                 unit_points,
+                                                 solution_values_curvature,
+                                                 EvaluationFlags::values);
+
+                    level_set_values[n_q_points * cell + q][v] =
+                      (evaluator.get_value(0) + 1.0) / 2.0;
+                    for (unsigned int d = 0; d < dim; ++d)
+                      level_set_gradients[n_q_points * cell + q][d][v] =
+                        (evaluator.get_gradient(0) / 2.0)[d];
+                    curvature_values[n_q_points * cell + q][v] =
+                      evaluator_curvature.get_value(0);
+                  }
+              }
+          }
+      }
+  }
+
+  void
+  evaluate_velocity_at_quadrature_points()
+  {
+    Assert(decoupled_meshes, ExcNotImplemented());
+
+    // 1) allocate memory
+    const auto &       matrix_free = level_set_solver.get_matrix_free();
+    const unsigned int n_q_points =
+      matrix_free.get_quadrature(LevelSetSolver<dim>::quad_index_vel).size();
+    const unsigned int n_cells = matrix_free.n_cell_batches();
+
+    auto &op                               = *level_set_solver.advection_operator;
+    op.velocity_at_quadrature_points_given = true;
+    op.evaluated_vel.resize(n_q_points * n_cells);
+    op.evaluated_vel_old.resize(n_q_points * n_cells);
+    op.evaluated_vel_old_old.resize(n_q_points * n_cells);
+
+    // 2) determine quadrature points on LS side
+    const auto evaluation_points = [&]() {
+      FEEvaluation<dim, -1, 0, dim, double> vel_values(
+        matrix_free,
+        LevelSetSolver<dim>::dof_index_ls,
+        LevelSetSolver<dim>::quad_index_vel);
+
+      std::vector<Point<dim>> evaluation_points;
+
+      for (unsigned int cell = 0; cell < matrix_free.n_cell_batches(); ++cell)
+        {
+          vel_values.reinit(cell);
+
+          for (unsigned int q = 0; q < n_q_points; ++q)
+            {
+              const auto points = vel_values.quadrature_point(q);
+              for (unsigned int v = 0;
+                   v < matrix_free.n_active_entries_per_cell_batch(cell);
+                   ++v)
+                {
+                  Point<dim> point;
+
+                  for (int i = 0; i < dim; ++i)
+                    point[i] = points[i][v];
+
+                  evaluation_points.push_back(point);
+                }
+            }
+        }
+      return evaluation_points;
+    }();
+
+    // 3) evaluate velocity in quadrature points on NS side
+    const auto evaluation_point_results = [&] {
+      Utilities::MPI::RemotePointEvaluation<dim, dim> eval;
+
+      eval.reinit(evaluation_points,
+                  navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+                  navier_stokes_solver.mapping);
+
+      FEPointEvaluation<dim, dim> evaluator(
+        navier_stokes_solver.mapping, navier_stokes_solver.get_dof_handler_u().get_fe());
+
+      std::vector<double> solution_values;
+
+      std::array<VectorType *, 3> vectors = {
+        {&navier_stokes_solver.solution.block(0),
+         &navier_stokes_solver.solution_old.block(0),
+         &navier_stokes_solver.solution_old_old.block(0)}};
+
+      const auto fu = [&](auto &values, const auto &quadrature_points) {
+        unsigned int i = 0;
+
+        for (const auto &cells_and_n : std::get<0>(quadrature_points))
+          {
+            typename DoFHandler<dim>::active_cell_iterator cell = {
+              &navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+              cells_and_n.first.first,
+              cells_and_n.first.second,
+              &navier_stokes_solver.get_dof_handler_u()};
+
+            const ArrayView<const Point<dim>> unit_points(
+              std::get<1>(quadrature_points).data() + i, cells_and_n.second);
+            solution_values.resize(cell->get_fe().n_dofs_per_cell());
+
+            for (unsigned int v = 0; v < vectors.size(); ++v)
+              {
+                cell->get_dof_values(*vectors[v],
+                                     solution_values.begin(),
+                                     solution_values.end());
+
+                evaluator.evaluate(cell,
+                                   unit_points,
+                                   solution_values,
+                                   EvaluationFlags::values);
+
+                for (unsigned int q = 0; q < unit_points.size(); ++q)
+                  values[std::get<2>(quadrature_points)[i]][v] = evaluator.get_value(q);
+              }
+            i += unit_points.size();
+          }
+      };
+
+      using T = std::array<Tensor<1, dim>, 3>;
+
+      std::vector<T> evaluation_point_results;
+      std::vector<T> buffer;
+
+      eval.template process<T>(evaluation_point_results, buffer, fu);
+
+      const auto unique_evaluation_point_results = [&]() {
+        const unsigned int modus = 0;
+        if (eval.is_unique_mapping())
+          {
+            return evaluation_point_results;
+          }
+        else
+          {
+            std::vector<T> unique_evaluation_point_results(evaluation_points.size());
+
+            const auto reduce = [modus](const auto &values) {
+              switch (modus)
+                {
+                  default:
+                    return values[0];
+                }
+            };
+
+            const auto &ptr = eval.get_quadrature_points_ptr();
+
+            for (unsigned int i = 0; i < evaluation_points.size(); ++i)
+              {
+                const auto n_entries = ptr[i + 1] - ptr[i];
+                if (n_entries == 0)
+                  continue;
+
+                unique_evaluation_point_results[i] =
+                  reduce(ArrayView<const T>(evaluation_point_results.data() + ptr[i],
+                                            n_entries));
+              }
+
+            return unique_evaluation_point_results;
+          }
+      }();
+      return unique_evaluation_point_results;
+    }();
+
+    AssertDimension(evaluation_point_results.size(), evaluation_points.size());
+
+    // 4) write back the result on LS side
+    for (unsigned int cell = 0, c = 0; cell < matrix_free.n_cell_batches(); ++cell)
+      for (unsigned int q = 0; q < n_q_points; ++q)
+        for (unsigned int v = 0; v < matrix_free.n_active_entries_per_cell_batch(cell);
+             ++v, ++c)
+          for (unsigned int d = 0; d < dim; ++d)
+            {
+              op.evaluated_vel[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][0][d];
+              op.evaluated_vel_old[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][1][d];
+              op.evaluated_vel_old_old[n_q_points * cell + q][d][v] =
+                evaluation_point_results[c][2][d];
+            }
   }
 
   void
   output_solution(const std::string &output_filename) override
   {
     // background mesh
-    {
-      DataOutBase::VtkFlags flags;
-      flags.write_higher_order_cells = true;
+    if (!decoupled_meshes)
+      {
+        DataOutBase::VtkFlags flags;
+        flags.write_higher_order_cells = true;
 
-      DataOut<dim> data_out;
-      data_out.set_flags(flags);
+        DataOut<dim> data_out;
+        data_out.set_flags(flags);
 
-      std::vector<DataComponentInterpretation::DataComponentInterpretation>
-        vector_component_interpretation(
-          dim, DataComponentInterpretation::component_is_part_of_vector);
+        std::vector<DataComponentInterpretation::DataComponentInterpretation>
+          vector_component_interpretation(
+            dim, DataComponentInterpretation::component_is_part_of_vector);
 
-      navier_stokes_solver.solution.update_ghost_values();
+        navier_stokes_solver.solution.update_ghost_values();
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
-                               navier_stokes_solver.solution.block(0),
-                               std::vector<std::string>(dim, "velocity"),
-                               vector_component_interpretation);
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                 navier_stokes_solver.solution.block(0),
+                                 std::vector<std::string>(dim, "velocity"),
+                                 vector_component_interpretation);
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
-                               navier_stokes_solver.user_rhs.block(0),
-                               std::vector<std::string>(dim, "user_rhs"),
-                               vector_component_interpretation);
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                 navier_stokes_solver.user_rhs.block(0),
+                                 std::vector<std::string>(dim, "user_rhs"),
+                                 vector_component_interpretation);
 
-      data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
-                               navier_stokes_solver.solution.block(1),
-                               "pressure");
+        data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
+                                 navier_stokes_solver.solution.block(1),
+                                 "pressure");
 
-      data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                               level_set_solver.get_level_set_vector(),
-                               "level_set");
-
-      data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                               level_set_solver.get_curvature_vector(),
-                               "curvature");
-
-      for (unsigned int i = 0; i < dim; ++i)
         data_out.add_data_vector(level_set_solver.get_dof_handler(),
-                                 level_set_solver.get_normal_vector().block(i),
-                                 "normal_" + std::to_string(i));
+                                 level_set_solver.get_level_set_vector(),
+                                 "level_set");
 
-      data_out.build_patches(navier_stokes_solver.mapping,
-                             navier_stokes_solver.get_dof_handler_u().get_fe().degree +
-                               1);
+        data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                 level_set_solver.get_curvature_vector(),
+                                 "curvature");
 
-      navier_stokes_solver.write_data_output(
-        output_filename,
-        navier_stokes_solver.time_stepping,
-        navier_stokes_solver.get_parameters().output_frequency,
-        navier_stokes_solver.get_dof_handler_u().get_triangulation(),
-        data_out);
-    }
+        for (unsigned int i = 0; i < dim; ++i)
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_normal_vector().block(i),
+                                   "normal_" + std::to_string(i));
+
+        data_out.build_patches(navier_stokes_solver.mapping,
+                               navier_stokes_solver.get_dof_handler_u().get_fe().degree +
+                                 1);
+
+        navier_stokes_solver.write_data_output(
+          output_filename,
+          navier_stokes_solver.time_stepping,
+          navier_stokes_solver.get_parameters().output_frequency,
+          navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+          data_out);
+      }
+    else
+      {
+        {
+          DataOutBase::VtkFlags flags;
+          flags.write_higher_order_cells = true;
+
+          DataOut<dim> data_out;
+          data_out.set_flags(flags);
+
+          std::vector<DataComponentInterpretation::DataComponentInterpretation>
+            vector_component_interpretation(
+              dim, DataComponentInterpretation::component_is_part_of_vector);
+
+          navier_stokes_solver.solution.update_ghost_values();
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                   navier_stokes_solver.solution.block(0),
+                                   std::vector<std::string>(dim, "velocity"),
+                                   vector_component_interpretation);
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
+                                   navier_stokes_solver.user_rhs.block(0),
+                                   std::vector<std::string>(dim, "user_rhs"),
+                                   vector_component_interpretation);
+
+          data_out.add_data_vector(navier_stokes_solver.get_dof_handler_p(),
+                                   navier_stokes_solver.solution.block(1),
+                                   "pressure");
+
+          data_out.build_patches(
+            navier_stokes_solver.mapping,
+            navier_stokes_solver.get_dof_handler_u().get_fe().degree + 1);
+
+          navier_stokes_solver.write_data_output(
+            output_filename + "_ns",
+            navier_stokes_solver.time_stepping,
+            navier_stokes_solver.get_parameters().output_frequency,
+            navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+            data_out);
+        }
+        {
+          DataOutBase::VtkFlags flags;
+          flags.write_higher_order_cells = true;
+
+          DataOut<dim> data_out;
+          data_out.set_flags(flags);
+
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_level_set_vector(),
+                                   "level_set");
+
+          data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                   level_set_solver.get_curvature_vector(),
+                                   "curvature");
+
+          for (unsigned int i = 0; i < dim; ++i)
+            data_out.add_data_vector(level_set_solver.get_dof_handler(),
+                                     level_set_solver.get_normal_vector().block(i),
+                                     "normal_" + std::to_string(i));
+
+          data_out.build_patches(
+            navier_stokes_solver.mapping,
+            navier_stokes_solver.get_dof_handler_u().get_fe().degree + 1);
+
+          navier_stokes_solver.write_data_output(
+            output_filename + "_ls",
+            navier_stokes_solver.time_stepping,
+            navier_stokes_solver.get_parameters().output_frequency,
+            navier_stokes_solver.get_dof_handler_u().get_triangulation(),
+            data_out);
+        }
+      }
 
     // surface mesh
     if (use_auxiliary_surface_mesh)
@@ -909,34 +1492,62 @@ private:
     if (density_diff == 0.0 && viscosity_diff == 0.0)
       return; // nothing to do
 
-    double dummy;
+    if (!decoupled_meshes)
+      {
+        double dummy;
 
-    // TODO: select proper MatrixFree object and set right dof/quad index
-    level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
-      [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
-                                                LevelSetSolver<dim>::dof_index_ls,
-                                                LevelSetSolver<dim>::quad_index_vel);
+        // TODO: select proper MatrixFree object and set right dof/quad index
+        level_set_solver.get_matrix_free().template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &src, auto macro_cells) {
+            FEEvaluation<dim, -1, 0, 1, double> phi(matrix_free,
+                                                    LevelSetSolver<dim>::dof_index_ls,
+                                                    LevelSetSolver<dim>::quad_index_vel);
 
-        for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
-          {
-            phi.reinit(cell);
-            phi.gather_evaluate(src, EvaluationFlags::values);
-
-            for (unsigned int q = 0; q < phi.n_q_points; ++q)
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
               {
-                const auto indicator =
-                  (phi.get_value(q) + 1.0) / 2.0; // TODO: fix indicator -> Heaviside
+                phi.reinit(cell);
+                phi.gather_evaluate(src, EvaluationFlags::values);
 
-                navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
-                  density + density_diff * indicator;
-                navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
-                  viscosity + viscosity_diff * indicator;
+                for (unsigned int q = 0; q < phi.n_q_points; ++q)
+                  {
+                    const auto indicator =
+                      (phi.get_value(q) + 1.0) / 2.0; // TODO: fix indicator -> Heaviside
+
+                    navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
+                      density + density_diff * indicator;
+                    navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
+                      viscosity + viscosity_diff * indicator;
+                  }
               }
-          }
-      },
-      dummy,
-      level_set_solver.get_level_set_vector());
+          },
+          dummy,
+          level_set_solver.get_level_set_vector());
+      }
+    else
+      {
+        double dummy;
+
+        navier_stokes_solver.matrix_free->template cell_loop<double, VectorType>(
+          [&](const auto &matrix_free, auto &, const auto &, auto macro_cells) {
+            const unsigned int n_q_points =
+              matrix_free.get_quadrature(navier_stokes_solver.quad_index_u).size();
+
+            for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
+              {
+                for (unsigned int q = 0; q < n_q_points; ++q)
+                  {
+                    const auto indicator = level_set_values[n_q_points * cell + q];
+
+                    navier_stokes_solver.get_matrix().begin_densities(cell)[q] =
+                      density + density_diff * indicator;
+                    navier_stokes_solver.get_matrix().begin_viscosities(cell)[q] =
+                      viscosity + viscosity_diff * indicator;
+                  }
+              }
+          },
+          dummy,
+          dummy);
+      }
   }
 
   void
@@ -963,7 +1574,7 @@ private:
                                            level_set_solver.get_curvature_vector(),
                                            level_set_solver.get_level_set_vector(),
                                            navier_stokes_solver.user_rhs.block(0));
-    else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
+    else if (!use_auxiliary_surface_mesh && !use_sharp_interface && !decoupled_meshes)
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
                                        level_set_solver.get_level_set_vector(),
                                        level_set_solver.get_curvature_vector(),
@@ -972,6 +1583,13 @@ private:
                                        LevelSetSolver<dim>::dof_index_curvature,
                                        LevelSetSolver<dim>::dof_index_velocity,
                                        LevelSetSolver<dim>::quad_index_vel);
+    else if (!use_auxiliary_surface_mesh && !use_sharp_interface && decoupled_meshes)
+      compute_force_vector_regularized(*navier_stokes_solver.matrix_free,
+                                       level_set_gradients,
+                                       curvature_values,
+                                       navier_stokes_solver.user_rhs.block(0),
+                                       navier_stokes_solver.dof_index_u,
+                                       navier_stokes_solver.quad_index_u);
     else
       AssertThrow(false, ExcNotImplemented());
   }
@@ -1013,8 +1631,14 @@ private:
       zero_out);
   }
 
+
+  AlignedVector<VectorizedArray<double>>                 level_set_values;
+  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> level_set_gradients;
+  AlignedVector<VectorizedArray<double>>                 curvature_values;
+
   const bool use_auxiliary_surface_mesh;
   const bool use_sharp_interface;
+  const bool decoupled_meshes;
 
   // background mesh
   NavierStokes<dim> & navier_stokes_solver;

@@ -42,11 +42,12 @@ struct TwoPhaseParameters : public FlowParameters
     ParameterHandler prm;
     FlowParameters::declare_parameters(prm);
     prm.enter_subsection("Problem-specific");
-    prm.declare_entry("two-phase method",
-                      "front tracking",
-                      Patterns::Selection(
-                        "front tracking|mixed level set|sharp level set|level set"),
-                      "Defines the two-phase method to be used");
+    prm.declare_entry(
+      "two-phase method",
+      "front tracking",
+      Patterns::Selection(
+        "front tracking|mixed level set|sharp level set|level set|level set 2"),
+      "Defines the two-phase method to be used");
     prm.leave_subsection();
     check_for_file(parameter_filename, prm);
     parse_parameters(parameter_filename, prm);
@@ -57,6 +58,59 @@ struct TwoPhaseParameters : public FlowParameters
 
   std::string solver_method;
 };
+
+template <int dim>
+void
+create_annulus(Triangulation<dim> &tria, const unsigned int n_refinements)
+{
+  GridGenerator::hyper_cube(tria, -2.5, +2.5);
+
+  if (n_refinements == 0)
+    return;
+
+  for (int i = 0; i < static_cast<int>(n_refinements) - 5; i++)
+    tria.refine_global();
+
+  Point<dim> center;
+  for (unsigned int d = 0; d < dim; ++d)
+    center[d] = 0.02 + 0.01 * d;
+
+  const auto fu = [&]() {
+    for (auto cell : tria.active_cell_iterators())
+      if (cell->is_locally_owned())
+        {
+          bool p = false;
+          bool m = false;
+
+          for (const auto v : cell->vertex_indices())
+            {
+              if ((cell->vertex(v) - center).norm() < 0.5)
+                m = true;
+              if ((cell->vertex(v) - center).norm() >= 0.5)
+                p = true;
+            }
+
+          if (/*p &&*/ m)
+            cell->set_refine_flag();
+        }
+    tria.execute_coarsening_and_refinement();
+  };
+
+  if (n_refinements >= 1)
+    fu();
+
+  if (n_refinements >= 2)
+    fu();
+
+  if (n_refinements >= 3)
+    fu();
+
+  if (n_refinements >= 4)
+    fu();
+
+  if (n_refinements >= 5)
+    fu();
+}
 
 
 
@@ -97,6 +151,7 @@ private:
 
   TwoPhaseParameters                        parameters;
   parallel::distributed::Triangulation<dim> triangulation;
+  parallel::distributed::Triangulation<dim> triangulation_ls;
 };
 
 template <int dim>
@@ -106,16 +161,24 @@ MicroFluidicProblem<dim>::MicroFluidicProblem(const TwoPhaseParameters &paramete
   , timer(pcout, TimerOutput::summary, TimerOutput::cpu_and_wall_times)
   , parameters(parameters)
   , triangulation(mpi_communicator)
+  , triangulation_ls(mpi_communicator)
 {}
 
 template <int dim>
 void
 MicroFluidicProblem<dim>::run()
 {
-  GridGenerator::subdivided_hyper_cube(triangulation,
-                                       parameters.global_refinements,
-                                       -2.5,
-                                       2.5);
+  GridGenerator::hyper_cube(triangulation, -2.5, 2.5);
+
+  if (false)
+    {
+      GridGenerator::hyper_cube(triangulation_ls, -2.5, 2.5);
+      triangulation_ls.refine_global(parameters.global_refinements + 1);
+    }
+  else
+    {
+      create_annulus(triangulation_ls, parameters.global_refinements + 2);
+    }
 
   NavierStokes<dim> navier_stokes_solver(parameters, triangulation, &timer);
 
@@ -144,6 +207,10 @@ MicroFluidicProblem<dim>::run()
     solver = std::make_unique<MixedLevelSetSolver<dim>>(navier_stokes_solver,
                                                         InitialValuesLS<dim>(),
                                                         false);
+  else if (parameters.solver_method == "level set 2")
+    solver = std::make_unique<MixedLevelSetSolver<dim>>(navier_stokes_solver,
+                                                        triangulation_ls,
+                                                        InitialValuesLS<dim>());
   else
     AssertThrow(false, ExcNotImplemented());
 

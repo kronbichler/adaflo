@@ -16,7 +16,7 @@
 #
 # mpirun: 2
 subsection Problem-specific
-  set two-phase method = sharp level set
+  set two-phase method = level set 2
 end
 subsection Two phase
   set density              = 1.
@@ -31,7 +31,7 @@ subsection Two phase
   set localize surface tension = 1
   set curvature correction = 1
   set number reinit steps = 2
-  set number initial reinit steps = 0
+  set number initial reinit steps = 5
 end
 subsection Time stepping
   set scheme           = bdf_2
@@ -40,7 +40,7 @@ subsection Time stepping
 end
 subsection Navier-Stokes
   set dimension            = 2
-  set global refinements   = 80
+  set global refinements   = 4
   set adaptive refinements = 0
   set velocity degree      = 2
   subsection Solver

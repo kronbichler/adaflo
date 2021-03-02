@@ -231,7 +231,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       const Tensor<1, dim, VectorizedArray<double>> *velocities =
-        &evaluated_convection[cell * ls_values.n_q_points];
+        &evaluated_vel[cell * ls_values.n_q_points];
       ls_values.reinit(cell);
 
       ls_values.gather_evaluate(src, true, true);
@@ -313,23 +313,25 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
+      if (velocity_at_quadrature_points_given == false)
+        {
+          vel_values.reinit(cell);
+          vel_values_old.reinit(cell);
+          vel_values_old_old.reinit(cell);
+          vel_values.read_dof_values_plain(vel_solution);
+          vel_values_old.read_dof_values_plain(vel_solution_old);
+          vel_values_old_old.read_dof_values_plain(vel_solution_old_old);
+          vel_values.evaluate(true, false);
+          vel_values_old.evaluate(true, false);
+          vel_values_old_old.evaluate(true, false);
+        }
+
       ls_values.reinit(cell);
       ls_values_old.reinit(cell);
       ls_values_old_old.reinit(cell);
-      vel_values.reinit(cell);
-      vel_values_old.reinit(cell);
-      vel_values_old_old.reinit(cell);
-
-      vel_values.read_dof_values_plain(vel_solution);
-      vel_values_old.read_dof_values_plain(vel_solution_old);
-      vel_values_old_old.read_dof_values_plain(vel_solution_old_old);
       ls_values.read_dof_values_plain(this->solution);
       ls_values_old.read_dof_values_plain(this->solution_old);
       ls_values_old_old.read_dof_values_plain(this->solution_old_old);
-
-      vel_values.evaluate(true, false);
-      vel_values_old.evaluate(true, false);
-      vel_values_old_old.evaluate(true, false);
       ls_values.evaluate(true, true);
       ls_values_old.evaluate(true, true);
       ls_values_old_old.evaluate(true, true);
@@ -340,8 +342,14 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
           for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
             {
               // compute residual of concentration equation
-              const auto u =
-                (vel_values_old.get_value(q) + vel_values_old_old.get_value(q));
+              Tensor<1, dim, VectorizedArray<double>> u;
+
+              if (velocity_at_quadrature_points_given)
+                u = evaluated_vel_old[cell * ls_values.n_q_points + q] +
+                    evaluated_vel_old_old[cell * ls_values.n_q_points + q];
+              else
+                u = vel_values_old.get_value(q) + vel_values_old_old.get_value(q);
+
               vector_t dc_dt =
                 (ls_values_old.get_value(q) - ls_values_old_old.get_value(q)) /
                 this->time_stepping.old_step_size();
@@ -362,10 +370,13 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
         }
 
       Tensor<1, dim, VectorizedArray<double>> *velocities =
-        &evaluated_convection[cell * ls_values.n_q_points];
+        &evaluated_vel[cell * ls_values.n_q_points];
 
       for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
         {
+          if (velocity_at_quadrature_points_given == false)
+            velocities[q] = vel_values.get_value(q);
+
           // compute right hand side
           auto old_value = this->time_stepping.weight_old() * ls_values_old.get_value(q);
           if (this->time_stepping.scheme() == TimeSteppingParameters::Scheme::bdf_2 &&
@@ -375,11 +386,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
           const auto ls_val   = ls_values.get_value(q);
           const auto ls_grad  = ls_values.get_gradient(q);
           const auto residual = -(ls_val * this->time_stepping.weight() +
-                                  dot(vel_values.get_value(q), ls_grad) + old_value);
+                                  dot(velocities[q], ls_grad) + old_value);
           ls_values.submit_value(residual, q);
           if (this->parameters.convection_stabilization)
             ls_values.submit_gradient(-artificial_viscosities[cell] * ls_grad, q);
-          velocities[q] = vel_values.get_value(q);
         }
       ls_values.integrate_scatter(true, this->parameters.convection_stabilization, dst);
     }
@@ -505,11 +515,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
     global_omega_diameter =
       diameter_on_coarse_grid(matrix_free.get_dof_handler().get_triangulation());
 
-  if (evaluated_convection.size() !=
-      this->matrix_free.n_cell_batches() *
-        this->matrix_free.get_n_q_points(parameters.quad_index))
-    evaluated_convection.resize(this->matrix_free.n_cell_batches() *
-                                this->matrix_free.get_n_q_points(parameters.quad_index));
+  if (evaluated_vel.size() != this->matrix_free.n_cell_batches() *
+                                this->matrix_free.get_n_q_points(parameters.quad_index))
+    evaluated_vel.resize(this->matrix_free.n_cell_batches() *
+                         this->matrix_free.get_n_q_points(parameters.quad_index));
 
   const auto &mapping     = *this->matrix_free.get_mapping_info().mapping;
   const auto &dof_handler = this->matrix_free.get_dof_handler(parameters.dof_index_ls);
@@ -538,10 +547,24 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
   }
 
   // compute right hand side
-  global_max_velocity =
-    get_maximal_velocity(matrix_free.get_dof_handler(parameters.dof_index_vel),
-                         vel_solution,
-                         matrix_free.get_quadrature(parameters.quad_index));
+  if (velocity_at_quadrature_points_given == false)
+    global_max_velocity =
+      get_maximal_velocity(matrix_free.get_dof_handler(parameters.dof_index_vel),
+                           vel_solution,
+                           matrix_free.get_quadrature(parameters.quad_index));
+  else
+    {
+      global_max_velocity = 0;
+
+      for (const auto &i : evaluated_vel)
+        {
+          const auto ii = i.norm();
+
+          for (const auto &iii : ii)
+            global_max_velocity = std::max(iii, global_max_velocity);
+        }
+    }
+
   rhs = 0;
 
 #define OPERATION(c_degree, u_degree)                                     \
