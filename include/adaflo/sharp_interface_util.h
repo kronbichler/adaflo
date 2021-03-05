@@ -119,6 +119,7 @@ namespace dealii
           temp_dof_indices.resize(fe_eval.dofs_per_cell);
 
           cell->get_dof_indices(temp_dof_indices);
+          //HÄH?
           cell->get_dof_values(euler_coordinates_vector, temp);
 
           for (const auto q : fe_eval.quadrature_point_indices())
@@ -351,6 +352,7 @@ namespace dealii
                        std::vector<Point<dim>> &         vertices,
                        std::vector<::CellData<dim - 1>> &cells)
       {
+        // cases 0-15 (see wikipedia)
         unsigned int c = 0;
 
         for (unsigned int i = 0, scale = 1; i < 4; ++i, scale *= 2)
@@ -384,13 +386,18 @@ namespace dealii
 
         if (c == 5 || c == 10)
           {
+            // cases with two contour lines in cell
             Assert(false, ExcNotImplemented());
             return;
           }
 
         static const unsigned int X = -1;
-        // cases
-        // Question: What do numbers mean? line
+        // What do numbers mean? -> edge of square 
+        /*   ___3___
+            |       |
+            0       1
+            |___2___|
+        */
         std::array<std::array<unsigned int, 2>, 16> table{{
           {{X, X}},
           {{0, 2}},
@@ -609,9 +616,9 @@ compute_force_vector_sharp_interface(
       for (unsigned int q = 0; q < n_points; ++q)
         phi_normal_force.submit_value(JxW[q], q);
 
-      // integrate values with test function and store in buffer?
+      // integrate values with test function and store in buffer
       phi_normal_force.integrate(cell, unit_points, buffer, EvaluationFlags::values);
-      //local buffert into global force vector
+      //local buffer into global force vector
       constraints.distribute_local_to_global(buffer, local_dof_indices, force_vector);
     }
 }

@@ -29,6 +29,7 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 
+#include <adaflo/level_set_okz.h>
 #include <adaflo/level_set_okz_advance_concentration.h>
 #include <adaflo/level_set_okz_compute_curvature.h>
 #include <adaflo/level_set_okz_compute_normal.h>
@@ -309,7 +310,8 @@ public:
     // transform_distance_function
     for (unsigned int i = 0; i < ls_solution.local_size(); i++)
       ls_solution.local_element(i) =
-        -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
+        // -std::tanh(ls_solution.local_element(i) / (2.*0.001));
+         -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
 
     reinitialize(true);
 
@@ -399,7 +401,7 @@ private:
                                       this->parameters.n_initial_reinit_steps :
                                       this->parameters.n_reinit_steps;
     const unsigned int diff_steps = 0;
-
+    this->pcout << "routine reinitialize" << std::endl;
     reinit->reinitialize(dt, stab_steps, diff_steps, [this](const bool fast) {
       normal_operator->compute_normal(fast);
     });

@@ -96,6 +96,7 @@ template <int dim>
 void
 LevelSetOKZMatrixSolver<dim>::compute_force()
 {
+  this->pcout << "matrix solver" << std::endl;
   compute_heaviside();
   compute_curvature();
 

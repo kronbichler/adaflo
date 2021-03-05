@@ -412,6 +412,7 @@ template <int dim>
 void
 LevelSetOKZSolver<dim>::compute_force()
 {
+  this->pcout << "level set solver" << std::endl;
   compute_heaviside();
   compute_curvature();
 
