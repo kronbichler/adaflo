@@ -310,8 +310,8 @@ public:
     // transform_distance_function
     for (unsigned int i = 0; i < ls_solution.local_size(); i++)
       ls_solution.local_element(i) =
-        // -std::tanh(ls_solution.local_element(i) / (2.*0.001));
-         -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
+         -std::tanh(ls_solution.local_element(i) / (2.*0.01));
+        // -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
 
     reinitialize(true);
 
@@ -773,8 +773,8 @@ public:
     this->update_surface_tension();
   }
 
-  MixedLevelSetSolver(NavierStokes<dim> &  navier_stokes_solver,
-                      const Function<dim> &initial_values_ls,
+  MixedLevelSetSolver(NavierStokes<dim> &         navier_stokes_solver,
+                      const Function<dim>         &initial_values_ls,
                       const bool           use_sharp_interface = true)
     : use_auxiliary_surface_mesh(false)
     , use_sharp_interface(use_sharp_interface)
@@ -972,7 +972,10 @@ private:
                                            level_set_solver.get_normal_vector(),
                                            level_set_solver.get_curvature_vector(),
                                            level_set_solver.get_level_set_vector(),
-                                           navier_stokes_solver.user_rhs.block(0));
+                                           navier_stokes_solver.solution.block(1),
+                                           navier_stokes_solver.user_rhs.block(0),
+                                           navier_stokes_solver.get_parameters(),
+                                           level_set_solver.interp); //TOOD!
     // level set
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
@@ -1027,6 +1030,7 @@ private:
   const bool use_auxiliary_surface_mesh;
   const bool use_sharp_interface;
 
+  
   // background mesh
   NavierStokes<dim> & navier_stokes_solver;
   LevelSetSolver<dim> level_set_solver;

@@ -180,7 +180,7 @@ MicroFluidicProblem<dim>::evaluate_spurious_velocities(NavierStokes<dim> &navier
 
           if (ns_cell->center().norm() < 0.1)
             {
-              pcout << "ns_cell_center_norm" << ns_cell->center().norm() << std::endl;
+              //pcout << "ns_cell_center_norm" << ns_cell->center().norm() << std::endl;
               ns_values.get_function_values(navier_stokes_solver.solution.block(1), p_values);
               for (unsigned int q = 0; q < n_q_points; ++q)
                 {
@@ -271,6 +271,7 @@ MicroFluidicProblem<dim>::run()
   else
     AssertThrow(false, ExcNotImplemented());
 
+  pcout << "first output" << std::endl;
   solver->output_solution(parameters.output_filename);
 
   while (navier_stokes_solver.time_stepping.at_end() == false)

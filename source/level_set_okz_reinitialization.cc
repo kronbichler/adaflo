@@ -79,12 +79,13 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
       phi.evaluate(true, true, false);
 
       VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
-      /* VectorizedArray<double> diffusion =
+      VectorizedArray<double> diffusion =
         std::max(make_vectorized_array(this->epsilon_used),
                  cell_diameter / static_cast<double>(ls_degree));
-         */       
+      
+      // this is just for variation of epsilon        
       //this->pcout << "epsilon = " << epsilon_used << "  diffusion = " << diffusion << "\n" << std::endl;
-      VectorizedArray<double> diffusion = std::max(make_vectorized_array(this->epsilon_used), make_vectorized_array(this->epsilon_used));
+      //VectorizedArray<double> diffusion = std::max(make_vectorized_array(this->epsilon_used), make_vectorized_array(this->epsilon_used));
 
       
 
@@ -160,12 +161,12 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
       normals.evaluate(true, false, false);
 
       VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
-      VectorizedArray<double> diffusion = std::max(make_vectorized_array(this->epsilon_used),make_vectorized_array(this->epsilon_used));
-      /* VectorizedArray<double> diffusion = 
+      // this is just for variation of epsilon        
+     // VectorizedArray<double> diffusion = std::max(make_vectorized_array(this->epsilon_used),make_vectorized_array(this->epsilon_used));
+      VectorizedArray<double> diffusion = 
         std::max(make_vectorized_array(this->epsilon_used),
                  cell_diameter / static_cast<double>(ls_degree));
-         */        
-      // this->pcout << "epsilon= " << epsilon_used << "  h/ls_deg = " << cell_diameter / static_cast<double>(ls_degree) << "\n" << std::endl;
+               
 
       for (unsigned int q = 0; q < phi.n_q_points; ++q)
         if (!diffuse_only)
