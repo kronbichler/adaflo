@@ -20,6 +20,8 @@
 #include <deal.II/fe/fe_nothing.h>
 #include <deal.II/fe/fe_point_evaluation.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
+#include <deal.II/fe/fe_q_dg0.h>
+#include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/mapping_fe_field.h>
 
 #include <deal.II/grid/grid_tools_cache.h>
@@ -934,11 +936,12 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
                                      const BlockVectorType &    normal_vector_field,
                                      const VectorType &         curvature_solution,
                                      const VectorType &         ls_vector,
-                                     const VectorType &         pres_vector,
                                      VectorType &               force_vector,
-                                     const auto                 params,
-                                     //@Peter: this matrix, I don't know how to get
-                                     const auto   	            interpolation_matrix)
+                                     const FlowParameters &     params,
+                                     const FiniteElement<dim> & navier_stokes_getfep,
+                                     ConditionalOStream  &      pcout)
+                                     
+                                     
 {
   const unsigned int                        n_subdivisions = 3;
   GridGenerator::MarchingCubeAlgorithm<dim> mc(mapping,
@@ -952,20 +955,12 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
   FESystem<dim>               fe_dim(dof_handler.get_fe(), dim);
   FEPointEvaluation<dim, dim> phi_normal(mapping, fe_dim);
   FEPointEvaluation<dim, dim> phi_force(mapping, dof_handler_dim.get_fe());
-  // @Peter: I added this, to save the projected values of the ls in it
-  FEPointEvaluation<dim, dim> pre_val(mapping, dof_handler_dim.get_fe());
-  // @Peter: this were the variables in level_set_okz used, 
-  // but there are already all needed values, but in a different structure
-  //const unsigned int ls_degree = params.concentration_subdivisions;
-  //const unsigned int n_q_points = ls_degree == -1 ? 0 : (params.velocity_degree + 1);
-  //FEEvaluation<dim, ls_degree, n_q_points, 1> ls_values(data, 2, 0);
-  //FEEvaluation<dim, ls_degree == -1 ? -1 : (params.velocity_degree - 1), n_q_points, 1>
-  //  pre_values(ls_solver, 1, 0);
-  typedef VectorizedArray<double> vector_t;
-
+ 
   std::vector<double>                  buffer;
   std::vector<double>                  buffer_dim;
   std::vector<types::global_dof_index> local_dof_indices;
+
+  
 
   // loop over all cells
   for (const auto &cell : dof_handler.active_cell_iterators())
@@ -1057,35 +1052,12 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
 
       // evaluate normal
       phi_normal.evaluate(cell, unit_points, buffer_dim, EvaluationFlags::values);
-
-
-      // interpolate ls values onto pressure (from level_set_okz.cc)
-      // TODO: @Peter: It was not just copy and paste, therefore I'm not sure
-      // if I rearranged the data structure in the right way
-      if (params.interpolate_grad_onto_pressure)
-        {
-          for (unsigned int i = 0; i < dim; ++i)
-            {
-              vector_t projected_value = vector_t();
-              for (unsigned int c = 0; c < cell->get_fe().n_dofs_per_cell(); ++c)
-              // TODO: get the interpolation_concentration_pressure from level_set_base
-                projected_value += interpolation_matrix(i, c) *
-                                   ls_vector(c);
-              buffer_dim[fe_dim.component_to_system_index(i)] = projected_value;
-              
-            }
-           //evaluate projected values 
-          pre_val.evaluate(cell, unit_points, buffer_dim, EvaluationFlags::gradient);
-        }
       
       // quadrature loop
       for (unsigned int q = 0; q < n_points; ++q)
         {
           Assert(phi_normal.get_value(q).norm() > 0, ExcNotImplemented());
-          //const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
-          const auto normal = (params.interpolate_grad_onto_pressure ?
-               pre_val.get_gradients(q) :
-               phi_normal.get_value(q) / phi_normal.get_value(q).norm());
+          const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
           phi_force.submit_value(params.surface_tension *normal * phi_curvature.get_value(q) * JxW[q], q);
         }
 

@@ -46,6 +46,7 @@ class LevelSetSolver
 public:
   using VectorType      = LinearAlgebra::distributed::Vector<double>;
   using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
+  ConditionalOStream    pcout;
 
   static const unsigned int dof_index_ls        = 1;
   static const unsigned int dof_index_normal    = 2;
@@ -411,7 +412,7 @@ private:
     curvature_operator->compute_curvature(/*diffuse_large_values*/ false);
   }
 
-  ConditionalOStream    pcout;
+  //ConditionalOStream    pcout;
   const FlowParameters &parameters;
   const TimeStepping &  time_stepping;
 
@@ -972,10 +973,10 @@ private:
                                            level_set_solver.get_normal_vector(),
                                            level_set_solver.get_curvature_vector(),
                                            level_set_solver.get_level_set_vector(),
-                                           navier_stokes_solver.solution.block(1),
                                            navier_stokes_solver.user_rhs.block(0),
                                            navier_stokes_solver.get_parameters(),
-                                           level_set_solver.interp); //TOOD!
+                                           navier_stokes_solver.get_fe_p(),
+                                           level_set_solver.pcout); 
     // level set
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
