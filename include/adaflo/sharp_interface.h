@@ -954,6 +954,8 @@ private:
                                                 level_set_solver.get_normal_vector(),
                                                 level_set_solver.get_curvature_vector(),
                                                 navier_stokes_solver.user_rhs.block(0));
+
+    // marching cube algorithm
     else if (!use_auxiliary_surface_mesh && use_sharp_interface)
       compute_force_vector_sharp_interface(QGauss<dim - 1>(2 /*TODO*/),
                                            navier_stokes_solver.mapping,

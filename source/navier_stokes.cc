@@ -277,17 +277,19 @@ NavierStokes<dim>::initialize_data_structures()
                            "other boundary conditions on same boundary!"));
 
 
-  VectorTools::compute_no_normal_flux_constraints(dof_handler_u,
-                                                  0,
-                                                  this->boundary->symmetry,
-                                                  hanging_node_constraints_u,
-                                                  this->mapping);
-  VectorTools::compute_normal_flux_constraints(dof_handler_u,
-                                               0,
-                                               this->boundary->normal_flux,
-                                               hanging_node_constraints_u,
-                                               this->mapping);
-
+  if constexpr (dim > 1)
+    {
+      VectorTools::compute_no_normal_flux_constraints(dof_handler_u,
+                                                      0,
+                                                      this->boundary->symmetry,
+                                                      hanging_node_constraints_u,
+                                                      this->mapping);
+      VectorTools::compute_normal_flux_constraints(dof_handler_u,
+                                                   0,
+                                                   this->boundary->normal_flux,
+                                                   hanging_node_constraints_u,
+                                                   this->mapping);
+    }
   // Now generate the rest of the constraints for the velocity
   constraints_u.merge(hanging_node_constraints_u);
   {
@@ -1491,5 +1493,6 @@ NavierStokes<dim>::print_memory_consumption(std::ostream &stream) const
 
 
 // explicit instantiations
+template class NavierStokes<1>;
 template class NavierStokes<2>;
 template class NavierStokes<3>;

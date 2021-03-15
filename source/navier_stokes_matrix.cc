@@ -20,6 +20,7 @@
 #include <deal.II/matrix_free/fe_evaluation.h>
 
 #include <adaflo/navier_stokes_matrix.h>
+#include <adaflo/util.h>
 
 
 // TODO:
@@ -683,7 +684,7 @@ NavierStokesMatrix<dim>::local_operation(
 
       for (unsigned int q = 0; q < velocity.n_q_points; ++q)
         {
-          Tensor<2, dim, vector_t> grad_u     = velocity.get_gradient(q);
+          Tensor<2, dim, vector_t> grad_u     = convert_to_tensor<2,dim,vector_t>(velocity.get_gradient(q));
           vector_t                 divergence = trace(grad_u);
 
           if (parameters.physical_type != FlowParameters::stokes)
@@ -692,7 +693,7 @@ NavierStokesMatrix<dim>::local_operation(
               const vector_t rho = use_variable_coefficients ?
                                      rho_values[q] :
                                      make_vectorized_array<double>(parameters.density);
-              Tensor<1, dim, vector_t> val_u = velocity.get_value(q);
+              Tensor<1, dim, vector_t> val_u = convert_to_vector<dim, vector_t>(velocity.get_value(q));
 
               Tensor<1, dim, vector_t> conv = val_u * time_step_weight;
 
@@ -706,8 +707,8 @@ NavierStokesMatrix<dim>::local_operation(
                 {
                   if (parameters.physical_type !=
                       FlowParameters::incompressible_stationary)
-                    conv += old.get_value(q) * time_step_weight_old +
-                            old_old.get_value(q) * time_step_weight_old_old;
+                    conv += convert_to_vector<dim, vector_t>(old.get_value(q)) * time_step_weight_old +
+                            convert_to_vector<dim, vector_t>(old_old.get_value(q)) * time_step_weight_old_old;
 
                   // Also store the current velocity and velocity gradient (or
                   // divergence, depending on the linearization scheme). A
@@ -717,15 +718,15 @@ NavierStokesMatrix<dim>::local_operation(
                   // need to extrapolate those velocities.
                   if (need_extrapolated_velocity)
                     {
-                      Tensor<2, dim, vector_t> old_grad     = old.get_gradient(q);
-                      Tensor<2, dim, vector_t> old_old_grad = old_old.get_gradient(q);
+                      Tensor<2, dim, vector_t> old_grad     = convert_to_tensor<2,dim,vector_t>(old.get_gradient(q));
+                      Tensor<2, dim, vector_t> old_old_grad = convert_to_tensor<2,dim,vector_t>(old_old.get_gradient(q));
                       for (unsigned int d = 0; d < dim; ++d)
                         for (unsigned int e = 0; e < dim; ++e)
                           old_grad[d][e] = time_stepping->extrapolate(old_grad[d][e],
                                                                       old_old_grad[d][e]);
                       const vector_t           extrapol_divergence = trace(old_grad);
-                      Tensor<1, dim, vector_t> old_val             = old.get_value(q);
-                      Tensor<1, dim, vector_t> old_old_val         = old_old.get_value(q);
+                      Tensor<1, dim, vector_t> old_val             = convert_to_vector<dim,vector_t>(old.get_value(q));
+                      Tensor<1, dim, vector_t> old_old_val         = convert_to_vector<dim,vector_t>(old_old.get_value(q));
                       for (unsigned int d = 0; d < dim; ++d)
                         old_val[d] =
                           time_stepping->extrapolate(old_val[d], old_old_val[d]);
@@ -852,7 +853,10 @@ NavierStokesMatrix<dim>::local_operation(
                 grad_u[d][d] -= pres;
             }
 
-          velocity.submit_gradient(grad_u, q);
+          if constexpr (dim==1)
+            velocity.submit_gradient(grad_u[0], q);
+          else
+            velocity.submit_gradient(grad_u, q);
         }
 
       // finally, integrate velocity and pressure and increase pointers to
@@ -911,7 +915,10 @@ NavierStokesMatrix<dim>::local_divergence(
                  -mu_values[q]) :
               make_vectorized_array(-1.);
 
-          pressure.submit_value(weight * velocity.get_divergence(q), q);
+          if constexpr (dim==1)
+            pressure.submit_value(weight * velocity.get_gradient(q), q);
+          else
+            pressure.submit_value(weight * velocity.get_divergence(q), q);
         }
 
       pressure.integrate(true, false);
@@ -1161,5 +1168,6 @@ NavierStokesMatrix<dim>::get_matvec_statistics() const
 
 
 // explicit instantiations
+template class NavierStokesMatrix<1>;
 template class NavierStokesMatrix<2>;
 template class NavierStokesMatrix<3>;

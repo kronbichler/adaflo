@@ -2644,5 +2644,6 @@ NavierStokesPreconditioner<dim>::get_timer_statistics() const
 
 
 // explicit instantiations
+template class NavierStokesPreconditioner<1>;
 template class NavierStokesPreconditioner<2>;
 template class NavierStokesPreconditioner<3>;
