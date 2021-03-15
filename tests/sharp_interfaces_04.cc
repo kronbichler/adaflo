@@ -90,6 +90,8 @@ public:
   run();
 
 private:
+void
+  evaluate_spurious_velocities(NavierStokes<dim> &navier_stokes_solver);
   MPI_Comm           mpi_communicator;
   ConditionalOStream pcout;
 
@@ -97,6 +99,8 @@ private:
 
   TwoPhaseParameters                        parameters;
   parallel::distributed::Triangulation<dim> triangulation;
+
+  std::vector<std::vector<double>> solution_data;
 };
 
 template <int dim>
@@ -107,6 +111,123 @@ MicroFluidicProblem<dim>::MicroFluidicProblem(const TwoPhaseParameters &paramete
   , parameters(parameters)
   , triangulation(mpi_communicator)
 {}
+
+template <int dim>
+void
+MicroFluidicProblem<dim>::evaluate_spurious_velocities(NavierStokes<dim> &navier_stokes_solver)
+{
+  double               local_norm_velocity, norm_velocity;
+  const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 2);
+  const unsigned int   n_q_points = quadrature_formula.size();
+
+  const MPI_Comm &         mpi_communicator = triangulation.get_communicator();
+  FEValues<dim> fe_values(navier_stokes_solver.get_fe_u(), quadrature_formula, update_values);
+  std::vector<Tensor<1, dim>> velocity_values(n_q_points);
+  local_norm_velocity = 0;
+
+  const FEValuesExtractors::Vector velocities(0);
+
+  typename DoFHandler<dim>::active_cell_iterator
+    cell = navier_stokes_solver.get_dof_handler_u().begin_active(),
+    endc = navier_stokes_solver.get_dof_handler_u().end();
+  for (; cell != endc; ++cell)
+    if (cell->is_locally_owned())
+      {
+        fe_values.reinit(cell);
+        fe_values[velocities].get_function_values(navier_stokes_solver.solution.block(0),
+                                                  velocity_values);
+        for (unsigned int q = 0; q < n_q_points; ++q)
+          local_norm_velocity = std::max(local_norm_velocity, velocity_values[q].norm());
+      }
+  norm_velocity = Utilities::MPI::max(local_norm_velocity, mpi_communicator);
+
+  double pressure_jump = 0;
+  {
+    QGauss<dim>       quadrature_formula(parameters.velocity_degree + 1);
+    QGauss<dim - 1>   face_quadrature_formula(parameters.velocity_degree + 1);
+    FEValues<dim>     ns_values(navier_stokes_solver.get_fe_p(),
+                            quadrature_formula,
+                            update_values | update_JxW_values);
+    FEFaceValues<dim> fe_face_values(navier_stokes_solver.get_fe_p(),
+                                     face_quadrature_formula,
+                                     update_values | update_JxW_values);
+
+    const unsigned int n_q_points = quadrature_formula.size();
+
+    std::vector<double> p_values(n_q_points);
+    std::vector<double> p_face_values(face_quadrature_formula.size());
+
+    // With all this in place, we can go on with the loop over all cells and
+    // add the local contributions.
+    //
+    // The first thing to do is to evaluate the FE basis functions at the
+    // quadrature points of the cell, as well as derivatives and the other
+    // quantities specified above.  Moreover, we need to reset the local
+    // matrices and right hand side before filling them with new information
+    // from the current cell.
+    const FEValuesExtractors::Scalar p(dim);
+    double pressure_average = 0, one_average = 0, press_b = 0, one_b = 0;
+    typename DoFHandler<dim>::active_cell_iterator
+      endc    = navier_stokes_solver.get_dof_handler_p().end(),
+      ns_cell = navier_stokes_solver.get_dof_handler_p().begin_active();
+
+    for (; ns_cell != endc; ++ns_cell)
+      if (ns_cell->is_locally_owned())
+        {
+          ns_values.reinit(ns_cell);
+
+          if (ns_cell->center().norm() < 0.1)
+            {
+              //pcout << "ns_cell_center_norm" << ns_cell->center().norm() << std::endl;
+              ns_values.get_function_values(navier_stokes_solver.solution.block(1), p_values);
+              for (unsigned int q = 0; q < n_q_points; ++q)
+                {
+                  pressure_average += p_values[q] * ns_values.JxW(q);
+                  one_average += ns_values.JxW(q);
+                }
+               
+            }
+          for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
+            if (ns_cell->face(face)->at_boundary())
+              {
+                fe_face_values.reinit(ns_cell, face);
+                fe_face_values.get_function_values(navier_stokes_solver.solution.block(1),
+                                                   p_face_values);
+                for (unsigned int q = 0; q < face_quadrature_formula.size(); ++q)
+                  {
+                    press_b += p_face_values[q] * fe_face_values.JxW(q);
+                    one_b += fe_face_values.JxW(q);
+                  }
+              }
+        }
+
+    const double global_p_avg = Utilities::MPI::sum(pressure_average, mpi_communicator);
+    const double global_o_avg = Utilities::MPI::sum(one_average, mpi_communicator);
+    const double global_p_bou = Utilities::MPI::sum(press_b, mpi_communicator);
+    const double global_o_bou = Utilities::MPI::sum(one_b, mpi_communicator);
+    pressure_jump = ((global_p_avg / global_o_avg - global_p_bou / global_o_bou) -
+                     2. * (dim - 1) * parameters.surface_tension) /
+                    (2 * (dim - 1) * parameters.surface_tension) * 100.;
+    std::cout.precision(8);
+    //pcout << "  pressure_average:  " << pressure_average << "   one_average: " << one_average << std::endl;
+    //pcout << "  press_b:  " << press_b << "  one_b: " << one_b << std::endl;
+    pcout << "  Error in pressure jump: " << pressure_jump << " %" << std::endl;
+  }
+
+  // calculate spurious currents
+  pcout << "  Size spurious currents, absolute: " << norm_velocity << std::endl;
+
+  // TODO: Do I need this?
+  std::vector<double> data(3);
+  data[0] = navier_stokes_solver.time_stepping.now();
+  data[1] = norm_velocity;
+  data[2] = pressure_jump;
+  if (solution_data.size() && data[0] == solution_data.back()[0])
+    solution_data.back().insert(solution_data.back().end(), data.begin() + 1, data.end());
+  else
+    solution_data.push_back(data);
+}
+
 
 template <int dim>
 void
@@ -176,6 +297,9 @@ MicroFluidicProblem<dim>::run()
       solver->advance_time_step();
 
       solver->output_solution(parameters.output_filename);
+
+      // evaluate velocity norm and pressure jump
+      evaluate_spurious_velocities(navier_stokes_solver);
     }
 }
 
