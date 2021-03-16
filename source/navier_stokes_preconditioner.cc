@@ -490,7 +490,8 @@ public:
     if (coordinates.size() > 0 && coordinates[0].size() > 0)
       {
         parameter_list.set("x-coordinates", const_cast<double *>(&coordinates[0][0]));
-        parameter_list.set("y-coordinates", const_cast<double *>(&coordinates[1][0]));
+        if (coordinates.size() > 1)
+          parameter_list.set("y-coordinates", const_cast<double *>(&coordinates[1][0]));
         if (coordinates.size() > 2)
           parameter_list.set("z-coordinates", const_cast<double *>(&coordinates[2][0]));
       }
@@ -906,6 +907,7 @@ NavierStokesPreconditioner<dim>::compute()
     {
       if (uu_ilu_scalar.get() == 0)
         uu_ilu_scalar = std::make_shared<ComponentILUExtension<dim>>();
+
       uu_ilu_scalar->initialize(matrix_u, ilu_data, scalar_dof_indices);
     }
   else
@@ -1019,6 +1021,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
     Utilities::MPI::this_mpi_process(get_communicator(triangulation));
 
   integration_helper.set_local_ordering_u(fe_u);
+
   if (parameters.use_simplex_mesh == false)
     {
       integration_helper.initialize_linear_elements(fe_u, fe_p);
@@ -2509,37 +2512,70 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
   const FE_Q_DG0<dim> *fe_q_dg0 = dynamic_cast<const FE_Q_DG0<dim> *>(&fe);
   Assert(fe_q != 0 || fe_q_dg0 != 0, ExcNotImplemented());
   const unsigned int degree = fe.degree;
-  dof_to_lin.resize(Utilities::fixed_power<dim>(degree),
-                    std::vector<unsigned int>(n_dofs));
-  std::vector<unsigned int> lexicographic(fe.dofs_per_cell);
-  if (fe_q != 0)
-    lexicographic = fe_q->get_poly_space_numbering_inverse();
-  else if (fe_q_dg0 != 0)
-    lexicographic = fe_q_dg0->get_poly_space_numbering_inverse();
 
-  Assert(dim == 2 || dim == 3, ExcNotImplemented());
-  const unsigned int dofs_per_dim = degree + 1;
-  const unsigned int dofs_3d      = dim == 3 ? degree : 1;
-  const unsigned int expand_3d    = dim == 3 ? 2 : 1;
-  for (unsigned int elz = 0; elz < dofs_3d; ++elz)
-    for (unsigned int ely = 0; ely < degree; ++ely)
-      for (unsigned int elx = 0; elx < degree; ++elx)
+  if (dim == 2 || dim == 3)
+    {
+      dof_to_lin.resize(Utilities::fixed_power<dim>(degree),
+                        std::vector<unsigned int>(n_dofs));
+      std::vector<unsigned int> lexicographic(fe.dofs_per_cell);
+      if (fe_q != 0)
+        lexicographic = fe_q->get_poly_space_numbering_inverse();
+      else if (fe_q_dg0 != 0)
+        lexicographic = fe_q_dg0->get_poly_space_numbering_inverse();
+
+      const unsigned int dofs_per_dim = degree + 1;
+      const unsigned int dofs_3d      = dim == 3 ? degree : 1;
+      const unsigned int expand_3d    = dim == 3 ? 2 : 1;
+      for (unsigned int elz = 0; elz < dofs_3d; ++elz)
+        for (unsigned int ely = 0; ely < degree; ++ely)
+          for (unsigned int elx = 0; elx < degree; ++elx)
+            {
+              const unsigned int index = elx + ely * degree + elz * degree * degree;
+              const unsigned int start_index =
+                elx + ely * dofs_per_dim + elz * dofs_per_dim * dofs_per_dim;
+              for (unsigned int i = 0; i < expand_3d; ++i)
+                for (unsigned int j = 0; j < 2; ++j)
+                  for (unsigned int k = 0; k < 2; ++k)
+                    {
+                      const unsigned int ind       = k + j * 2 + i * 4;
+                      const unsigned int loc_index = start_index + k + j * dofs_per_dim +
+                                                     i * dofs_per_dim * dofs_per_dim;
+
+                      AssertIndexRange(loc_index, fe.dofs_per_cell);
+                      unsigned int dof_index = lexicographic[loc_index];
+
+                      dof_to_lin[index][ind] = dof_index;
+                    }
+            }
+    }
+  else if (dim == 1)
+    {
+      if (fe_q)
         {
-          const unsigned int index = elx + ely * degree + elz * degree * degree;
-          const unsigned int start_index =
-            elx + ely * dofs_per_dim + elz * dofs_per_dim * dofs_per_dim;
-          for (unsigned int i = 0; i < expand_3d; ++i)
-            for (unsigned int j = 0; j < 2; ++j)
-              for (unsigned int k = 0; k < 2; ++k)
-                {
-                  const unsigned int ind = k + j * 2 + i * 4;
-                  const unsigned int loc_index =
-                    start_index + k + j * dofs_per_dim + i * dofs_per_dim * dofs_per_dim;
-                  AssertIndexRange(loc_index, fe.dofs_per_cell);
-                  unsigned int dof_index = lexicographic[loc_index];
-                  dof_to_lin[index][ind] = dof_index;
-                }
+          auto lexicographic = fe_q->get_poly_space_numbering_inverse();
+          dof_to_lin.resize(degree, std::vector<unsigned int>(n_dofs));
+          // elx (degree=2)
+          //      (0)        (1)
+          // (*) ------ (*) ----- (*)
+
+          // loc_index (degree=2)
+          // (0) ------ (1) ----- (2)
+
+          // dof_index (=lexicographic) (degree=2)
+          // (0) ------ (2) ----- (1)
+
+          for (unsigned int elx = 0; elx < degree; ++elx)
+            for (unsigned int i = 0; i < 2; ++i)
+              {
+                unsigned int loc_index = elx + i;
+                dof_to_lin[elx][i]     = lexicographic[loc_index];
+              }
         }
+      else
+        AssertThrow(false, ExcNotImplemented());
+    }
+  else
+    AssertThrow(false, ExcNotImplemented());
 }
 
 
@@ -2550,31 +2586,73 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_quad(
   const unsigned int                      degree,
   std::vector<std::vector<unsigned int>> &quad_to_lin) const
 {
-  quad_to_lin.resize(Utilities::fixed_power<dim>(degree),
-                     std::vector<unsigned int>(n_dofs));
-  Assert(dim == 2 || dim == 3, ExcNotImplemented());
-  const unsigned int points_per_dim = 2 * degree;
-  const unsigned int points_3d      = dim == 3 ? degree : 1;
-  const unsigned int expand_3d      = dim == 3 ? 2 : 1;
-  for (unsigned int elz = 0; elz < points_3d; ++elz)
-    for (unsigned int ely = 0; ely < degree; ++ely)
-      for (unsigned int elx = 0; elx < degree; ++elx)
-        {
-          const unsigned int index = elx + ely * degree + elz * degree * degree;
-          const unsigned int start_index =
-            2 * (elx + ely * points_per_dim + elz * points_per_dim * points_per_dim);
-          for (unsigned int i = 0; i < expand_3d; ++i)
-            for (unsigned int j = 0; j < 2; ++j)
-              for (unsigned int k = 0; k < 2; ++k)
-                {
-                  const unsigned int ind       = k + j * 2 + i * 4;
-                  const unsigned int loc_index = start_index + k + j * points_per_dim +
-                                                 i * points_per_dim * points_per_dim;
-                  AssertIndexRange(loc_index,
-                                   Utilities::fixed_power<dim>(points_per_dim));
-                  quad_to_lin[index][ind] = loc_index;
-                }
-        }
+  if (dim == 2 || dim == 3)
+    {
+      // Example: dim = 2; degree = 2
+      //          * denotes quadrature points
+      //
+      //          cell 2     cell 3
+      //      +----------+----------+
+      //      |  *    *  |  *    *  |
+      //      | 12   13  | 14   15  |  numbers indicate quad idx
+      //      |  8    9  | 10   11  |
+      //      |  *    *  |  *    *  |
+      //      +----------+----------+
+      //      |  *    *  |  *    *  |
+      //      |  4    5  |  6    7  |
+      //      |  0    1  |  2    3  |
+      //      |  *    *  |  *    *  |
+      //      +----------+----------+
+      //         cell 0     cell 1
+      //
+      //      quad_to_lin[cell x][local quad idx] = quad_idx
+      //      quad_to_lin[0][0] = 0
+      //      quad_to_lin[0][1] = 1
+      //      quad_to_lin[0][2] = 4
+      //      quad_to_lin[0][3] = 5
+      //      quad_to_lin[1][0] = 2
+      //      .....             = ...
+      //      quad_to_lin[2][0] = 8
+      //      .....             = ...
+      //      quad_to_lin[3][0] = 10
+      //      .....             = ...
+
+      quad_to_lin.resize(Utilities::fixed_power<dim>(degree),
+                         std::vector<unsigned int>(n_dofs));
+
+      const unsigned int points_per_dim = 2 * degree;
+      const unsigned int points_3d      = dim == 3 ? degree : 1;
+      const unsigned int expand_3d      = dim == 3 ? 2 : 1;
+      for (unsigned int elz = 0; elz < points_3d; ++elz)
+        for (unsigned int ely = 0; ely < degree; ++ely)
+          for (unsigned int elx = 0; elx < degree; ++elx)
+            {
+              const unsigned int index = elx + ely * degree + elz * degree * degree;
+              const unsigned int start_index =
+                2 * (elx + ely * points_per_dim + elz * points_per_dim * points_per_dim);
+              for (unsigned int i = 0; i < expand_3d; ++i)
+                for (unsigned int j = 0; j < 2; ++j)
+                  for (unsigned int k = 0; k < 2; ++k)
+                    {
+                      const unsigned int ind       = k + j * 2 + i * 4;
+                      const unsigned int loc_index = start_index + k +
+                                                     j * points_per_dim +
+                                                     i * points_per_dim * points_per_dim;
+                      AssertIndexRange(loc_index,
+                                       Utilities::fixed_power<dim>(points_per_dim));
+                      quad_to_lin[index][ind] = loc_index;
+                    }
+            }
+    }
+  else if (dim == 1)
+    {
+      quad_to_lin.resize(degree, std::vector<unsigned int>(n_dofs));
+      for (unsigned int el = 0; el < degree; ++el)
+        for (unsigned int i = 0; i < 2; ++i)
+          quad_to_lin[el][i] = el * n_dofs + i;
+    }
+  else
+    AssertThrow(false, ExcNotImplemented());
 }
 
 
