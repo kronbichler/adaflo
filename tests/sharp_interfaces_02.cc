@@ -73,9 +73,9 @@ test()
 
   // Set up MappingFEField
   Vector<double> euler_vector(dof_handler_dim.n_dofs());
-  VectorTools::get_position_vector(dof_handler_dim,
-                                   euler_vector,
-                                   MappingQGeneric<dim, spacedim>(mapping_degree));
+  VectorTools::get_position_vector(MappingQGeneric<dim, spacedim>(mapping_degree),
+                                   dof_handler_dim,
+                                   euler_vector);
   MappingFEField<dim, spacedim> mapping(dof_handler_dim, euler_vector);
 
 
