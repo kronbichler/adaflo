@@ -2554,6 +2554,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
         {
           auto lexicographic = fe_q->get_poly_space_numbering_inverse();
           dof_to_lin.resize(degree, std::vector<unsigned int>(n_dofs));
+
           // elx (degree=2)
           //      (0)        (1)
           // (*) ------ (*) ----- (*)

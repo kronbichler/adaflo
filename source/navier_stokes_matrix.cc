@@ -847,7 +847,7 @@ NavierStokesMatrix<dim>::local_operation(
                 grad_u[0][1] = sym;
                 grad_u[1][0] = sym;
                 break;
-              case 1: // TODO??
+              case 1: // nothing todo
                 break;
               default:
                 Assert(false, ExcNotImplemented());
