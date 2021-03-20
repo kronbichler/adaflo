@@ -16,6 +16,7 @@
 #ifndef __adaflo_block_sharp_inteface_h
 #define __adaflo_block_sharp_inteface_h
 
+#include <deal.II/dofs/dof_renumbering.h>
 
 #include <deal.II/fe/fe_point_evaluation.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
@@ -225,6 +226,9 @@ public:
 
       const FESystem<dim> fe_dim(FE_Q<dim>(parameters.velocity_degree), dim);
       dof_handler_dim.distribute_dofs(fe_dim);
+
+      if (parameters.precondition_velocity == FlowParameters::u_ilu)
+        DoFRenumbering::Cuthill_McKee(dof_handler_dim, false, false);
 
       const QIterated<dim> quad(QGauss<1>(2), fe.degree);
       const QGauss<dim>    quad_vel(parameters.velocity_degree + 1);
@@ -943,35 +947,40 @@ private:
   update_surface_tension()
   {
     if (use_auxiliary_surface_mesh && use_sharp_interface)
-      compute_force_vector_sharp_interface<dim>(euler_dofhandler.get_triangulation(),
-                                                *euler_mapping,
-                                                euler_dofhandler.get_fe().base_element(0),
-                                                QGauss<dim - 1>(
-                                                  euler_dofhandler.get_fe().degree + 1),
-                                                navier_stokes_solver.mapping,
-                                                level_set_solver.get_dof_handler(),
-                                                navier_stokes_solver.get_dof_handler_u(),
-                                                level_set_solver.get_normal_vector(),
-                                                level_set_solver.get_curvature_vector(),
-                                                navier_stokes_solver.user_rhs.block(0));
+      compute_force_vector_sharp_interface<dim>(
+        euler_dofhandler.get_triangulation(),
+        *euler_mapping,
+        euler_dofhandler.get_fe().base_element(0),
+        QGauss<dim - 1>(euler_dofhandler.get_fe().degree + 1),
+        navier_stokes_solver.mapping,
+        level_set_solver.get_dof_handler(),
+        navier_stokes_solver.get_dof_handler_u(),
+        level_set_solver.get_normal_vector(),
+        level_set_solver.get_curvature_vector(),
+        navier_stokes_solver.get_parameters().surface_tension,
+        navier_stokes_solver.user_rhs.block(0));
     else if (!use_auxiliary_surface_mesh && use_sharp_interface)
-      compute_force_vector_sharp_interface(QGauss<dim - 1>(2 /*TODO*/),
-                                           navier_stokes_solver.mapping,
-                                           level_set_solver.get_dof_handler(),
-                                           navier_stokes_solver.get_dof_handler_u(),
-                                           level_set_solver.get_normal_vector(),
-                                           level_set_solver.get_curvature_vector(),
-                                           level_set_solver.get_level_set_vector(),
-                                           navier_stokes_solver.user_rhs.block(0));
+      compute_force_vector_sharp_interface(
+        QGauss<dim - 1>(2 /*TODO*/),
+        navier_stokes_solver.mapping,
+        level_set_solver.get_dof_handler(),
+        navier_stokes_solver.get_dof_handler_u(),
+        level_set_solver.get_normal_vector(),
+        level_set_solver.get_curvature_vector(),
+        level_set_solver.get_level_set_vector(),
+        navier_stokes_solver.get_parameters().surface_tension,
+        navier_stokes_solver.user_rhs.block(0));
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
-      compute_force_vector_regularized(level_set_solver.get_matrix_free(),
-                                       level_set_solver.get_level_set_vector(),
-                                       level_set_solver.get_curvature_vector(),
-                                       navier_stokes_solver.user_rhs.block(0),
-                                       LevelSetSolver<dim>::dof_index_ls,
-                                       LevelSetSolver<dim>::dof_index_curvature,
-                                       LevelSetSolver<dim>::dof_index_velocity,
-                                       LevelSetSolver<dim>::quad_index_vel);
+      compute_force_vector_regularized(
+        level_set_solver.get_matrix_free(),
+        level_set_solver.get_level_set_vector(),
+        level_set_solver.get_curvature_vector(),
+        navier_stokes_solver.user_rhs.block(0),
+        LevelSetSolver<dim>::dof_index_ls,
+        LevelSetSolver<dim>::dof_index_curvature,
+        LevelSetSolver<dim>::dof_index_velocity,
+        LevelSetSolver<dim>::quad_index_vel,
+        navier_stokes_solver.get_parameters().surface_tension);
     else
       AssertThrow(false, ExcNotImplemented());
   }
@@ -988,7 +997,9 @@ private:
 
     navier_stokes_solver.matrix_free->template cell_loop<VectorType, std::nullptr_t>(
       [&](const auto &matrix_free, auto &vec, const auto &, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, dim, double> phi(matrix_free, 0, 0);
+        FEEvaluation<dim, -1, 0, dim, double> phi(matrix_free,
+                                                  LevelSetSolver<dim>::dof_index_velocity,
+                                                  LevelSetSolver<dim>::quad_index_vel);
 
         for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
           {
