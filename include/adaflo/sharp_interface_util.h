@@ -524,6 +524,9 @@ collect_integration_points(
 
 
 
+/**
+ * Compute force vector for sharp-interface method (front tracking).
+ */
 template <int dim, int spacedim, typename VectorType>
 void
 compute_force_vector_sharp_interface(
@@ -803,6 +806,9 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 
 
 
+/**
+ * Compute force vector for sharp-interface method (mixed level set).
+ */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_mesh,
@@ -812,9 +818,9 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
                                      const Mapping<dim> &               mapping,
                                      const DoFHandler<dim> &            dof_handler,
                                      const DoFHandler<dim> &            dof_handler_dim,
+                                     const double                       surface_tension,
                                      const BlockVectorType &normal_vector_field,
                                      const VectorType &     curvature_solution,
-                                     const double           surface_tension,
                                      VectorType &           force_vector)
 {
   // step 1) collect all locally-relevant surface quadrature points (cell,
@@ -916,16 +922,19 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
 
 
 
+/**
+ * Compute force vector for sharp-interface method (marching-cube algorithm).
+ */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
                                      const Mapping<dim> &       mapping,
                                      const DoFHandler<dim> &    dof_handler,
                                      const DoFHandler<dim> &    dof_handler_dim,
+                                     const double               surface_tension,
                                      const BlockVectorType &    normal_vector_field,
                                      const VectorType &         curvature_solution,
                                      const VectorType &         ls_vector,
-                                     const double               surface_tension,
                                      VectorType &               force_vector)
 {
   const unsigned int                        n_subdivisions = 3;
@@ -1060,12 +1069,12 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
 
 
 
-template <int dim, typename VectorType1>
+template <int dim, typename VectorType1, typename VectorType2>
 void
 compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
                                  const VectorType1 &            ls_solution,
                                  const VectorType1 &            curvature_solution,
-                                 VectorType1 &                  force_rhs,
+                                 VectorType2 &                  force_rhs,
                                  const unsigned int             dof_index_ls,
                                  const unsigned int             dof_index_curvature,
                                  const unsigned int             dof_index_normal,
@@ -1080,7 +1089,7 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
   level_set_as_heaviside.add(1.0);
   level_set_as_heaviside *= 0.5;
 
-  matrix_free.template cell_loop<VectorType1, VectorType1>(
+  matrix_free.template cell_loop<VectorType2, VectorType1>(
     [&](const auto &matrix_free,
         auto &      force_rhs,
         const auto &level_set_as_heaviside,
