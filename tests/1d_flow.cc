@@ -21,9 +21,6 @@
 #include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/utilities.h>
 
-#include <deal.II/distributed/grid_refinement.h>
-#include <deal.II/distributed/tria.h>
-
 #include <deal.II/dofs/dof_tools.h>
 
 #include <deal.II/fe/fe_q.h>
@@ -51,21 +48,33 @@
 
 using namespace dealii;
 
+/**
+ * Simple test case for 1d Navier-Stokes
+ *
+ *
+ * velocity(t=0) = 2
+ *                             L=2.5
+ * (pressure=2) +-------------------------------+ (p=1)
+ *              |--> x
+ *
+ */
+
+
 template <int dim>
 class InflowVelocity : public Function<dim>
 {
 public:
-  InflowVelocity(const double time)
+  InflowVelocity()
     : Function<dim>()
   {}
 
   double
   value(const Point<dim> &p, const unsigned int component = 0) const override
   {
-    const double time = this->get_time();
+    (void)p;
+    (void)component;
     if constexpr (dim == 1)
-      return (2 - p[0] / 2.5);
-    // return (2-p[0]/2.5)*(1+time);
+      return 2.0;
     else
       AssertThrow(false, ExcMessage("Advection field for dim!=1 not implemented"));
   }
@@ -81,8 +90,6 @@ public:
   run();
 
 private:
-  void
-  compute_statistics() const;
   void
   output_results() const;
 
@@ -101,19 +108,6 @@ ChannelFlow<dim>::ChannelFlow(const FlowParameters &parameters)
   , navier_stokes(parameters, triangulation, &timer)
 {}
 
-
-
-template <int dim>
-void
-ChannelFlow<dim>::compute_statistics() const
-{
-  timer.enter_subsection("Compute statistics.");
-
-  timer.leave_subsection();
-}
-
-
-
 template <int dim>
 void
 ChannelFlow<dim>::output_results() const
@@ -130,23 +124,19 @@ template <int dim>
 void
 create_triangulation(Triangulation<dim> &tria)
 {
-  if (dim == 1)
-    {
-      GridGenerator::hyper_rectangle(tria, Point<dim>(0.0), Point<dim>(2.5));
-      tria.refine_global(10);
+  AssertThrow(dim == 1, ExcNotImplemented());
+  GridGenerator::hyper_rectangle(tria, Point<dim>(0.0), Point<dim>(2.5));
+  tria.refine_global(10);
 
-      for (auto &cell : tria.cell_iterators())
-        for (auto &face : cell->face_iterators())
-          if ((face->at_boundary()))
-            {
-              if (face->center()[0] == 0)
-                face->set_boundary_id(0);
-              else if (face->center()[0] == 2.5)
-                face->set_boundary_id(1);
-            }
-    }
-  else
-    AssertThrow(false, ExcNotImplemented());
+  for (auto &cell : tria.cell_iterators())
+    for (auto &face : cell->face_iterators())
+      if ((face->at_boundary()))
+        {
+          if (face->center()[0] == 0)
+            face->set_boundary_id(0);
+          else if (face->center()[0] == 2.5)
+            face->set_boundary_id(1);
+        }
 }
 
 
@@ -156,30 +146,21 @@ void
 ChannelFlow<dim>::run()
 {
   timer.enter_subsection("Setup grid and initial condition.");
-  pcout << "Running a " << dim << "D flow past a cylinder "
+  pcout << "Running a " << dim << "D flow "
         << "using " << navier_stokes.time_stepping.name() << ", Q"
         << navier_stokes.get_fe_u().degree << "/Q" << navier_stokes.get_fe_p().degree
         << " elements" << std::endl;
 
   create_triangulation(triangulation);
 
-  // set boundary conditions
-  navier_stokes.set_velocity_dirichlet_boundary(
-    0, std::make_shared<InflowVelocity<dim>>(2.));
-  // navier_stokes.set_open_boundary(1, std::make_shared<Functions::ZeroFunction<dim>>());
-  navier_stokes.set_velocity_dirichlet_boundary(
-    1, std::make_shared<InflowVelocity<dim>>(1.));
-  // navier_stokes.set_no_slip_boundary(1);
-  navier_stokes.fix_pressure_constant(
+  navier_stokes.set_open_boundary_with_normal_flux(
     0, std::make_shared<Functions::ConstantFunction<dim>>(2));
-  // navier_stokes.set_open_boundary_with_normal_flux(1,
-  // std::make_shared<Functions::ZeroFunction<dim>>());
-  // navier_stokes.set_open_boundary_with_normal_flux(0,
-  // std::make_shared<Functions::ConstantFunction<dim>>(2));
+  navier_stokes.set_open_boundary_with_normal_flux(
+    1, std::make_shared<Functions::ConstantFunction<dim>>(1));
 
   timer.leave_subsection();
 
-  navier_stokes.setup_problem(InflowVelocity<dim>(0.));
+  navier_stokes.setup_problem(InflowVelocity<dim>());
   navier_stokes.print_n_dofs();
 
   output_results();
@@ -187,7 +168,6 @@ ChannelFlow<dim>::run()
   while (navier_stokes.time_stepping.at_end() == false)
     {
       navier_stokes.advance_time_step();
-      compute_statistics();
       if (navier_stokes.time_stepping.at_tick(
             navier_stokes.get_parameters().output_frequency))
         output_results();
@@ -198,12 +178,7 @@ ChannelFlow<dim>::run()
     output_results();
 }
 
-
-
 /* ----------------------------------------------------------------------- */
-
-
-
 /* ----------------------------------------------------------------------- */
 
 int
@@ -216,7 +191,6 @@ main(int argc, char **argv)
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc,
                                                           argv,
                                                           numbers::invalid_unsigned_int);
-      // AssertDimension(Utilities::MPI::n_mpi_processes(this->mpi_communicator), 1);
       deallog.depth_console(0);
 
       std::string paramfile;
@@ -233,7 +207,7 @@ main(int argc, char **argv)
         }
       else
         {
-          AssertThrow(false, ExcMessage("Invalid dimension"));
+          AssertThrow(false, ExcMessage("Invalid dimension. Only 1D supported."));
         }
     }
   catch (std::exception &exc)

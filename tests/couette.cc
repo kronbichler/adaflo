@@ -49,69 +49,6 @@
 
 using namespace dealii;
 
-
-
-// @sect4{Exact Solution}
-
-template <int dim>
-class ExactSolutionU : public Function<dim>
-{
-public:
-  ExactSolutionU(const double viscosity = 1., const double time = 0.)
-    : Function<dim>(dim, time)
-    , nu(viscosity)
-  {}
-
-  virtual void
-  vector_value(const Point<dim> &p, Vector<double> &values) const;
-
-private:
-  const double nu;
-};
-
-template <int dim>
-void
-ExactSolutionU<dim>::vector_value(const Point<dim> &p, Vector<double> &values) const
-{
-  AssertDimension(values.size(), dim);
-
-  // exact solution for channel flow in time-dependent setting is
-  // approximately computed from an ODE of the form ds/dt + nu s - 1 = 0
-  // with initial condition s(0) = 0, which gives the x-velocity of the form
-  // u(x,y,t) = s(t) * (1-y)*(1+y) assuming a quadratic profile. But the
-  // profile will only be quadratic in the steady state, so only use it for
-  // the steady state
-  // const double time = this->get_time();
-
-  values(0) = 0.5 / nu * (1 - p[1]) * (1 + p[1]);
-  for (unsigned int d = 1; d < dim; ++d)
-    values(d) = 0;
-}
-
-
-
-template <int dim>
-class ExactSolutionP : public Function<dim>
-{
-public:
-  ExactSolutionP()
-    : Function<dim>(1, 0)
-  {}
-
-  virtual double
-  value(const Point<dim> &p, const unsigned int) const;
-};
-
-template <int dim>
-double
-ExactSolutionP<dim>::value(const Point<dim> &p, const unsigned int) const
-{
-  return 2 - p[0];
-}
-
-
-
-// @sect3{The <code>Beltramiproblem</code> class template}
 template <int dim>
 class CouetteProblem
 {
@@ -133,8 +70,6 @@ private:
   parallel::distributed::Triangulation<dim> triangulation;
   NavierStokes<dim>                         navier_stokes;
   const double                              nu;
-
-  const unsigned int output_timestep_skip;
 };
 
 
@@ -146,7 +81,6 @@ CouetteProblem<dim>::CouetteProblem(const FlowParameters &parameters)
   , triangulation(MPI_COMM_WORLD)
   , navier_stokes(parameters, triangulation, &timer)
   , nu(parameters.viscosity)
-  , output_timestep_skip(4)
 {}
 
 
@@ -155,12 +89,6 @@ template <int dim>
 void
 CouetteProblem<dim>::output_results() const
 {
-  ExactSolutionU<dim> exact(nu, navier_stokes.time_stepping.now());
-  Vector<double>      values(dim);
-  exact.vector_value(Point<dim>(), values);
-
-  pcout << "  Maximum velocity now: " << values[0] << std::endl;
-
   navier_stokes.output_solution(navier_stokes.get_parameters().output_filename);
 }
 
@@ -171,7 +99,7 @@ void
 CouetteProblem<dim>::run()
 {
   timer.enter_subsection("Setup grid and initial condition.");
-  pcout << "Running a " << dim << "D channel flow problem "
+  pcout << "Running a " << dim << "D Couette problem "
         << "using " << navier_stokes.time_stepping.name() << ", Q"
         << navier_stokes.get_fe_u().degree << "/Q" << navier_stokes.get_fe_p().degree
         << " elements" << std::endl;
@@ -220,22 +148,15 @@ CouetteProblem<dim>::run()
   navier_stokes.print_n_dofs();
   output_results();
 
-  // @sect5{Time loop}
   if (navier_stokes.get_parameters().physical_type == FlowParameters::incompressible)
     while (navier_stokes.time_stepping.at_end() == false)
       {
         navier_stokes.advance_time_step();
-
-        // We check whether we are at a time step where to save the current
-        // solution to a file.
-        if (navier_stokes.time_stepping.step_no() % output_timestep_skip == 0)
-          output_results();
+        output_results();
       }
   else
     navier_stokes.advance_time_step();
 }
-
-
 
 /* ----------------------------------------------------------------------- */
 
@@ -248,14 +169,6 @@ CouetteProblem<dim>::run()
 int
 main(int argc, char **argv)
 {
-  /* we initialize MPI at the start of the program. Since we will in general mix
-   * MPI parallelization with threads, we also set the third argument in MPI_InitFinalize
-   * that controls the number of threads to an invalid number, which means that the TBB
-   * library chooses the number of threads automatically, typically to the number of
-   * available cores in the system. As an alternative, you can also set this number
-   * manually if you want to set a specific number of threads (e.g. when MPI-only is
-   * required)  (cf step-40 and 48).
-   */
   try
     {
       using namespace dealii;

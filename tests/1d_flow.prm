@@ -16,14 +16,14 @@
 subsection Time stepping
   set scheme           = bdf_2
   set end time         = 1
-  set step size        = 0.001
+  set step size        = 0.01
 end
 subsection Navier-Stokes
   set physical type      = incompressible
   set dimension          = 1
   set velocity degree    = 2
-  set density            = 0.0
-  set viscosity          = 1.0
+  set density            = 1.0
+  set viscosity          = 0.01
   subsection Solver
     set linearization scheme         = coupled implicit Newton
     set NL max iterations            = 10
