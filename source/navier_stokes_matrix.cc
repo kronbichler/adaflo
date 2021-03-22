@@ -863,10 +863,7 @@ NavierStokesMatrix<dim>::local_operation(
                 grad_u[d][d] -= pres;
             }
 
-          if constexpr (dim == 1)
-            velocity.submit_gradient(grad_u[0], q);
-          else
-            velocity.submit_gradient(grad_u, q);
+          velocity.submit_gradient(grad_u, q);
         }
 
       // finally, integrate velocity and pressure and increase pointers to
@@ -925,10 +922,7 @@ NavierStokesMatrix<dim>::local_divergence(
                  -mu_values[q]) :
               make_vectorized_array(-1.);
 
-          if constexpr (dim == 1)
-            pressure.submit_value(weight * velocity.get_gradient(q), q);
-          else
-            pressure.submit_value(weight * velocity.get_divergence(q), q);
+          pressure.submit_value(weight * velocity.get_divergence(q), q);
         }
 
       pressure.integrate(true, false);

@@ -137,10 +137,9 @@ template <int dim, typename VectorizedArrayType = VectorizedArray<double>>
 static Tensor<1, dim, VectorizedArrayType>
 convert_to_vector(const VectorizedArrayType &in)
 {
-  AssertThrow(dim == 1, ExcMessage("This operation is not permitted for dim>1."))
+  Assert(dim == 1, ExcMessage("This operation is not permitted for dim>1."));
 
-    Tensor<1, dim, VectorizedArrayType>
-      vec;
+  Tensor<1, dim, VectorizedArrayType> vec;
 
   for (unsigned int v = 0; v < VectorizedArrayType::size(); ++v)
     vec[0][v] = in[v];
@@ -168,17 +167,18 @@ template <int rank_, int dim, typename VectorizedArrayType = VectorizedArray<dou
 static Tensor<rank_, dim, VectorizedArrayType>
 convert_to_tensor(const Tensor<rank_ - 1, dim, VectorizedArrayType> &in)
 {
-  AssertThrow(dim == 1, ExcMessage("This operation is not permitted for dim>1."))
+  Assert(dim == 1, ExcMessage("This operation is not permitted for dim>1."));
 
-    if (rank_ == 2)
-  {
-    Tensor<2, dim, VectorizedArrayType> tens;
+  if (rank_ == 2)
+    {
+      Tensor<2, dim, VectorizedArrayType> tens;
 
-    for (unsigned int v = 0; v < VectorizedArrayType::size(); ++v)
-      tens[0][0][v] = in[0][v];
-    return tens;
-  }
-  else AssertThrow(false, ExcNotImplemented());
+      for (unsigned int v = 0; v < VectorizedArrayType::size(); ++v)
+        tens[0][0][v] = in[0][v];
+      return tens;
+    }
+  else
+    AssertThrow(false, ExcNotImplemented());
 }
 
 /**
