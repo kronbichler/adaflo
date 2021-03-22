@@ -141,8 +141,7 @@ convert_to_vector(const VectorizedArrayType &in)
 
   Tensor<1, dim, VectorizedArrayType> vec;
 
-  for (unsigned int v = 0; v < VectorizedArrayType::size(); ++v)
-    vec[0][v] = in[v];
+  vec[0] = in;
 
   return vec;
 }
@@ -173,12 +172,13 @@ convert_to_tensor(const Tensor<rank_ - 1, dim, VectorizedArrayType> &in)
     {
       Tensor<2, dim, VectorizedArrayType> tens;
 
-      for (unsigned int v = 0; v < VectorizedArrayType::size(); ++v)
-        tens[0][0][v] = in[0][v];
-      return tens;
-    }
+    tens[0][0] = in[0];
+    return tens;
+  }
   else
-    AssertThrow(false, ExcNotImplemented());
+  {
+    Assert(false, ExcNotImplemented());
+  }
 }
 
 /**

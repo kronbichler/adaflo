@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2011 - 2016 by the adaflo authors
+// Copyright (C) 2021 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -98,6 +98,8 @@ template <int dim>
 void
 CouetteProblem<dim>::run()
 {
+  AssertDimension(dim, 2);
+
   timer.enter_subsection("Setup grid and initial condition.");
   pcout << "Running a " << dim << "D Couette problem "
         << "using " << navier_stokes.time_stepping.name() << ", Q"
@@ -117,19 +119,14 @@ CouetteProblem<dim>::run()
 
   // no need to check for owned cells here: on level 0 everything is locally
   // owned
-  for (typename Triangulation<dim>::active_cell_iterator it = triangulation.begin();
-       it != triangulation.end();
-       ++it)
-    for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-      if (it->face(face)->at_boundary() &&
-          std::abs(it->face(face)->center()[0] - 2) < 1e-13)
-        it->face(face)->set_boundary_id(1); // left
-      else if (it->face(face)->at_boundary() &&
-               std::abs(it->face(face)->center()[0] + 2) < 1e-13)
-        it->face(face)->set_boundary_id(2); // right
-      else if (it->face(face)->at_boundary() &&
-               std::abs(it->face(face)->center()[1]) < 1e-13)
-        it->face(face)->set_boundary_id(3); // top
+  for (const auto &cell : triangulation.active_cell_iterators())
+    for (const auto &face : cell->face_iterators())
+      if (face->at_boundary() && std::abs(face->center()[0] - 2) < 1e-13)
+        face->set_boundary_id(1); // left
+      else if (face->at_boundary() && std::abs(face->center()[0] + 2) < 1e-13)
+        face->set_boundary_id(2); // right
+      else if (face->at_boundary() && std::abs(face->center()[1]) < 1e-13)
+        face->set_boundary_id(3); // top
 
 
   navier_stokes.set_no_slip_boundary(0);
@@ -157,12 +154,6 @@ CouetteProblem<dim>::run()
   else
     navier_stokes.advance_time_step();
 }
-
-/* ----------------------------------------------------------------------- */
-
-
-
-/* ----------------------------------------------------------------------- */
 
 
 

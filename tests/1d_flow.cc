@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Copyright (C) 2014 - 2016 by the adaflo authors
+// Copyright (C) 2021 by the adaflo authors
 //
 // This file is part of the adaflo library.
 //
@@ -107,7 +107,7 @@ create_triangulation(Triangulation<dim> &tria)
   GridGenerator::hyper_rectangle(tria, Point<dim>(0.0), Point<dim>(2.5));
   tria.refine_global(10);
 
-  for (auto &cell : tria.cell_iterators())
+  for (const auto &cell : tria.cell_iterators())
     for (auto &face : cell->face_iterators())
       if (face->at_boundary())
         {
@@ -157,8 +157,7 @@ ChannelFlow<dim>::run()
     output_results();
 }
 
-/* ----------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------- */
+
 
 int
 main(int argc, char **argv)
@@ -171,6 +170,8 @@ main(int argc, char **argv)
                                                           argv,
                                                           numbers::invalid_unsigned_int);
       deallog.depth_console(0);
+
+      AssertDimension(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 1);
 
       std::string paramfile;
       if (argc > 1)
