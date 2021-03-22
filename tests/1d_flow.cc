@@ -61,27 +61,6 @@ using namespace dealii;
 
 
 template <int dim>
-class InflowVelocity : public Function<dim>
-{
-public:
-  InflowVelocity()
-    : Function<dim>()
-  {}
-
-  double
-  value(const Point<dim> &p, const unsigned int component = 0) const override
-  {
-    (void)p;
-    (void)component;
-    if constexpr (dim == 1)
-      return 2.0;
-    else
-      AssertThrow(false, ExcMessage("Advection field for dim!=1 not implemented"));
-  }
-};
-
-
-template <int dim>
 class ChannelFlow
 {
 public:
@@ -130,11 +109,11 @@ create_triangulation(Triangulation<dim> &tria)
 
   for (auto &cell : tria.cell_iterators())
     for (auto &face : cell->face_iterators())
-      if ((face->at_boundary()))
+      if (face->at_boundary())
         {
-          if (face->center()[0] == 0)
+          if (std::abs(face->center()[0]) < 1e-12)
             face->set_boundary_id(0);
-          else if (face->center()[0] == 2.5)
+          else if (std::abs(face->center()[0] - 2.5) < 1e-12)
             face->set_boundary_id(1);
         }
 }
@@ -160,7 +139,7 @@ ChannelFlow<dim>::run()
 
   timer.leave_subsection();
 
-  navier_stokes.setup_problem(InflowVelocity<dim>());
+  navier_stokes.setup_problem(Functions::ConstantFunction<dim>(2));
   navier_stokes.print_n_dofs();
 
   output_results();
