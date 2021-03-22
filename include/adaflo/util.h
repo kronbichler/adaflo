@@ -172,13 +172,13 @@ convert_to_tensor(const Tensor<rank_ - 1, dim, VectorizedArrayType> &in)
     {
       Tensor<2, dim, VectorizedArrayType> tens;
 
-    tens[0][0] = in[0];
-    return tens;
-  }
+      tens[0][0] = in[0];
+      return tens;
+    }
   else
-  {
-    Assert(false, ExcNotImplemented());
-  }
+    {
+      Assert(false, ExcNotImplemented());
+    }
 }
 
 /**
