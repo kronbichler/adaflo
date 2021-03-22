@@ -524,6 +524,9 @@ collect_integration_points(
 
 
 
+/**
+ * Compute force vector for sharp-interface method (front tracking).
+ */
 template <int dim, int spacedim, typename VectorType>
 void
 compute_force_vector_sharp_interface(
@@ -803,6 +806,9 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 
 
 
+/**
+ * Compute force vector for sharp-interface method (mixed level set).
+ */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_mesh,
@@ -812,6 +818,7 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
                                      const Mapping<dim> &               mapping,
                                      const DoFHandler<dim> &            dof_handler,
                                      const DoFHandler<dim> &            dof_handler_dim,
+                                     const double                       surface_tension,
                                      const BlockVectorType &normal_vector_field,
                                      const VectorType &     curvature_solution,
                                      VectorType &           force_vector)
@@ -896,7 +903,9 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
         {
           Assert(phi_normal.get_value(q).norm() > 0, ExcNotImplemented());
           const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
-          phi_force.submit_value(normal * phi_curvature.get_value(q) * JxW[q], q);
+          phi_force.submit_value(surface_tension * normal * phi_curvature.get_value(q) *
+                                   JxW[q],
+                                 q);
         }
 
       buffer_dim.resize(dof_handler_dim.get_fe().n_dofs_per_cell());
@@ -913,12 +922,16 @@ compute_force_vector_sharp_interface(const Triangulation<dim - 1, dim> &surface_
 
 
 
+/**
+ * Compute force vector for sharp-interface method (marching-cube algorithm).
+ */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
 compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
                                      const Mapping<dim> &       mapping,
                                      const DoFHandler<dim> &    dof_handler,
                                      const DoFHandler<dim> &    dof_handler_dim,
+                                     const double               surface_tension,
                                      const BlockVectorType &    normal_vector_field,
                                      const VectorType &         curvature_solution,
                                      const VectorType &         ls_vector,
@@ -1037,7 +1050,9 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
         {
           Assert(phi_normal.get_value(q).norm() > 0, ExcNotImplemented());
           const auto normal = phi_normal.get_value(q) / phi_normal.get_value(q).norm();
-          phi_force.submit_value(normal * phi_curvature.get_value(q) * JxW[q], q);
+          phi_force.submit_value(surface_tension * normal * phi_curvature.get_value(q) *
+                                   JxW[q],
+                                 q);
         }
 
       buffer_dim.resize(dof_handler_dim.get_fe().n_dofs_per_cell());
@@ -1057,13 +1072,14 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
 template <int dim, typename VectorType1, typename VectorType2>
 void
 compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
-                                 const VectorType1 &            ls_solution,
-                                 const VectorType1 &            curvature_solution,
-                                 VectorType2 &                  force_rhs,
                                  const unsigned int             dof_index_ls,
                                  const unsigned int             dof_index_curvature,
                                  const unsigned int             dof_index_normal,
-                                 const unsigned int             quad_index)
+                                 const unsigned int             quad_index,
+                                 const double       surface_tension_coefficient,
+                                 const VectorType1 &ls_solution,
+                                 const VectorType1 &curvature_solution,
+                                 VectorType2 &      force_rhs)
 {
   (void)matrix_free;
   (void)ls_solution;
@@ -1072,8 +1088,6 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
   auto level_set_as_heaviside = ls_solution;
   level_set_as_heaviside.add(1.0);
   level_set_as_heaviside *= 0.5;
-
-  const double surface_tension_coefficient = 1.0;
 
   matrix_free.template cell_loop<VectorType2, VectorType1>(
     [&](const auto &matrix_free,
@@ -1116,7 +1130,7 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
     },
     force_rhs,
     level_set_as_heaviside,
-    true);
+    false);
 }
 
 #endif
