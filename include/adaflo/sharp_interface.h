@@ -16,6 +16,7 @@
 #ifndef __adaflo_block_sharp_inteface_h
 #define __adaflo_block_sharp_inteface_h
 
+#include <deal.II/dofs/dof_renumbering.h>
 
 #include <deal.II/fe/fe_point_evaluation.h>
 #include <deal.II/fe/fe_q_iso_q1.h>
@@ -228,6 +229,9 @@ public:
       const FESystem<dim> fe_dim(FE_Q<dim>(parameters.velocity_degree), dim);
       dof_handler_dim.distribute_dofs(fe_dim);
 
+      if (parameters.precondition_velocity == FlowParameters::u_ilu)
+        DoFRenumbering::Cuthill_McKee(dof_handler_dim, false, false);
+
       const QIterated<dim> quad(QGauss<1>(2), fe.degree);
       const QGauss<dim>    quad_vel(parameters.velocity_degree + 1);
 
@@ -391,7 +395,13 @@ private:
   void
   advance_concentration()
   {
+    velocity_solution.update_ghost_values();
+    velocity_solution_old.update_ghost_values();
+    velocity_solution_old_old.update_ghost_values();
     advection_operator->advance_concentration(this->time_stepping.step_size());
+    velocity_solution.zero_out_ghost_values();
+    velocity_solution_old.zero_out_ghost_values();
+    velocity_solution_old_old.zero_out_ghost_values();
   }
 
   void
@@ -507,9 +517,11 @@ public:
     surface_dofhandler.distribute_dofs(FE_Q<dim - 1, dim>(fe_degree));
 
     surface_coordinates_vector.reinit(surface_dofhandler_dim.n_dofs());
-    VectorTools::get_position_vector(surface_dofhandler_dim,
-                                     surface_coordinates_vector,
-                                     MappingQGeneric<dim - 1, dim>(mapping_degree));
+    surface_coordinates_vector.update_ghost_values();
+    VectorTools::get_position_vector(MappingQGeneric<dim - 1, dim>(mapping_degree),
+                                     surface_dofhandler_dim,
+                                     surface_coordinates_vector);
+    surface_coordinates_vector.zero_out_ghost_values();
 
     euler_mapping = std::make_shared<MappingFEField<dim - 1, dim, VectorType>>(
       surface_dofhandler_dim, surface_coordinates_vector);
@@ -762,8 +774,10 @@ public:
     euler_dofhandler.distribute_dofs(surface_fe_dim);
 
     euler_vector.reinit(euler_dofhandler.n_dofs());
+    euler_vector.update_ghost_values();
     VectorTools::
-      get_position_vector(euler_dofhandler, euler_vector, MappingQGeneric<dim - 1, dim>(4 /*TODO: this is a high number to well represent curved surfaces, the actual values is not that relevant*/));
+      get_position_vector(MappingQGeneric<dim - 1, dim>(4 /*TODO: this is a high number to well represent curved surfaces, the actual value is not that relevant*/), euler_dofhandler, euler_vector);
+    euler_vector.zero_out_ghost_values();
     euler_mapping =
       std::make_shared<MappingFEField<dim - 1, dim, VectorType>>(euler_dofhandler,
                                                                  euler_vector);
@@ -828,6 +842,10 @@ public:
           dim, DataComponentInterpretation::component_is_part_of_vector);
 
       navier_stokes_solver.solution.update_ghost_values();
+      navier_stokes_solver.user_rhs.update_ghost_values();
+      level_set_solver.get_level_set_vector().update_ghost_values();
+      level_set_solver.get_curvature_vector().update_ghost_values();
+      level_set_solver.get_normal_vector().update_ghost_values();
 
       data_out.add_data_vector(navier_stokes_solver.get_dof_handler_u(),
                                navier_stokes_solver.solution.block(0),
@@ -859,6 +877,12 @@ public:
       data_out.build_patches(navier_stokes_solver.mapping,
                              navier_stokes_solver.get_dof_handler_u().get_fe().degree +
                                1);
+
+      navier_stokes_solver.solution.zero_out_ghost_values();
+      navier_stokes_solver.user_rhs.zero_out_ghost_values();
+      level_set_solver.get_level_set_vector().zero_out_ghost_values();
+      level_set_solver.get_curvature_vector().zero_out_ghost_values();
+      level_set_solver.get_normal_vector().zero_out_ghost_values();
 
       navier_stokes_solver.write_data_output(
         output_filename,
@@ -953,40 +977,39 @@ private:
   {
     // mixed level set
     if (use_auxiliary_surface_mesh && use_sharp_interface)
-      compute_force_vector_sharp_interface<dim>(euler_dofhandler.get_triangulation(),
-                                                *euler_mapping,
-                                                euler_dofhandler.get_fe().base_element(0),
-                                                QGauss<dim - 1>(
-                                                  euler_dofhandler.get_fe().degree + 1),
-                                                navier_stokes_solver.mapping,
-                                                level_set_solver.get_dof_handler(),
-                                                navier_stokes_solver.get_dof_handler_u(),
-                                                level_set_solver.get_normal_vector(),
-                                                level_set_solver.get_curvature_vector(),
-                                                navier_stokes_solver.user_rhs.block(0));
-    // sharp interface method                                            
+      compute_force_vector_sharp_interface(
+        euler_dofhandler.get_triangulation(),
+        *euler_mapping,
+        QGauss<dim - 1>(euler_dofhandler.get_fe().degree + 1),
+        navier_stokes_solver.mapping,
+        level_set_solver.get_dof_handler(),
+        navier_stokes_solver.get_dof_handler_u(),
+        navier_stokes_solver.get_parameters().surface_tension,
+        level_set_solver.get_normal_vector(),
+        level_set_solver.get_curvature_vector(),
+        navier_stokes_solver.user_rhs.block(0));
     else if (!use_auxiliary_surface_mesh && use_sharp_interface)
-      compute_force_vector_sharp_interface(QGauss<dim - 1>(2 /*TODO*/),
-                                           navier_stokes_solver.mapping,
-                                           level_set_solver.get_dof_handler(),
-                                           navier_stokes_solver.get_dof_handler_u(),
-                                           level_set_solver.get_normal_vector(),
-                                           level_set_solver.get_curvature_vector(),
-                                           level_set_solver.get_level_set_vector(),
-                                           navier_stokes_solver.user_rhs.block(0),
-                                           navier_stokes_solver.get_parameters(),
-                                           navier_stokes_solver.get_fe_p(),
-                                           level_set_solver.pcout); 
-    // level set
+      compute_force_vector_sharp_interface(
+        QGauss<dim - 1>(2 /*TODO*/),
+        navier_stokes_solver.mapping,
+        level_set_solver.get_dof_handler(),
+        navier_stokes_solver.get_dof_handler_u(),
+        navier_stokes_solver.get_parameters().surface_tension,
+        level_set_solver.get_normal_vector(),
+        level_set_solver.get_curvature_vector(),
+        level_set_solver.get_level_set_vector(),
+        navier_stokes_solver.user_rhs.block(0));
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
-      compute_force_vector_regularized(level_set_solver.get_matrix_free(),
-                                       level_set_solver.get_level_set_vector(),
-                                       level_set_solver.get_curvature_vector(),
-                                       navier_stokes_solver.user_rhs.block(0),
-                                       LevelSetSolver<dim>::dof_index_ls,
-                                       LevelSetSolver<dim>::dof_index_curvature,
-                                       LevelSetSolver<dim>::dof_index_velocity,
-                                       LevelSetSolver<dim>::quad_index_vel);
+      compute_force_vector_regularized(
+        level_set_solver.get_matrix_free(),
+        LevelSetSolver<dim>::dof_index_ls,
+        LevelSetSolver<dim>::dof_index_curvature,
+        LevelSetSolver<dim>::dof_index_velocity,
+        LevelSetSolver<dim>::quad_index_vel,
+        navier_stokes_solver.get_parameters().surface_tension,
+        level_set_solver.get_level_set_vector(),
+        level_set_solver.get_curvature_vector(),
+        navier_stokes_solver.user_rhs.block(0));
     else
       AssertThrow(false, ExcNotImplemented());
   }
@@ -1003,7 +1026,9 @@ private:
 
     navier_stokes_solver.matrix_free->template cell_loop<VectorType, std::nullptr_t>(
       [&](const auto &matrix_free, auto &vec, const auto &, auto macro_cells) {
-        FEEvaluation<dim, -1, 0, dim, double> phi(matrix_free, 0, 0);
+        FEEvaluation<dim, -1, 0, dim, double> phi(matrix_free,
+                                                  LevelSetSolver<dim>::dof_index_velocity,
+                                                  LevelSetSolver<dim>::quad_index_vel);
 
         for (unsigned int cell = macro_cells.first; cell < macro_cells.second; ++cell)
           {

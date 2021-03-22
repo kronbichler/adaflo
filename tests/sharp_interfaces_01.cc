@@ -359,13 +359,14 @@ test(const std::string &parameter_filename)
 
   //  compute force vector with a regularized approach
   compute_force_vector_regularized(matrix_free,
-                                   ls_solution,
-                                   curvature_solution,
-                                   force_vector_regularized,
                                    dof_index_ls,
                                    dof_index_curvature,
                                    dof_index_normal,
-                                   quad_index);
+                                   quad_index,
+                                   1.0, /*TODO*/
+                                   ls_solution,
+                                   curvature_solution,
+                                   force_vector_regularized);
 
   std::cout << force_vector_regularized.l2_norm() << std::endl;
 
@@ -378,24 +379,24 @@ test(const std::string &parameter_filename)
   surface_dof_handler_dim.distribute_dofs(surface_fe_dim);
 
   VectorType euler_vector(surface_dof_handler_dim.n_dofs());
-  VectorTools::get_position_vector(surface_dof_handler_dim,
-                                   euler_vector,
-                                   MappingQGeneric<dim - 1, dim>(4));
+  VectorTools::get_position_vector(MappingQGeneric<dim - 1, dim>(4),
+                                   surface_dof_handler_dim,
+                                   euler_vector);
   MappingFEField<dim - 1, dim, VectorType> surface_mapping(surface_dof_handler_dim,
                                                            euler_vector);
 
   FE_Q<dim - 1, dim> surface_fe(fe_degree);
   QGauss<dim - 1>    surface_quad(fe_degree + 1);
-  compute_force_vector_sharp_interface<dim>(surface_mesh,
-                                            surface_mapping,
-                                            surface_fe,
-                                            surface_quad,
-                                            mapping,
-                                            dof_handler,
-                                            dof_handler_dim,
-                                            normal_vector_field,
-                                            curvature_solution,
-                                            force_vector_sharp_interface);
+  compute_force_vector_sharp_interface(surface_mesh,
+                                       surface_mapping,
+                                       surface_quad,
+                                       mapping,
+                                       dof_handler,
+                                       dof_handler_dim,
+                                       1.0, /*TODO*/
+                                       normal_vector_field,
+                                       curvature_solution,
+                                       force_vector_sharp_interface);
 
   std::cout << force_vector_sharp_interface.l2_norm() << std::endl;
   force_vector_sharp_interface = 0.0;
@@ -476,29 +477,30 @@ test(const std::string &parameter_filename)
         force_vector_regularized, LevelSetSolver<dim>::dof_index_velocity);
 
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
-                                       level_set_solver.get_level_set_vector(),
-                                       level_set_solver.get_curvature_vector(),
-                                       force_vector_regularized,
                                        LevelSetSolver<dim>::dof_index_ls,
                                        LevelSetSolver<dim>::dof_index_curvature,
                                        LevelSetSolver<dim>::dof_index_velocity,
-                                       LevelSetSolver<dim>::quad_index);
+                                       LevelSetSolver<dim>::quad_index,
+                                       1.0, /*TODO*/
+                                       level_set_solver.get_level_set_vector(),
+                                       level_set_solver.get_curvature_vector(),
+                                       force_vector_regularized);
 
       // sharp interface
       VectorType force_vector_sharp_interface;
       level_set_solver.initialize_dof_vector(force_vector_sharp_interface,
                                              LevelSetSolver<dim>::dof_index_velocity);
 
-      compute_force_vector_sharp_interface<dim>(surface_mesh,
-                                                surface_mapping,
-                                                surface_fe,
-                                                surface_quad,
-                                                mapping,
-                                                level_set_solver.get_dof_handler(),
-                                                level_set_solver.get_dof_handler_dim(),
-                                                level_set_solver.get_normal_vector(),
-                                                level_set_solver.get_curvature_vector(),
-                                                force_vector_sharp_interface);
+      compute_force_vector_sharp_interface(surface_mesh,
+                                           surface_mapping,
+                                           surface_quad,
+                                           mapping,
+                                           level_set_solver.get_dof_handler(),
+                                           level_set_solver.get_dof_handler_dim(),
+                                           1.0, /*TODO*/
+                                           level_set_solver.get_normal_vector(),
+                                           level_set_solver.get_curvature_vector(),
+                                           force_vector_sharp_interface);
 
       {
         DataOutBase::VtkFlags flags;
