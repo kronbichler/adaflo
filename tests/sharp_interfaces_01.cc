@@ -359,14 +359,14 @@ test(const std::string &parameter_filename)
 
   //  compute force vector with a regularized approach
   compute_force_vector_regularized(matrix_free,
-                                   ls_solution,
-                                   curvature_solution,
-                                   force_vector_regularized,
                                    dof_index_ls,
                                    dof_index_curvature,
                                    dof_index_normal,
                                    quad_index,
-                                   1.0 /*TODO*/);
+                                   1.0, /*TODO*/
+                                   ls_solution,
+                                   curvature_solution,
+                                   force_vector_regularized);
 
   std::cout << force_vector_regularized.l2_norm() << std::endl;
 
@@ -478,14 +478,14 @@ test(const std::string &parameter_filename)
         force_vector_regularized, LevelSetSolver<dim>::dof_index_velocity);
 
       compute_force_vector_regularized(level_set_solver.get_matrix_free(),
-                                       level_set_solver.get_level_set_vector(),
-                                       level_set_solver.get_curvature_vector(),
-                                       force_vector_regularized,
                                        LevelSetSolver<dim>::dof_index_ls,
                                        LevelSetSolver<dim>::dof_index_curvature,
                                        LevelSetSolver<dim>::dof_index_velocity,
                                        LevelSetSolver<dim>::quad_index,
-                                       1.0 /*TODO*/);
+                                       1.0, /*TODO*/
+                                       level_set_solver.get_level_set_vector(),
+                                       level_set_solver.get_curvature_vector(),
+                                       force_vector_regularized);
 
       // sharp interface
       VectorType force_vector_sharp_interface;

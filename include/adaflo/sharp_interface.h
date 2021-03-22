@@ -973,14 +973,14 @@ private:
     else if (!use_auxiliary_surface_mesh && !use_sharp_interface)
       compute_force_vector_regularized(
         level_set_solver.get_matrix_free(),
-        level_set_solver.get_level_set_vector(),
-        level_set_solver.get_curvature_vector(),
-        navier_stokes_solver.user_rhs.block(0),
         LevelSetSolver<dim>::dof_index_ls,
         LevelSetSolver<dim>::dof_index_curvature,
         LevelSetSolver<dim>::dof_index_velocity,
         LevelSetSolver<dim>::quad_index_vel,
-        navier_stokes_solver.get_parameters().surface_tension);
+        navier_stokes_solver.get_parameters().surface_tension,
+        level_set_solver.get_level_set_vector(),
+        level_set_solver.get_curvature_vector(),
+        navier_stokes_solver.user_rhs.block(0));
     else
       AssertThrow(false, ExcNotImplemented());
   }

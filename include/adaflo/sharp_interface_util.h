@@ -1072,14 +1072,14 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
 template <int dim, typename VectorType1, typename VectorType2>
 void
 compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
-                                 const VectorType1 &            ls_solution,
-                                 const VectorType1 &            curvature_solution,
-                                 VectorType2 &                  force_rhs,
                                  const unsigned int             dof_index_ls,
                                  const unsigned int             dof_index_curvature,
                                  const unsigned int             dof_index_normal,
                                  const unsigned int             quad_index,
-                                 const double surface_tension_coefficient)
+                                 const double       surface_tension_coefficient,
+                                 const VectorType1 &ls_solution,
+                                 const VectorType1 &curvature_solution,
+                                 VectorType2 &      force_rhs)
 {
   (void)matrix_free;
   (void)ls_solution;
