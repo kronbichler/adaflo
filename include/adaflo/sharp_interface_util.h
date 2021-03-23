@@ -265,7 +265,6 @@ namespace dealii
         for (unsigned int j = 0; j < n_subdivisions; ++j)
           for (unsigned int i = 0; i < n_subdivisions; ++i)
             {
-              // Question: ??
               std::vector<unsigned int> mask{(n_subdivisions + 1) * (j + 0) + (i + 0),
                                              (n_subdivisions + 1) * (j + 0) + (i + 1),
                                              (n_subdivisions + 1) * (j + 1) + (i + 1),
@@ -470,7 +469,6 @@ collect_integration_points(
 
 /**
  * Compute force vector for sharp-interface method (front tracking).
- * front tracking:
  *   - no level-set. 
  *   - two meshs: Interface at codim-1 mesh, NSE at background mesh
  *   - normal and curvature from geometric configuration of surface mesh
@@ -559,10 +557,8 @@ compute_force_vector_sharp_interface(
 
       cell->get_dof_indices(local_dof_indices);
 
-      // Question: number of integration points?
       const unsigned int n_points = ptrs[i + 1] - ptrs[i];
 
-      // Question: + ptrs[i]???
       const ArrayView<const Point<spacedim>> unit_points(points.data() + ptrs[i],
                                                          n_points);
       const ArrayView<const Tensor<1, spacedim, double>> JxW(weights.data() + ptrs[i],
@@ -640,7 +636,6 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
 
   for (const auto &cell : dof_handler.active_cell_iterators())
     {
-      //Question: cell->level()?
       TriaIterator<DoFCellAccessor<dim, spacedim, false>> dof_cell_dim(
         &dof_handler_dim.get_triangulation(),
         cell->level(),
@@ -661,7 +656,6 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
         {
           double curvature = 0.0;
 
-          //Question: why 2D gradient??  
           for (unsigned c = 0; c < spacedim; ++c)
             curvature += normal_gradients[q][c][c];
 
@@ -673,8 +667,8 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
 }
 
 
-// 
-//used for mixed level set method
+
+// used for mixed level set method
 template <int dim, int spacedim>
 std::tuple<std::vector<std::pair<int, int>>,
            std::vector<unsigned int>,
@@ -766,10 +760,9 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 
 /**
  * Compute force vector for sharp-interface method (mixed level set).
- * mixed level set
- * - background mesh at which NS and level set is solved
- * - normal and curvature from level set are used for interface
- * - surface mesh is for codim1 Interface, to determine quadrature point, moved with velocity from NSE
+  *   - background mesh at which NS and level set is solved
+ *    - normal and curvature from level set are used for interface
+ *    - surface mesh is for codim1 Interface, to determine quadrature point, moved with velocity from NSE
  */
 template <int dim, int spacedim, typename VectorType, typename BlockVectorType>
 void
@@ -945,9 +938,9 @@ compute_force_vector_sharp_interface(const Triangulation<dim, spacedim> &surface
 /**
  * Compute force vector for sharp-interface method (marching-cube algorithm).
  * sharp level set
- * - only one mesh for NS and level set
- * - interface is calculated with normal and curvature from level set
- * - Marching square/cube algorithm is used to generate interface contour in cells which are cut by interface
+ *    - only one mesh for NS and level set
+ *    - interface is calculated with normal and curvature from level set
+ *    - Marching square/cube algorithm is used to generate interface contour in cells which are cut by interface
  */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
@@ -1114,10 +1107,10 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
                                  const unsigned int             dof_index_curvature,
                                  const unsigned int             dof_index_normal,
                                  const unsigned int             quad_index,
-                                 const double       surface_tension_coefficient,
-                                 const VectorType1 &ls_solution,
-                                 const VectorType1 &curvature_solution,
-                                 VectorType2 &      force_rhs)
+                                 const double                   surface_tension_coefficient,
+                                 const VectorType1              &ls_solution,
+                                 const VectorType1              &curvature_solution,
+                                 VectorType2 &                  force_rhs)
 {
   (void)matrix_free;
   (void)ls_solution;
