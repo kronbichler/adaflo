@@ -319,7 +319,7 @@ namespace dealii
           return points[mask[lines[0]]] * (w1 / (w0 + w1)) +
                  points[mask[lines[1]]] * (w0 / (w0 + w1));
         };
-        // Question: What exactly is handed over? point
+        
         const auto process_lines = [&](const auto &lines) {
           std::array<std::array<unsigned int, 2>, 4> table{
             {{{0, 3}}, {{1, 2}}, {{0, 1}}, {{3, 2}}}};
@@ -436,7 +436,6 @@ collect_integration_points(
         {}
     }
 
-  // Question: How does compression works? sort/get/..?
   // step 4: compress data structures
   std::sort(info.begin(), info.end(), [](const auto &a, const auto &b) {
     return std::get<2>(a) < std::get<2>(b);
