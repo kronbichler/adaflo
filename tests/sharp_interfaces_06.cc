@@ -124,15 +124,18 @@ MicroFluidicProblem<dim>::run()
   navier_stokes_solver.setup_problem(Functions::ZeroFunction<dim>(dim));
   navier_stokes_solver.output_solution(parameters.output_filename);
 
-  Triangulation<dim - 1, dim> surface_mesh;
+  parallel::shared::Triangulation<dim - 1, dim> surface_mesh(mpi_communicator);
   GridGenerator::hyper_sphere(surface_mesh, Point<dim>(0.02, 0.03), 0.5);
   surface_mesh.refine_global(5);
 
   std::unique_ptr<SharpInterfaceSolver> solver;
 
   if (parameters.solver_method == "front tracking")
-    solver =
-      std::make_unique<FrontTrackingSolver<dim>>(navier_stokes_solver, surface_mesh);
+    {
+      AssertDimension(Utilities::MPI::n_mpi_processes(mpi_communicator), 1);
+      solver =
+        std::make_unique<FrontTrackingSolver<dim>>(navier_stokes_solver, surface_mesh);
+    }
   else if (parameters.solver_method == "mixed level set")
     solver = std::make_unique<MixedLevelSetSolver<dim>>(navier_stokes_solver,
                                                         surface_mesh,
