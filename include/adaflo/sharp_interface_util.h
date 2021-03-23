@@ -343,7 +343,7 @@ namespace dealii
           }
 
         static const unsigned int X = -1;
-        // What do numbers mean? -> edge of square 
+        // numbers are edges of square 
         /*   ___3___
             |       |
             0       1
@@ -416,7 +416,6 @@ collect_integration_points(
           const auto first_cell = GridTools::find_active_cell_around_point(
             cache, point_and_weight.first, cell_hint, marked_vertices, tolerance);
 
-          //Q: Why?Not used again
           cell_hint = first_cell.first;
 
           // step 2: find all neighbor cells around first_cell
@@ -424,7 +423,7 @@ collect_integration_points(
             GridTools::find_all_active_cells_around_point(
               mapping, tria, point_and_weight.first, tolerance, first_cell);
 
-          // step 3: put all information together??
+          // step 3: put all information together
           for (const auto &cell_and_reference_coordinate : active_cells_around_point)
             info.emplace_back(
               cell_and_reference_coordinate.second,

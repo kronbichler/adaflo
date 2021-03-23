@@ -263,7 +263,6 @@ MicroFluidicProblem<dim>::run()
   else
     AssertThrow(false, ExcNotImplemented());
 
-  pcout << "first output" << std::endl;
   solver->output_solution(parameters.output_filename);
 
   while (navier_stokes_solver.time_stepping.at_end() == false)
