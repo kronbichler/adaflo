@@ -128,4 +128,68 @@ compute_cell_diameters(const MatrixFree<dim, double> &         matrix_free,
     Utilities::MPI::max(cell_diameter_max, get_communicator(triangulation));
 }
 
+/**
+ * If dim == 1, convert a VectorizedArray<number> to a vector (rank 1 tensor).
+ * This function is useful to obtain equal, vector-valued return types of
+ * FEEvaluation-operations for dim == 1 and dim > 1.
+ */
+template <int dim, typename VectorizedArrayType = VectorizedArray<double>>
+static Tensor<1, dim, VectorizedArrayType>
+convert_to_vector(const VectorizedArrayType &in)
+{
+  Assert(dim == 1, ExcMessage("This operation is not permitted for dim>1."));
+
+  Tensor<1, dim, VectorizedArrayType> vec;
+
+  vec[0] = in;
+
+  return vec;
+}
+
+/**
+ * This function overloads the previous convert_to_vector function, when
+ * the input argument is already given as a rank 1 tensor.
+ */
+template <int dim, typename VectorizedArrayType = VectorizedArray<double>>
+static Tensor<1, dim, VectorizedArrayType>
+convert_to_vector(const Tensor<1, dim, VectorizedArrayType> &in)
+{
+  return in;
+}
+
+/**
+ * If dim == 1, convert a tensor of rank-1 to a tensor of rank. This function
+ * is useful to obtain equal, tensor-rank-valued return types of
+ * FEEvaluation-operations for dim == 1 and dim > 1.
+ */
+template <int rank_, int dim, typename VectorizedArrayType = VectorizedArray<double>>
+static Tensor<rank_, dim, VectorizedArrayType>
+convert_to_tensor(const Tensor<rank_ - 1, dim, VectorizedArrayType> &in)
+{
+  Assert(dim == 1, ExcMessage("This operation is not permitted for dim>1."));
+
+  if (rank_ == 2)
+    {
+      Tensor<2, dim, VectorizedArrayType> tens;
+
+      tens[0][0] = in[0];
+      return tens;
+    }
+  else
+    {
+      Assert(false, ExcNotImplemented());
+    }
+}
+
+/**
+ * This function overloads the previous convert_to_tensor function, when the input
+ * tensor already has the desired tensor rank.
+ */
+template <int rank_, int dim, typename VectorizedArrayType = VectorizedArray<double>>
+static Tensor<rank_, dim, VectorizedArrayType>
+convert_to_tensor(const Tensor<rank_, dim, VectorizedArrayType> &in)
+{
+  return in;
+}
+
 #endif

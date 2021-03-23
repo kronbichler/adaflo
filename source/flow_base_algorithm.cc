@@ -277,6 +277,6 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
     }
 }
 
-
+template struct FlowBaseAlgorithm<1>;
 template struct FlowBaseAlgorithm<2>;
 template struct FlowBaseAlgorithm<3>;
