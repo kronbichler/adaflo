@@ -168,6 +168,7 @@ namespace dealii
       const Point<dim> &point)
     {
       boost::geometry::model::d2::point_xy<double> p(point[0], point[1]);
+      // true if geometry1 is completely contained within geometry2, else false
       return boost::geometry::within(p, polygon);
     }
 
@@ -295,7 +296,6 @@ namespace dealii
          *      +_____+_____+ --> x
          *      (0)   (1)  (2)
          */
-
         std::vector<Point<dim>> quadrature_points;
 
         for (unsigned int j = 0; j <= n_subdivisions; ++j)
@@ -318,6 +318,7 @@ namespace dealii
                        std::vector<Point<dim>> &         vertices,
                        std::vector<::CellData<dim - 1>> &cells)
       {
+        // cases 0-15
         unsigned int c = 0;
 
         for (unsigned int i = 0, scale = 1; i < 4; ++i, scale *= 2)
@@ -356,12 +357,18 @@ namespace dealii
         // sense.
         if (c == 5 || c == 10)
           {
+            // cases with two contour lines in cell
             Assert(false, ExcNotImplemented());
             return;
           }
 
         static const unsigned int X = -1;
-
+        // numbers are edges of square
+        /*   ___3___
+            |       |
+            0       1
+            |___2___|
+        */
         std::array<std::array<unsigned int, 2>, 16> table{{
           {{X, X}},
           {{0, 2}},
@@ -425,15 +432,18 @@ collect_integration_points(
     {
       try
         {
+          // step 1: find cell in which specific integration point lies
           const auto first_cell = GridTools::find_active_cell_around_point(
             cache, point_and_weight.first, cell_hint, marked_vertices, tolerance);
 
           cell_hint = first_cell.first;
 
+          // step 2: find all neighbor cells around first_cell
           const auto active_cells_around_point =
             GridTools::find_all_active_cells_around_point(
               mapping, tria, point_and_weight.first, tolerance, first_cell);
 
+          // step 3: put all information together
           for (const auto &cell_and_reference_coordinate : active_cells_around_point)
             info.emplace_back(
               cell_and_reference_coordinate.second,
@@ -477,6 +487,9 @@ collect_integration_points(
 
 /**
  * Compute force vector for sharp-interface method (front tracking).
+ *   - no level-set.
+ *   - two meshs: Interface at codim-1 mesh, NSE at background mesh
+ *   - normal and curvature from geometric configuration of surface mesh
  */
 template <int dim, int spacedim, typename VectorType>
 void
@@ -533,7 +546,7 @@ compute_force_vector_sharp_interface(
             for (unsigned int i = 0; i < spacedim; ++i)
               result[i] = -curvature_values[q] * normal_values[q][i] * fe_eval.JxW(q) *
                           surface_tension;
-
+            // f = kappa * n * JxW * sigma
             integration_points.push_back(fe_eval.quadrature_point(q));
             integration_values.push_back(result);
           }
@@ -572,14 +585,18 @@ compute_force_vector_sharp_interface(
       for (unsigned int q = 0; q < n_points; ++q)
         phi_normal_force.submit_value(JxW[q], q);
 
+      // integrate values with test function and store in buffer
       phi_normal_force.integrate(cell, unit_points, buffer, EvaluationFlags::values);
-
+      // local buffer into global force vector
       constraints.distribute_local_to_global(buffer, local_dof_indices, force_vector);
     }
 }
 
 
-
+/**
+ * routine to compute normal from actual interface at surface mesh
+ * for front-tracking method
+ */
 template <int dim, int spacedim, typename VectorType>
 void
 compute_normal(const Mapping<dim, spacedim> &   mapping,
@@ -615,7 +632,10 @@ compute_normal(const Mapping<dim, spacedim> &   mapping,
 }
 
 
-
+/**
+ * routine to compute curvature from actual interface at surface mesh
+ * for front-tracking method
+ */
 template <int dim, int spacedim, typename VectorType>
 void
 compute_curvature(const Mapping<dim, spacedim> &   mapping,
@@ -669,7 +689,9 @@ compute_curvature(const Mapping<dim, spacedim> &   mapping,
 }
 
 
-
+/**
+ * used for mixed level set method
+ */
 template <int dim, int spacedim>
 std::tuple<std::vector<std::pair<int, int>>,
            std::vector<unsigned int>,
@@ -759,6 +781,10 @@ collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
 
 /**
  * Compute force vector for sharp-interface method (mixed level set).
+ *   - background mesh at which NS and level set is solved
+ *    - normal and curvature from level set are used for interface
+ *    - surface mesh is for codim1 Interface, to determine quadrature point, moved with
+ * velocity from NSE
  */
 template <int dim, int spacedim, typename VectorType, typename BlockVectorType>
 void
@@ -931,9 +957,13 @@ compute_force_vector_sharp_interface(const Triangulation<dim, spacedim> &surface
 }
 
 
-
 /**
  * Compute force vector for sharp-interface method (marching-cube algorithm).
+ * sharp level set
+ *    - only one mesh for NS and level set
+ *    - interface is calculated with normal and curvature from level set
+ *    - Marching square/cube algorithm is used to generate interface contour in cells
+ * which are cut by interface
  */
 template <int dim, typename VectorType, typename BlockVectorType>
 void
@@ -946,6 +976,8 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
                                      const VectorType &         curvature_solution,
                                      const VectorType &         ls_vector,
                                      VectorType &               force_vector)
+
+
 {
   const unsigned int                        n_subdivisions = 3;
   GridGenerator::MarchingCubeAlgorithm<dim> mc(mapping,

@@ -210,7 +210,7 @@ public:
       dof_handler.distribute_dofs(fe);
 
       pcout << "Number of level set degrees of freedom: " << dof_handler.n_dofs()
-            << std::endl;
+            << "    fe degree of level set: " << fe.degree << std::endl;
 
       typename MatrixFree<dim>::AdditionalData data;
 
@@ -286,6 +286,9 @@ public:
 
       epsilon_used =
         parameters.epsilon / parameters.concentration_subdivisions * epsilon_used;
+
+      pcout << "epsilon_used: " << epsilon_used
+            << " epsilon_input: " << parameters.epsilon << std::endl;
 
       initialize_mass_matrix_diagonal(
         matrix_free, hanging_node_constraints, dof_index_ls, quad_index, preconditioner);
@@ -500,6 +503,7 @@ public:
     , surface_dofhandler_dim(surface_mesh)
     , surface_dofhandler(surface_mesh)
   {
+    // Degree for FE at surface mesh
     const unsigned int fe_degree      = 3;
     const unsigned int mapping_degree = fe_degree;
 
@@ -759,6 +763,7 @@ public:
                        navier_stokes_solver.boundary->symmetry)
     , euler_dofhandler(surface_mesh)
   {
+    // Degree for FE at surface mesh
     const unsigned int fe_degree = 1;
 
     FESystem<dim - 1, dim> surface_fe_dim(FE_Q<dim - 1, dim>(fe_degree), dim);
@@ -966,6 +971,7 @@ private:
   void
   update_surface_tension()
   {
+    // mixed level set
     if (use_auxiliary_surface_mesh && use_sharp_interface)
       compute_force_vector_sharp_interface(
         euler_dofhandler.get_triangulation(),
