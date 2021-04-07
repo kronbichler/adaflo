@@ -18,6 +18,8 @@
 
 #include <deal.II/distributed/tria.h>
 
+#include <deal.II/lac/lapack_full_matrix.h>
+
 #include <deal.II/matrix_free/matrix_free.h>
 
 using namespace dealii;
