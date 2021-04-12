@@ -637,10 +637,11 @@ NavierStokesMatrix<dim>::local_operation(
     parameters.linearization == FlowParameters::coupled_velocity_semi_implicit ||
     parameters.linearization == FlowParameters::coupled_velocity_explicit;
 
-  // 0:   NS in convective form
-  // 0.5: NS in skew-symmetric form
-  // 1:   NS in conservative form
-  const vector_t conservative_form = make_vectorized_array<double>(0.5);
+  // beta = 0:   NS in convective form     ∇•(u x u) = (u • ∇) u
+  // beta = 0.5: NS in skew-symmetric form ∇•(u x u) = (u • ∇) u + 0.5 u (∇ • u) (default)
+  // beta = 1:   NS in conservative form   ∇•(u x u) = (u • ∇) u + u (∇ • u)
+  const vector_t conservative_form =
+    make_vectorized_array<double>(parameters.beta_convective_term_momentum_balance);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
