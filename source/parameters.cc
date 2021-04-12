@@ -117,6 +117,15 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     "Navier-Stokes, one can choose between a stationary and a "
                     "time-dependent variant. The time-dependent Navier-Stokes "
                     "equations are the default.");
+  prm.declare_entry("formulation convective term momentum balance",
+                    "skew-symmetric",
+                    Patterns::Selection("skew-symmetric|convective|conservative"),
+                    "Sets the formulation of the convective term in the "
+                    "momentum balance of the Navier-Stokes equations, i.e. "
+                    "∇·(u x u) =(u·∇)u + βu(∇·u). The parameter β will be "
+                    "set to 1 for the conservative form, to 0 for the "
+                    "convective form and to 0.5 for the skew-symmetric "
+                    "form (default formulation).");
 
   prm.enter_subsection("Solver");
   prm.declare_entry("NL max iterations",
@@ -456,8 +465,9 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
     Assert(false, ExcNotImplemented());
   if (physical_type == stokes)
     density = 0;
-
-
+  beta_convective_term_momentum_balance =
+    get_beta_formulation_convective_term_momentum_balance[prm.get(
+      "formulation convective term momentum balance")];
 
   prm.enter_subsection("Solver");
   max_nl_iteration   = prm.get_integer("NL max iterations");

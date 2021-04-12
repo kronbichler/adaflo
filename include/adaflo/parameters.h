@@ -57,6 +57,13 @@ struct FlowParameters
     incompressible_stationary,
     stokes
   } physical_type;
+
+  std::map<std::string, double> get_beta_formulation_convective_term_momentum_balance = {
+    {"conservative", 1.0},
+    {"convective", 0.0},
+    {"skew-symmetric", 0.5},
+  };
+  double       beta_convective_term_momentum_balance;
   unsigned int velocity_degree;
   bool         augmented_taylor_hood;
   double       viscosity;
