@@ -124,7 +124,7 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     "momentum balance of the Navier-Stokes equations, i.e. "
                     "∇·(u x u) =(u·∇)u + βu(∇·u). The parameter β will be "
                     "set to 1 for the conservative form, to 0 for the "
-                    "convective form and to 0.5 for the the skew-symmetric "
+                    "convective form and to 0.5 for the skew-symmetric "
                     "form (default formulation).");
 
   prm.enter_subsection("Solver");
