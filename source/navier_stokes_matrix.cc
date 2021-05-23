@@ -144,9 +144,10 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
           matrix_free->initialize_dof_vector(pressure_constant_modes[mode], dof_index_p);
           matrix_free->initialize_dof_vector(pressure_constant_mode_weights[mode],
                                              dof_index_p);
-          AssertDimension(pressure_constant_modes[mode].local_size(),
+          AssertDimension(pressure_constant_modes[mode].locally_owned_size(),
                           constant_modes[mode].size());
-          for (unsigned int i = 0; i < pressure_constant_modes[mode].local_size(); ++i)
+          for (unsigned int i = 0; i < pressure_constant_modes[mode].locally_owned_size();
+               ++i)
             if (constant_modes[mode][i])
               {
                 pressure_constant_modes[mode].local_element(i) = 1.;

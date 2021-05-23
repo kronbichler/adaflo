@@ -318,7 +318,7 @@ BeltramiProblem<dim>::output_results() const
 
   timer.enter_subsection("Output solution.");
   const double time = navier_stokes.time_stepping.now();
-  exact.zero_out_ghosts();
+  exact.zero_out_ghost_values();
   VectorTools::interpolate(navier_stokes.get_dof_handler_u(),
                            ExactSolutionU<dim>(nu, time),
                            exact.block(0));

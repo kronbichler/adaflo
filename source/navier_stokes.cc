@@ -662,7 +662,7 @@ NavierStokes<dim>::init_time_advance(const bool print_time_info)
     parameters.linearization == FlowParameters::projection ? 1 : 2;
   for (unsigned int block = 0; block < n_blocks; ++block)
     {
-      const unsigned int n       = solution.block(block).local_size();
+      const unsigned int n       = solution.block(block).locally_owned_size();
       double *           cur     = solution.block(block).begin();
       double *           old     = solution_old.block(block).begin();
       double *           old_old = solution_old_old.block(block).begin();
@@ -685,7 +685,7 @@ NavierStokes<dim>::init_time_advance(const bool print_time_info)
     {
       if (time_stepping.step_no() > 1)
         {
-          const unsigned int n       = solution.block(1).local_size();
+          const unsigned int n       = solution.block(1).locally_owned_size();
           double *           cur     = solution.block(1).begin();
           double *           upd     = solution_update.block(1).begin();
           double *           old     = solution_old.block(1).begin();
@@ -1401,7 +1401,7 @@ NavierStokes<dim>::interpolate_pressure_field(
                                        std::vector<bool>(1, true),
                                        constant_modes);
       AssertDimension(constant_modes.size(), 2);
-      for (unsigned int i = 0; i < pressure_vector.local_size(); ++i)
+      for (unsigned int i = 0; i < pressure_vector.locally_owned_size(); ++i)
         if (constant_modes[1][i])
           pressure_vector.local_element(i) = 0.;
     }
