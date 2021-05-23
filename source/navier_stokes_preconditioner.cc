@@ -328,11 +328,11 @@ public:
   Multiply(bool, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const
   {
     Assert(X.NumVectors() == 1, ExcNotImplemented());
-    AssertDimension(src.local_size(), static_cast<unsigned int>(X.MyLength()));
+    AssertDimension(src.locally_owned_size(), static_cast<unsigned int>(X.MyLength()));
 
-    std::memcpy(src.begin(), X[0], src.local_size() * sizeof(double));
+    std::memcpy(src.begin(), X[0], src.locally_owned_size() * sizeof(double));
     vmult(dst, src);
-    std::memcpy(Y[0], dst.begin(), dst.local_size() * sizeof(double));
+    std::memcpy(Y[0], dst.begin(), dst.locally_owned_size() * sizeof(double));
 
     return 0;
   }
@@ -417,9 +417,9 @@ public:
       sparse_matrix.trilinos_matrix().Multiply(false, X, Y);
     else
       {
-        std::memcpy(src.begin(), X[0], src.local_size() * sizeof(double));
+        std::memcpy(src.begin(), X[0], src.locally_owned_size() * sizeof(double));
         vmult(dst, src);
-        std::memcpy(Y[0], dst.begin(), dst.local_size() * sizeof(double));
+        std::memcpy(Y[0], dst.begin(), dst.locally_owned_size() * sizeof(double));
       }
     return 0;
   }
@@ -533,9 +533,9 @@ public:
   vmult(LinearAlgebra::distributed::Vector<double> &      dst,
         const LinearAlgebra::distributed::Vector<double> &src) const
   {
-    AssertDimension(static_cast<int>(dst.local_size()),
+    AssertDimension(static_cast<int>(dst.locally_owned_size()),
                     preconditioner->OperatorDomainMap().NumMyElements());
-    AssertDimension(static_cast<int>(src.local_size()),
+    AssertDimension(static_cast<int>(src.locally_owned_size()),
                     preconditioner->OperatorRangeMap().NumMyElements());
     Epetra_Vector tril_dst(View, preconditioner->OperatorDomainMap(), dst.begin());
     Epetra_Vector tril_src(View,
@@ -1346,7 +1346,8 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
                 if (!cell->at_boundary(face))
                   {
                     if (cell->face(face)->has_children())
-                      for (unsigned int i = 0; i < cell->face(face)->number_of_children();
+                      for (unsigned int i = 0;
+                           i < cell->face(face)->n_active_descendants();
                            ++i)
                         {
                           cell->neighbor_child_on_subface(face, i)->get_dof_indices(
@@ -2210,7 +2211,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                       {
                         if (cell->face(f)->has_children())
                           for (unsigned int subf = 0;
-                               subf < cell->face(f)->number_of_children();
+                               subf < cell->face(f)->n_active_descendants();
                                ++subf)
                             {
                               data.fe_subface_values_p.reinit(cell, f, subf);

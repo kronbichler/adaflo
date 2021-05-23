@@ -358,7 +358,8 @@ PhaseFieldSolver<dim>::apply_contact_bc(
       JxW += n_face_q_points;
     }
   if (!have_ghost_values)
-    const_cast<LinearAlgebra::distributed::BlockVector<double> &>(src).zero_out_ghosts();
+    const_cast<LinearAlgebra::distributed::BlockVector<double> &>(src)
+      .zero_out_ghost_values();
 }
 
 

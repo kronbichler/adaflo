@@ -164,7 +164,7 @@ TwoPhaseBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_
       {
         refine_grid();
 
-        navier_stokes.solution.block(0).zero_out_ghosts();
+        navier_stokes.solution.block(0).zero_out_ghost_values();
         VectorTools::interpolate(this->mapping,
                                  navier_stokes.get_dof_handler_u(),
                                  initial_velocity_field,
@@ -172,7 +172,7 @@ TwoPhaseBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_
         navier_stokes.solution.update_ghost_values();
         navier_stokes.solution_old.update_ghost_values();
 
-        solution.block(0).zero_out_ghosts();
+        solution.block(0).zero_out_ghost_values();
         VectorTools::interpolate(this->mapping,
                                  dof_handler,
                                  initial_distance_function,
@@ -334,7 +334,7 @@ TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
   Vector<float> error_per_cell(triangulation.n_active_cells());
 
   {
-    for (unsigned int i = 0; i < error_estimate.local_size(); i++)
+    for (unsigned int i = 0; i < error_estimate.locally_owned_size(); i++)
       error_estimate.local_element(i) =
         (1. - error_estimate.local_element(i) * error_estimate.local_element(i));
     error_estimate.update_ghost_values();

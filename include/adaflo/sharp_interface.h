@@ -312,7 +312,7 @@ public:
 
 
     // transform_distance_function
-    for (unsigned int i = 0; i < ls_solution.local_size(); i++)
+    for (unsigned int i = 0; i < ls_solution.locally_owned_size(); i++)
       ls_solution.local_element(i) =
         -std::tanh(ls_solution.local_element(i) / (2. * epsilon_used));
 

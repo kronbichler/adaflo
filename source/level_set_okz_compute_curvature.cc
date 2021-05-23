@@ -357,7 +357,7 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
   // and correcting the value, if so requested
   if (this->parameters.curvature_correction == true)
     {
-      for (unsigned int i = 0; i < this->solution_curvature.local_size(); ++i)
+      for (unsigned int i = 0; i < this->solution_curvature.locally_owned_size(); ++i)
         if (this->solution_curvature.local_element(i) > 1e-4)
           {
             const double c_val = this->solution_ls.local_element(i);

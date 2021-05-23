@@ -47,13 +47,13 @@ DiagonalPreconditioner<Number>::reinit(
   diagonal_vector = diagonal_vector_in;
   inverse_diagonal_vector.reinit(diagonal_vector, true);
   const double linfty_norm = diagonal_vector.linfty_norm();
-  for (unsigned int i = 0; i < diagonal_vector.local_size(); ++i)
+  for (unsigned int i = 0; i < diagonal_vector.locally_owned_size(); ++i)
     if (std::abs(diagonal_vector.local_element(i)) > 1e-10 * linfty_norm)
       inverse_diagonal_vector.local_element(i) = 1. / diagonal_vector.local_element(i);
     else
       inverse_diagonal_vector.local_element(i) = 1.;
-  diagonal_vector.zero_out_ghosts();
-  inverse_diagonal_vector.zero_out_ghosts();
+  diagonal_vector.zero_out_ghost_values();
+  inverse_diagonal_vector.zero_out_ghost_values();
 }
 
 
@@ -68,7 +68,8 @@ DiagonalPreconditioner<Number>::reinit(
   inverse_diagonal_block_vector = diagonal_vector_in;
   const double linfty_norm      = inverse_diagonal_block_vector.linfty_norm();
   for (unsigned int bl = 0; bl < inverse_diagonal_block_vector.n_blocks(); ++bl)
-    for (unsigned int i = 0; i < inverse_diagonal_block_vector.block(bl).local_size();
+    for (unsigned int i = 0;
+         i < inverse_diagonal_block_vector.block(bl).locally_owned_size();
          ++i)
       if (std::abs(inverse_diagonal_block_vector.block(bl).local_element(i)) >
           1e-10 * linfty_norm)
@@ -76,7 +77,7 @@ DiagonalPreconditioner<Number>::reinit(
           1. / inverse_diagonal_block_vector.block(bl).local_element(i);
       else
         inverse_diagonal_block_vector.block(bl).local_element(i) = 1.;
-  inverse_diagonal_block_vector.zero_out_ghosts();
+  inverse_diagonal_block_vector.zero_out_ghost_values();
 }
 
 
@@ -89,7 +90,7 @@ DiagonalPreconditioner<Number>::vmult(
 {
   AssertDimension(diagonal_vector.size(), src.size());
   AssertDimension(inverse_diagonal_block_vector.size(), 0);
-  for (unsigned int i = 0; i < inverse_diagonal_vector.local_size(); ++i)
+  for (unsigned int i = 0; i < inverse_diagonal_vector.locally_owned_size(); ++i)
     {
       dst.local_element(i) =
         src.local_element(i) * inverse_diagonal_vector.local_element(i);
@@ -116,7 +117,7 @@ DiagonalPreconditioner<Number>::vmult(
       for (unsigned int block = 0; block < src.n_blocks(); ++block)
         AssertDimension(inverse_diagonal_vector.size(), dst.block(block).size());
       const unsigned int n_blocks = src.n_blocks();
-      for (unsigned int i = 0; i < inverse_diagonal_vector.local_size(); ++i)
+      for (unsigned int i = 0; i < inverse_diagonal_vector.locally_owned_size(); ++i)
         for (unsigned int block = 0; block < n_blocks; ++block)
           {
             dst.block(block).local_element(i) = src.block(block).local_element(i) *
