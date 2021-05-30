@@ -86,11 +86,11 @@ namespace dealii
       Utilities::MPI::RemotePointEvaluation<spacedim, spacedim> cache;
 
       const auto evaluation_values =
-        VectorTools::evaluate_at_points<spacedim>(background_mapping,
-                                                  background_dofhandler,
-                                                  velocity_vector,
-                                                  evaluation_points,
-                                                  cache);
+        VectorTools::point_values<spacedim>(background_mapping,
+                                            background_dofhandler,
+                                            velocity_vector,
+                                            evaluation_points,
+                                            cache);
 
       unsigned int counter = 0;
 
