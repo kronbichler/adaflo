@@ -588,23 +588,14 @@ public:
     {
       DataOutBase::VtkFlags flags;
 
-#if (DEAL_II_VERSION_MAJOR <= 9) && (DEAL_II_VERSION_MINOR <= 3)
-      DataOut<dim - 1, DoFHandler<dim - 1, dim>> data_out;
-#else
       DataOut<dim - 1, dim> data_out;
-#endif
       data_out.set_flags(flags);
       data_out.add_data_vector(surface_dofhandler, curvature_vector, "curvature");
       data_out.add_data_vector(surface_dofhandler_dim, normal_vector, "normal");
 
       data_out.build_patches(*euler_mapping,
                              surface_dofhandler_dim.get_fe().degree + 1,
-#if (DEAL_II_VERSION_MAJOR <= 9) && (DEAL_II_VERSION_MINOR <= 3)
-                             DataOut<dim - 1, DoFHandler<dim - 1, dim>>
-#else
-                             DataOut<dim - 1, dim>
-#endif
-                             ::CurvedCellRegion::curved_inner_cells);
+                             DataOut<dim - 1, dim>::CurvedCellRegion::curved_inner_cells);
 
       std::filesystem::path path(output_filename + "_surface");
 
@@ -902,22 +893,14 @@ public:
       {
         DataOutBase::VtkFlags flags;
 
-#if (DEAL_II_VERSION_MAJOR <= 9) && (DEAL_II_VERSION_MINOR <= 3)
-        DataOut<dim - 1, DoFHandler<dim - 1, dim>> data_out;
-#else
         DataOut<dim - 1, dim> data_out;
-#endif
         data_out.set_flags(flags);
         data_out.attach_dof_handler(euler_dofhandler);
 
-        data_out.build_patches(*euler_mapping,
-                               euler_dofhandler.get_fe().degree + 1,
-#if (DEAL_II_VERSION_MAJOR <= 9) && (DEAL_II_VERSION_MINOR <= 3)
-                               DataOut<dim - 1, DoFHandler<dim - 1, dim>>
-#else
-                               DataOut<dim - 1, dim>
-#endif
-                               ::CurvedCellRegion::curved_inner_cells);
+        data_out.build_patches(
+          *euler_mapping,
+          euler_dofhandler.get_fe().degree + 1,
+          DataOut<dim - 1, dim>::CurvedCellRegion::curved_inner_cells);
 
         std::filesystem::path path(output_filename + "_surface");
 
