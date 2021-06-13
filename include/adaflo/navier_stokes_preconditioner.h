@@ -200,7 +200,7 @@ private:
     unsigned int n_subelements_u;
     unsigned int n_subelements_p;
 
-    static const unsigned int              n_dofs = GeometryInfo<dim>::vertices_per_cell;
+    static constexpr unsigned int          n_dofs = GeometryInfo<dim>::vertices_per_cell;
     Tensor<1, dim>                         grads_unit_cell[n_dofs][n_dofs];
     double                                 values_unit_cell[n_dofs][n_dofs];
     std::vector<std::vector<unsigned int>> dof_to_lin_u;
