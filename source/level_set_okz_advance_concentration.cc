@@ -583,7 +583,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
                                                   this->parameters.dof_index_ls);
             cell_rhs = 0;
 
-            for (const auto face : cell->face_iterators())
+            for (const auto &face : cell->face_iterators())
               {
                 if (face->at_boundary() == false)
                   continue;
