@@ -1,0 +1,60 @@
+# --------------------------------------------------------------------------
+#
+# Copyright (C) 2013 - 2016 by the adaflo authors
+#
+# This file is part of the adaflo library.
+#
+# The adaflo library is free software; you can use it, redistribute it,
+# and/or modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.  The full text of the
+# license can be found in the file LICENSE at the top level of the adaflo
+# distribution.
+#
+# --------------------------------------------------------------------------
+# Listing of Parameters
+#
+# mpirun: 2
+subsection Problem-specific
+  set two-phase method = level set okz
+end
+subsection Two phase
+  set density              = 1.2
+  set density difference   = 1198.8
+  set viscosity            = 0.022
+  set viscosity difference = 0.0
+  set surface tension      = 0.0652
+  set epsilon              = 1.5
+  set gravity              = -9.81
+  set concentration subdivisions = 4
+  set grad pressure compatible = 1
+  set localize surface tension = 1
+  set curvature correction = 1
+  set number reinit steps = 5
+  set number initial reinit steps = 5
+end
+subsection Time stepping
+  set scheme           = bdf_2
+  set end time         = 7.5e-3
+  set step size        = 1.0e-5
+end
+subsection Navier-Stokes
+  set dimension            = 3
+  set global refinements   = 1
+  set adaptive refinements = 2
+  set velocity degree      = 2
+  subsection Solver
+    set NL max iterations            = 10
+    set NL tolerance                 = 1.e-9
+    set lin max iterations           = 30
+    set lin tolerance                = 1.e-4
+    set lin velocity preconditioner  = ilu
+    set lin its before inner solvers = 50
+  end
+end
+subsection Output options
+  set output filename  = output-drop_impact/data
+  set output verbosity = 2
+  set output frequency = 2.5e-5
+  set output vtk files = 1
+end
