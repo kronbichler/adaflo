@@ -71,10 +71,8 @@ public:
   double
   value(const Point<dim> &p, const unsigned int /*component*/) const
   {
-    const double radius               = 0.25;
-    Point<dim>   distance_from_origin = p;
-    for (unsigned int i = 0; i < dim; ++i)
-      distance_from_origin[i] = 0.5;
+    const double radius = 0.25;
+    Point<dim>   distance_from_origin(0.0, 0.5);
     return p.distance(distance_from_origin) - radius;
   }
 };
@@ -112,38 +110,17 @@ template <int dim>
 void
 MicroFluidicProblem<dim>::run()
 {
-  std::vector<unsigned int> subdivisions(dim, 5);
-  subdivisions[dim - 1] = 10;
-
-  const Point<dim> bottom_left;
-  const Point<dim> top_right = (dim == 2 ? Point<dim>(1, 2) : Point<dim>(1, 1, 2));
-  GridGenerator::subdivided_hyper_rectangle(triangulation,
-                                            subdivisions,
-                                            bottom_left,
-                                            top_right);
-
-  typename parallel::distributed::Triangulation<dim>::active_cell_iterator
-    cell = triangulation.begin(),
-    endc = triangulation.end();
-
-  for (; cell != endc; ++cell)
-    for (unsigned int face = 0; face < GeometryInfo<dim>::faces_per_cell; ++face)
-      if (cell->face(face)->at_boundary() &&
-          (std::fabs(cell->face(face)->center()[0] - 1) < 1e-14 ||
-           std::fabs(cell->face(face)->center()[0]) < 1e-14))
-        cell->face(face)->set_boundary_id(2);
-
-  AssertThrow(parameters.global_refinements < 12, ExcInternalError());
+  GridGenerator::subdivided_hyper_cube(triangulation,
+                                       parameters.global_refinements,
+                                       -1.0,
+                                       1.0);
 
   NavierStokes<dim> navier_stokes_solver(parameters, triangulation, &timer);
 
   navier_stokes_solver.set_no_slip_boundary(0);
   navier_stokes_solver.fix_pressure_constant(0);
-  navier_stokes_solver.set_symmetry_boundary(2);
-  // navier_stokes_solver.boundary->fluid_type[0] =
-  // std::make_shared<Functions::ConstantFunction<dim>>(1.0);
-
   navier_stokes_solver.setup_problem(Functions::ZeroFunction<dim>(dim));
+  navier_stokes_solver.output_solution(parameters.output_filename);
   navier_stokes_solver.print_n_dofs();
 
   Triangulation<dim - 1, dim> surface_mesh;
@@ -170,6 +147,8 @@ MicroFluidicProblem<dim>::run()
     AssertThrow(false, ExcNotImplemented());
 
   solver->output_solution(parameters.output_filename);
+
+  return; // TODO: only interested in first time step
 
   while (navier_stokes_solver.time_stepping.at_end() == false)
     {
