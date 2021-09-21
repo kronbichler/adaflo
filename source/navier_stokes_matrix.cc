@@ -101,6 +101,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
       variable_densities.resize(size, make_vectorized_array<double>(parameters.density));
       variable_viscosities.resize(size,
                                   make_vectorized_array<double>(parameters.viscosity));
+      variable_damping_coefficients.resize(size, make_vectorized_array<double>(0));
     }
   if (parameters.linearization != FlowParameters::coupled_velocity_explicit)
     linearized_velocities.resize(size);
@@ -177,6 +178,7 @@ NavierStokesMatrix<dim>::clear()
   time_stepping = 0;
   variable_densities.clear();
   variable_viscosities.clear();
+  variable_damping_coefficients.clear();
   linearized_velocities.clear();
   variable_densities_preconditioner.clear();
   variable_viscosities_preconditioner.clear();
@@ -632,6 +634,8 @@ NavierStokesMatrix<dim>::local_operation(
     use_variable_coefficients ? begin_densities(cell_range.first) : 0;
   const vector_t *mu_values =
     use_variable_coefficients ? begin_viscosities(cell_range.first) : 0;
+  const vector_t *damping_values =
+    use_variable_coefficients ? begin_damping_coeff(cell_range.first) : 0;
 
   const bool need_extrapolated_velocity =
     parameters.linearization == FlowParameters::projection ||
@@ -810,6 +814,15 @@ NavierStokesMatrix<dim>::local_operation(
                     conv[d] += tau1 * res;
                   }
               conv *= rho;
+
+              // damping K * u_new with the damping coefficient K; this expression
+              // is NOT considered in the NavierStokesPreconditioner
+              const vector_t damping =
+                use_variable_coefficients ?
+                  damping_values[q] :
+                  make_vectorized_array<double>(parameters.damping);
+              conv -= damping * val_u;
+
               velocity.submit_value(conv, q);
             }
 
@@ -883,6 +896,7 @@ NavierStokesMatrix<dim>::local_operation(
         {
           rho_values += velocity.n_q_points;
           mu_values += velocity.n_q_points;
+          damping_values += velocity.n_q_points;
         }
     }
 }
@@ -1151,6 +1165,7 @@ NavierStokesMatrix<dim>::print_memory_consumption(std::ostream &stream) const
     stream << "| Variable densities & viscosities: "
            << 1e-6 * double(variable_densities.memory_consumption() +
                             variable_viscosities.memory_consumption() +
+                            variable_damping_coefficients.memory_consumption() +
                             variable_densities_preconditioner.memory_consumption() +
                             variable_viscosities_preconditioner.memory_consumption())
            << " MB\n";

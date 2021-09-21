@@ -68,6 +68,7 @@ struct FlowParameters
   bool         augmented_taylor_hood;
   double       viscosity;
   double       density;
+  double       damping;
   double       tau_grad_div;
   unsigned int max_nl_iteration;
   double       tol_nl_iteration;
