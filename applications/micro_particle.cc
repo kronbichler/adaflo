@@ -289,7 +289,8 @@ namespace MicroFluidic
 
 
 
-  void create_triangulation(Triangulation<2> &triangulation)
+  void
+  create_triangulation(Triangulation<2> &triangulation)
   {
     const int   dim = 2;
     GridIn<dim> grid_in;
@@ -316,7 +317,8 @@ namespace MicroFluidic
 
 
 
-  void create_triangulation(Triangulation<3> &triangulation)
+  void
+  create_triangulation(Triangulation<3> &triangulation)
   {
     Triangulation<2> tria_2d;
     create_triangulation(tria_2d);
