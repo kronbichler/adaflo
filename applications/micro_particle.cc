@@ -542,7 +542,8 @@ main(int argc, char **argv)
 
   // change mode for rounding: denormals are flushed to zero to avoid computing
   // on denormals which can slow down things.
-#define MXCSR_DAZ (1 << 6)  /* Enable denormals are zero mode */
+#define MXCSR_DAZ (1 << 6) /* Enable denormals are zero mode */
+
 #define MXCSR_FTZ (1 << 15) /* Enable flush to zero mode */
 
   unsigned int mxcsr = __builtin_ia32_stmxcsr();
