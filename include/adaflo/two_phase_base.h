@@ -81,7 +81,8 @@ public:
   // be used. The optional argument @p interface_points collects the interface
   // position in a list of points, connecting the start and end point of a
   // segment within an element or part of an element.
-  std::vector<double> compute_bubble_statistics(
+  std::vector<double>
+  compute_bubble_statistics(
     std::vector<Tensor<2, dim>> *interface_points = 0,
     const unsigned int           sub_refinements  = numbers::invalid_unsigned_int) const;
 
@@ -90,7 +91,8 @@ public:
   // this is relatively similar to compute_bubble_statistics. In 3D, this call
   // is considerably more accurate and detailed than the plain bubble
   // statistics which compute smeared-out quantities.
-  std::vector<double> compute_bubble_statistics_immersed(
+  std::vector<double>
+  compute_bubble_statistics_immersed(
     std::vector<Tensor<2, dim>> *interface_points = 0) const;
 
   void

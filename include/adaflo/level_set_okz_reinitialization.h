@@ -101,10 +101,11 @@ public:
 
   // performs reinitialization
   void
-  reinitialize(const double                     dt,
-               const unsigned int               stab_steps,
-               const unsigned int               diff_steps     = 0,
-               const std::function<void(bool)> &compute_normal = [](const bool) {});
+  reinitialize(
+    const double                     dt,
+    const unsigned int               stab_steps,
+    const unsigned int               diff_steps     = 0,
+    const std::function<void(bool)> &compute_normal = [](const bool) {});
 
   void
   reinitialization_vmult(VectorType &      dst,

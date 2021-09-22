@@ -693,9 +693,9 @@ NavierStokesMatrix<dim>::local_operation(
           if (parameters.physical_type != FlowParameters::stokes)
             {
               // variable parameters if present
-              const vector_t rho = use_variable_coefficients ?
-                                     rho_values[q] :
-                                     make_vectorized_array<double>(parameters.density);
+              const vector_t           rho = use_variable_coefficients ?
+                                               rho_values[q] :
+                                               make_vectorized_array<double>(parameters.density);
               Tensor<1, dim, vector_t> val_u =
                 convert_to_vector<dim, vector_t>(velocity.get_value(q));
 

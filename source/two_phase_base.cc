@@ -616,15 +616,16 @@ TwoPhaseBaseAlgorithm<dim>::set_adaptive_time_step(const double norm_velocity) c
 
 
 template <>
-std::vector<double> TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
+std::vector<double>
+TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
   std::vector<Tensor<2, 2>> *interface_points,
   const unsigned int         sub_refinements) const
 {
   const unsigned int dim = 2;
 
-  const int sub_per_d = sub_refinements == numbers::invalid_unsigned_int ?
-                          parameters.velocity_degree + 3 :
-                          sub_refinements;
+  const int            sub_per_d = sub_refinements == numbers::invalid_unsigned_int ?
+                                     parameters.velocity_degree + 3 :
+                                     sub_refinements;
   const QIterated<dim> quadrature_formula(QTrapez<1>(), sub_per_d);
   const QGauss<dim>    interior_quadrature(parameters.velocity_degree);
   const unsigned int   n_q_points = quadrature_formula.size();
@@ -967,8 +968,8 @@ std::vector<double> TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
 
 template <>
 std::vector<double>
-  TwoPhaseBaseAlgorithm<3>::compute_bubble_statistics(std::vector<Tensor<2, 3>> *,
-                                                      const unsigned int) const
+TwoPhaseBaseAlgorithm<3>::compute_bubble_statistics(std::vector<Tensor<2, 3>> *,
+                                                    const unsigned int) const
 {
   const unsigned int dim = 3;
 
@@ -1089,7 +1090,8 @@ std::vector<double>
 
 
 template <int dim>
-std::vector<double> TwoPhaseBaseAlgorithm<dim>::compute_bubble_statistics_immersed(
+std::vector<double>
+TwoPhaseBaseAlgorithm<dim>::compute_bubble_statistics_immersed(
   std::vector<Tensor<2, dim>> * /*interface_points*/) const
 {
   // this needs immersed/cut functionality which is not currently available in

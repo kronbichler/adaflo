@@ -178,7 +178,8 @@ FlowPastCylinder<dim>::output_results() const
 
 
 
-void create_triangulation(Triangulation<2> &tria, const bool compute_in_2d = true)
+void
+create_triangulation(Triangulation<2> &tria, const bool compute_in_2d = true)
 {
   Triangulation<2> left, middle, right, tmp, tmp2;
   GridGenerator::subdivided_hyper_rectangle(
@@ -277,7 +278,8 @@ void create_triangulation(Triangulation<2> &tria, const bool compute_in_2d = tru
 
 
 
-void create_triangulation(Triangulation<3> &tria)
+void
+create_triangulation(Triangulation<3> &tria)
 {
   Triangulation<2> tria_2d;
   create_triangulation(tria_2d, false);

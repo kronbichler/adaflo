@@ -151,7 +151,8 @@ FlowPastCylinder<dim>::output_results() const
 
 
 
-void create_triangulation(Triangulation<2> &tria)
+void
+create_triangulation(Triangulation<2> &tria)
 {
   // create mesh with hole
   Point<2>                  p1(0, 0);
@@ -191,7 +192,8 @@ void create_triangulation(Triangulation<2> &tria)
 
 
 
-void create_triangulation(Triangulation<3> &tria)
+void
+create_triangulation(Triangulation<3> &tria)
 {
   Triangulation<2> tria_2d;
   create_triangulation(tria_2d);
