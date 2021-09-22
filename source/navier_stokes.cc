@@ -1163,10 +1163,13 @@ NavierStokes<dim>::compute_initial_stokes_field()
               VectorizedArray<double> *visc =
                 navier_stokes_matrix.begin_viscosities(cell);
               VectorizedArray<double> *dens = navier_stokes_matrix.begin_densities(cell);
+              VectorizedArray<double> *damp =
+                navier_stokes_matrix.begin_damping_coeff(cell);
               for (unsigned int q = 0; q < matrix_free->get_n_q_points(quad_index_u); ++q)
                 {
                   visc[q] = viscosity;
                   dens[q] = VectorizedArray<double>();
+                  damp[q] = VectorizedArray<double>();
                 }
             }
         }

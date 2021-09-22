@@ -168,6 +168,11 @@ public:
   VectorizedArray<double> *
   begin_viscosities(const unsigned int macro_cell);
 
+  const VectorizedArray<double> *
+  begin_damping_coeff(const unsigned int macro_cell) const;
+  VectorizedArray<double> *
+  begin_damping_coeff(const unsigned int macro_cell);
+
   const velocity_stored *
   begin_linearized_velocities(const unsigned int macro_cell) const;
   bool
@@ -256,6 +261,7 @@ public:
 private:
   mutable AlignedVector<VectorizedArray<double>> variable_densities;
   mutable AlignedVector<VectorizedArray<double>> variable_viscosities;
+  mutable AlignedVector<VectorizedArray<double>> variable_damping_coefficients;
   mutable AlignedVector<velocity_stored>         linearized_velocities;
 
   mutable AlignedVector<VectorizedArray<double>> variable_densities_preconditioner;
@@ -327,6 +333,34 @@ NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell)
                   matrix_free->n_cell_batches() *
                     matrix_free->get_n_q_points(quad_index_u));
   return &variable_viscosities[matrix_free->get_n_q_points(quad_index_u) * macro_cell];
+}
+
+
+
+template <int dim>
+inline const VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_damping_coeff(const unsigned int macro_cell) const
+{
+  AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
+  AssertDimension(variable_damping_coefficients.size(),
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_damping_coefficients[matrix_free->get_n_q_points(quad_index_u) *
+                                        macro_cell];
+}
+
+
+
+template <int dim>
+inline VectorizedArray<double> *
+NavierStokesMatrix<dim>::begin_damping_coeff(const unsigned int macro_cell)
+{
+  AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
+  AssertDimension(variable_damping_coefficients.size(),
+                  matrix_free->n_cell_batches() *
+                    matrix_free->get_n_q_points(quad_index_u));
+  return &variable_damping_coefficients[matrix_free->get_n_q_points(quad_index_u) *
+                                        macro_cell];
 }
 
 

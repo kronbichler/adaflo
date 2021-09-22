@@ -109,6 +109,7 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     Patterns::Double(),
                     "Defines the fluid dynamic viscosity");
   prm.declare_entry("density", "1.", Patterns::Double(), "Defines the fluid density");
+  prm.declare_entry("damping", "0", Patterns::Double(), "Defines the fluid damping.");
   prm.declare_entry("physical type",
                     "incompressible",
                     Patterns::Selection(
@@ -454,7 +455,9 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
   augmented_taylor_hood = prm.get_integer("augmented Taylor-Hood elements");
   viscosity             = prm.get_double("viscosity");
   density               = prm.get_double("density");
-  std::string type      = prm.get("physical type");
+  damping               = -prm.get_double(
+    "damping"); // sign(damping) = minus: damping; sign(damping) = plus: acceleration
+  std::string type = prm.get("physical type");
   if (type == "stokes")
     physical_type = stokes;
   else if (type == "incompressible")

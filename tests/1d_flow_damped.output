@@ -1,0 +1,952 @@
+Running a 1D flow using BDF-2, Q2/Q1 elements
+ Number of active cells: 2048.
+ Number of degrees of freedom (velocity/pressure): 6146 (4097 + 2049).
+ Approximate size last cell: 0.0012207
+
+Time step #1, advancing from t_n-1 = 0 to t = 0.01 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.236e+00        ILUs       6.91e+01       28       6.94e-06
+   6.937e-06        ---        7.14e-04       24       4.60e-10
+   4.596e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      309      309      309           0      0     
+-- Statistics -- nln solver  :     2.01     2.01     2.01     2.01  0      0     
+-- Statistics --  lin solver :     1.37     1.37     1.37    0.683  0      0     
+-- Statistics --   mat-vec   :    0.507    0.507    0.507  0.00905  0      0     
+-- Statistics --   full prec :     0.75     0.75     0.75   0.0134  0      0     
+-- Statistics --   velocity  :   0.0523   0.0523   0.0523 0.000935  0      0     
+-- Statistics --   div matrix:    0.617    0.617    0.617    0.011  0      0     
+-- Statistics --   pres mass :   0.0142   0.0142   0.0142 0.000254  0      0     
+-- Statistics --   pres Poiss:    0.063    0.063    0.063  0.00113  0      0     
+
+
+Time step #2, advancing from t_n-1 = 0.01 to t = 0.02 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.347e-02        ILUs       2.43e-01        0       1.02e-09
+   1.022e-09        ---        1.65e-08        0       3.78e-10
+   3.776e-10     converged.
+
+
+Time step #3, advancing from t_n-1 = 0.02 to t = 0.03 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.086e-06        ---        2.16e-05        2       1.75e-10
+   1.751e-10     converged.
+
+
+Time step #4, advancing from t_n-1 = 0.03 to t = 0.04 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.259e-06        ILUs       2.34e-05        2       2.29e-10
+   2.287e-10     converged.
+
+
+Time step #5, advancing from t_n-1 = 0.04 to t = 0.05 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.317e-06        ILUs       2.40e-05        1       4.73e-10
+   4.728e-10     converged.
+
+
+Time step #6, advancing from t_n-1 = 0.05 to t = 0.06 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.336e-06        ILUs       2.42e-05        2       2.97e-10
+   2.975e-10     converged.
+
+
+Time step #7, advancing from t_n-1 = 0.06 to t = 0.07 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.342e-06        ILUs       2.43e-05        2       3.02e-10
+   3.016e-10     converged.
+
+
+Time step #8, advancing from t_n-1 = 0.07 to t = 0.08 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.344e-06        ILUs       2.43e-05        1       4.80e-10
+   4.802e-10     converged.
+
+
+Time step #9, advancing from t_n-1 = 0.08 to t = 0.09 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.345e-06        ILUs       2.43e-05        2       4.39e-10
+   4.392e-10     converged.
+
+
+Time step #10, advancing from t_n-1 = 0.09 to t = 0.1 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.345e-06        ILUs       2.43e-05        2       4.78e-10
+   4.783e-10     converged.
+
+
+Time step #11, advancing from t_n-1 = 0.1 to t = 0.11 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.345e-06        ILUs       2.43e-05        3       4.62e-10
+   4.622e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      317      317      317           0      0     
+-- Statistics -- nln solver  :     5.98     5.98     5.98    0.598  0      0     
+-- Statistics --  lin solver :    0.668    0.668    0.668   0.0608  0      0     
+-- Statistics --   mat-vec   :    0.323    0.323    0.323  0.00828  0      0     
+-- Statistics --   full prec :    0.286    0.286    0.286  0.00734  0      0     
+-- Statistics --   velocity  :   0.0491   0.0491   0.0491  0.00126  0      0     
+-- Statistics --   div matrix:    0.174    0.174    0.174  0.00447  0      0     
+-- Statistics --   pres mass :   0.0116   0.0116   0.0116 0.000298  0      0     
+-- Statistics --   pres Poiss:   0.0481   0.0481   0.0481  0.00123  0      0     
+
+
+Time step #12, advancing from t_n-1 = 0.11 to t = 0.12 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.345e-06        ILUs       2.43e-05        4       2.92e-10
+   2.917e-10     converged.
+
+
+Time step #13, advancing from t_n-1 = 0.12 to t = 0.13 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.344e-06        ILUs       2.43e-05        4       2.79e-10
+   2.785e-10     converged.
+
+
+Time step #14, advancing from t_n-1 = 0.13 to t = 0.14 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.344e-06        ILUs       2.43e-05        3       4.78e-10
+   4.780e-10     converged.
+
+
+Time step #15, advancing from t_n-1 = 0.14 to t = 0.15 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.344e-06        ILUs       2.43e-05        2       4.44e-10
+   4.441e-10     converged.
+
+
+Time step #16, advancing from t_n-1 = 0.15 to t = 0.16 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.344e-06        ILUs       2.43e-05        3       4.38e-10
+   4.379e-10     converged.
+
+
+Time step #17, advancing from t_n-1 = 0.16 to t = 0.17 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.343e-06        ILUs       2.43e-05        4       3.00e-10
+   3.001e-10     converged.
+
+
+Time step #18, advancing from t_n-1 = 0.17 to t = 0.18 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.343e-06        ILUs       2.43e-05        4       2.75e-10
+   2.751e-10     converged.
+
+
+Time step #19, advancing from t_n-1 = 0.18 to t = 0.19 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.343e-06        ILUs       2.43e-05        3       4.93e-10
+   4.926e-10     converged.
+
+
+Time step #20, advancing from t_n-1 = 0.19 to t = 0.2 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.343e-06        ILUs       2.43e-05        2       4.40e-10
+   4.401e-10     converged.
+
+
+Time step #21, advancing from t_n-1 = 0.2 to t = 0.21 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.342e-06        ILUs       2.43e-05        3       4.61e-10
+   4.609e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      317      317      317           0      0     
+-- Statistics -- nln solver  :     7.16     7.16     7.16    0.716  0      0     
+-- Statistics --  lin solver :    0.926    0.926    0.926   0.0926  0      0     
+-- Statistics --   mat-vec   :    0.501    0.501    0.501  0.00963  0      0     
+-- Statistics --   full prec :    0.345    0.345    0.345  0.00663  0      0     
+-- Statistics --   velocity  :   0.0495   0.0495   0.0495 0.000951  0      0     
+-- Statistics --   div matrix:     0.22     0.22     0.22  0.00424  0      0     
+-- Statistics --   pres mass :   0.0167   0.0167   0.0167 0.000322  0      0     
+-- Statistics --   pres Poiss:   0.0487   0.0487   0.0487 0.000936  0      0     
+
+
+Time step #22, advancing from t_n-1 = 0.21 to t = 0.22 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.342e-06        ILUs       2.43e-05        4       3.13e-10
+   3.129e-10     converged.
+
+
+Time step #23, advancing from t_n-1 = 0.22 to t = 0.23 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.342e-06        ILUs       2.43e-05        4       2.84e-10
+   2.837e-10     converged.
+
+
+Time step #24, advancing from t_n-1 = 0.23 to t = 0.24 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.342e-06        ILUs       2.43e-05        4       2.86e-10
+   2.862e-10     converged.
+
+
+Time step #25, advancing from t_n-1 = 0.24 to t = 0.25 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.341e-06        ILUs       2.43e-05        3       4.71e-10
+   4.709e-10     converged.
+
+
+Time step #26, advancing from t_n-1 = 0.25 to t = 0.26 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.341e-06        ILUs       2.43e-05        2       4.28e-10
+   4.277e-10     converged.
+
+
+Time step #27, advancing from t_n-1 = 0.26 to t = 0.27 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.341e-06        ILUs       2.43e-05        3       4.65e-10
+   4.646e-10     converged.
+
+
+Time step #28, advancing from t_n-1 = 0.27 to t = 0.28 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.341e-06        ILUs       2.43e-05        4       3.23e-10
+   3.225e-10     converged.
+
+
+Time step #29, advancing from t_n-1 = 0.28 to t = 0.29 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.341e-06        ILUs       2.43e-05        4       2.96e-10
+   2.956e-10     converged.
+
+
+Time step #30, advancing from t_n-1 = 0.29 to t = 0.3 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.340e-06        ILUs       2.43e-05        4       3.03e-10
+   3.027e-10     converged.
+
+
+Time step #31, advancing from t_n-1 = 0.3 to t = 0.31 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.340e-06        ILUs       2.43e-05        3       4.85e-10
+   4.851e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      318      318      318           0      0     
+-- Statistics -- nln solver  :     7.04     7.04     7.04    0.704  0      0     
+-- Statistics --  lin solver :    0.918    0.918    0.918   0.0918  0      0     
+-- Statistics --   mat-vec   :     0.47     0.47     0.47  0.00855  0      0     
+-- Statistics --   full prec :     0.37     0.37     0.37  0.00673  0      0     
+-- Statistics --   velocity  :   0.0656   0.0656   0.0656  0.00119  0      0     
+-- Statistics --   div matrix:    0.236    0.236    0.236   0.0043  0      0     
+-- Statistics --   pres mass :   0.0202   0.0202   0.0202 0.000367  0      0     
+-- Statistics --   pres Poiss:    0.044    0.044    0.044 0.000799  0      0     
+
+
+Time step #32, advancing from t_n-1 = 0.31 to t = 0.32 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.340e-06        ILUs       2.42e-05        2       4.45e-10
+   4.452e-10     converged.
+
+
+Time step #33, advancing from t_n-1 = 0.32 to t = 0.33 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.340e-06        ILUs       2.42e-05        3       4.91e-10
+   4.908e-10     converged.
+
+
+Time step #34, advancing from t_n-1 = 0.33 to t = 0.34 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.339e-06        ILUs       2.42e-05        4       3.48e-10
+   3.479e-10     converged.
+
+
+Time step #35, advancing from t_n-1 = 0.34 to t = 0.35 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.339e-06        ILUs       2.42e-05        4       3.24e-10
+   3.243e-10     converged.
+
+
+Time step #36, advancing from t_n-1 = 0.35 to t = 0.36 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.339e-06        ILUs       2.42e-05        4       3.35e-10
+   3.347e-10     converged.
+
+
+Time step #37, advancing from t_n-1 = 0.36 to t = 0.37 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.339e-06        ILUs       2.42e-05        4       3.30e-10
+   3.295e-10     converged.
+
+
+Time step #38, advancing from t_n-1 = 0.37 to t = 0.38 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.338e-06        ILUs       2.42e-05        3       4.99e-10
+   4.994e-10     converged.
+
+
+Time step #39, advancing from t_n-1 = 0.38 to t = 0.39 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.338e-06        ILUs       2.42e-05        2       4.64e-10
+   4.640e-10     converged.
+
+
+Time step #40, advancing from t_n-1 = 0.39 to t = 0.4 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.338e-06        ILUs       2.42e-05        4       2.48e-10
+   2.482e-10     converged.
+
+
+Time step #41, advancing from t_n-1 = 0.4 to t = 0.41 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.338e-06        ILUs       2.42e-05        4       3.10e-10
+   3.104e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      319      319      319           0      0     
+-- Statistics -- nln solver  :     6.98     6.98     6.98    0.698  0      0     
+-- Statistics --  lin solver :    0.952    0.952    0.952   0.0952  0      0     
+-- Statistics --   mat-vec   :    0.499    0.499    0.499  0.00924  0      0     
+-- Statistics --   full prec :    0.381    0.381    0.381  0.00706  0      0     
+-- Statistics --   velocity  :   0.0541   0.0541   0.0541    0.001  0      0     
+-- Statistics --   div matrix:    0.251    0.251    0.251  0.00465  0      0     
+-- Statistics --   pres mass :   0.0229   0.0229   0.0229 0.000424  0      0     
+-- Statistics --   pres Poiss:   0.0487   0.0487   0.0487 0.000902  0      0     
+
+
+Time step #42, advancing from t_n-1 = 0.41 to t = 0.42 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.337e-06        ILUs       2.42e-05        4       3.38e-10
+   3.376e-10     converged.
+
+
+Time step #43, advancing from t_n-1 = 0.42 to t = 0.43 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.337e-06        ILUs       2.42e-05        4       3.43e-10
+   3.426e-10     converged.
+
+
+Time step #44, advancing from t_n-1 = 0.43 to t = 0.44 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.337e-06        ILUs       2.42e-05        4       3.40e-10
+   3.397e-10     converged.
+
+
+Time step #45, advancing from t_n-1 = 0.44 to t = 0.45 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.337e-06        ILUs       2.42e-05        4       3.29e-10
+   3.295e-10     converged.
+
+
+Time step #46, advancing from t_n-1 = 0.45 to t = 0.46 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.337e-06        ILUs       2.42e-05        3       4.69e-10
+   4.691e-10     converged.
+
+
+Time step #47, advancing from t_n-1 = 0.46 to t = 0.47 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.336e-06        ILUs       2.42e-05        2       4.57e-10
+   4.572e-10     converged.
+
+
+Time step #48, advancing from t_n-1 = 0.47 to t = 0.48 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.336e-06        ILUs       2.42e-05        4       2.49e-10
+   2.490e-10     converged.
+
+
+Time step #49, advancing from t_n-1 = 0.48 to t = 0.49 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.336e-06        ILUs       2.42e-05        4       3.15e-10
+   3.155e-10     converged.
+
+
+Time step #50, advancing from t_n-1 = 0.49 to t = 0.5 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.336e-06        ILUs       2.42e-05        4       3.47e-10
+   3.466e-10     converged.
+
+
+Time step #51, advancing from t_n-1 = 0.5 to t = 0.51 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.335e-06        ---        2.42e-05        4       3.57e-10
+   3.567e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      320      320      320           0      0     
+-- Statistics -- nln solver  :     6.55     6.55     6.55    0.655  0      0     
+-- Statistics --  lin solver :     1.05     1.05     1.05    0.105  0      0     
+-- Statistics --   mat-vec   :    0.527    0.527    0.527  0.00924  0      0     
+-- Statistics --   full prec :    0.411    0.411    0.411  0.00721  0      0     
+-- Statistics --   velocity  :   0.0555   0.0555   0.0555 0.000974  0      0     
+-- Statistics --   div matrix:    0.282    0.282    0.282  0.00494  0      0     
+-- Statistics --   pres mass :   0.0148   0.0148   0.0148  0.00026  0      0     
+-- Statistics --   pres Poiss:   0.0508   0.0508   0.0508 0.000891  0      0     
+
+
+Time step #52, advancing from t_n-1 = 0.51 to t = 0.52 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.335e-06        ---        2.42e-05        4       3.57e-10
+   3.572e-10     converged.
+
+
+Time step #53, advancing from t_n-1 = 0.52 to t = 0.53 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.335e-06        ---        2.42e-05        4       3.50e-10
+   3.499e-10     converged.
+
+
+Time step #54, advancing from t_n-1 = 0.53 to t = 0.54 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.335e-06        ---        2.42e-05        3       4.89e-10
+   4.892e-10     converged.
+
+
+Time step #55, advancing from t_n-1 = 0.54 to t = 0.55 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.334e-06        ---        2.42e-05        2       4.78e-10
+   4.784e-10     converged.
+
+
+Time step #56, advancing from t_n-1 = 0.55 to t = 0.56 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.334e-06        ---        2.42e-05        4       2.72e-10
+   2.716e-10     converged.
+
+
+Time step #57, advancing from t_n-1 = 0.56 to t = 0.57 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.334e-06        ---        2.42e-05        4       3.52e-10
+   3.520e-10     converged.
+
+
+Time step #58, advancing from t_n-1 = 0.57 to t = 0.58 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.334e-06        ---        2.42e-05        4       3.91e-10
+   3.906e-10     converged.
+
+
+Time step #59, advancing from t_n-1 = 0.58 to t = 0.59 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.334e-06        ---        2.42e-05        4       3.99e-10
+   3.995e-10     converged.
+
+
+Time step #60, advancing from t_n-1 = 0.59 to t = 0.6 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.333e-06        ---        2.42e-05        4       3.95e-10
+   3.945e-10     converged.
+
+
+Time step #61, advancing from t_n-1 = 0.6 to t = 0.61 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.333e-06        ---        2.42e-05        4       3.83e-10
+   3.826e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      320      320      320           0      0     
+-- Statistics -- nln solver  :     1.07     1.07     1.07    0.107  0      0     
+-- Statistics --  lin solver :    0.935    0.935    0.935   0.0935  0      0     
+-- Statistics --   mat-vec   :    0.448    0.448    0.448  0.00786  0      0     
+-- Statistics --   full prec :    0.415    0.415    0.415  0.00728  0      0     
+-- Statistics --   velocity  :   0.0615   0.0615   0.0615  0.00108  0      0     
+-- Statistics --   div matrix:    0.268    0.268    0.268  0.00471  0      0     
+-- Statistics --   pres mass :   0.0256   0.0256   0.0256 0.000449  0      0     
+-- Statistics --   pres Poiss:   0.0548   0.0548   0.0548 0.000961  0      0     
+
+
+Time step #62, advancing from t_n-1 = 0.61 to t = 0.62 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.333e-06        ---        2.42e-05        4       3.67e-10
+   3.671e-10     converged.
+
+
+Time step #63, advancing from t_n-1 = 0.62 to t = 0.63 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.333e-06        ---        2.42e-05        3       4.87e-10
+   4.872e-10     converged.
+
+
+Time step #64, advancing from t_n-1 = 0.63 to t = 0.64 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.332e-06        ---        2.42e-05        2       4.84e-10
+   4.837e-10     converged.
+
+
+Time step #65, advancing from t_n-1 = 0.64 to t = 0.65 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.332e-06        ---        2.42e-05        4       2.80e-10
+   2.802e-10     converged.
+
+
+Time step #66, advancing from t_n-1 = 0.65 to t = 0.66 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.332e-06        ---        2.42e-05        4       3.80e-10
+   3.800e-10     converged.
+
+
+Time step #67, advancing from t_n-1 = 0.66 to t = 0.67 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.332e-06        ---        2.42e-05        4       4.17e-10
+   4.174e-10     converged.
+
+
+Time step #68, advancing from t_n-1 = 0.67 to t = 0.68 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.331e-06        ---        2.42e-05        4       4.13e-10
+   4.129e-10     converged.
+
+
+Time step #69, advancing from t_n-1 = 0.68 to t = 0.69 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.331e-06        ---        2.42e-05        4       3.95e-10
+   3.954e-10     converged.
+
+
+Time step #70, advancing from t_n-1 = 0.69 to t = 0.7 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.331e-06        ---        2.42e-05        4       3.79e-10
+   3.786e-10     converged.
+
+
+Time step #71, advancing from t_n-1 = 0.7 to t = 0.71 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.331e-06        ---        2.42e-05        3       4.82e-10
+   4.819e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      320      320      320           0      0     
+-- Statistics -- nln solver  :     1.08     1.08     1.08    0.108  0      0     
+-- Statistics --  lin solver :     0.96     0.96     0.96    0.096  0      0     
+-- Statistics --   mat-vec   :    0.431    0.431    0.431  0.00769  0      0     
+-- Statistics --   full prec :    0.453    0.453    0.453  0.00809  0      0     
+-- Statistics --   velocity  :    0.067    0.067    0.067   0.0012  0      0     
+-- Statistics --   div matrix:    0.306    0.306    0.306  0.00547  0      0     
+-- Statistics --   pres mass :   0.0121   0.0121   0.0121 0.000216  0      0     
+-- Statistics --   pres Poiss:   0.0617   0.0617   0.0617   0.0011  0      0     
+
+
+Time step #72, advancing from t_n-1 = 0.71 to t = 0.72 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.330e-06        ---        2.42e-05        2       4.90e-10
+   4.903e-10     converged.
+
+
+Time step #73, advancing from t_n-1 = 0.72 to t = 0.73 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.330e-06        ---        2.41e-05        4       2.71e-10
+   2.712e-10     converged.
+
+
+Time step #74, advancing from t_n-1 = 0.73 to t = 0.74 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.330e-06        ---        2.41e-05        4       3.80e-10
+   3.800e-10     converged.
+
+
+Time step #75, advancing from t_n-1 = 0.74 to t = 0.75 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.330e-06        ---        2.41e-05        4       4.16e-10
+   4.162e-10     converged.
+
+
+Time step #76, advancing from t_n-1 = 0.75 to t = 0.76 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.330e-06        ---        2.41e-05        3       4.85e-10
+   4.850e-10     converged.
+
+
+Time step #77, advancing from t_n-1 = 0.76 to t = 0.77 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.329e-06        ---        2.41e-05        3       4.60e-10
+   4.598e-10     converged.
+
+
+Time step #78, advancing from t_n-1 = 0.77 to t = 0.78 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.329e-06        ---        2.41e-05        4       3.86e-10
+   3.858e-10     converged.
+
+
+Time step #79, advancing from t_n-1 = 0.78 to t = 0.79 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.329e-06        ---        2.41e-05        4       4.29e-10
+   4.294e-10     converged.
+
+
+Time step #80, advancing from t_n-1 = 0.79 to t = 0.8 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.329e-06        ---        2.41e-05        4       4.09e-10
+   4.089e-10     converged.
+
+
+Time step #81, advancing from t_n-1 = 0.8 to t = 0.81 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.328e-06        ---        2.41e-05        3       4.73e-10
+   4.731e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      320      320      320           0      0     
+-- Statistics -- nln solver  :     1.02     1.02     1.02    0.102  0      0     
+-- Statistics --  lin solver :    0.919    0.919    0.919   0.0919  0      0     
+-- Statistics --   mat-vec   :    0.422    0.422    0.422  0.00767  0      0     
+-- Statistics --   full prec :    0.418    0.418    0.418  0.00761  0      0     
+-- Statistics --   velocity  :    0.057    0.057    0.057  0.00104  0      0     
+-- Statistics --   div matrix:    0.282    0.282    0.282  0.00512  0      0     
+-- Statistics --   pres mass :   0.0232   0.0232   0.0232 0.000421  0      0     
+-- Statistics --   pres Poiss:   0.0425   0.0425   0.0425 0.000773  0      0     
+
+
+Time step #82, advancing from t_n-1 = 0.81 to t = 0.82 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.328e-06        ---        2.41e-05        3       4.08e-10
+   4.082e-10     converged.
+
+
+Time step #83, advancing from t_n-1 = 0.82 to t = 0.83 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.328e-06        ---        2.41e-05        4       4.16e-10
+   4.156e-10     converged.
+
+
+Time step #84, advancing from t_n-1 = 0.83 to t = 0.84 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.328e-06        ---        2.41e-05        4       4.05e-10
+   4.053e-10     converged.
+
+
+Time step #85, advancing from t_n-1 = 0.84 to t = 0.85 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.327e-06        ---        2.41e-05        3       4.71e-10
+   4.713e-10     converged.
+
+
+Time step #86, advancing from t_n-1 = 0.85 to t = 0.86 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.327e-06        ---        2.41e-05        3       4.88e-10
+   4.883e-10     converged.
+
+
+Time step #87, advancing from t_n-1 = 0.86 to t = 0.87 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.327e-06        ---        2.41e-05        4       3.36e-10
+   3.360e-10     converged.
+
+
+Time step #88, advancing from t_n-1 = 0.87 to t = 0.88 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.327e-06        ---        2.41e-05        4       4.45e-10
+   4.454e-10     converged.
+
+
+Time step #89, advancing from t_n-1 = 0.88 to t = 0.89 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.327e-06        ---        2.41e-05        2       4.91e-10
+   4.913e-10     converged.
+
+
+Time step #90, advancing from t_n-1 = 0.89 to t = 0.9 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.326e-06        ---        2.41e-05        4       3.03e-10
+   3.031e-10     converged.
+
+
+Time step #91, advancing from t_n-1 = 0.9 to t = 0.91 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.326e-06        ---        2.41e-05        4       4.67e-10
+   4.667e-10     converged.
+
+-- Statistics --                    min      avg      max avg/call  p_min  p_max
+-- Statistics -- memory [MB] :      320      320      320           0      0     
+-- Statistics -- nln solver  :     1.05     1.05     1.05    0.105  0      0     
+-- Statistics --  lin solver :    0.903    0.903    0.903   0.0903  0      0     
+-- Statistics --   mat-vec   :    0.392    0.392    0.392  0.00712  0      0     
+-- Statistics --   full prec :    0.446    0.446    0.446  0.00811  0      0     
+-- Statistics --   velocity  :   0.0569   0.0569   0.0569  0.00103  0      0     
+-- Statistics --   div matrix:    0.302    0.302    0.302  0.00549  0      0     
+-- Statistics --   pres mass :   0.0221   0.0221   0.0221 0.000401  0      0     
+-- Statistics --   pres Poiss:   0.0537   0.0537   0.0537 0.000977  0      0     
+
+
+Time step #92, advancing from t_n-1 = 0.91 to t = 0.92 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.326e-06        ---        2.41e-05        4       4.81e-10
+   4.814e-10     converged.
+
+
+Time step #93, advancing from t_n-1 = 0.92 to t = 0.93 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.326e-06        ---        2.41e-05        3       4.92e-10
+   4.924e-10     converged.
+
+
+Time step #94, advancing from t_n-1 = 0.93 to t = 0.94 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.325e-06        ---        2.41e-05        3       4.45e-10
+   4.447e-10     converged.
+
+
+Time step #95, advancing from t_n-1 = 0.94 to t = 0.95 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.325e-06        ---        2.41e-05        4       4.53e-10
+   4.525e-10     converged.
+
+
+Time step #96, advancing from t_n-1 = 0.95 to t = 0.96 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.325e-06        ---        2.41e-05        4       3.21e-10
+   3.206e-10     converged.
+
+
+Time step #97, advancing from t_n-1 = 0.96 to t = 0.97 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.325e-06        ---        2.41e-05        2       4.29e-10
+   4.287e-10     converged.
+
+
+Time step #98, advancing from t_n-1 = 0.97 to t = 0.98 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.324e-06        ---        2.41e-05        2       4.94e-10
+   4.944e-10     converged.
+
+
+Time step #99, advancing from t_n-1 = 0.98 to t = 0.99 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.324e-06        ---        2.41e-05        4       2.93e-10
+   2.932e-10     converged.
+
+
+Time step #100, advancing from t_n-1 = 0.99 to t = 1 (dt = 0.01). 
+
+   Nonlin Res     Prec Upd     Increment   Lin Iter     Lin Res
+   ____________________________________________________________
+   2.324e-06        ---        2.41e-05        4       4.21e-10
+   4.208e-10     converged.
+
+
+
++-----------------------------------------------+------------+------------+
+| Total CPU time elapsed since start            |      83.5s |            |
+|                                               |            |            |
+| Section                           | no. calls |  CPU time  | % of total |
++-----------------------------------+-----------+------------+------------+
+| Generate output.                  |        51 |      18.4s |        22% |
+| NS apply boundary conditions.     |       100 |     0.394s |      0.47% |
+| NS assemble nonlinear residual.   |       202 |      4.21s |         5% |
+| NS assemble preconditioner.       |        49 |      41.5s |        50% |
+| NS build preconditioner.          |        49 |      2.38s |       2.9% |
+| NS distribute DoFs.               |         1 |    0.0434s |         0% |
+| NS setup matrix and vectors.      |         1 |     0.144s |      0.17% |
+| NS solve system.                  |       102 |      15.8s |        19% |
+| Setup grid and initial condition. |         1 |    0.0609s |         0% |
++-----------------------------------+-----------+------------+------------+
+
+
+
++-----------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start      |      55.6s |            |
+|                                               |            |            |
+| Section                           | no. calls |  wall time | % of total |
++-----------------------------------+-----------+------------+------------+
+| Generate output.                  |        51 |      12.2s |        22% |
+| NS apply boundary conditions.     |       100 |     0.418s |      0.75% |
+| NS assemble nonlinear residual.   |       202 |      2.55s |       4.6% |
+| NS assemble preconditioner.       |        49 |      26.9s |        48% |
+| NS build preconditioner.          |        49 |       2.4s |       4.3% |
+| NS distribute DoFs.               |         1 |    0.0393s |         0% |
+| NS setup matrix and vectors.      |         1 |     0.131s |      0.24% |
+| NS solve system.                  |       102 |      10.4s |        19% |
+| Setup grid and initial condition. |         1 |    0.0642s |      0.12% |
++-----------------------------------+-----------+------------+------------+
+
