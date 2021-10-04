@@ -1169,6 +1169,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
   constraints_schur_complement.close();
 
   constraints_schur_complement_only.clear();
+
   for (unsigned int i = 0; i < dof_handler_p.locally_owned_dofs().n_elements(); ++i)
     if (constraints_schur_complement.is_constrained(
           dof_handler_p.locally_owned_dofs().nth_index_in_set(i)) &&
@@ -2417,7 +2418,9 @@ NavierStokesPreconditioner<dim>::assemble_matrices()
   // constrained entries
   if (parameters.density > 0)
     {
-      IndexSet index = matrix->get_matrix_free().get_dof_handler(1).locally_owned_dofs();
+      IndexSet index = matrix->get_matrix_free()
+                         .get_dof_handler(flow_algorithm.dof_index_p)
+                         .locally_owned_dofs();
       for (unsigned int i = 0; i < index.n_elements(); ++i)
         {
           const types::global_dof_index idx = index.nth_index_in_set(i);
