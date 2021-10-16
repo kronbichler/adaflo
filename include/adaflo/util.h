@@ -25,22 +25,6 @@
 using namespace dealii;
 
 /**
- * Return the communicator of an arbitrary mesh type. Use this function to be
- * able to code that is independent if a serial or a parallel triangulation is
- * used.
- */
-template <typename MeshType>
-MPI_Comm
-get_communicator(const MeshType &mesh)
-{
-  const auto *tria_parallel = dynamic_cast<
-    const parallel::TriangulationBase<MeshType::dimension, MeshType::space_dimension> *>(
-    &(mesh.get_triangulation()));
-
-  return tria_parallel != nullptr ? tria_parallel->get_communicator() : MPI_COMM_SELF;
-}
-
-/**
  * Return the locally-owned subdomain of an arbitrary mesh type. Use this
  * function to be able to code that is independent if a serial or a parallel
  * triangulation is used.
@@ -125,9 +109,9 @@ compute_cell_diameters(const MatrixFree<dim, double> &         matrix_free,
       cell_diameters[cell] = diameter;
     }
   cell_diameter_min =
-    -Utilities::MPI::max(-cell_diameter_min, get_communicator(triangulation));
+    -Utilities::MPI::max(-cell_diameter_min, triangulation.get_communicator());
   cell_diameter_max =
-    Utilities::MPI::max(cell_diameter_max, get_communicator(triangulation));
+    Utilities::MPI::max(cell_diameter_max, triangulation.get_communicator());
 }
 
 /**

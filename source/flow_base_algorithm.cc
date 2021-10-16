@@ -235,7 +235,7 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
   const unsigned int no_time_steps =
     (time_stepping.final() - time_stepping.start()) / output_frequency + 1;
   const unsigned int digits_steps = std::log10((double)no_time_steps) + 1;
-  const unsigned int n_procs = Utilities::MPI::n_mpi_processes(get_communicator(tria));
+  const unsigned int n_procs = Utilities::MPI::n_mpi_processes(tria.get_communicator());
   const unsigned int digits_procs = std::log10(n_procs) + 1;
 
   const unsigned int cycle = time_stepping.now() / output_frequency + 0.51;
@@ -257,7 +257,7 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
   // we create a master on the zeroth processor that describes how the
   // individual files are defining the global data set. Of course, we do not
   // need a master file when only one processor is working.
-  if (n_procs > 1 && Utilities::MPI::this_mpi_process(get_communicator(tria)) == 0)
+  if (n_procs > 1 && Utilities::MPI::this_mpi_process(tria.get_communicator()) == 0)
     {
       std::vector<std::string> filenames;
       // remove possible directory names
@@ -266,7 +266,7 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
         base_name.erase(0, base_name.find_last_of('/') + 1);
 
       for (unsigned int i = 0;
-           i < Utilities::MPI::n_mpi_processes(get_communicator(tria));
+           i < Utilities::MPI::n_mpi_processes(tria.get_communicator());
            ++i)
         filenames.push_back(base_name + "-" + Utilities::int_to_string(i, digits_procs) +
                             ".vtu");

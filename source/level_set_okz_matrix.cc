@@ -86,7 +86,7 @@ LevelSetOKZMatrixSolver<dim>::initialize_data_structures()
   DoFTools::make_sparsity_pattern(this->dof_handler, dsp, this->constraints, true);
   system_matrix.reinit(this->dof_handler.locally_owned_dofs(),
                        dsp,
-                       get_communicator(this->triangulation),
+                       this->triangulation.get_communicator(),
                        true);
 }
 
