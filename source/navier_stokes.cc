@@ -81,8 +81,9 @@ NavierStokes<dim>::NavierStokes(
   , solution_update(2)
   , time_stepping(parameters)
   , parameters(parameters)
-  , n_mpi_processes(Utilities::MPI::n_mpi_processes(get_communicator(triangulation_in)))
-  , this_mpi_process(Utilities::MPI::this_mpi_process(get_communicator(triangulation_in)))
+  , n_mpi_processes(Utilities::MPI::n_mpi_processes(triangulation_in.get_communicator()))
+  , this_mpi_process(
+      Utilities::MPI::this_mpi_process(triangulation_in.get_communicator()))
   , pcout(std::cout, this_mpi_process == 0)
   , triangulation(triangulation_in)
   , fe_u(parameters.use_simplex_mesh ?
@@ -166,7 +167,7 @@ NavierStokes<dim>::print_n_dofs() const
 {
   std::pair<unsigned int, unsigned int> n_dofs = this->n_dofs();
   const double min_cell_diameter = -Utilities::MPI::max(-triangulation.last()->diameter(),
-                                                        get_communicator(triangulation));
+                                                        triangulation.get_communicator());
 
   pcout << " Number of active cells: " << triangulation.n_global_active_cells() << "."
         << std::endl
@@ -415,7 +416,7 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_fre
       // processor
       data.mapping_update_flags = data.mapping_update_flags | update_quadrature_points;
       data.tasks_parallel_scheme =
-        Utilities::MPI::n_mpi_processes(get_communicator(triangulation)) > 1 ?
+        Utilities::MPI::n_mpi_processes(triangulation.get_communicator()) > 1 ?
           MatrixFree<dim>::AdditionalData::none :
           MatrixFree<dim>::AdditionalData::partition_color;
       if (parameters.velocity_degree == 2)
@@ -1012,14 +1013,14 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
     end_loop:
 
       const long int min_index =
-        -Utilities::MPI::max(-distance.first, get_communicator(triangulation));
+        -Utilities::MPI::max(-distance.first, triangulation.get_communicator());
       AssertThrow(min_index != std::numeric_limits<long int>::max(),
                   ExcMessage("Could not find a boundary point for fixing the pressure"));
       const double local_value =
         (distance.first == min_index ? distance.second :
                                        -std::numeric_limits<double>::max());
       const double shift =
-        Utilities::MPI::max(local_value, get_communicator(triangulation));
+        Utilities::MPI::max(local_value, triangulation.get_communicator());
       navier_stokes_matrix.apply_pressure_shift(shift, solution.block(1));
       hanging_node_constraints_p.distribute(solution.block(1));
       solution.block(1).update_ghost_values();
@@ -1070,7 +1071,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
       Utilities::System::MemoryStats stats;
       Utilities::System::get_memory_stats(stats);
       Utilities::MPI::MinMaxAvg memory =
-        Utilities::MPI::min_max_avg(stats.VmRSS / 1024, get_communicator(triangulation));
+        Utilities::MPI::min_max_avg(stats.VmRSS / 1024, triangulation.get_communicator());
       pcout << "-- Statistics -- memory [MB] : " << std::fixed << std::setprecision(0)
             << std::right << std::setw(8) << memory.min << " " << std::setprecision(0)
             << std::right << std::setw(8) << memory.avg << " " << std::setprecision(0)
@@ -1081,7 +1082,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
       std::cout.unsetf(std::ios_base::floatfield);
 
       memory = Utilities::MPI::min_max_avg(solver_timers[1].second,
-                                           get_communicator(triangulation));
+                                           triangulation.get_communicator());
       pcout << "-- Statistics -- nln solver  : " << std::setprecision(3) << std::right
             << std::setw(8) << memory.min << " " << std::setprecision(3) << std::right
             << std::setw(8) << memory.avg << " " << std::setprecision(3) << std::right
@@ -1092,7 +1093,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
       solver_timers[1] = std::pair<unsigned int, double>();
 
       memory = Utilities::MPI::min_max_avg(solver_timers[0].second,
-                                           get_communicator(triangulation));
+                                           triangulation.get_communicator());
       pcout << "-- Statistics --  lin solver : " << std::setprecision(3) << std::right
             << std::setw(8) << memory.min << " " << std::setprecision(3) << std::right
             << std::setw(8) << memory.avg << " " << std::setprecision(3) << std::right
@@ -1311,7 +1312,7 @@ NavierStokes<dim>::refine_grid_pressure_based(const unsigned int max_grid_level,
   LinearAlgebra::distributed::Vector<double> pressure_extended(
     dof_handler_p.locally_owned_dofs(),
     constraints_p.get_local_lines(),
-    get_communicator(triangulation));
+    triangulation.get_communicator());
   pressure_extended = solution.block(1);
   pressure_extended.update_ghost_values();
   Vector<float> estimated_error_per_cell(triangulation.n_active_cells());

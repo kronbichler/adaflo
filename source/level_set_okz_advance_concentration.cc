@@ -62,7 +62,7 @@ namespace
             max_velocity = std::max(max_velocity, velocity_values[q].norm());
         }
 
-    return Utilities::MPI::max(max_velocity, get_communicator(dof_handler));
+    return Utilities::MPI::max(max_velocity, dof_handler.get_communicator());
   }
 
   template <int dim, int spacedim>

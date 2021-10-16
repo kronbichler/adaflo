@@ -351,7 +351,7 @@ LevelSetBaseAlgorithm<dim>::mark_cells_for_refinement()
 
   unsigned int do_refine =
     Utilities::MPI::max(static_cast<unsigned int>(needs_refinement_or_coarsening),
-                        get_communicator(this->triangulation));
+                        this->triangulation.get_communicator());
 
   if (!do_refine)
     return false;
@@ -479,7 +479,7 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
 
     joint_solution.reinit(joint_dof_handler.locally_owned_dofs(),
                           locally_relevant_joint_dofs,
-                          get_communicator(this->triangulation));
+                          this->triangulation.get_communicator());
   }
 
 
