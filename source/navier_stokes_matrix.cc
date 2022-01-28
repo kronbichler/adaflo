@@ -182,6 +182,7 @@ NavierStokesMatrix<dim>::clear()
   linearized_velocities.clear();
   variable_densities_preconditioner.clear();
   variable_viscosities_preconditioner.clear();
+  variable_damping_coefficients_preconditioner.clear();
   linearized_velocities_preconditioner.clear();
 }
 
@@ -349,6 +350,7 @@ NavierStokesMatrix<dim>::velocity_vmult(
       linearized_velocities.swap(linearized_velocities_preconditioner);
       variable_densities.swap(variable_densities_preconditioner);
       variable_viscosities.swap(variable_viscosities_preconditioner);
+      variable_damping_coefficients.swap(variable_damping_coefficients_preconditioner);
     }
 
 #define OPERATION(degree_p)                                                  \
@@ -368,6 +370,7 @@ NavierStokesMatrix<dim>::velocity_vmult(
       linearized_velocities.swap(linearized_velocities_preconditioner);
       variable_densities.swap(variable_densities_preconditioner);
       variable_viscosities.swap(variable_viscosities_preconditioner);
+      variable_damping_coefficients.swap(variable_damping_coefficients_preconditioner);
     }
 
   // diagonal values of constrained degrees of freedom set to 1
@@ -1131,9 +1134,10 @@ template <int dim>
 void
 NavierStokesMatrix<dim>::fix_linearization_point() const
 {
-  linearized_velocities_preconditioner = linearized_velocities;
-  variable_densities_preconditioner    = variable_densities;
-  variable_viscosities_preconditioner  = variable_viscosities;
+  linearized_velocities_preconditioner         = linearized_velocities;
+  variable_densities_preconditioner            = variable_densities;
+  variable_viscosities_preconditioner          = variable_viscosities;
+  variable_damping_coefficients_preconditioner = variable_damping_coefficients;
 }
 
 
@@ -1148,6 +1152,7 @@ NavierStokesMatrix<dim>::memory_consumption() const
   memory += linearized_velocities_preconditioner.size();
   memory += variable_densities_preconditioner.size();
   memory += variable_viscosities_preconditioner.size();
+  memory += variable_damping_coefficients_preconditioner.size();
   return memory;
 }
 
@@ -1163,11 +1168,13 @@ NavierStokesMatrix<dim>::print_memory_consumption(std::ostream &stream) const
          << " MB\n";
   if (variable_viscosities.size() > 0)
     stream << "| Variable densities & viscosities: "
-           << 1e-6 * double(variable_densities.memory_consumption() +
-                            variable_viscosities.memory_consumption() +
-                            variable_damping_coefficients.memory_consumption() +
-                            variable_densities_preconditioner.memory_consumption() +
-                            variable_viscosities_preconditioner.memory_consumption())
+           << 1e-6 *
+                double(variable_densities.memory_consumption() +
+                       variable_viscosities.memory_consumption() +
+                       variable_damping_coefficients.memory_consumption() +
+                       variable_densities_preconditioner.memory_consumption() +
+                       variable_viscosities_preconditioner.memory_consumption() +
+                       variable_damping_coefficients_preconditioner.memory_consumption())
            << " MB\n";
 }
 
