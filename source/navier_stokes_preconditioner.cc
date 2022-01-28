@@ -1730,6 +1730,8 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
     use_variable_parameters ? matrix->begin_densities(cell_range.first) : 0;
   const vector_t *viscosities =
     use_variable_parameters ? matrix->begin_viscosities(cell_range.first) : 0;
+  const vector_t *damping =
+    use_variable_parameters ? matrix->begin_damping_coeff(cell_range.first) : 0;
 
   const typename NavierStokesMatrix<dim>::velocity_stored *linearized =
     matrix->begin_linearized_velocities(cell_range.first);
@@ -1806,9 +1808,13 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                     use_variable_parameters ? viscosities[q][vec] : parameters.viscosity;
                   const double actual_rho =
                     use_variable_parameters ? densities[q][vec] : parameters.density;
+                  const double actual_damping =
+                    use_variable_parameters ? damping[q][vec] : parameters.damping;
                   const double weight_nu =
                     JxW[q] * (parameters.tau_grad_div + actual_nu * tau);
-                  const double weight_rho = JxW[q] * actual_rho;
+                  const double weight_rho     = JxW[q] * actual_rho;
+                  const double weight_damping = JxW[q] * actual_damping;
+
                   for (unsigned int i = 0; i < dofs_per_u_component; ++i)
                     {
                       const Tensor<1, dim> &phi_grad_iq =
@@ -1839,6 +1845,12 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                             FlowParameters::incompressible_stationary ?
                           0. :
                           phi_iq * time_stepping.weight();
+
+                      // Note: The division by weight_rho is necessary, since
+                      // data.velocity_phi_matrix((dim+1)*q + dim, i) is multiplied by
+                      // weight_rho.
+                      phi_and_grad -= weight_damping / weight_rho * phi_iq;
+
                       if (linearized != 0)
                         {
                           for (unsigned int d = 0; d < dim; ++d)
@@ -1852,9 +1864,11 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                                 linearized[q].second[d][d][vec] * phi_iq * tau;
                         }
                       else if (!scalar_ilu)
-                        for (unsigned int d = 0; d < dim; ++d)
-                          data.velocity_phi_and_grad_matrix((dim + 1) * q + dim,
-                                                            i * dim + d) = phi_and_grad;
+                        {
+                          for (unsigned int d = 0; d < dim; ++d)
+                            data.velocity_phi_and_grad_matrix((dim + 1) * q + dim,
+                                                              i * dim + d) = phi_and_grad;
+                        }
                       if (scalar_ilu)
                         data.velocity_phi_and_grad_matrix((dim + 1) * q + dim, i) =
                           phi_and_grad;
@@ -1863,7 +1877,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
 
               // velocity matrix: rho * val(phi_i) * ( val(phi_j)/dt + val(u)
               // grad (phi_j) + val (phi_j) * grad u ) + nu * grad(phi_i) *
-              // grads(phi_j).
+              // grads(phi_j) - damping * val(phi_i) * val(phi_j).
 
               // We only assemble the components within one vector component,
               // so to fill the FullMatrix, we have to copy the data to the
@@ -1929,6 +1943,8 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                                                parameters.viscosity;
                     const double actual_rho =
                       use_variable_parameters ? densities[0][vec] : parameters.density;
+                    const double actual_damping =
+                      use_variable_parameters ? damping[0][vec] : parameters.damping;
 
                     for (unsigned int d = 0; d < dim; ++d)
                       {
@@ -1953,6 +1969,10 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                             const double weight_rho =
                               data.fe_values_lin_u.JxW(quad_to_lin_u[sub][q]) *
                               actual_rho;
+                            const double weight_damping =
+                              data.fe_values_lin_u.JxW(quad_to_lin_u[sub][q]) *
+                              actual_damping;
+
                             for (unsigned int i = 0; i < n_dofs; ++i)
                               {
                                 Tensor<1, dim> phi_grad_iq;
@@ -1968,6 +1988,13 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
                                     0. :
                                     integration_helper.values_unit_cell[i][q] *
                                       time_stepping.weight();
+
+                                // Note: The division by weight_rho is necessary since
+                                // in the assignment of data_for_val[i][q] it is
+                                // multiplied by weight_rho.
+                                phi_and_grad -= weight_damping / weight_rho *
+                                                integration_helper.values_unit_cell[i][q];
+
                                 if (linearized != 0)
                                   {
                                     for (unsigned int e = 0; e < dim; ++e)
@@ -2322,6 +2349,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
         {
           densities += n_q_points;
           viscosities += n_q_points;
+          damping += n_q_points;
         }
     }
 }

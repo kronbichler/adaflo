@@ -266,7 +266,9 @@ private:
 
   mutable AlignedVector<VectorizedArray<double>> variable_densities_preconditioner;
   mutable AlignedVector<VectorizedArray<double>> variable_viscosities_preconditioner;
-  mutable AlignedVector<velocity_stored>         linearized_velocities_preconditioner;
+  mutable AlignedVector<VectorizedArray<double>>
+                                         variable_damping_coefficients_preconditioner;
+  mutable AlignedVector<velocity_stored> linearized_velocities_preconditioner;
 
   const LinearAlgebra::distributed::BlockVector<double> &solution_old;
   const LinearAlgebra::distributed::BlockVector<double> &solution_old_old;
