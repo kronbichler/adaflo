@@ -184,7 +184,7 @@ public:
   }
 
   const LinearAlgebra::distributed::BlockVector<double> &
-  get_rhs() const
+  get_system_rhs() const
   {
     return system_rhs;
   }
