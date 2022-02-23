@@ -183,6 +183,12 @@ public:
     return navier_stokes_matrix;
   }
 
+  const LinearAlgebra::distributed::BlockVector<double> &
+  get_system_rhs() const
+  {
+    return system_rhs;
+  }
+
   bool
   get_update_preconditioner() const
   {
