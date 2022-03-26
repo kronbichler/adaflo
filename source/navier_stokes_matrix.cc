@@ -700,9 +700,10 @@ NavierStokesMatrix<dim>::local_operation(
           if (parameters.physical_type != FlowParameters::stokes)
             {
               // variable parameters if present
-              const vector_t           rho = use_variable_coefficients ?
-                                               rho_values[q] :
-                                               make_vectorized_array<double>(parameters.density);
+              const vector_t rho = use_variable_coefficients ?
+                                     rho_values[q] :
+                                     make_vectorized_array<double>(parameters.density);
+
               Tensor<1, dim, vector_t> val_u =
                 convert_to_vector<dim, vector_t>(velocity.get_value(q));
 
@@ -818,8 +819,7 @@ NavierStokesMatrix<dim>::local_operation(
                   }
               conv *= rho;
 
-              // damping K * u_new with the damping coefficient K; this expression
-              // is NOT considered in the NavierStokesPreconditioner
+              // damping K * u_new with the damping coefficient K
               const vector_t damping =
                 use_variable_coefficients ?
                   damping_values[q] :
@@ -871,11 +871,18 @@ NavierStokesMatrix<dim>::local_operation(
                 Assert(false, ExcNotImplemented());
 #pragma GCC diagnostic push
             }
+
           // add pressure
           for (unsigned int d = 0; d < dim; ++d)
             {
               grad_u[d][d] =
                 tmu_times_2 * grad_u[d][d] + parameters.tau_grad_div * divergence;
+
+              // Subtract the volumetric part from the rate of deformation tensor.
+              if (parameters.constitutive_type ==
+                  FlowParameters::newtonian_compressible_stokes_hypothesis)
+                grad_u[d][d] -= tmu_times_2 * divergence / static_cast<double>(dim);
+
               if (LocalOps == NavierStokesOps::vmult ||
                   LocalOps == NavierStokesOps::residual)
                 grad_u[d][d] -= pres;
@@ -918,14 +925,14 @@ NavierStokesMatrix<dim>::local_divergence(
   FEEvaluation<dim, degree_p == -1 ? -1 : (degree_p + 1), degree_p + 2, dim> velocity(
     data, dof_index_u, quad_index_u);
   FEEvaluation<dim, degree_p, degree_p + 2, 1> pressure(data, dof_index_p, quad_index_u);
-
-  const VectorizedArray<double> *mu_values =
+  const VectorizedArray<double> *              mu_values =
     variable_viscosities.empty() ? 0 : begin_viscosities(cell_range.first);
 
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
     {
       pressure.reinit(cell);
       velocity.reinit(cell);
+
       if (parameters.linearization == FlowParameters::projection)
         velocity.read_dof_values_plain(src);
       else
