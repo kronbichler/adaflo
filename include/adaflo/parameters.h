@@ -62,6 +62,7 @@ struct FlowParameters
   {
     newtonian_compressible_stokes_hypothesis,
     newtonian_incompressible,
+    user_defined
   } constitutive_type;
 
   std::map<std::string, double> get_beta_formulation_convective_term_momentum_balance = {

@@ -168,6 +168,13 @@ public:
                            const unsigned int                                face,
                            const double                                      density);
 
+  void
+  set_user_defined_material(std::function<Tensor<2, dim, VectorizedArray<double>>(
+                              const Tensor<2, dim, VectorizedArray<double>> &,
+                              const unsigned int,
+                              const unsigned int,
+                              const bool)> my_user_defined_material);
+
   const FlowParameters &
   get_parameters() const;
 
@@ -438,5 +445,16 @@ NavierStokes<dim>::set_face_average_density(
   preconditioner.set_face_average_density(cell, face, density);
 }
 
+template <int dim>
+inline void
+NavierStokes<dim>::set_user_defined_material(
+  std::function<Tensor<2, dim, VectorizedArray<double>>(
+    const Tensor<2, dim, VectorizedArray<double>> &,
+    const unsigned int,
+    const unsigned int,
+    const bool)> my_user_defined_material)
+{
+  navier_stokes_matrix.user_defined_material = my_user_defined_material;
+}
 
 #endif

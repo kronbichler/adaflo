@@ -258,6 +258,22 @@ public:
   const unsigned int &quad_index_u;
   const unsigned int &quad_index_p;
 
+  std::function<Tensor<2, dim, VectorizedArray<double>>(
+    const Tensor<2, dim, VectorizedArray<double>> &,
+    const unsigned int,
+    const unsigned int,
+    const bool)>
+    user_defined_material = [](const Tensor<2, dim, VectorizedArray<double>> &,
+                               const unsigned int,
+                               const unsigned int,
+                               const bool) -> Tensor<2, dim, VectorizedArray<double>> {
+    AssertThrow(
+      false,
+      ExcMessage(
+        "It seems that you did not define a user defined material function. "
+        "If you choose the constitutive type user defined, this function needs to be set."));
+  };
+
 private:
   mutable AlignedVector<VectorizedArray<double>> variable_densities;
   mutable AlignedVector<VectorizedArray<double>> variable_viscosities;

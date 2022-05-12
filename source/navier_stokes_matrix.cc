@@ -836,7 +836,6 @@ NavierStokesMatrix<dim>::local_operation(
                                tau1;
           const vector_t tmu_times_2 = 2. * tmu;
 
-
           // get divergence, extract pressure, integrate (p, -div (u)), which
           // writes into the pressure field
           vector_t pres;
@@ -848,45 +847,60 @@ NavierStokesMatrix<dim>::local_operation(
               pressure.submit_value(-divergence, q);
             }
 
-          vector_t sym;
-          switch (dim)
+          if (parameters.constitutive_type ==
+                FlowParameters::newtonian_compressible_stokes_hypothesis ||
+              parameters.constitutive_type == FlowParameters::newtonian_incompressible)
             {
+              vector_t sym;
+              switch (dim)
+                {
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-              case 3:
-                sym          = tmu * (grad_u[0][2] + grad_u[2][0]);
-                grad_u[0][2] = sym;
-                grad_u[2][0] = sym;
-                sym          = tmu * (grad_u[1][2] + grad_u[2][1]);
-                grad_u[1][2] = sym;
-                grad_u[2][1] = sym;
-              // fall through to part that is also present also in 2D
-              case 2:
-                sym          = tmu * (grad_u[0][1] + grad_u[1][0]);
-                grad_u[0][1] = sym;
-                grad_u[1][0] = sym;
-                break;
-              case 1: // nothing todo
-                break;
-              default:
-                Assert(false, ExcNotImplemented());
+                  case 3:
+                    sym          = tmu * (grad_u[0][2] + grad_u[2][0]);
+                    grad_u[0][2] = sym;
+                    grad_u[2][0] = sym;
+                    sym          = tmu * (grad_u[1][2] + grad_u[2][1]);
+                    grad_u[1][2] = sym;
+                    grad_u[2][1] = sym;
+                  // fall through to part that is also present also in 2D
+                  case 2:
+                    sym          = tmu * (grad_u[0][1] + grad_u[1][0]);
+                    grad_u[0][1] = sym;
+                    grad_u[1][0] = sym;
+                    break;
+                  case 1: // nothing todo
+                    break;
+                  default:
+                    Assert(false, ExcNotImplemented());
 #pragma GCC diagnostic push
+                }
+
+              for (unsigned int d = 0; d < dim; ++d)
+                {
+                  grad_u[d][d] =
+                    tmu_times_2 * grad_u[d][d] + parameters.tau_grad_div * divergence;
+
+                  // In case of Newtonian compressible constitutive type, subtract the
+                  // volumetric part from the rate of deformation tensor.
+                  if (parameters.constitutive_type ==
+                      FlowParameters::newtonian_compressible_stokes_hypothesis)
+                    grad_u[d][d] -= tmu_times_2 * divergence / static_cast<double>(dim);
+                }
             }
+          else if (parameters.constitutive_type == FlowParameters::user_defined)
+            {
+              Tensor<2, dim, vector_t> grad_u_temp =
+                convert_to_tensor<2, dim, vector_t>(velocity.get_gradient(q));
+              grad_u =
+                tau1 * user_defined_material(grad_u_temp, cell, q, q == 0 /*do_reinit*/);
+            }
+          else
+            AssertThrow(false, ExcMessage("Requested ConstitutiveType not found."));
 
           // add pressure
-          for (unsigned int d = 0; d < dim; ++d)
-            {
-              grad_u[d][d] =
-                tmu_times_2 * grad_u[d][d] + parameters.tau_grad_div * divergence;
-
-              // Subtract the volumetric part from the rate of deformation tensor.
-              if (parameters.constitutive_type ==
-                  FlowParameters::newtonian_compressible_stokes_hypothesis)
-                grad_u[d][d] -= tmu_times_2 * divergence / static_cast<double>(dim);
-
-              if (LocalOps == NavierStokesOps::vmult ||
-                  LocalOps == NavierStokesOps::residual)
-                grad_u[d][d] -= pres;
-            }
+          if (LocalOps == NavierStokesOps::vmult || LocalOps == NavierStokesOps::residual)
+            for (unsigned int d = 0; d < dim; ++d)
+              grad_u[d][d] -= pres;
 
           velocity.submit_gradient(grad_u, q);
         }
