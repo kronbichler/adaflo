@@ -122,12 +122,11 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
     "constitutive type",
     "newtonian incompressible",
     Patterns::Selection(
-      "newtonian incompressible|newtonian compressible stokes hypothesis"),
+      "newtonian incompressible|newtonian compressible stokes hypothesis|user defined"),
     "Sets the type of constitutive equations. The incompressible Newtonian "
     "fluid assumption is the default case. Alternatively, a compressible "
-    "Newtonian fluid formulation exploiting the Stokes hypothesis can be "
-    "chosen. The latter is recommended in the presence of a mass source term "
-    "where the velocity field is not divergence-free.");
+    "Newtonian fluid formulation exploiting the Stokes hypothesis or a "
+    "user defined type can be chosen.");
   prm.declare_entry("formulation convective term momentum balance",
                     "skew-symmetric",
                     Patterns::Selection("skew-symmetric|convective|conservative"),
@@ -483,6 +482,8 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
     constitutive_type = newtonian_incompressible;
   else if (type == "newtonian compressible stokes hypothesis")
     constitutive_type = newtonian_compressible_stokes_hypothesis;
+  else if (type == "user defined")
+    constitutive_type = user_defined;
   else
     Assert(false, ExcNotImplemented());
   beta_convective_term_momentum_balance =
