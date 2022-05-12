@@ -118,25 +118,24 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     "Navier-Stokes, one can choose between a stationary and a "
                     "time-dependent variant. The time-dependent Navier-Stokes "
                     "equations are the default.");
-  prm
-    .declare_entry(
-      "constitutive type",
-      "newtonian incompressible",
-      Patterns::Selection(
-        "newtonian incompressible|newtonian compressible stokes hypothesis|user defined"),
-      "Sets the type of constitutive equations. The incompressible Newtonian "
-      "fluid assumption is the default case. Alternatively, a compressible "
-      "Newtonian fluid formulation exploiting the Stokes hypothesis or a "
-      "user defined type can be chosen.")
-      prm.declare_entry("formulation convective term momentum balance",
-                        "skew-symmetric",
-                        Patterns::Selection("skew-symmetric|convective|conservative"),
-                        "Sets the formulation of the convective term in the "
-                        "momentum balance of the Navier-Stokes equations, i.e. "
-                        "∇·(u x u) =(u·∇)u + βu(∇·u). The parameter β will be "
-                        "set to 1 for the conservative form, to 0 for the "
-                        "convective form and to 0.5 for the skew-symmetric "
-                        "form (default formulation).");
+  prm.declare_entry(
+    "constitutive type",
+    "newtonian incompressible",
+    Patterns::Selection(
+      "newtonian incompressible|newtonian compressible stokes hypothesis|user defined"),
+    "Sets the type of constitutive equations. The incompressible Newtonian "
+    "fluid assumption is the default case. Alternatively, a compressible "
+    "Newtonian fluid formulation exploiting the Stokes hypothesis or a "
+    "user defined type can be chosen.");
+  prm.declare_entry("formulation convective term momentum balance",
+                    "skew-symmetric",
+                    Patterns::Selection("skew-symmetric|convective|conservative"),
+                    "Sets the formulation of the convective term in the "
+                    "momentum balance of the Navier-Stokes equations, i.e. "
+                    "∇·(u x u) =(u·∇)u + βu(∇·u). The parameter β will be "
+                    "set to 1 for the conservative form, to 0 for the "
+                    "convective form and to 0.5 for the skew-symmetric "
+                    "form (default formulation).");
 
   prm.enter_subsection("Solver");
   prm.declare_entry("NL max iterations",
