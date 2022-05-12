@@ -259,10 +259,10 @@ public:
   const unsigned int &quad_index_p;
 
   std::function<Tensor<2, dim, VectorizedArray<double>>(
-    const Tensor<2, dim, VectorizedArray<double>> &,
-    const unsigned int,
-    const unsigned int,
-    const bool)>
+    const Tensor<2, dim, VectorizedArray<double>> &velocity_gradient,
+    const unsigned int                             cell_idx,
+    const unsigned int                             quad_idx,
+    const bool                                     do_tangent)>
     user_defined_material = [](const Tensor<2, dim, VectorizedArray<double>> &,
                                const unsigned int,
                                const unsigned int,

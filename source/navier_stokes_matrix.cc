@@ -892,7 +892,11 @@ NavierStokesMatrix<dim>::local_operation(
               Tensor<2, dim, vector_t> grad_u_temp =
                 convert_to_tensor<2, dim, vector_t>(velocity.get_gradient(q));
               grad_u =
-                tau1 * user_defined_material(grad_u_temp, cell, q, q == 0 /*do_reinit*/);
+                tau1 * user_defined_material(
+                         grad_u_temp,
+                         cell,
+                         q,
+                         LocalOps != NavierStokesOps::residual /*tangent is computed*/);
             }
           else
             AssertThrow(false, ExcMessage("Requested ConstitutiveType not found."));
