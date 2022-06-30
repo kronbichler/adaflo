@@ -266,7 +266,7 @@ PeriodicChannelProblem<dim>::local_compute_force(
         {
           vel_values.submit_value(force, q);
         }
-      vel_values.integrate(true, false);
+      vel_values.integrate(EvaluationFlags::values);
       vel_values.distribute_local_to_global(dst);
     }
 }

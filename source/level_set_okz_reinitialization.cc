@@ -76,7 +76,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
     {
       phi.reinit(cell);
       phi.read_dof_values(src);
-      phi.evaluate(true, true, false);
+      phi.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
 
       VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
       VectorizedArray<double> diffusion =
@@ -99,7 +99,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
             phi.submit_gradient(phi.get_gradient(q) * diffusion, q);
           }
 
-      phi.integrate(true, true);
+      phi.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       phi.distribute_local_to_global(dst);
     }
 }
@@ -148,11 +148,11 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
     {
       phi.reinit(cell);
       phi.read_dof_values_plain(this->solution);
-      phi.evaluate(true, true, false);
+      phi.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
 
       normals.reinit(cell);
       normals.read_dof_values_plain(this->normal_vector_field);
-      normals.evaluate(true, false, false);
+      normals.evaluate(EvaluationFlags::values);
 
       VectorizedArray<double> cell_diameter = this->cell_diameters[cell];
       VectorizedArray<double> diffusion =
@@ -182,7 +182,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
             phi.submit_gradient(-diffusion * phi.get_gradient(q), q);
           }
 
-      phi.integrate(false, true);
+      phi.integrate(EvaluationFlags::gradients);
       phi.distribute_local_to_global(dst);
     }
 }

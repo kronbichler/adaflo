@@ -75,7 +75,7 @@ PhaseFieldSolver<dim>::local_compute_force(
       // set variable parameters
       if (use_variable_parameters)
         {
-          ls_values.evaluate(true, false);
+          ls_values.evaluate(EvaluationFlags::values);
           vector_t *densities = this->navier_stokes.get_matrix().begin_densities(cell);
           vector_t *viscosities =
             this->navier_stokes.get_matrix().begin_viscosities(cell);
@@ -104,8 +104,8 @@ PhaseFieldSolver<dim>::local_compute_force(
 
       // evaluate curvature and level set gradient
       curv_values.read_dof_values(this->solution.block(1));
-      curv_values.evaluate(true, false);
-      pre_values.evaluate(false, true);
+      curv_values.evaluate(EvaluationFlags::values);
+      pre_values.evaluate(EvaluationFlags::gradients);
 
       // evaluate surface tension force and gravity force
       for (unsigned int q = 0; q < curv_values.n_q_points; ++q)
@@ -123,7 +123,7 @@ PhaseFieldSolver<dim>::local_compute_force(
 
           vel_values.submit_value(force, q);
         }
-      vel_values.integrate(true, false);
+      vel_values.integrate(EvaluationFlags::values);
 
       vel_values.distribute_local_to_global(dst);
     }
@@ -171,12 +171,12 @@ PhaseFieldSolver<dim>::local_residual(
       old_old_c_values.read_dof_values_plain(this->solution_old_old.block(0));
       vel_values.read_dof_values_plain(*velocity_vector);
 
-      vel_values.evaluate(true, false);
-      old_old_c_values.evaluate(true, false);
-      old_c_values.evaluate(true, false);
+      vel_values.evaluate(EvaluationFlags::values);
+      old_old_c_values.evaluate(EvaluationFlags::values);
+      old_c_values.evaluate(EvaluationFlags::values);
 
-      c_values.evaluate(true, true);
-      phi_values.evaluate(true, true);
+      c_values.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
+      phi_values.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
 
       for (unsigned int q = 0; q < c_values.n_q_points; ++q)
         {
@@ -205,9 +205,9 @@ PhaseFieldSolver<dim>::local_residual(
           phi_values.submit_gradient(make_vectorized_array(-factor_4) * c_grad, q);
         }
 
-      c_values.integrate(true, true);
+      c_values.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       c_values.distribute_local_to_global(dst.block(0));
-      phi_values.integrate(true, true);
+      phi_values.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       phi_values.distribute_local_to_global(dst.block(1));
     }
 }
@@ -243,8 +243,8 @@ PhaseFieldSolver<dim>::local_vmult(
 
       phi_values.read_dof_values(src.block(1));
       c_values.read_dof_values(src.block(0));
-      c_values.evaluate(true, true);
-      phi_values.evaluate(true, true);
+      c_values.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
+      phi_values.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
 
       for (unsigned int q = 0; q < c_values.n_q_points; ++q)
         {
@@ -264,9 +264,9 @@ PhaseFieldSolver<dim>::local_vmult(
           phi_values.submit_gradient(make_vectorized_array(-factor_4) * c_grad, q);
         }
 
-      c_values.integrate(true, true);
+      c_values.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       c_values.distribute_local_to_global(dst.block(0));
-      phi_values.integrate(true, true);
+      phi_values.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       phi_values.distribute_local_to_global(dst.block(1));
     }
 }
@@ -287,10 +287,10 @@ PhaseFieldSolver<dim>::local_mass(
     {
       c_values.reinit(cell);
       c_values.read_dof_values(src);
-      c_values.evaluate(true, false);
+      c_values.evaluate(EvaluationFlags::values);
       for (unsigned int q = 0; q < c_values.n_q_points; ++q)
         c_values.submit_value(c_values.get_value(q), q);
-      c_values.integrate(true, false);
+      c_values.integrate(EvaluationFlags::values);
       c_values.distribute_local_to_global(dst);
     }
 }
