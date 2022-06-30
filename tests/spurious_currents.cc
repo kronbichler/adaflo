@@ -122,7 +122,8 @@ void
 MicroFluidicProblem<dim>::evaluate_spurious_velocities()
 {
   double               local_norm_velocity, norm_velocity;
-  const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 2);
+  const QIterated<dim> quadrature_formula(QTrapezoid<1>(),
+                                          parameters.velocity_degree + 2);
   const unsigned int   n_q_points = quadrature_formula.size();
 
   const NavierStokes<dim> &navier_stokes    = solver->get_navier_stokes();

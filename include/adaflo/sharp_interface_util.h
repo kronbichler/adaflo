@@ -1008,13 +1008,13 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
         {
           level_set.reinit(cell);
           level_set.read_dof_values_plain(level_set_as_heaviside);
-          level_set.evaluate(false, true);
+          level_set.evaluate(EvaluationFlags::gradients);
 
           surface_tension.reinit(cell);
 
           curvature.reinit(cell);
           curvature.read_dof_values_plain(curvature_solution);
-          curvature.evaluate(true, false);
+          curvature.evaluate(EvaluationFlags::values);
 
           for (unsigned int q_index = 0; q_index < surface_tension.n_q_points; ++q_index)
             {
@@ -1023,7 +1023,7 @@ compute_force_vector_regularized(const MatrixFree<dim, double> &matrix_free,
                                              curvature.get_value(q_index),
                                            q_index);
             }
-          surface_tension.integrate_scatter(true, false, force_rhs);
+          surface_tension.integrate_scatter(EvaluationFlags::values, force_rhs);
         }
     },
     force_rhs,

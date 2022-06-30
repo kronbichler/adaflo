@@ -103,7 +103,10 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
       phi.read_dof_values(src);
       // If diffusion_setting is true a damping term is added to the weak form
       //  i.e. diffusion_setting=1 => diffusion_setting%2 == 1 is true.
-      phi.evaluate(diffusion_setting < 2, diffusion_setting % 2 == 1);
+      phi.evaluate(
+        ((diffusion_setting < 2) ? EvaluationFlags::values : EvaluationFlags::nothing) |
+        ((diffusion_setting % 2 == 1) ? EvaluationFlags::gradients :
+                                        EvaluationFlags::nothing));
       const VectorizedArray<double> damping =
         diffusion_setting % 2 == 1 ?
           Utilities::fixed_power<2>(
@@ -117,7 +120,10 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
           if (diffusion_setting % 2 == 1)
             phi.submit_gradient(phi.get_gradient(q) * damping, q);
         }
-      phi.integrate(diffusion_setting < 2, diffusion_setting % 2 == 1);
+      phi.integrate(
+        ((diffusion_setting < 2) ? EvaluationFlags::values : EvaluationFlags::nothing) |
+        ((diffusion_setting % 2 == 1) ? EvaluationFlags::gradients :
+                                        EvaluationFlags::nothing));
       phi.distribute_local_to_global(dst);
     }
 }
@@ -239,10 +245,10 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
 
       if (all_zero == false)
         {
-          normal_values.evaluate(false, true, false);
+          normal_values.evaluate(EvaluationFlags::gradients);
           for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
             curv_values.submit_value(-get_divergence(normal_values, q), q);
-          curv_values.integrate(true, false);
+          curv_values.integrate(EvaluationFlags::values);
           curv_values.distribute_local_to_global(dst);
         }
     }

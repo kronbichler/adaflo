@@ -286,13 +286,13 @@ LevelSetOKZSolver<dim>::local_projection_matrix(
           for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
             phi.begin_dof_values()[j] = VectorizedArray<double>();
           phi.begin_dof_values()[i] = 1.;
-          phi.evaluate(true, true);
+          phi.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
           for (unsigned int q = 0; q < phi.n_q_points; ++q)
             {
               phi.submit_value(phi.get_value(q), q);
               phi.submit_gradient(phi.get_gradient(q) * damping, q);
             }
-          phi.integrate(true, true);
+          phi.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
           for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell); ++v)
             for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)
               scratch.matrices[v](phi.get_shape_info().lexicographic_numbering[j],
@@ -353,7 +353,7 @@ LevelSetOKZSolver<dim>::local_compute_force(
           vector_t *densities = this->navier_stokes.get_matrix().begin_densities(cell);
           vector_t *viscosities =
             this->navier_stokes.get_matrix().begin_viscosities(cell);
-          ls_values.evaluate(true, false);
+          ls_values.evaluate(EvaluationFlags::values);
           for (unsigned int q = 0; q < ls_values.n_q_points; ++q)
             {
               densities[q] = this->parameters.density +
@@ -374,14 +374,14 @@ LevelSetOKZSolver<dim>::local_compute_force(
                                    ls_values.get_dof_value(j);
               pre_values.submit_dof_value(projected_value, i);
             }
-          pre_values.evaluate(false, true);
+          pre_values.evaluate(EvaluationFlags::gradients);
         }
       else
-        ls_values.evaluate(false, true);
+        ls_values.evaluate(EvaluationFlags::gradients);
 
       // evaluate curvature and level set gradient
       curv_values.read_dof_values_plain(this->solution.block(1));
-      curv_values.evaluate(true, false);
+      curv_values.evaluate(EvaluationFlags::values);
 
       // evaluate surface tension force and gravity force
       for (unsigned int q = 0; q < curv_values.n_q_points; ++q)
@@ -402,7 +402,7 @@ LevelSetOKZSolver<dim>::local_compute_force(
 
           vel_values.submit_value(force, q);
         }
-      vel_values.integrate(true, false);
+      vel_values.integrate(EvaluationFlags::values);
 
       vel_values.distribute_local_to_global(dst);
     }

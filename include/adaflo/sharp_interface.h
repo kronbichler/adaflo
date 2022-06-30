@@ -717,7 +717,7 @@ private:
                      navier_stokes_solver.get_matrix().begin_densities(cell)[q]);
                 phi.submit_value(force, q);
               }
-            phi.integrate_scatter(true, false, vec);
+            phi.integrate_scatter(EvaluationFlags::values, vec);
           }
       },
       navier_stokes_solver.user_rhs.block(0),
@@ -1040,7 +1040,7 @@ private:
                      navier_stokes_solver.get_matrix().begin_densities(cell)[q]);
                 phi.submit_value(force, q);
               }
-            phi.integrate_scatter(true, false, vec);
+            phi.integrate_scatter(EvaluationFlags::values, vec);
           }
       },
       navier_stokes_solver.user_rhs.block(0),

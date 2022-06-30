@@ -664,17 +664,24 @@ NavierStokesMatrix<dim>::local_operation(
       else
         get_velocity_values(velocity, src);
 
-      velocity.evaluate(parameters.physical_type != FlowParameters::stokes, true);
+      velocity.evaluate(((parameters.physical_type != FlowParameters::stokes) ?
+                           EvaluationFlags::values :
+                           EvaluationFlags::nothing) |
+                        EvaluationFlags::gradients);
 
       if (LocalOps == NavierStokesOps::residual &&
           parameters.physical_type == FlowParameters::incompressible)
         {
           old.reinit(cell);
           old.read_dof_values_plain(solution_old.block(0));
-          old.evaluate(true, need_extrapolated_velocity);
+          old.evaluate(EvaluationFlags::values |
+                       (need_extrapolated_velocity ? EvaluationFlags::gradients :
+                                                     EvaluationFlags::nothing));
           old_old.reinit(cell);
           old_old.read_dof_values_plain(solution_old_old.block(0));
-          old_old.evaluate(true, need_extrapolated_velocity);
+          old_old.evaluate(EvaluationFlags::values |
+                           (need_extrapolated_velocity ? EvaluationFlags::gradients :
+                                                         EvaluationFlags::nothing));
         }
 
       // get pressure part
@@ -685,7 +692,7 @@ NavierStokesMatrix<dim>::local_operation(
             get_pressure_values_plain(pressure, src);
           else
             get_pressure_values(pressure, src);
-          pressure.evaluate(true, false);
+          pressure.evaluate(EvaluationFlags::values);
         }
 
       // loop over all quadrature points and implement the Navier-Stokes
@@ -911,12 +918,15 @@ NavierStokesMatrix<dim>::local_operation(
 
       // finally, integrate velocity and pressure and increase pointers to
       // linearization data and rho and mu values
-      velocity.integrate(parameters.physical_type != FlowParameters::stokes, true);
+      velocity.integrate(((parameters.physical_type != FlowParameters::stokes) ?
+                            EvaluationFlags::values :
+                            EvaluationFlags::nothing) |
+                         EvaluationFlags::gradients);
       distribute_velocity_ltg(velocity, dst);
       if (LocalOps != NavierStokesOps::vmult_velocity &&
           parameters.linearization != FlowParameters::projection)
         {
-          pressure.integrate(true, false);
+          pressure.integrate(EvaluationFlags::values);
           distribute_pressure_ltg(pressure, dst);
         }
       linearized += velocity.n_q_points;
@@ -955,7 +965,7 @@ NavierStokesMatrix<dim>::local_divergence(
         velocity.read_dof_values_plain(src);
       else
         velocity.read_dof_values(src);
-      velocity.evaluate(false, true, false);
+      velocity.evaluate(EvaluationFlags::gradients);
 
       for (unsigned int q = 0; q < velocity.n_q_points; ++q)
         {
@@ -969,7 +979,7 @@ NavierStokesMatrix<dim>::local_divergence(
           pressure.submit_value(weight * velocity.get_divergence(q), q);
         }
 
-      pressure.integrate(true, false);
+      pressure.integrate(EvaluationFlags::values);
       pressure.distribute_local_to_global(dst);
     }
 }
@@ -1001,7 +1011,7 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
         {
           pressure.reinit(cell);
           get_pressure_values(pressure, src);
-          pressure.evaluate(false, true, false);
+          pressure.evaluate(EvaluationFlags::gradients);
 
           for (unsigned int q = 0; q < pressure.n_q_points; ++q)
             pressure.submit_gradient(pressure.get_gradient(q) *
@@ -1009,7 +1019,7 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
                                               begin_densities(cell)[q])),
                                      q);
 
-          pressure.integrate(false, true);
+          pressure.integrate(EvaluationFlags::gradients);
           pressure.distribute_local_to_global(dst);
         }
     }
@@ -1023,7 +1033,7 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
         {
           pressure.reinit(cell);
           get_pressure_values(pressure, src);
-          pressure.evaluate(false, true, false);
+          pressure.evaluate(EvaluationFlags::gradients);
 
           const vector_t rho_value =
             use_variable_coefficients ?
@@ -1039,7 +1049,7 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
           for (unsigned int q = 0; q < pressure.n_q_points; ++q)
             pressure.submit_gradient(pressure.get_gradient(q) * coefficient, q);
 
-          pressure.integrate(false, true);
+          pressure.integrate(EvaluationFlags::gradients);
           pressure.distribute_local_to_global(dst);
         }
     }
@@ -1065,7 +1075,7 @@ NavierStokesMatrix<dim>::local_pressure_mass(
     {
       pressure.reinit(cell);
       get_pressure_values(pressure, src);
-      pressure.evaluate(true, false, false);
+      pressure.evaluate(EvaluationFlags::values);
 
       const vector_t mu_value = use_variable_coefficients ?
                                   begin_viscosities(cell)[data.get_n_q_points(0) / 2] :
@@ -1079,7 +1089,7 @@ NavierStokesMatrix<dim>::local_pressure_mass(
       for (unsigned int q = 0; q < pressure.n_q_points; ++q)
         pressure.submit_value(pressure.get_value(q) * coefficient, q);
 
-      pressure.integrate(true, false);
+      pressure.integrate(EvaluationFlags::values);
       pressure.distribute_local_to_global(dst);
     }
 }
@@ -1103,7 +1113,7 @@ NavierStokesMatrix<dim>::local_pressure_mass_weight(
       one = 1.;
       for (unsigned int q = 0; q < pressure.n_q_points; ++q)
         pressure.submit_value(one, q);
-      pressure.integrate(true, false);
+      pressure.integrate(EvaluationFlags::values);
       pressure.distribute_local_to_global(dst);
     }
 }
@@ -1132,7 +1142,7 @@ NavierStokesMatrix<dim>::local_pressure_convdiff(
     {
       pressure.reinit(cell);
       get_pressure_values(pressure, src);
-      pressure.evaluate(false, true, false);
+      pressure.evaluate(EvaluationFlags::gradients);
 
       const vector_t mu_value = use_variable_coefficients ?
                                   begin_viscosities(cell)[pressure.n_q_points / 2] :
@@ -1146,7 +1156,7 @@ NavierStokesMatrix<dim>::local_pressure_convdiff(
           // pressure.submit_value(pres_grad*linearized[q].first, q);
         }
 
-      pressure.integrate(false, true);
+      pressure.integrate(EvaluationFlags::gradients);
       distribute_pressure_ltg(pressure, dst);
 
       linearized += pressure.n_q_points;

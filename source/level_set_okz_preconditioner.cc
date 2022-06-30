@@ -146,13 +146,13 @@ initialize_projection_matrix(
           for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)                          \
             phi.begin_dof_values()[j] = VectorizedArray<double>();                      \
           phi.begin_dof_values()[i] = 1.;                                               \
-          phi.evaluate(true, true);                                                     \
+          phi.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);           \
           for (unsigned int q = 0; q < phi.n_q_points; ++q)                             \
             {                                                                           \
               phi.submit_value(phi.get_value(q), q);                                    \
               phi.submit_gradient(phi.get_gradient(q) * damping, q);                    \
             }                                                                           \
-          phi.integrate(true, true);                                                    \
+          phi.integrate(EvaluationFlags::values | EvaluationFlags::gradients);          \
           for (unsigned int v = 0; v < data.n_active_entries_per_cell_batch(cell); ++v) \
             for (unsigned int j = 0; j < phi.dofs_per_cell; ++j)                        \
               scratch.matrices[v](phi.get_shape_info().lexicographic_numbering[j],      \
