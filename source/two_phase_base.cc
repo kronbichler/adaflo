@@ -480,7 +480,8 @@ template <int dim>
 double
 TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
 {
-  const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 1);
+  const QIterated<dim> quadrature_formula(QTrapezoid<1>(),
+                                          parameters.velocity_degree + 1);
   const unsigned int   n_q_points = quadrature_formula.size();
 
   FEValues<dim> fe_values(navier_stokes.get_fe_u(), quadrature_formula, update_values);
@@ -513,7 +514,7 @@ template <int dim>
 std::pair<double, double>
 TwoPhaseBaseAlgorithm<dim>::get_concentration_range() const
 {
-  const QIterated<dim> quadrature_formula(QTrapez<1>(), fe->degree + 2);
+  const QIterated<dim> quadrature_formula(QTrapezoid<1>(), fe->degree + 2);
   FEValues<dim>        fe_values(*fe, quadrature_formula, update_values);
   const unsigned int   n_q_points = quadrature_formula.size();
   std::vector<double>  concentration_values(n_q_points);
@@ -626,7 +627,7 @@ TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
   const int            sub_per_d = sub_refinements == numbers::invalid_unsigned_int ?
                                      parameters.velocity_degree + 3 :
                                      sub_refinements;
-  const QIterated<dim> quadrature_formula(QTrapez<1>(), sub_per_d);
+  const QIterated<dim> quadrature_formula(QTrapezoid<1>(), sub_per_d);
   const QGauss<dim>    interior_quadrature(parameters.velocity_degree);
   const unsigned int   n_q_points = quadrature_formula.size();
   FEValues<dim>        fe_values(this->mapping,

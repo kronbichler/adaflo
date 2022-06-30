@@ -42,7 +42,7 @@ namespace
     const Quadrature<dim> quadrature_formula =
       dof_handler.get_fe().reference_cell() == ReferenceCells::get_hypercube<dim>() ?
         Quadrature<dim>(
-          QIterated<dim>(QTrapez<1>(), dof_handler.get_fe().tensor_degree() + 1)) :
+          QIterated<dim>(QTrapezoid<1>(), dof_handler.get_fe().tensor_degree() + 1)) :
         quad_in;
 
     FEValues<dim> fe_values(dof_handler.get_fe(), quadrature_formula, update_values);
