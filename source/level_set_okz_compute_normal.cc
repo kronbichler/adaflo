@@ -101,7 +101,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
     {
       phi.reinit(cell);
       phi.read_dof_values(src);
-      phi.evaluate(true, true);
+      phi.evaluate(EvaluationFlags::values | EvaluationFlags::gradients);
       const VectorizedArray<Number> damping =
         Number(parameters.damping_scale_factor) *
         Utilities::fixed_power<2>(
@@ -111,7 +111,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
           phi.submit_value(phi.get_value(q), q);
           phi.submit_gradient(phi.get_gradient(q) * damping, q);
         }
-      phi.integrate(true, true);
+      phi.integrate(EvaluationFlags::values | EvaluationFlags::gradients);
       phi.distribute_local_to_global(dst);
     }
 }
@@ -143,12 +143,12 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
       ls_values.reinit(cell);
 
       ls_values.read_dof_values_plain(this->level_set_solution);
-      ls_values.evaluate(false, true, false);
+      ls_values.evaluate(EvaluationFlags::gradients);
 
       for (unsigned int q = 0; q < normal_values.n_q_points; ++q)
         normal_values.submit_value(ls_values.get_gradient(q), q);
 
-      normal_values.integrate(true, false);
+      normal_values.integrate(EvaluationFlags::values);
       normal_values.distribute_local_to_global(dst);
     }
 }
