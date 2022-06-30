@@ -247,10 +247,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
           if (this->parameters.convection_stabilization)
             ls_values.submit_gradient(artificial_viscosities[cell] * ls_grad, q);
         }
-      ls_values.integrate_scatter(this->parameters.convection_stabilization ?
-                                    (EvaluationFlags::values |
-                                     EvaluationFlags::gradients) :
-                                    EvaluationFlags::values,
+      ls_values.integrate_scatter(EvaluationFlags::values |
+                                    (this->parameters.convection_stabilization ?
+                                       EvaluationFlags::gradients :
+                                       EvaluationFlags::nothing),
                                   dst);
     }
 }
@@ -386,10 +386,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
             ls_values.submit_gradient(-artificial_viscosities[cell] * ls_grad, q);
           velocities[q] = vel_values.get_value(q);
         }
-      ls_values.integrate_scatter(this->parameters.convection_stabilization ?
-                                    (EvaluationFlags::values |
-                                     EvaluationFlags::gradients) :
-                                    EvaluationFlags::values,
+      ls_values.integrate_scatter(EvaluationFlags::values |
+                                    (this->parameters.convection_stabilization ?
+                                       EvaluationFlags::gradients :
+                                       EvaluationFlags::nothing),
                                   dst);
     }
 }
