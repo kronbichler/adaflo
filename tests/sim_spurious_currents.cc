@@ -120,7 +120,8 @@ MicroFluidicProblem<dim>::evaluate_spurious_velocities(
   NavierStokes<dim> &navier_stokes_solver)
 {
   double               local_norm_velocity, norm_velocity;
-  const QIterated<dim> quadrature_formula(QTrapez<1>(), parameters.velocity_degree + 2);
+  const QIterated<dim> quadrature_formula(QTrapezoid<1>(),
+                                          parameters.velocity_degree + 2);
   const unsigned int   n_q_points = quadrature_formula.size();
 
   const MPI_Comm &            mpi_communicator = triangulation.get_communicator();
