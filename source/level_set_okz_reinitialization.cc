@@ -264,7 +264,7 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(
   const unsigned int               diff_steps,
   const std::function<void(bool)> &compute_normal)
 {
-  this->time_stepping.set_time_step(dt);
+  this->time_stepping.set_desired_time_step(dt);
 
   // This function assembles and solves for a given profile using the approach
   // described in the paper by Olsson, Kreiss, and Zahedi.
