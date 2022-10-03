@@ -235,8 +235,18 @@ TimeStepping::at_tick(const double tick) const
 }
 
 
+
 void
-TimeStepping::set_time_step(const double desired_value)
+TimeStepping::set_time_step(const double value)
+{
+  current_step_val = value;
+  step_val         = current_step_val;
+}
+
+
+
+void
+TimeStepping::set_desired_time_step(const double desired_value)
 {
   // We take into account the first iteration regarding to the
   // previous used time step

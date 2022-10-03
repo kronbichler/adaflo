@@ -507,7 +507,7 @@ template <int dim>
 void
 LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double dt)
 {
-  this->time_stepping.set_time_step(dt);
+  this->time_stepping.set_desired_time_step(dt);
   this->time_stepping.next();
 
   if (global_omega_diameter == 0.0)
