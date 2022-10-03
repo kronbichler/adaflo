@@ -611,7 +611,7 @@ TwoPhaseBaseAlgorithm<dim>::set_adaptive_time_step(const double norm_velocity) c
   // hand this step to the timer stepper. The time stepper will make sure that
   // the time step does not change too rapidly from one iteration to the next
   // and also be within the bounds set in the parameter file.
-  time_stepping.set_time_step(new_time_step);
+  time_stepping.set_desired_time_step(new_time_step);
 }
 
 

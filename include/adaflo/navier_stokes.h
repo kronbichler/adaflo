@@ -239,8 +239,6 @@ public:
 
 private:
   void
-  set_time_step_weight(const double new_weight);
-  void
   apply_boundary_conditions();
   double
   compute_residual();
