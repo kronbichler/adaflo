@@ -137,10 +137,10 @@ private:
   const double min_step_val;     // [i] minimum value of the time increment
   double       current_step_val; // [m] current value of the time increment;
                                  //     initialized in the constructor by start_step_val
-                           //     can be modified in set_desired_time_step(desired_value)
-                           //     fulfilling the criteria
-                           //         - 0.5 * step_size_prev <= current_step_val <=
-                           //         2*step_size_prev
+  //     can be modified in set_desired_time_step(desired_value)
+  //     fulfilling the criteria
+  //         - 0.5 * step_size_prev <= current_step_val <=
+  //         2*step_size_prev
   //         - min_step_val <= current_step_val <= max_step_val
   double last_step_val; // [m] constructor and restart() sets this parameter to zero.
                         //     next() sets this parameter equal to current_step_val
