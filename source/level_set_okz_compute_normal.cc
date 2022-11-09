@@ -173,12 +173,16 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
 #undef OPERATION
 
   // The number "4" below is so that constraints_normals is used
-  for (unsigned int i = 0; i < this->matrix_free.get_constrained_dofs(4).size(); ++i)
+  for (unsigned int i = 0;
+       i < this->matrix_free.get_constrained_dofs(parameters.dof_index_normal).size();
+       ++i)
     for (unsigned int d = 0; d < dim; ++d)
-      dst.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]) =
+      dst.block(d).local_element(
+        this->matrix_free.get_constrained_dofs(parameters.dof_index_normal)[i]) =
         preconditioner.get_vector().local_element(
-          this->matrix_free.get_constrained_dofs(4)[i]) *
-        src.block(d).local_element(this->matrix_free.get_constrained_dofs(4)[i]);
+          this->matrix_free.get_constrained_dofs(parameters.dof_index_normal)[i]) *
+        src.block(d).local_element(
+          this->matrix_free.get_constrained_dofs(parameters.dof_index_normal)[i]);
 }
 
 
