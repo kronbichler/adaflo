@@ -471,15 +471,10 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
       dst.compress(VectorOperation::add);
     }
 
-  for (unsigned int i = 0;
-       i < this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls).size();
-       ++i)
-    dst.local_element(
-      this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]) =
-      preconditioner.get_vector().local_element(
-        this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]) *
-      src.local_element(
-        this->matrix_free.get_constrained_dofs(this->parameters.dof_index_ls)[i]);
+  for (const unsigned int entry :
+       this->matrix_free.get_constrained_dofs(parameters.dof_index_ls))
+    dst.local_element(entry) =
+      preconditioner.get_vector().local_element(entry) * src.local_element(entry);
 }
 
 
