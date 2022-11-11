@@ -185,7 +185,7 @@ LevelSetBaseAlgorithm<dim>::initialize_data_structures()
 
 
 template <int dim>
-unsigned int
+std::pair<unsigned int, unsigned int>
 LevelSetBaseAlgorithm<dim>::advance_time_step()
 {
   // advance the time in the time stepping scheme. The Navier--Stokes class
@@ -241,7 +241,7 @@ LevelSetBaseAlgorithm<dim>::advance_time_step()
           this->pcout << "/" << convergence.first << "] " << std::flush;
         }
       */
-      return step;
+      return {step, 0};
     }
   // do not iterate, just do an extrapolated value on the concentration
   else

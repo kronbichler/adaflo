@@ -461,7 +461,7 @@ PhaseFieldSolver<dim>::solve_cahn_hilliard()
 
 
 template <int dim>
-unsigned int
+std::pair<unsigned int, unsigned int>
 PhaseFieldSolver<dim>::advance_time_step()
 {
   this->init_time_advance();

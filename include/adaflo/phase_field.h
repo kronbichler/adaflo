@@ -57,7 +57,7 @@ public:
   distribute_dofs();
   virtual void
   initialize_data_structures();
-  virtual unsigned int
+  virtual std::pair<unsigned int, unsigned int>
   advance_time_step();
 
   void
