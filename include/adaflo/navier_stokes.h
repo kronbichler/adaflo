@@ -112,9 +112,9 @@ public:
 
   void
   init_time_advance(const bool print_time_info = true);
-  unsigned int
+  std::pair<unsigned int, unsigned int>
   evaluate_time_step();
-  virtual unsigned int
+  virtual std::pair<unsigned int, unsigned int>
   advance_time_step();
 
   virtual void
@@ -203,7 +203,7 @@ public:
   // Solves the nonlinear Navier-Stokes system by a Newton or Newton-like
   // iteration. This function expects that the initial residual is passed into
   // the function as an argument
-  unsigned int
+  std::pair<unsigned int, unsigned int>
   solve_nonlinear_system(const double initial_residual);
 
   // return an estimate of the total memory consumption

@@ -43,7 +43,7 @@ public:
   virtual void
   initialize_data_structures();
 
-  virtual unsigned int
+  virtual std::pair<unsigned int, unsigned int>
   advance_time_step(); // perform one time step
 
   // write whole solution to file
