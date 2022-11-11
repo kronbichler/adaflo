@@ -576,7 +576,9 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
   // not succeed, throw the more powerful (but more expensive) solver at
   // it. Note that we use FGMRES for that case as there are inner iterations
   // which make the preconditioner non-linear
-  double residual = 1.;
+  double       residual    = 1.;
+  unsigned int iter_strong = 0;
+
   try
     {
       preconditioner.do_inner_solves = false;
@@ -625,7 +627,8 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
           catch (const SolverControl::NoConvergence &)
             {}
 
-          residual = solver_control_strong.last_value();
+          iter_strong = solver_control_strong.last_step();
+          residual    = solver_control_strong.last_value();
         }
       else
         residual = solver_control_simple.last_value();
@@ -639,8 +642,7 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
 
   timer->leave_subsection();
 
-  return std::pair<unsigned int, double>(solver_control_simple.last_step() +
-                                           solver_control_strong.last_step(),
+  return std::pair<unsigned int, double>(solver_control_simple.last_step() + iter_strong,
                                          residual);
 }
 
