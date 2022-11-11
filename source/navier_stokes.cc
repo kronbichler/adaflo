@@ -739,7 +739,7 @@ NavierStokes<dim>::init_time_advance(const bool print_time_info)
 
 
 template <int dim>
-unsigned int
+std::pair<unsigned int, unsigned int>
 NavierStokes<dim>::advance_time_step()
 {
   init_time_advance();
@@ -749,7 +749,7 @@ NavierStokes<dim>::advance_time_step()
 
 
 template <int dim>
-unsigned int
+std::pair<unsigned int, unsigned int>
 NavierStokes<dim>::evaluate_time_step()
 {
   const double initial_residual = compute_initial_residual(true);
@@ -813,7 +813,7 @@ NavierStokes<dim>::compute_initial_residual(const bool)
 
 
 template <int dim>
-unsigned int
+std::pair<unsigned int, unsigned int>
 NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
 {
   Timer        nl_timer;
@@ -1135,7 +1135,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
       std::cout.flags(flags);
     }
 
-  return step;
+  return {step + 1, n_tot_iterations};
 }
 
 

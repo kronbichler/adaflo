@@ -117,10 +117,10 @@ struct FlowBaseAlgorithm
 
   /**
    * Performs one complete time step of the problem, including the solution of
-   * each associated field. Returns the number of accumulated linear
-   * iterations during the time step.
+   * each associated field. Returns the number of nonlinear and the accumulated
+   * linear iterations during the time step.
    */
-  virtual unsigned int
+  virtual std::pair<unsigned int, unsigned int>
   advance_time_step() = 0;
 
   /**
