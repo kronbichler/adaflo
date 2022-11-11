@@ -956,7 +956,8 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
     {
       if (parameters.output_verbosity == 1)
         pcout << "]" << std::endl;
-      pcout << "Warning: nonlinear iteration did not converge!" << std::endl;
+
+      AssertThrow(false, ExcNavierStokesNoConvergence());
     }
 
   solution.block(0).update_ghost_values();

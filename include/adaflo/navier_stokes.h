@@ -41,6 +41,9 @@
 using namespace dealii;
 
 
+// Indicate that Navier-Stokes solver has not converged.
+DeclExceptionMsg(ExcNavierStokesNoConvergence,
+                 "The Navier-Stokes solver did not converge.");
 
 template <int dim>
 class NavierStokes : public FlowBaseAlgorithm<dim>
