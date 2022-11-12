@@ -275,7 +275,17 @@ LevelSetBaseAlgorithm<dim>::advance_time_step()
           last_smoothing_step = this->time_stepping.step_no();
         }
       old_residual = actual_res;
-      return this->navier_stokes.solve_nonlinear_system(actual_res);
+
+      std::pair<unsigned int, unsigned int> iter({0, 0});
+      try
+        {
+          iter = this->navier_stokes.solve_nonlinear_system(actual_res);
+        }
+      catch (const ExcNavierStokesNoConvergence &e)
+        {
+          this->pcout << "Warning: nonlinear iteration did not converge!" << std::endl;
+        }
+      return iter;
     }
 }
 
