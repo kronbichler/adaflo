@@ -576,7 +576,9 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
   // not succeed, throw the more powerful (but more expensive) solver at
   // it. Note that we use FGMRES for that case as there are inner iterations
   // which make the preconditioner non-linear
-  double residual = 1.;
+  double       residual    = 1.;
+  unsigned int iter_strong = 0;
+
   try
     {
       preconditioner.do_inner_solves = false;
@@ -625,7 +627,8 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
           catch (const SolverControl::NoConvergence &)
             {}
 
-          residual = solver_control_strong.last_value();
+          iter_strong = solver_control_strong.last_step();
+          residual    = solver_control_strong.last_value();
         }
       else
         residual = solver_control_simple.last_value();
@@ -639,8 +642,7 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
 
   timer->leave_subsection();
 
-  return std::pair<unsigned int, double>(solver_control_simple.last_step() +
-                                           solver_control_strong.last_step(),
+  return std::pair<unsigned int, double>(solver_control_simple.last_step() + iter_strong,
                                          residual);
 }
 
@@ -753,7 +755,17 @@ std::pair<unsigned int, unsigned int>
 NavierStokes<dim>::evaluate_time_step()
 {
   const double initial_residual = compute_initial_residual(true);
-  return solve_nonlinear_system(initial_residual);
+
+  std::pair<unsigned int, unsigned int> iter({0, 0});
+  try
+    {
+      iter = solve_nonlinear_system(initial_residual);
+    }
+  catch (const ExcNavierStokesNoConvergence &e)
+    {
+      pcout << "Warning: nonlinear iteration did not converge!" << std::endl;
+    }
+  return iter;
 }
 
 
@@ -956,7 +968,6 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
     {
       if (parameters.output_verbosity == 1)
         pcout << "]" << std::endl;
-      pcout << "Warning: nonlinear iteration did not converge!" << std::endl;
     }
 
   solution.block(0).update_ghost_values();
@@ -1134,6 +1145,8 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
       pcout << std::endl;
       std::cout.flags(flags);
     }
+
+  AssertThrow(step < parameters.max_nl_iteration, ExcNavierStokesNoConvergence());
 
   return {step + 1, n_tot_iterations};
 }
