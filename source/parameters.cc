@@ -260,6 +260,10 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
                     "0",
                     Patterns::Integer(),
                     "Defines whether to output wall times. 0 means no output.");
+  prm.declare_entry("output memory",
+                    "0",
+                    Patterns::Integer(),
+                    "Defines whether to output memory. 0 means no output.");
   prm.leave_subsection();
 
   prm.enter_subsection("Two phase");
@@ -551,6 +555,7 @@ FlowParameters::parse_parameters(ParameterHandler &prm)
   if (print_solution_fields > 2)
     print_solution_fields = 1;
   output_wall_times = prm.get_integer("output wall times") > 0;
+  output_memory     = prm.get_integer("output memory") > 0;
   prm.leave_subsection();
 
 

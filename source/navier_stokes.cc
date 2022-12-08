@@ -1072,8 +1072,8 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
   solver_timers[1].second += nl_timer.wall_time();
   solver_timers[1].first++;
 
-  if ((parameters.output_verbosity > 1 && time_stepping.step_no() % 10 == 1) ||
-      parameters.output_verbosity == 3)
+  if (parameters.output_memory &&
+      ((time_stepping.step_no() % 10 == 1) || parameters.output_verbosity == 3))
     {
       std::ios_base::fmtflags flags = std::cout.flags();
       pcout
