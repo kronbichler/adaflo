@@ -103,6 +103,7 @@ struct FlowParameters
   double       output_frequency;
   unsigned int print_solution_fields;
   bool         output_wall_times;
+  bool         output_memory;
 
   TimeSteppingParameters::Scheme time_step_scheme;
   double                         start_time;
