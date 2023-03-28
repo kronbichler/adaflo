@@ -72,7 +72,7 @@ public:
   {}
 
   virtual void
-  vector_value(const Point<dim> &p, Vector<double> &values) const;
+  vector_value(const Point<dim> &p, Vector<double> &values) const override;
 
 private:
   const double nu;

@@ -102,10 +102,10 @@ public:
   distribute_dofs();
   void
   initialize_data_structures();
-  virtual void
-  setup_problem(
-    const Function<dim> &initial_velocity_field,
-    const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
+  void
+  setup_problem(const Function<dim> &initial_velocity_field,
+                const Function<dim> &initial_distance_function =
+                  Functions::ZeroFunction<dim>()) final;
   void
   initialize_matrix_free(MatrixFree<dim> *  external_matrix_free = 0,
                          const unsigned int dof_index_u          = 0,
@@ -117,12 +117,12 @@ public:
   init_time_advance(const bool print_time_info = true);
   std::pair<unsigned int, unsigned int>
   evaluate_time_step();
-  virtual std::pair<unsigned int, unsigned int>
-  advance_time_step();
+  std::pair<unsigned int, unsigned int>
+  advance_time_step() final;
 
-  virtual void
+  void
   output_solution(const std::string  output_base_name,
-                  const unsigned int n_subdivisions = 0) const;
+                  const unsigned int n_subdivisions = 0) const final;
 
   /**
    * When solving a problem with boundary conditions that start at a non-zero

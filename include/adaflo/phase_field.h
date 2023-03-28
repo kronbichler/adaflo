@@ -54,11 +54,11 @@ public:
   {}
 
   virtual void
-  distribute_dofs();
+  distribute_dofs() override;
   virtual void
-  initialize_data_structures();
+  initialize_data_structures() override;
   virtual std::pair<unsigned int, unsigned int>
-  advance_time_step();
+  advance_time_step() override;
 
   void
   vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
@@ -70,7 +70,8 @@ public:
   const LinearAlgebra::distributed::Vector<double> *velocity_vector;
 
   virtual void
-  transform_distance_function(LinearAlgebra::distributed::Vector<double> &vector) const;
+  transform_distance_function(
+    LinearAlgebra::distributed::Vector<double> &vector) const override;
 
 protected:
   virtual void
@@ -82,7 +83,7 @@ protected:
   compute_residual();
 
   virtual void
-  print_n_dofs() const;
+  print_n_dofs() const override;
 
   // compute the density on faces needed for the Navier-Stokes preconditioner
   // with FE_Q_DG0 elements
@@ -95,7 +96,7 @@ protected:
   solve_cahn_hilliard();
 
   virtual bool
-  mark_cells_for_refinement();
+  mark_cells_for_refinement() override;
 
   // matrix-free worker operations for various operations
   template <int ls_degree, int velocity_degree>

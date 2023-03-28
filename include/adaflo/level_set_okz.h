@@ -46,39 +46,40 @@ public:
   {}
 
   virtual void
-  initialize_data_structures();
+  initialize_data_structures() override;
 
   virtual void
-  transform_distance_function(LinearAlgebra::distributed::Vector<double> &vector) const;
+  transform_distance_function(
+    LinearAlgebra::distributed::Vector<double> &vector) const override;
 
 private:
   // compute the force term and variable density/viscosity for the
   // Navier--Stokes equations
   virtual void
-  compute_force();
+  compute_force() override;
 
   // advection step
   virtual void
-  advance_concentration();
+  advance_concentration() override;
 
   // computes normal direction vector by projection of level set gradient (not
   // scaled to have norm 1!)
   virtual void
-  compute_normal(const bool fast_computation);
+  compute_normal(const bool fast_computation) override;
 
   // computes curvature by projecting the divergence of the normal vector
   // (scaled to norm 1 now)
   virtual void
-  compute_curvature(const bool diffuse_large_values = false);
+  compute_curvature(const bool diffuse_large_values = false) override;
 
   // performs reinitialization
   virtual void
   reinitialize(const unsigned int stab_steps,
-               const unsigned int diff_steps                              = 0,
-               const bool         diffuse_cells_with_large_curvature_only = false);
+               const unsigned int diff_steps                      = 0,
+               const bool diffuse_cells_with_large_curvature_only = false) override;
 
   virtual void
-  compute_heaviside();
+  compute_heaviside() override;
 
   // matrix-free worker operations for various operations
   template <int ls_degree, int velocity_degree>

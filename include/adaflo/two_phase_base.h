@@ -54,9 +54,9 @@ public:
   clear_data();
 
   virtual void
-  setup_problem(
-    const Function<dim> &initial_velocity_field,
-    const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
+  setup_problem(const Function<dim> &initial_velocity_field,
+                const Function<dim> &initial_distance_function =
+                  Functions::ZeroFunction<dim>()) override;
 
   virtual void
   distribute_dofs();
@@ -116,7 +116,7 @@ public:
   // order solutions.
   virtual void
   output_solution(const std::string  output_base_name,
-                  const unsigned int n_subdivisions = 0) const;
+                  const unsigned int n_subdivisions = 0) const override;
 
   // A derived class can transform the initial signed distance function
   // prescribed by the input distance function in setup_problem, e.g. to have

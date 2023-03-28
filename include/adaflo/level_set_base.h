@@ -37,19 +37,19 @@ public:
   {}
 
   virtual void
-  setup_problem(
-    const Function<dim> &initial_velocity_field,
-    const Function<dim> &initial_distance_function = Functions::ZeroFunction<dim>());
+  setup_problem(const Function<dim> &initial_velocity_field,
+                const Function<dim> &initial_distance_function =
+                  Functions::ZeroFunction<dim>()) override;
   virtual void
-  initialize_data_structures();
+  initialize_data_structures() override;
 
   virtual std::pair<unsigned int, unsigned int>
-  advance_time_step(); // perform one time step
+  advance_time_step() override; // perform one time step
 
   // write whole solution to file
   virtual void
   output_solution(const std::string  output_name,
-                  const unsigned int n_subdivisions = 0) const;
+                  const unsigned int n_subdivisions = 0) const override;
 
   double old_residual;
 
@@ -57,7 +57,7 @@ protected:
   virtual void
   evaluate_heaviside_function(FEValues<dim> &              fe_values,
                               std::vector<double> &        cell_heaviside,
-                              std::vector<Tensor<1, dim>> &cell_delta) const
+                              std::vector<Tensor<1, dim>> &cell_delta) const override
   {
     for (unsigned int d = 0; d < dim; ++d)
       {
@@ -74,7 +74,7 @@ protected:
   // adaptive grid refinement around the interface (based on values of
   // concentration gradient)
   virtual bool
-  mark_cells_for_refinement();
+  mark_cells_for_refinement() override;
 
   // compute the force term and variable density/viscosity for the
   // Navier--Stokes equations
