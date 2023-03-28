@@ -63,7 +63,7 @@ public:
   {}
 
   virtual void
-  vector_value(const Point<dim> &p, Vector<double> &values) const;
+  vector_value(const Point<dim> &p, Vector<double> &values) const override;
 
 private:
   const double nu;
@@ -99,7 +99,7 @@ public:
   {}
 
   virtual double
-  value(const Point<dim> &p, const unsigned int) const;
+  value(const Point<dim> &p, const unsigned int) const override;
 };
 
 template <int dim>

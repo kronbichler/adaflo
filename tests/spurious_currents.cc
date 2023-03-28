@@ -61,7 +61,7 @@ public:
   {}
 
   double
-  value(const Point<dim> &p, const unsigned int) const
+  value(const Point<dim> &p, const unsigned int) const override
   {
     // set radius of bubble to 0.5, slightly shifted away from the center
     Point<dim> center;

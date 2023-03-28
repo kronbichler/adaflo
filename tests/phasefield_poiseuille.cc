@@ -55,7 +55,7 @@ public:
   {}
 
   double
-  value(const Point<dim> &p, const unsigned int /*component*/) const
+  value(const Point<dim> &p, const unsigned int /*component*/) const override
   {
     return -p[0] + center;
   }
@@ -97,9 +97,10 @@ public:
   }
 
   virtual void
-  vector_value(const Point<dim> &p, Vector<double> &values) const;
+  vector_value(const Point<dim> &p, Vector<double> &values) const override;
   virtual void
-  vector_gradient(const Point<dim> &p, std::vector<Tensor<1, dim>> &gradients) const;
+  vector_gradient(const Point<dim> &           p,
+                  std::vector<Tensor<1, dim>> &gradients) const override;
 
 private:
   const double wall_velocity, viscosity_ratio, phi, scaling;
