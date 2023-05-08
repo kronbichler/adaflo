@@ -73,7 +73,10 @@ public:
   // Multiply is our vmult operation with Epetra vectors, whereas the rest is
   // given by the sparse matrix based on linear elements
   virtual int
-  Multiply(bool TransA, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const = 0;
+  Multiply(bool                      TransA,
+           const Epetra_MultiVector &X,
+           Epetra_MultiVector &      Y) const override = 0;
+
   virtual void
   vmult(LinearAlgebra::distributed::Vector<double> &,
         const LinearAlgebra::distributed::Vector<double> &) const = 0;
@@ -81,204 +84,204 @@ public:
   // implement all sorts of functions in Epetra_RowMatrix
 
   int
-  NumMyRowEntries(int MyRow, int &NumEntries) const
+  NumMyRowEntries(int MyRow, int &NumEntries) const final
   {
     return sparse_matrix.trilinos_matrix().NumMyRowEntries(MyRow, NumEntries);
   }
   int
-  MaxNumEntries() const
+  MaxNumEntries() const final
   {
     return sparse_matrix.trilinos_matrix().MaxNumEntries();
   }
   int
   ExtractMyRowCopy(int MyRow, int Length, int &NumEntries, double *Values, int *Indices)
-    const
+    const final
   {
     return sparse_matrix.trilinos_matrix().ExtractMyRowCopy(
       MyRow, Length, NumEntries, Values, Indices);
   }
   int
-  ExtractDiagonalCopy(Epetra_Vector &Diagonal) const
+  ExtractDiagonalCopy(Epetra_Vector &Diagonal) const final
   {
     return sparse_matrix.trilinos_matrix().ExtractDiagonalCopy(Diagonal);
   }
   const Epetra_Map &
-  RowMatrixRowMap() const
+  RowMatrixRowMap() const final
   {
     return sparse_matrix.trilinos_matrix().RowMatrixRowMap();
   }
   const Epetra_Map &
-  RowMatrixColMap() const
+  RowMatrixColMap() const final
   {
     return sparse_matrix.trilinos_matrix().RowMatrixColMap();
   }
   const Epetra_Import *
-  RowMatrixImporter() const
+  RowMatrixImporter() const final
   {
     return sparse_matrix.trilinos_matrix().RowMatrixImporter();
   }
   const Epetra_BlockMap &
-  Map() const
+  Map() const final
   {
     return sparse_matrix.trilinos_matrix().Map();
   }
   int
-  SetUseTranspose(bool)
+  SetUseTranspose(bool) final
   {
     Assert(false, ExcNotImplemented());
     return 0;
   }
   int
-  Apply(const Epetra_MultiVector &X, Epetra_MultiVector &Y) const
+  Apply(const Epetra_MultiVector &X, Epetra_MultiVector &Y) const final
   {
     return Multiply(false, X, Y);
   }
   int
-  ApplyInverse(const Epetra_MultiVector &, Epetra_MultiVector &) const
+  ApplyInverse(const Epetra_MultiVector &, Epetra_MultiVector &) const final
   {
     Assert(false, ExcNotImplemented());
     return 0;
   }
   double
-  NormInf() const
+  NormInf() const final
   {
     return sparse_matrix.trilinos_matrix().NormInf();
   }
   const char *
-  Label() const
+  Label() const final
   {
     return "MatrixFreeWrapper";
   }
   bool
-  UseTranspose() const
+  UseTranspose() const final
   {
     return false;
   }
   bool
-  HasNormInf() const
+  HasNormInf() const final
   {
     return false;
   }
   const Epetra_Comm &
-  Comm() const
+  Comm() const final
   {
     return sparse_matrix.trilinos_matrix().Comm();
   }
   const Epetra_Map &
-  OperatorDomainMap() const
+  OperatorDomainMap() const final
   {
     return sparse_matrix.trilinos_matrix().OperatorDomainMap();
   }
   const Epetra_Map &
-  OperatorRangeMap() const
+  OperatorRangeMap() const final
   {
     return sparse_matrix.trilinos_matrix().OperatorRangeMap();
   }
   int
-  Solve(bool, bool, bool, const Epetra_MultiVector &, Epetra_MultiVector &) const
+  Solve(bool, bool, bool, const Epetra_MultiVector &, Epetra_MultiVector &) const final
   {
     Assert(false, ExcNotImplemented());
     return 0;
   }
   int
-  LeftScale(const Epetra_Vector &)
+  LeftScale(const Epetra_Vector &) final
   {
     Assert(false, ExcNotImplemented());
     return 0;
   }
   int
-  RightScale(const Epetra_Vector &)
+  RightScale(const Epetra_Vector &) final
   {
     Assert(false, ExcNotImplemented());
     return 0;
   }
   int
-  InvRowSums(Epetra_Vector &X) const
+  InvRowSums(Epetra_Vector &X) const final
   {
     return sparse_matrix.trilinos_matrix().InvRowSums(X);
   }
   int
-  InvColSums(Epetra_Vector &X) const
+  InvColSums(Epetra_Vector &X) const final
   {
     return sparse_matrix.trilinos_matrix().InvColSums(X);
   }
   bool
-  Filled() const
+  Filled() const final
   {
     return sparse_matrix.trilinos_matrix().Filled();
   }
   double
-  NormOne() const
+  NormOne() const final
   {
     return sparse_matrix.trilinos_matrix().NormOne();
   }
   int
-  NumGlobalNonzeros() const
+  NumGlobalNonzeros() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalNonzeros();
   }
   long long
-  NumGlobalNonzeros64() const
+  NumGlobalNonzeros64() const final
   {
     return NumGlobalNonzeros();
   }
   int
-  NumGlobalRows() const
+  NumGlobalRows() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalRows();
   }
   long long
-  NumGlobalRows64() const
+  NumGlobalRows64() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalRows64();
   }
   int
-  NumGlobalCols() const
+  NumGlobalCols() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalCols();
   }
   long long
-  NumGlobalCols64() const
+  NumGlobalCols64() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalCols64();
   }
   int
-  NumGlobalDiagonals() const
+  NumGlobalDiagonals() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalDiagonals();
   }
   long long
-  NumGlobalDiagonals64() const
+  NumGlobalDiagonals64() const final
   {
     return sparse_matrix.trilinos_matrix().NumGlobalDiagonals64();
   }
   int
-  NumMyNonzeros() const
+  NumMyNonzeros() const final
   {
     return sparse_matrix.trilinos_matrix().NumMyNonzeros();
   }
   int
-  NumMyRows() const
+  NumMyRows() const final
   {
     return sparse_matrix.trilinos_matrix().NumMyRows();
   }
   int
-  NumMyCols() const
+  NumMyCols() const final
   {
     return sparse_matrix.trilinos_matrix().NumMyCols();
   }
   int
-  NumMyDiagonals() const
+  NumMyDiagonals() const final
   {
     return sparse_matrix.trilinos_matrix().NumMyDiagonals();
   }
   bool
-  LowerTriangular() const
+  LowerTriangular() const final
   {
     return sparse_matrix.trilinos_matrix().LowerTriangular();
   }
   bool
-  UpperTriangular() const
+  UpperTriangular() const final
   {
     return sparse_matrix.trilinos_matrix().UpperTriangular();
   }
@@ -319,13 +322,13 @@ public:
 
   void
   vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
+        const LinearAlgebra::distributed::Vector<double> &src) const final
   {
     ns_matrix.velocity_vmult(dst, src);
   }
 
   int
-  Multiply(bool, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const
+  Multiply(bool, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const final
   {
     Assert(X.NumVectors() == 1, ExcNotImplemented());
     AssertDimension(src.locally_owned_size(), static_cast<unsigned int>(X.MyLength()));
@@ -380,7 +383,7 @@ public:
 
   void
   vmult(LinearAlgebra::distributed::Vector<double> &      dst,
-        const LinearAlgebra::distributed::Vector<double> &src) const
+        const LinearAlgebra::distributed::Vector<double> &src) const final
   {
     if (use_trilinos_matrix)
       sparse_matrix.vmult(dst, src);
@@ -410,7 +413,7 @@ public:
   }
 
   int
-  Multiply(bool, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const
+  Multiply(bool, const Epetra_MultiVector &X, Epetra_MultiVector &Y) const final
   {
     Assert(X.NumVectors() == 1, ExcNotImplemented());
     if (use_trilinos_matrix)
