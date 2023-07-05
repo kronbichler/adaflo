@@ -1415,7 +1415,7 @@ NavierStokes<dim>::interpolate_pressure_field(
       // set DG0 components to zero
       std::vector<std::vector<bool>> constant_modes;
       DoFTools::extract_constant_modes(dof_handler_p,
-                                       std::vector<bool>(1, true),
+                                       ComponentMask(std::vector<bool>(1, true)),
                                        constant_modes);
       AssertDimension(constant_modes.size(), 2);
       for (unsigned int i = 0; i < pressure_vector.locally_owned_size(); ++i)

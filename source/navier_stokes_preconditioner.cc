@@ -1152,7 +1152,7 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
     {
       std::vector<std::vector<bool>> constant_modes;
       DoFTools::extract_constant_modes(dof_handler_p,
-                                       std::vector<bool>(1, true),
+                                       ComponentMask(std::vector<bool>(1, true)),
                                        constant_modes);
       AssertDimension(constant_modes.size(), 2);
       int min_local_index = std::numeric_limits<int>::min();
@@ -1387,12 +1387,12 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
   if (parameters.precondition_velocity == FlowParameters::u_amg ||
       parameters.precondition_velocity == FlowParameters::u_amg_linear)
     DoFTools::extract_constant_modes(dof_handler_u,
-                                     std::vector<bool>(dim, true),
+                                     ComponentMask(std::vector<bool>(dim, true)),
                                      constant_modes_u);
 
   if (parameters.density > 0 || parameters.augmented_taylor_hood)
     DoFTools::extract_constant_modes(dof_handler_p,
-                                     std::vector<bool>(1, true),
+                                     ComponentMask(std::vector<bool>(1, true)),
                                      constant_modes_p);
 
 
