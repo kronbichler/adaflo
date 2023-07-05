@@ -132,7 +132,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
 
       std::vector<std::vector<bool>> constant_modes;
       DoFTools::extract_constant_modes(matrix_free->get_dof_handler(dof_index_p),
-                                       std::vector<bool>(1, true),
+                                       ComponentMask(std::vector<bool>(1, true)),
                                        constant_modes);
 
       for (unsigned int mode = 0; mode < 2; ++mode)
