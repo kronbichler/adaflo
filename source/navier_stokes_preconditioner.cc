@@ -657,8 +657,10 @@ NavierStokesPreconditioner<dim>::vmult(
             }
         }
       catch (...)
-        Assert(false,
-               ExcMessage("Solver for velocity-velocity matrix did not converge."));
+        {
+          Assert(false,
+                 ExcMessage("Solver for velocity-velocity matrix did not converge."));
+        }
     }
   precond_timer.second[0] += time.wall_time();
 
