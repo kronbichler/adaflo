@@ -832,7 +832,6 @@ compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
   FEPointEvaluation<dim, dim> phi_normal(mapping, fe_dim, update_values);
   FEPointEvaluation<dim, dim> phi_force(mapping,
                                         dof_handler_dim.get_fe(),
-                                        update_values,
                                         update_values);
 
   std::vector<double>                  buffer;
