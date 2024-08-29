@@ -436,7 +436,7 @@ FlowParameters::parse_parameters(const std::string parameter_file, ParameterHand
   catch (...)
     {
       if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-        prm.print_parameters(std::cout, ParameterHandler::Text);
+        prm.print_parameters(std::cout, ParameterHandler::PRM);
       AssertThrow(false, ExcMessage("Invalid input parameter file."));
     }
 
