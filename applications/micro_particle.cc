@@ -109,7 +109,7 @@ BoundaryValuesVelocity<dim>::BoundaryValuesVelocity(const int boundary_ind)
 
 template <int dim>
 double
-BoundaryValuesVelocity<dim>::value(const Point<dim> & p,
+BoundaryValuesVelocity<dim>::value(const Point<dim>  &p,
                                    const unsigned int component) const
 {
   (void)p;
@@ -150,7 +150,7 @@ BoundaryValuesVelocity<dim>::value(const Point<dim> & p,
 template <int dim>
 void
 BoundaryValuesVelocity<dim>::vector_value(const Point<dim> &p,
-                                          Vector<double> &  values) const
+                                          Vector<double>   &values) const
 {
   for (unsigned int c = 0; c < this->n_components; ++c)
     values(c) = BoundaryValuesVelocity<dim>::value(p, c);

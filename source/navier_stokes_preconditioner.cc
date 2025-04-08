@@ -77,7 +77,7 @@ public:
   virtual int
   Multiply(bool                      TransA,
            const Epetra_MultiVector &X,
-           Epetra_MultiVector &      Y) const override = 0;
+           Epetra_MultiVector       &Y) const override = 0;
 
   virtual void
   vmult(LinearAlgebra::distributed::Vector<double> &,
@@ -313,7 +313,7 @@ class VelocityMatrix : public adaflo::MatrixFreeWrapper
 {
 public:
   VelocityMatrix(const adaflo::NavierStokesMatrix<dim> &ns_matrix,
-                 const TrilinosWrappers::SparseMatrix & tri_mat)
+                 const TrilinosWrappers::SparseMatrix  &tri_mat)
     : MatrixFreeWrapper(tri_mat)
     , ns_matrix(ns_matrix)
   {
@@ -323,7 +323,7 @@ public:
   }
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const final
   {
     ns_matrix.velocity_vmult(dst, src);
@@ -343,7 +343,7 @@ public:
   }
 
 private:
-  const adaflo::NavierStokesMatrix<dim> &            ns_matrix;
+  const adaflo::NavierStokesMatrix<dim>             &ns_matrix;
   mutable LinearAlgebra::distributed::Vector<double> dst;
   mutable LinearAlgebra::distributed::Vector<double> src;
 };
@@ -356,9 +356,9 @@ class PressurePoissonMatrix : public adaflo::MatrixFreeWrapper
 public:
   PressurePoissonMatrix(
     const adaflo::NavierStokesMatrix<dim> &ns_matrix,
-    const TrilinosWrappers::SparseMatrix & tri_mat,
+    const TrilinosWrappers::SparseMatrix  &tri_mat,
     const bool                             use_trilinos_matrix,
-    const std::vector<unsigned int> &      constraints_schur_complement_only)
+    const std::vector<unsigned int>       &constraints_schur_complement_only)
     : MatrixFreeWrapper(tri_mat)
     , ns_matrix(ns_matrix)
     , use_trilinos_matrix(use_trilinos_matrix)
@@ -384,7 +384,7 @@ public:
   }
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const final
   {
     if (use_trilinos_matrix)
@@ -430,11 +430,11 @@ public:
   }
 
 private:
-  const adaflo::NavierStokesMatrix<dim> &            ns_matrix;
+  const adaflo::NavierStokesMatrix<dim>             &ns_matrix;
   const bool                                         use_trilinos_matrix;
   mutable LinearAlgebra::distributed::Vector<double> dst;
   mutable LinearAlgebra::distributed::Vector<double> src;
-  const std::vector<unsigned int> &                  constraints_schur_complement_only;
+  const std::vector<unsigned int>                   &constraints_schur_complement_only;
   std::vector<double>                                constrained_diagonal_values;
   mutable std::vector<double>                        schur_complement_tmp_values;
 };
@@ -450,7 +450,7 @@ public:
   {}
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const
   {
     ns_matrix.pressure_mass_vmult(dst, src);
@@ -468,8 +468,8 @@ public:
   Precondition_LinML(){};
 
   void
-  initialize(const MatrixFreeWrapper &               matrix,
-             const std::vector<std::vector<bool>> &  constant_modes,
+  initialize(const MatrixFreeWrapper                &matrix,
+             const std::vector<std::vector<bool>>   &constant_modes,
              const bool                              is_velocity,
              const std::vector<std::vector<double>> &coordinates)
   {
@@ -502,7 +502,7 @@ public:
       }
 
     parameter_list.set("ML output", 0);
-    const Epetra_Map &  domain_map = matrix.OperatorDomainMap();
+    const Epetra_Map   &domain_map = matrix.OperatorDomainMap();
     Epetra_MultiVector  distributed_constant_modes(domain_map, dim > 0 ? dim : 1);
     std::vector<double> dummy(dim);
 
@@ -535,7 +535,7 @@ public:
   }
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const
   {
     AssertDimension(static_cast<int>(dst.locally_owned_size()),
@@ -578,7 +578,7 @@ namespace helper
       : ns_matrix(ns_matrix){};
 
     void
-    vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    vmult(LinearAlgebra::distributed::Vector<double>       &dst,
           const LinearAlgebra::distributed::Vector<double> &src) const
     {
       ns_matrix.velocity_vmult(dst, src);
@@ -593,7 +593,7 @@ namespace helper
 template <int dim>
 void
 adaflo::NavierStokesPreconditioner<dim>::vmult(
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  LinearAlgebra::distributed::BlockVector<double>       &dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   Assert(initialized == true, ExcNotInitialized());
@@ -741,7 +741,7 @@ adaflo::NavierStokesPreconditioner<dim>::vmult(
 template <int dim>
 void
 adaflo::NavierStokesPreconditioner<dim>::solve_pressure_mass(
-  LinearAlgebra::distributed::Vector<double> &      dst,
+  LinearAlgebra::distributed::Vector<double>       &dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
   if (pp_mass.get() == 0)
@@ -778,10 +778,10 @@ template <int dim>
 std::pair<unsigned int, double>
 adaflo::NavierStokesPreconditioner<dim>::solve_projection_system(
   const LinearAlgebra::distributed::BlockVector<double> &solution,
-  LinearAlgebra::distributed::BlockVector<double> &      solution_update,
-  LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
-  LinearAlgebra::distributed::Vector<double> &           projection_update,
-  TimerOutput &                                          timer) const
+  LinearAlgebra::distributed::BlockVector<double>       &solution_update,
+  LinearAlgebra::distributed::BlockVector<double>       &system_rhs,
+  LinearAlgebra::distributed::Vector<double>            &projection_update,
+  TimerOutput                                           &timer) const
 {
   SolverControl                              solver_control(parameters.max_lin_iteration,
                                0.5 * parameters.tol_nl_iteration);
@@ -977,9 +977,9 @@ adaflo::NavierStokesPreconditioner<dim>::compute()
 
 template <int dim>
 adaflo::NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
-  const FlowParameters &           parameters,
-  const NavierStokes<dim> &        flow_algorithm,
-  const Triangulation<dim> &       tria,
+  const FlowParameters            &parameters,
+  const NavierStokes<dim>         &flow_algorithm,
+  const Triangulation<dim>        &tria,
   const AffineConstraints<double> &constraints_u)
   : do_inner_solves(false)
   , initialized(false)
@@ -1016,8 +1016,8 @@ adaflo::NavierStokesPreconditioner<dim>::clear()
 template <int dim>
 void
 adaflo::NavierStokesPreconditioner<dim>::initialize_matrices(
-  const DoFHandler<dim> &          dof_handler_u,
-  const DoFHandler<dim> &          dof_handler_p,
+  const DoFHandler<dim>           &dof_handler_u,
+  const DoFHandler<dim>           &dof_handler_p,
   const AffineConstraints<double> &constraints_p)
 {
   const FiniteElement<dim> &fe_u = dof_handler_u.get_fe();
@@ -1439,9 +1439,9 @@ namespace adaflo::AssemblyData
   struct Preconditioner
   {
     Preconditioner(const adaflo::NavierStokesPreconditioner<dim> &preconditioner,
-                   const Mapping<dim> &                           mapping,
-                   const FiniteElement<dim> &                     fe_u,
-                   const FiniteElement<dim> &                     fe_p);
+                   const Mapping<dim>                            &mapping,
+                   const FiniteElement<dim>                      &fe_u,
+                   const FiniteElement<dim>                      &fe_p);
 
     Preconditioner(const Preconditioner &data);
 
@@ -1513,9 +1513,9 @@ namespace adaflo::AssemblyData
   template <int dim>
   Preconditioner<dim>::Preconditioner(
     const NavierStokesPreconditioner<dim> &preconditioner,
-    const Mapping<dim> &                   mapping,
-    const FiniteElement<dim> &             fe_u,
-    const FiniteElement<dim> &             fe_p)
+    const Mapping<dim>                    &mapping,
+    const FiniteElement<dim>              &fe_u,
+    const FiniteElement<dim>              &fe_p)
     : fe_values_u(mapping,
                   fe_u.base_element(0),
                   // TODO: not particular nice to distinguish here
@@ -1636,12 +1636,12 @@ namespace
   template <int dim>
   void
   compute_ip_matrix_q_dg0(
-    const FEFaceValuesBase<dim> &                            fe_face_values,
+    const FEFaceValuesBase<dim>                             &fe_face_values,
     const unsigned int                                       face1,
     const typename Triangulation<dim>::active_cell_iterator &neighbor,
     const double                                             scale,
-    FullMatrix<double> &                                     matrix_1,
-    FullMatrix<double> &                                     matrix_2)
+    FullMatrix<double>                                      &matrix_1,
+    FullMatrix<double>                                      &matrix_2)
   {
     // Compute penalty parameter
     const unsigned int face2   = fe_face_values.get_cell()->neighbor_face_no(face1);
@@ -1688,7 +1688,7 @@ namespace
   compute_nitsche_matrix(const FEFaceValuesBase<dim> &fe_face_values,
                          const unsigned int           face1,
                          const double                 scale,
-                         FullMatrix<double> &         matrix)
+                         FullMatrix<double>          &matrix)
   {
     const unsigned int normal1 = GeometryInfo<dim>::unit_normal_direction[face1];
     const unsigned int degsq =
@@ -2545,10 +2545,10 @@ adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::initialize_linear_el
 template <int dim>
 void
 adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
-  const FiniteElement<dim> &              fe,
+  const FiniteElement<dim>               &fe,
   std::vector<std::vector<unsigned int>> &dof_to_lin) const
 {
-  const FE_Q<dim> *    fe_q     = dynamic_cast<const FE_Q<dim> *>(&fe);
+  const FE_Q<dim>     *fe_q     = dynamic_cast<const FE_Q<dim> *>(&fe);
   const FE_Q_DG0<dim> *fe_q_dg0 = dynamic_cast<const FE_Q_DG0<dim> *>(&fe);
   Assert(fe_q != 0 || fe_q_dg0 != 0, ExcNotImplemented());
   const unsigned int degree = fe.degree;

@@ -57,16 +57,16 @@ namespace adaflo
     unsigned int quad_index_u = 0;
     unsigned int quad_index_p = 1;
 
-    NavierStokes(const Mapping<dim> &                              mapping,
-                 const FlowParameters &                            parameters,
-                 Triangulation<dim> &                              triangulation,
-                 TimerOutput *                                     external_timer = 0,
+    NavierStokes(const Mapping<dim>                               &mapping,
+                 const FlowParameters                             &parameters,
+                 Triangulation<dim>                               &triangulation,
+                 TimerOutput                                      *external_timer = 0,
                  std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor =
                    std::shared_ptr<helpers::BoundaryDescriptor<dim>>());
 
-    NavierStokes(const FlowParameters &                            parameters,
-                 Triangulation<dim> &                              triangulation,
-                 TimerOutput *                                     external_timer = 0,
+    NavierStokes(const FlowParameters                             &parameters,
+                 Triangulation<dim>                               &triangulation,
+                 TimerOutput                                      *external_timer = 0,
                  std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor =
                    std::shared_ptr<helpers::BoundaryDescriptor<dim>>());
 
@@ -110,7 +110,7 @@ namespace adaflo
                   const Function<dim> &initial_distance_function =
                     Functions::ZeroFunction<dim>()) final;
     void
-    initialize_matrix_free(MatrixFree<dim> *  external_matrix_free = 0,
+    initialize_matrix_free(MatrixFree<dim>   *external_matrix_free = 0,
                            const unsigned int dof_index_u          = 0,
                            const unsigned int dof_index_p          = 1,
                            const unsigned int quad_index_u         = 0,
@@ -144,7 +144,7 @@ namespace adaflo
      */
     void
     interpolate_pressure_field(
-      const Function<dim> &                       pressure_function,
+      const Function<dim>                        &pressure_function,
       LinearAlgebra::distributed::Vector<double> &pressure_vector) const;
 
     void
@@ -157,7 +157,7 @@ namespace adaflo
     solve_system(const double linear_tolerance);
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
     void

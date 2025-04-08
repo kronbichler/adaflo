@@ -63,10 +63,10 @@ namespace
 
 template <int dim>
 adaflo::TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
-  const FlowParameters &                    parameters_in,
+  const FlowParameters                     &parameters_in,
   const std::shared_ptr<FiniteElement<dim>> fe_in,
-  Triangulation<dim> &                      tria_in,
-  TimerOutput *                             timer_in)
+  Triangulation<dim>                       &tria_in,
+  TimerOutput                              *timer_in)
   : FlowBaseAlgorithm<dim>(
       parameters_in.use_simplex_mesh ?
         std::shared_ptr<Mapping<dim>>(new MappingFE<dim>(FE_SimplexP<dim>(1))) :

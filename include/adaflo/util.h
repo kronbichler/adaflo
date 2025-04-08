@@ -46,11 +46,11 @@ namespace adaflo
 
   template <int dim>
   void
-  compute_cell_diameters(const MatrixFree<dim, double> &         matrix_free,
+  compute_cell_diameters(const MatrixFree<dim, double>          &matrix_free,
                          const unsigned int                      dof_index,
                          AlignedVector<VectorizedArray<double>> &cell_diameters,
-                         double &                                cell_diameter_min,
-                         double &                                cell_diameter_max)
+                         double                                 &cell_diameter_min,
+                         double                                 &cell_diameter_max)
   {
     cell_diameters.resize(matrix_free.n_cell_batches());
 

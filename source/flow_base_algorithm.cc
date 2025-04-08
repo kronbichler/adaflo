@@ -221,7 +221,7 @@ adaflo::FlowBaseAlgorithm<dim>::set_periodic_direction(
 
 template <int dim>
 void
-adaflo::FlowBaseAlgorithm<dim>::write_data_output(const std::string & output_name,
+adaflo::FlowBaseAlgorithm<dim>::write_data_output(const std::string  &output_name,
                                                   const TimeStepping &time_stepping,
                                                   const double        output_frequency,
                                                   const Triangulation<dim> &tria,

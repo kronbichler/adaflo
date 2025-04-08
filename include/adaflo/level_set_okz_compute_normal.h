@@ -74,18 +74,18 @@ namespace adaflo
     using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
     LevelSetOKZSolverComputeNormal(
-      BlockVectorType &                              normal_vector_field,
-      BlockVectorType &                              normal_vector_rhs,
-      const VectorType &                             level_set_field,
-      const AlignedVector<VectorizedArray<double>> & cell_diameters,
-      const double &                                 epsilon_used,
-      const double &                                 minimal_edge_length,
-      const AffineConstraints<double> &              constraints_normals,
+      BlockVectorType                               &normal_vector_field,
+      BlockVectorType                               &normal_vector_rhs,
+      const VectorType                              &level_set_field,
+      const AlignedVector<VectorizedArray<double>>  &cell_diameters,
+      const double                                  &epsilon_used,
+      const double                                  &minimal_edge_length,
+      const AffineConstraints<double>               &constraints_normals,
       const LevelSetOKZSolverComputeNormalParameter &parameters,
-      const MatrixFree<dim> &                        matrix_free,
-      const DiagonalPreconditioner<double> &         preconditioner,
-      const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
-      const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix);
+      const MatrixFree<dim>                         &matrix_free,
+      const DiagonalPreconditioner<double>          &preconditioner,
+      const std::shared_ptr<BlockMatrixExtension>   &projection_matrix,
+      const std::shared_ptr<BlockILUExtension>      &ilu_projection_matrix);
 
     virtual ~LevelSetOKZSolverComputeNormal() = default;
 
@@ -98,17 +98,17 @@ namespace adaflo
   private:
     template <int ls_degree, typename Number>
     void
-    local_compute_normal(const MatrixFree<dim, Number> &                        data,
-                         LinearAlgebra::distributed::BlockVector<Number> &      dst,
+    local_compute_normal(const MatrixFree<dim, Number>                         &data,
+                         LinearAlgebra::distributed::BlockVector<Number>       &dst,
                          const LinearAlgebra::distributed::BlockVector<Number> &src,
                          const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int ls_degree>
     void
     local_compute_normal_rhs(
-      const MatrixFree<dim, double> &              data,
-      BlockVectorType &                            dst,
-      const VectorType &                           src,
+      const MatrixFree<dim, double>               &data,
+      BlockVectorType                             &dst,
+      const VectorType                            &src,
       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     /**
@@ -119,29 +119,29 @@ namespace adaflo
     /**
      * Vector section
      */
-    BlockVectorType & normal_vector_field; // [o]
-    BlockVectorType & normal_vector_rhs;   // [-]
+    BlockVectorType  &normal_vector_field; // [o]
+    BlockVectorType  &normal_vector_rhs;   // [-]
     const VectorType &level_set_solution;  // [i]
 
     /**
      * MatrixFree
      */
-    const MatrixFree<dim> &          matrix_free;         // [i]
+    const MatrixFree<dim>           &matrix_free;         // [i]
     const AffineConstraints<double> &constraints_normals; // [i]
 
     /**
      * Physics section
      */
     const AlignedVector<VectorizedArray<double>> &cell_diameters;      // [i]
-    const double &                                epsilon_used;        // [i]
-    const double &                                minimal_edge_length; // [i]
+    const double                                 &epsilon_used;        // [i]
+    const double                                 &minimal_edge_length; // [i]
 
     /**
      * Solver section
      */
-    const DiagonalPreconditioner<double> &       preconditioner;        // [i]
+    const DiagonalPreconditioner<double>        &preconditioner;        // [i]
     const std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
-    const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
+    const std::shared_ptr<BlockILUExtension>    &ilu_projection_matrix; // [i]
   };
 } // namespace adaflo
 

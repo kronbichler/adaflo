@@ -34,10 +34,10 @@ namespace adaflo
   inline void
   initialize_mass_matrix_diagonal(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
-    const AffineConstraints<Number> &                   hanging_node_constraints,
+    const AffineConstraints<Number>                    &hanging_node_constraints,
     const unsigned int                                  dof_index,
     const unsigned int                                  quad_index,
-    DiagonalPreconditioner<double> &                    preconditioner)
+    DiagonalPreconditioner<double>                     &preconditioner)
   {
     LinearAlgebra::distributed::Vector<Number> diagonal;
     matrix_free.initialize_dof_vector(diagonal, dof_index);
@@ -109,14 +109,14 @@ namespace adaflo
   void
   initialize_projection_matrix(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
-    const AffineConstraints<Number> &                   constraints_normals,
+    const AffineConstraints<Number>                    &constraints_normals,
     const unsigned int                                  dof_index,
     const unsigned int                                  quad_index,
-    const Number &                                      epsilon_used,
-    const Number &                                      epsilon,
-    const AlignedVector<VectorizedArrayType> &          cell_diameters,
-    BlockMatrixExtension &                              projection_matrix,
-    BlockILUExtension &                                 ilu_projection_matrix);
+    const Number                                       &epsilon_used,
+    const Number                                       &epsilon,
+    const AlignedVector<VectorizedArrayType>           &cell_diameters,
+    BlockMatrixExtension                               &projection_matrix,
+    BlockILUExtension                                  &ilu_projection_matrix);
 } // namespace adaflo
 
 #endif

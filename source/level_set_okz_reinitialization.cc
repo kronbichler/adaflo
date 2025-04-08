@@ -54,9 +54,9 @@ template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
 adaflo::LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
-  const MatrixFree<dim, double> &              data,
-  VectorType &                                 dst,
-  const VectorType &                           src,
+  const MatrixFree<dim, double>               &data,
+  VectorType                                  &dst,
+  const VectorType                            &src,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
   const unsigned int concentration_subdivisions =
@@ -130,7 +130,7 @@ template <int ls_degree, bool diffuse_only>
 void
 adaflo::LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
   const MatrixFree<dim, double> &data,
-  VectorType &                   dst,
+  VectorType                    &dst,
   const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range)
 {
@@ -193,7 +193,7 @@ adaflo::LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
 template <int dim>
 void
 adaflo::LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
-  VectorType &      dst,
+  VectorType       &dst,
   const VectorType &src,
   const bool        diffuse_only) const
 {

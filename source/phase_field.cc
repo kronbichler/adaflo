@@ -48,7 +48,7 @@ using namespace dealii;
 
 template <int dim>
 adaflo::PhaseFieldSolver<dim>::PhaseFieldSolver(const FlowParameters &parameters_in,
-                                                Triangulation<dim> &  tria_in)
+                                                Triangulation<dim>   &tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                std::make_shared<FE_Q_iso_Q1<dim>>(
                                  parameters_in.concentration_subdivisions),
@@ -320,7 +320,7 @@ struct MassMatrix
   {}
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const
   {
     two_phase.mass_vmult(dst, src);
@@ -374,7 +374,7 @@ template <typename Preconditioner, int dim>
 class BlockPreconditionerSimple
 {
 public:
-  BlockPreconditionerSimple(const Preconditioner & preconditioner,
+  BlockPreconditionerSimple(const Preconditioner  &preconditioner,
                             const MassMatrix<dim> &mass_matrix,
                             const double           factor)
     : preconditioner(preconditioner)
@@ -383,7 +383,7 @@ public:
   {}
 
   void
-  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+  vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
         const LinearAlgebra::distributed::BlockVector<double> &src) const
   {
     AssertDimension(src.n_blocks(), 2);
@@ -401,7 +401,7 @@ public:
   }
 
 private:
-  const Preconditioner &                             preconditioner;
+  const Preconditioner                              &preconditioner;
   const MassMatrix<dim>                              mass_matrix;
   const double                                       factor;
   mutable LinearAlgebra::distributed::Vector<double> temp1;

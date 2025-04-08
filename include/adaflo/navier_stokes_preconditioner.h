@@ -68,9 +68,9 @@ namespace adaflo
   class NavierStokesPreconditioner
   {
   public:
-    NavierStokesPreconditioner(const FlowParameters &           parameters,
-                               const NavierStokes<dim> &        base_algorithm,
-                               const Triangulation<dim> &       tria,
+    NavierStokesPreconditioner(const FlowParameters            &parameters,
+                               const NavierStokes<dim>         &base_algorithm,
+                               const Triangulation<dim>        &tria,
                                const AffineConstraints<double> &constraints_u);
 
     void
@@ -80,24 +80,24 @@ namespace adaflo
     compute();
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
     std::pair<unsigned int, double>
     solve_projection_system(
       const LinearAlgebra::distributed::BlockVector<double> &solution,
-      LinearAlgebra::distributed::BlockVector<double> &      solution_update,
-      LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
-      LinearAlgebra::distributed::Vector<double> &           projection_update,
-      TimerOutput &                                          timer) const;
+      LinearAlgebra::distributed::BlockVector<double>       &solution_update,
+      LinearAlgebra::distributed::BlockVector<double>       &system_rhs,
+      LinearAlgebra::distributed::Vector<double>            &projection_update,
+      TimerOutput                                           &timer) const;
 
     void
-    solve_pressure_mass(LinearAlgebra::distributed::Vector<double> &      dst,
+    solve_pressure_mass(LinearAlgebra::distributed::Vector<double>       &dst,
                         const LinearAlgebra::distributed::Vector<double> &src) const;
 
     void
-    initialize_matrices(const DoFHandler<dim> &          dof_handler_u,
-                        const DoFHandler<dim> &          dof_handler_p,
+    initialize_matrices(const DoFHandler<dim>           &dof_handler_u,
+                        const DoFHandler<dim>           &dof_handler_p,
                         const AffineConstraints<double> &constraints_p);
     void
     set_system_matrix(const NavierStokesMatrix<dim> &matrix);
@@ -192,7 +192,7 @@ namespace adaflo
                                  const FiniteElement<dim> &fe_p);
 
       void
-      get_indices_sub_elements(const FiniteElement<dim> &              fe,
+      get_indices_sub_elements(const FiniteElement<dim>               &fe,
                                std::vector<std::vector<unsigned int>> &dof_to_lin) const;
 
       void
@@ -219,7 +219,7 @@ namespace adaflo
 
     IntegrationHelper integration_helper;
 
-    const FlowParameters &   parameters;
+    const FlowParameters    &parameters;
     const NavierStokes<dim> &flow_algorithm;
 
     // A table containing variable densities on faces for face integrals in

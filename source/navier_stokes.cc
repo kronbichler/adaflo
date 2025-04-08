@@ -53,9 +53,9 @@ using namespace dealii;
 
 template <int dim>
 adaflo::NavierStokes<dim>::NavierStokes(
-  const FlowParameters &                            parameters,
-  Triangulation<dim> &                              triangulation_in,
-  TimerOutput *                                     external_timer,
+  const FlowParameters                             &parameters,
+  Triangulation<dim>                               &triangulation_in,
+  TimerOutput                                      *external_timer,
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
   : NavierStokes(parameters.use_simplex_mesh ?
                    static_cast<const Mapping<dim> &>(
@@ -70,10 +70,10 @@ adaflo::NavierStokes<dim>::NavierStokes(
 
 template <int dim>
 adaflo::NavierStokes<dim>::NavierStokes(
-  const Mapping<dim> &                              mapping,
-  const FlowParameters &                            parameters,
-  Triangulation<dim> &                              triangulation_in,
-  TimerOutput *                                     external_timer,
+  const Mapping<dim>                               &mapping,
+  const FlowParameters                             &parameters,
+  Triangulation<dim>                               &triangulation_in,
+  TimerOutput                                      *external_timer,
   std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary_descriptor)
   : FlowBaseAlgorithm<dim>(std::shared_ptr<Mapping<dim>>(mapping.clone()))
   , user_rhs(2)
@@ -392,7 +392,7 @@ adaflo::NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_f
 
 template <int dim>
 void
-adaflo::NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_free,
+adaflo::NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim>   *external_matrix_free,
                                                   const unsigned int dof_index_u,
                                                   const unsigned int dof_index_p,
                                                   const unsigned int quad_index_u,
@@ -669,9 +669,9 @@ adaflo::NavierStokes<dim>::init_time_advance(const bool print_time_info)
   for (unsigned int block = 0; block < n_blocks; ++block)
     {
       const unsigned int n       = solution.block(block).locally_owned_size();
-      double *           cur     = solution.block(block).begin();
-      double *           old     = solution_old.block(block).begin();
-      double *           old_old = solution_old_old.block(block).begin();
+      double            *cur     = solution.block(block).begin();
+      double            *old     = solution_old.block(block).begin();
+      double            *old_old = solution_old_old.block(block).begin();
 
       for (unsigned int i = 0; i < n; ++i)
         {
@@ -692,10 +692,10 @@ adaflo::NavierStokes<dim>::init_time_advance(const bool print_time_info)
       if (time_stepping.step_no() > 1)
         {
           const unsigned int n       = solution.block(1).locally_owned_size();
-          double *           cur     = solution.block(1).begin();
-          double *           upd     = solution_update.block(1).begin();
-          double *           old     = solution_old.block(1).begin();
-          double *           old_old = solution_old_old.block(1).begin();
+          double            *cur     = solution.block(1).begin();
+          double            *upd     = solution_update.block(1).begin();
+          double            *old     = solution_old.block(1).begin();
+          double            *old_old = solution_old_old.block(1).begin();
           for (unsigned int i = 0; i < n; ++i)
             {
               const double tmp =
@@ -1410,7 +1410,7 @@ adaflo::NavierStokes<dim>::prepare_coarsening_and_refinement()
 template <int dim>
 void
 adaflo::NavierStokes<dim>::interpolate_pressure_field(
-  const Function<dim> &                       pressure_function,
+  const Function<dim>                        &pressure_function,
   LinearAlgebra::distributed::Vector<double> &pressure_vector) const
 {
   VectorTools::interpolate(dof_handler_p, pressure_function, pressure_vector);

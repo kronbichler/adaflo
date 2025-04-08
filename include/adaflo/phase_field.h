@@ -63,10 +63,10 @@ namespace adaflo
     advance_time_step() override;
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const;
     void
-    mass_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    mass_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                const LinearAlgebra::distributed::Vector<double> &src) const;
 
     const LinearAlgebra::distributed::Vector<double> *velocity_vector;
@@ -103,35 +103,35 @@ namespace adaflo
     // matrix-free worker operations for various operations
     template <int ls_degree, int velocity_degree>
     void
-    local_compute_force(const MatrixFree<dim, double> &                   data,
-                        LinearAlgebra::distributed::Vector<double> &      dst,
+    local_compute_force(const MatrixFree<dim, double>                    &data,
+                        LinearAlgebra::distributed::Vector<double>       &dst,
                         const LinearAlgebra::distributed::Vector<double> &src,
-                        const std::pair<unsigned int, unsigned int> &     cell_range);
+                        const std::pair<unsigned int, unsigned int>      &cell_range);
 
     template <int ls_degree, int velocity_degree>
     void
-    local_residual(const MatrixFree<dim, double> &                        data,
-                   LinearAlgebra::distributed::BlockVector<double> &      dst,
+    local_residual(const MatrixFree<dim, double>                         &data,
+                   LinearAlgebra::distributed::BlockVector<double>       &dst,
                    const LinearAlgebra::distributed::BlockVector<double> &src,
                    const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int ls_degree>
     void
-    local_vmult(const MatrixFree<dim, double> &                        data,
-                LinearAlgebra::distributed::BlockVector<double> &      dst,
+    local_vmult(const MatrixFree<dim, double>                         &data,
+                LinearAlgebra::distributed::BlockVector<double>       &dst,
                 const LinearAlgebra::distributed::BlockVector<double> &src,
-                const std::pair<unsigned int, unsigned int> &          cell_range) const;
+                const std::pair<unsigned int, unsigned int>           &cell_range) const;
 
     template <int ls_degree>
     void
-    local_mass(const MatrixFree<dim, double> &                   data,
-               LinearAlgebra::distributed::Vector<double> &      dst,
+    local_mass(const MatrixFree<dim, double>                    &data,
+               LinearAlgebra::distributed::Vector<double>       &dst,
                const LinearAlgebra::distributed::Vector<double> &src,
-               const std::pair<unsigned int, unsigned int> &     cell_range) const;
+               const std::pair<unsigned int, unsigned int>      &cell_range) const;
 
     template <int operation>
     void
-    apply_contact_bc(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    apply_contact_bc(LinearAlgebra::distributed::BlockVector<double>       &dst,
                      const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
     const FlowParameters &parameters;

@@ -35,7 +35,7 @@ namespace adaflo
   {
   public:
     LevelSetOKZMatrixSolver(const FlowParameters &parameters,
-                            Triangulation<dim> &  triangulation);
+                            Triangulation<dim>   &triangulation);
     virtual ~LevelSetOKZMatrixSolver()
     {}
 

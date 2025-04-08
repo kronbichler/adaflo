@@ -55,17 +55,17 @@ namespace adaflo
                       Tensor<2, dim, VectorizedArray<double>>>
       velocity_stored;
     NavierStokesMatrix(
-      const FlowParameters &                                 parameters,
-      const unsigned int &                                   dof_index_u,
-      const unsigned int &                                   dof_index_p,
-      const unsigned int &                                   quad_index_u,
-      const unsigned int &                                   quad_index_p,
+      const FlowParameters                                  &parameters,
+      const unsigned int                                    &dof_index_u,
+      const unsigned int                                    &dof_index_p,
+      const unsigned int                                    &quad_index_u,
+      const unsigned int                                    &quad_index_p,
       const LinearAlgebra::distributed::BlockVector<double> &solution_old,
       const LinearAlgebra::distributed::BlockVector<double> &solution_old_old);
 
     void
     initialize(const MatrixFree<dim> &matrix_free_in,
-               const TimeStepping &   time_stepping_in,
+               const TimeStepping    &time_stepping_in,
                const bool             pressure_average_fix);
 
     void
@@ -123,33 +123,33 @@ namespace adaflo
                          LinearAlgebra::distributed::Vector<double> &pressure) const;
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const;
 
     void
-    residual(LinearAlgebra::distributed::BlockVector<double> &      residual_vector,
+    residual(LinearAlgebra::distributed::BlockVector<double>       &residual_vector,
              const LinearAlgebra::distributed::BlockVector<double> &src,
              const LinearAlgebra::distributed::BlockVector<double> &user_rhs) const;
 
     void
-    divergence_vmult_add(LinearAlgebra::distributed::Vector<double> &      dst,
+    divergence_vmult_add(LinearAlgebra::distributed::Vector<double>       &dst,
                          const LinearAlgebra::distributed::Vector<double> &src,
                          const bool weight_by_viscosity = false) const;
 
     void
-    velocity_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    velocity_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                    const LinearAlgebra::distributed::Vector<double> &src) const;
 
     void
-    pressure_poisson_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    pressure_poisson_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                            const LinearAlgebra::distributed::Vector<double> &src) const;
 
     void
-    pressure_mass_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    pressure_mass_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                         const LinearAlgebra::distributed::Vector<double> &src) const;
 
     void
-    pressure_convdiff_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    pressure_convdiff_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                             const LinearAlgebra::distributed::Vector<double> &src) const;
 
     // fix the linearization point in additional data points (used for AMG
@@ -209,50 +209,50 @@ namespace adaflo
     // distinguishes them (see above for the various values).
     template <int degree_p, typename VectorType, int LocalOp>
     void
-    local_operation(const MatrixFree<dim> &                      data,
-                    VectorType &                                 dst,
-                    const VectorType &                           src,
+    local_operation(const MatrixFree<dim>                       &data,
+                    VectorType                                  &dst,
+                    const VectorType                            &src,
                     const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int degree_p, bool weight_by_viscosity>
     void
-    local_divergence(const MatrixFree<dim> &                           data,
-                     LinearAlgebra::distributed::Vector<double> &      dst,
+    local_divergence(const MatrixFree<dim>                            &data,
+                     LinearAlgebra::distributed::Vector<double>       &dst,
                      const LinearAlgebra::distributed::Vector<double> &src,
-                     const std::pair<unsigned int, unsigned int> &     cell_range) const;
+                     const std::pair<unsigned int, unsigned int>      &cell_range) const;
 
     template <int degree_p>
     void
-    local_pressure_poisson(const MatrixFree<dim> &                           data,
-                           LinearAlgebra::distributed::Vector<double> &      dst,
+    local_pressure_poisson(const MatrixFree<dim>                            &data,
+                           LinearAlgebra::distributed::Vector<double>       &dst,
                            const LinearAlgebra::distributed::Vector<double> &src,
                            const std::pair<unsigned int, unsigned int> &cell_range) const;
     template <int degree_p>
     void
-    local_pressure_mass(const MatrixFree<dim> &                           data,
-                        LinearAlgebra::distributed::Vector<double> &      dst,
+    local_pressure_mass(const MatrixFree<dim>                            &data,
+                        LinearAlgebra::distributed::Vector<double>       &dst,
                         const LinearAlgebra::distributed::Vector<double> &src,
                         const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int degree_p>
     void
     local_pressure_convdiff(
-      const MatrixFree<dim> &                           data,
-      LinearAlgebra::distributed::Vector<double> &      dst,
+      const MatrixFree<dim>                            &data,
+      LinearAlgebra::distributed::Vector<double>       &dst,
       const LinearAlgebra::distributed::Vector<double> &src,
-      const std::pair<unsigned int, unsigned int> &     cell_range) const;
+      const std::pair<unsigned int, unsigned int>      &cell_range) const;
 
     template <int degree_p>
     void
     local_pressure_mass_weight(
-      const MatrixFree<dim> &                     data,
+      const MatrixFree<dim>                      &data,
       LinearAlgebra::distributed::Vector<double> &dst,
       const unsigned int &,
       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     const MatrixFree<dim> *matrix_free;
-    const TimeStepping *   time_stepping;
-    const FlowParameters & parameters;
+    const TimeStepping    *time_stepping;
+    const FlowParameters  &parameters;
 
   public:
     const unsigned int &dof_index_u;

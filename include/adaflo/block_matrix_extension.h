@@ -32,7 +32,7 @@ namespace adaflo
     using TrilinosWrappers::SparseMatrix::vmult;
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const
     {
       const Epetra_CrsMatrix &matrix = this->trilinos_matrix();
@@ -65,7 +65,7 @@ namespace adaflo
     using TrilinosWrappers::PreconditionBase::vmult;
 
     void
-    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<double>       &dst,
           const LinearAlgebra::distributed::BlockVector<double> &src) const
     {
       Assert(preconditioner.get() != 0, ExcNotInitialized());
@@ -105,7 +105,7 @@ namespace adaflo
   {
   public:
     void
-    initialize(const TrilinosWrappers::SparseMatrix &                   matrix,
+    initialize(const TrilinosWrappers::SparseMatrix                    &matrix,
                const TrilinosWrappers::PreconditionILU::AdditionalData &data,
                const std::vector<unsigned int> &index_by_component)
     {
@@ -120,7 +120,7 @@ namespace adaflo
     // Application to a vector src, stored in dst (do not call the method vmult
     // in order to avoid overloading a virtual function in deal.II)
     void
-    multiply(LinearAlgebra::distributed::Vector<double> &      dst,
+    multiply(LinearAlgebra::distributed::Vector<double>       &dst,
              const LinearAlgebra::distributed::Vector<double> &src) const
     {
       Assert(preconditioner.get() != 0, ExcNotInitialized());
