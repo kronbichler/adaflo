@@ -23,13 +23,9 @@
 #include <fstream>
 #include <iostream>
 
-using namespace dealii;
-
-
 namespace adaflo
 {
   using namespace dealii;
-
 
   struct FlowParameters
   {

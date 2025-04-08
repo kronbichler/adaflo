@@ -291,7 +291,7 @@ namespace adaflo
 
 // access to density and viscosity fields
 template <int dim>
-inline const VectorizedArray<double> *
+inline const dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell) const
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
@@ -304,7 +304,7 @@ adaflo::NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell) 
 
 
 template <int dim>
-inline VectorizedArray<double> *
+inline dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell)
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
@@ -317,7 +317,7 @@ adaflo::NavierStokesMatrix<dim>::begin_densities(const unsigned int macro_cell)
 
 
 template <int dim>
-inline const VectorizedArray<double> *
+inline const dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell) const
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
@@ -330,7 +330,7 @@ adaflo::NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell
 
 
 template <int dim>
-inline VectorizedArray<double> *
+inline dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell)
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
@@ -343,7 +343,7 @@ adaflo::NavierStokesMatrix<dim>::begin_viscosities(const unsigned int macro_cell
 
 
 template <int dim>
-inline const VectorizedArray<double> *
+inline const dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_damping_coeff(const unsigned int macro_cell) const
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());
@@ -357,7 +357,7 @@ adaflo::NavierStokesMatrix<dim>::begin_damping_coeff(const unsigned int macro_ce
 
 
 template <int dim>
-inline VectorizedArray<double> *
+inline dealii::VectorizedArray<double> *
 adaflo::NavierStokesMatrix<dim>::begin_damping_coeff(const unsigned int macro_cell)
 {
   AssertIndexRange(macro_cell, matrix_free->n_cell_batches());

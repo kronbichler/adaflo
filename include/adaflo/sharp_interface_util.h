@@ -864,8 +864,8 @@ namespace adaflo
         const auto [points, weights] =
           [&]() -> std::tuple<std::vector<Point<dim>>, std::vector<double>> {
           // determine points and cells of aux surface triangulation
-          std::vector<Point<dim>>          surface_vertices;
-          std::vector<::CellData<dim - 1>> surface_cells;
+          std::vector<Point<dim>>        surface_vertices;
+          std::vector<CellData<dim - 1>> surface_cells;
 
           // run square/cube marching algorithm
           mc.process_cell(cell, ls_vector, 0.0, surface_vertices, surface_cells);
