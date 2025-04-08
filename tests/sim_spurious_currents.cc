@@ -34,6 +34,8 @@
 
 
 using namespace dealii;
+using namespace adaflo;
+
 
 struct TwoPhaseParameters : public FlowParameters
 {

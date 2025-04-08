@@ -42,13 +42,13 @@
 #include <fstream>
 #include <iostream>
 
+
 using namespace dealii;
 
 
-
 template <int dim>
-PhaseFieldSolver<dim>::PhaseFieldSolver(const FlowParameters &parameters_in,
-                                        Triangulation<dim> &  tria_in)
+adaflo::PhaseFieldSolver<dim>::PhaseFieldSolver(const FlowParameters &parameters_in,
+                                                Triangulation<dim> &  tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                std::make_shared<FE_Q_iso_Q1<dim>>(
                                  parameters_in.concentration_subdivisions),
@@ -91,7 +91,7 @@ PhaseFieldSolver<dim>::PhaseFieldSolver(const FlowParameters &parameters_in,
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::distribute_dofs()
+adaflo::PhaseFieldSolver<dim>::distribute_dofs()
 {
   preconditioner_matrix.clear();
   this->TwoPhaseBaseAlgorithm<dim>::distribute_dofs();
@@ -101,7 +101,7 @@ PhaseFieldSolver<dim>::distribute_dofs()
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::transform_distance_function(
+adaflo::PhaseFieldSolver<dim>::transform_distance_function(
   LinearAlgebra::distributed::Vector<double> &vector) const
 {
   for (unsigned int i = 0; i < vector.locally_owned_size(); i++)
@@ -112,7 +112,7 @@ PhaseFieldSolver<dim>::transform_distance_function(
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::initialize_data_structures()
+adaflo::PhaseFieldSolver<dim>::initialize_data_structures()
 {
   // now to the boundary conditions: the matrix system gets zero boundary
   // conditions on open boundaries
@@ -180,7 +180,7 @@ PhaseFieldSolver<dim>::initialize_data_structures()
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::print_n_dofs() const
+adaflo::PhaseFieldSolver<dim>::print_n_dofs() const
 {
   std::pair<unsigned int, unsigned int> ns_dofs = this->navier_stokes.n_dofs();
   this->pcout << std::endl
@@ -198,7 +198,7 @@ PhaseFieldSolver<dim>::print_n_dofs() const
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::compute_density_on_faces()
+adaflo::PhaseFieldSolver<dim>::compute_density_on_faces()
 {
   if (this->parameters.augmented_taylor_hood == false ||
       this->parameters.density_diff == 0 ||
@@ -237,7 +237,7 @@ PhaseFieldSolver<dim>::compute_density_on_faces()
 // @sect4{PhaseFieldSolver::advance_concentration}
 template <int dim>
 void
-PhaseFieldSolver<dim>::create_cahn_hilliard_preconditioner()
+adaflo::PhaseFieldSolver<dim>::create_cahn_hilliard_preconditioner()
 {
   this->timer->enter_subsection("Cahn-Hilliard preconditioner.");
 
@@ -315,7 +315,7 @@ PhaseFieldSolver<dim>::create_cahn_hilliard_preconditioner()
 template <int dim>
 struct MassMatrix
 {
-  MassMatrix(const PhaseFieldSolver<dim> &two_phase_in)
+  MassMatrix(const adaflo::PhaseFieldSolver<dim> &two_phase_in)
     : two_phase(two_phase_in)
   {}
 
@@ -326,7 +326,7 @@ struct MassMatrix
     two_phase.mass_vmult(dst, src);
   }
 
-  const PhaseFieldSolver<dim> &two_phase;
+  const adaflo::PhaseFieldSolver<dim> &two_phase;
 };
 
 
@@ -334,7 +334,7 @@ struct MassMatrix
 // solve the linear system
 template <int dim>
 void
-PhaseFieldSolver<dim>::advance_cahn_hilliard()
+adaflo::PhaseFieldSolver<dim>::advance_cahn_hilliard()
 {
   if (this->parameters.output_verbosity > 0)
     this->pcout << "  Advance Cahn-Hilliard: ";
@@ -411,7 +411,7 @@ private:
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::solve_cahn_hilliard()
+adaflo::PhaseFieldSolver<dim>::solve_cahn_hilliard()
 {
   this->timer->enter_subsection("Cahn-Hilliard solve.");
   // similar factor as in the matrix assembly, but now sqrt(delta)/epsilon
@@ -462,7 +462,7 @@ PhaseFieldSolver<dim>::solve_cahn_hilliard()
 
 template <int dim>
 std::pair<unsigned int, unsigned int>
-PhaseFieldSolver<dim>::advance_time_step()
+adaflo::PhaseFieldSolver<dim>::advance_time_step()
 {
   this->init_time_advance();
   advance_cahn_hilliard();
@@ -474,7 +474,7 @@ PhaseFieldSolver<dim>::advance_time_step()
 
 template <int dim>
 bool
-PhaseFieldSolver<dim>::mark_cells_for_refinement()
+adaflo::PhaseFieldSolver<dim>::mark_cells_for_refinement()
 {
   if (this->parameters.adaptive_refinements == 0 ||
       this->time_stepping.step_no() % 5 != 0)
@@ -527,5 +527,5 @@ PhaseFieldSolver<dim>::mark_cells_for_refinement()
 
 // explicit instantiations
 
-template class PhaseFieldSolver<2>;
-template class PhaseFieldSolver<3>;
+template class adaflo::PhaseFieldSolver<2>;
+template class adaflo::PhaseFieldSolver<3>;

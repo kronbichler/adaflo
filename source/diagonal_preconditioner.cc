@@ -15,13 +15,10 @@
 
 #include <adaflo/diagonal_preconditioner.h>
 
-
 using namespace dealii;
 
-
-
 template <typename Number>
-DiagonalPreconditioner<Number>::DiagonalPreconditioner(
+adaflo::DiagonalPreconditioner<Number>::DiagonalPreconditioner(
   const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in)
 {
   reinit(diagonal_vector_in);
@@ -30,7 +27,7 @@ DiagonalPreconditioner<Number>::DiagonalPreconditioner(
 
 
 template <typename Number>
-DiagonalPreconditioner<Number>::DiagonalPreconditioner(
+adaflo::DiagonalPreconditioner<Number>::DiagonalPreconditioner(
   const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in)
 {
   reinit(diagonal_vector_in);
@@ -40,7 +37,7 @@ DiagonalPreconditioner<Number>::DiagonalPreconditioner(
 
 template <typename Number>
 void
-DiagonalPreconditioner<Number>::reinit(
+adaflo::DiagonalPreconditioner<Number>::reinit(
   const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in)
 {
   inverse_diagonal_block_vector.reinit(0);
@@ -60,7 +57,7 @@ DiagonalPreconditioner<Number>::reinit(
 
 template <typename Number>
 void
-DiagonalPreconditioner<Number>::reinit(
+adaflo::DiagonalPreconditioner<Number>::reinit(
   const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in)
 {
   diagonal_vector.reinit(0);
@@ -84,7 +81,7 @@ DiagonalPreconditioner<Number>::reinit(
 
 template <typename Number>
 void
-DiagonalPreconditioner<Number>::vmult(
+adaflo::DiagonalPreconditioner<Number>::vmult(
   LinearAlgebra::distributed::Vector<Number> &      dst,
   const LinearAlgebra::distributed::Vector<Number> &src) const
 {
@@ -101,7 +98,7 @@ DiagonalPreconditioner<Number>::vmult(
 
 template <typename Number>
 void
-DiagonalPreconditioner<Number>::vmult(
+adaflo::DiagonalPreconditioner<Number>::vmult(
   LinearAlgebra::distributed::BlockVector<Number> &      dst,
   const LinearAlgebra::distributed::BlockVector<Number> &src) const
 {
@@ -128,5 +125,5 @@ DiagonalPreconditioner<Number>::vmult(
 
 
 
-template class DiagonalPreconditioner<double>;
-template class DiagonalPreconditioner<float>;
+template class adaflo::DiagonalPreconditioner<double>;
+template class adaflo::DiagonalPreconditioner<float>;

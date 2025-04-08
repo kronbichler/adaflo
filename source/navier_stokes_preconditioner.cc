@@ -52,11 +52,13 @@
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
+using namespace dealii;
+
 
 // a wrapper around velocity_vmult in Navier-Stokes class to make work with
 // iterative solvers
 
-class MatrixFreeWrapper : public Epetra_RowMatrix
+class adaflo::MatrixFreeWrapper : public Epetra_RowMatrix
 {
 public:
   MatrixFreeWrapper(const TrilinosWrappers::SparseMatrix &tri_mat)
@@ -307,11 +309,11 @@ protected:
 
 
 template <int dim>
-class VelocityMatrix : public MatrixFreeWrapper
+class VelocityMatrix : public adaflo::MatrixFreeWrapper
 {
 public:
-  VelocityMatrix(const NavierStokesMatrix<dim> &       ns_matrix,
-                 const TrilinosWrappers::SparseMatrix &tri_mat)
+  VelocityMatrix(const adaflo::NavierStokesMatrix<dim> &ns_matrix,
+                 const TrilinosWrappers::SparseMatrix & tri_mat)
     : MatrixFreeWrapper(tri_mat)
     , ns_matrix(ns_matrix)
   {
@@ -341,7 +343,7 @@ public:
   }
 
 private:
-  const NavierStokesMatrix<dim> &                    ns_matrix;
+  const adaflo::NavierStokesMatrix<dim> &            ns_matrix;
   mutable LinearAlgebra::distributed::Vector<double> dst;
   mutable LinearAlgebra::distributed::Vector<double> src;
 };
@@ -349,14 +351,14 @@ private:
 
 
 template <int dim>
-class PressurePoissonMatrix : public MatrixFreeWrapper
+class PressurePoissonMatrix : public adaflo::MatrixFreeWrapper
 {
 public:
   PressurePoissonMatrix(
-    const NavierStokesMatrix<dim> &       ns_matrix,
-    const TrilinosWrappers::SparseMatrix &tri_mat,
-    const bool                            use_trilinos_matrix,
-    const std::vector<unsigned int> &     constraints_schur_complement_only)
+    const adaflo::NavierStokesMatrix<dim> &ns_matrix,
+    const TrilinosWrappers::SparseMatrix & tri_mat,
+    const bool                             use_trilinos_matrix,
+    const std::vector<unsigned int> &      constraints_schur_complement_only)
     : MatrixFreeWrapper(tri_mat)
     , ns_matrix(ns_matrix)
     , use_trilinos_matrix(use_trilinos_matrix)
@@ -428,7 +430,7 @@ public:
   }
 
 private:
-  const NavierStokesMatrix<dim> &                    ns_matrix;
+  const adaflo::NavierStokesMatrix<dim> &            ns_matrix;
   const bool                                         use_trilinos_matrix;
   mutable LinearAlgebra::distributed::Vector<double> dst;
   mutable LinearAlgebra::distributed::Vector<double> src;
@@ -443,7 +445,7 @@ template <int dim>
 class PressureMassMatrix
 {
 public:
-  PressureMassMatrix(const NavierStokesMatrix<dim> &ns_matrix)
+  PressureMassMatrix(const adaflo::NavierStokesMatrix<dim> &ns_matrix)
     : ns_matrix(ns_matrix)
   {}
 
@@ -455,12 +457,12 @@ public:
   }
 
 private:
-  const NavierStokesMatrix<dim> &ns_matrix;
+  const adaflo::NavierStokesMatrix<dim> &ns_matrix;
 };
 
 
 
-class Precondition_LinML
+class adaflo::Precondition_LinML
 {
 public:
   Precondition_LinML(){};
@@ -572,7 +574,7 @@ namespace helper
   template <int dim>
   struct NavierStokesVelocityMatrix
   {
-    NavierStokesVelocityMatrix(const NavierStokesMatrix<dim> &ns_matrix)
+    NavierStokesVelocityMatrix(const adaflo::NavierStokesMatrix<dim> &ns_matrix)
       : ns_matrix(ns_matrix){};
 
     void
@@ -582,7 +584,7 @@ namespace helper
       ns_matrix.velocity_vmult(dst, src);
     }
 
-    const NavierStokesMatrix<dim> &ns_matrix;
+    const adaflo::NavierStokesMatrix<dim> &ns_matrix;
   };
 } // namespace helper
 
@@ -590,7 +592,7 @@ namespace helper
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::vmult(
+adaflo::NavierStokesPreconditioner<dim>::vmult(
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
@@ -738,7 +740,7 @@ NavierStokesPreconditioner<dim>::vmult(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::solve_pressure_mass(
+adaflo::NavierStokesPreconditioner<dim>::solve_pressure_mass(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -774,7 +776,7 @@ NavierStokesPreconditioner<dim>::solve_pressure_mass(
 
 template <int dim>
 std::pair<unsigned int, double>
-NavierStokesPreconditioner<dim>::solve_projection_system(
+adaflo::NavierStokesPreconditioner<dim>::solve_projection_system(
   const LinearAlgebra::distributed::BlockVector<double> &solution,
   LinearAlgebra::distributed::BlockVector<double> &      solution_update,
   LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
@@ -896,7 +898,7 @@ namespace
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::compute()
+adaflo::NavierStokesPreconditioner<dim>::compute()
 {
   if (parameters.precondition_velocity != FlowParameters::u_ilu_scalar)
     uu_amg_mat = std::make_shared<VelocityMatrix<dim>>(*matrix, matrix_u);
@@ -974,7 +976,7 @@ NavierStokesPreconditioner<dim>::compute()
 
 
 template <int dim>
-NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
+adaflo::NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
   const FlowParameters &           parameters,
   const NavierStokes<dim> &        flow_algorithm,
   const Triangulation<dim> &       tria,
@@ -991,7 +993,7 @@ NavierStokesPreconditioner<dim>::NavierStokesPreconditioner(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::clear()
+adaflo::NavierStokesPreconditioner<dim>::clear()
 {
   matrix_u.clear();
   matrix_p.clear();
@@ -1013,7 +1015,7 @@ NavierStokesPreconditioner<dim>::clear()
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::initialize_matrices(
+adaflo::NavierStokesPreconditioner<dim>::initialize_matrices(
   const DoFHandler<dim> &          dof_handler_u,
   const DoFHandler<dim> &          dof_handler_p,
   const AffineConstraints<double> &constraints_p)
@@ -1422,23 +1424,24 @@ NavierStokesPreconditioner<dim>::initialize_matrices(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::set_system_matrix(const NavierStokesMatrix<dim> &matrix)
+adaflo::NavierStokesPreconditioner<dim>::set_system_matrix(
+  const NavierStokesMatrix<dim> &matrix)
 {
   this->matrix = &matrix;
 }
 
 
-namespace AssemblyData
+namespace adaflo::AssemblyData
 {
   // This collects all the data we need for assembly of the preconditioner
   // matrices
   template <int dim>
   struct Preconditioner
   {
-    Preconditioner(const NavierStokesPreconditioner<dim> &preconditioner,
-                   const Mapping<dim> &                   mapping,
-                   const FiniteElement<dim> &             fe_u,
-                   const FiniteElement<dim> &             fe_p);
+    Preconditioner(const adaflo::NavierStokesPreconditioner<dim> &preconditioner,
+                   const Mapping<dim> &                           mapping,
+                   const FiniteElement<dim> &                     fe_u,
+                   const FiniteElement<dim> &                     fe_p);
 
     Preconditioner(const Preconditioner &data);
 
@@ -1617,7 +1620,7 @@ namespace AssemblyData
                     GeometryInfo<dim>::vertices_per_cell)
     , linear_dof_indices(GeometryInfo<dim>::vertices_per_cell)
   {}
-} // namespace AssemblyData
+} // namespace adaflo::AssemblyData
 
 
 
@@ -1713,7 +1716,7 @@ namespace
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
+adaflo::NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
   const MatrixFree<dim> &matrix_free,
   std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim>>>
     &in_data,
@@ -2363,7 +2366,7 @@ NavierStokesPreconditioner<dim>::local_assemble_preconditioner(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::assemble_matrices()
+adaflo::NavierStokesPreconditioner<dim>::assemble_matrices()
 {
   uu_amg.reset();
   uu_ilu.reset();
@@ -2471,7 +2474,7 @@ NavierStokesPreconditioner<dim>::assemble_matrices()
 
 template <int dim>
 bool
-NavierStokesPreconditioner<dim>::is_variable() const
+adaflo::NavierStokesPreconditioner<dim>::is_variable() const
 {
   return pp_mass.get() == 0 || do_inner_solves ||
          (parameters.physical_type == FlowParameters::incompressible_stationary);
@@ -2480,7 +2483,7 @@ NavierStokesPreconditioner<dim>::is_variable() const
 
 
 template <int dim>
-NavierStokesPreconditioner<dim>::IntegrationHelper::IntegrationHelper()
+adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::IntegrationHelper()
   : n_subelements_u(0)
   , n_subelements_p(0)
 {}
@@ -2489,7 +2492,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::IntegrationHelper()
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::IntegrationHelper::set_local_ordering_u(
+adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::set_local_ordering_u(
   const FiniteElement<dim> &fe_u)
 {
   local_ordering_u.resize(dim,
@@ -2504,7 +2507,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::set_local_ordering_u(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::IntegrationHelper::initialize_linear_elements(
+adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::initialize_linear_elements(
   const FiniteElement<dim> &fe_u,
   const FiniteElement<dim> &fe_p)
 {
@@ -2541,7 +2544,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::initialize_linear_elements(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
+adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
   const FiniteElement<dim> &              fe,
   std::vector<std::vector<unsigned int>> &dof_to_lin) const
 {
@@ -2620,7 +2623,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_elements(
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_quad(
+adaflo::NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_quad(
   const unsigned int                      degree,
   std::vector<std::vector<unsigned int>> &quad_to_lin) const
 {
@@ -2697,7 +2700,7 @@ NavierStokesPreconditioner<dim>::IntegrationHelper::get_indices_sub_quad(
 
 template <int dim>
 std::size_t
-NavierStokesPreconditioner<dim>::memory_consumption() const
+adaflo::NavierStokesPreconditioner<dim>::memory_consumption() const
 {
   std::size_t memory = matrix_u.memory_consumption();
   memory += matrix_p.memory_consumption();
@@ -2720,7 +2723,8 @@ NavierStokesPreconditioner<dim>::memory_consumption() const
 
 template <int dim>
 void
-NavierStokesPreconditioner<dim>::print_memory_consumption(std::ostream &stream) const
+adaflo::NavierStokesPreconditioner<dim>::print_memory_consumption(
+  std::ostream &stream) const
 {
   stream << "| Preconditioner matrices: "
          << 1e-6 *
@@ -2743,7 +2747,7 @@ NavierStokesPreconditioner<dim>::print_memory_consumption(std::ostream &stream) 
 
 template <int dim>
 std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int>
-NavierStokesPreconditioner<dim>::get_timer_statistics() const
+adaflo::NavierStokesPreconditioner<dim>::get_timer_statistics() const
 {
   std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int> data;
   data.second         = precond_timer.first;
@@ -2760,6 +2764,6 @@ NavierStokesPreconditioner<dim>::get_timer_statistics() const
 
 
 // explicit instantiations
-template class NavierStokesPreconditioner<1>;
-template class NavierStokesPreconditioner<2>;
-template class NavierStokesPreconditioner<3>;
+template class adaflo::NavierStokesPreconditioner<1>;
+template class adaflo::NavierStokesPreconditioner<2>;
+template class adaflo::NavierStokesPreconditioner<3>;

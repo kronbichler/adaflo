@@ -47,9 +47,11 @@
         OPERATION(4, 0);                                                  \
     }
 
+using namespace dealii;
+
 
 template <int dim>
-LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
+adaflo::LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
   BlockVectorType &                              normal_vector_field,
   BlockVectorType &                              normal_vector_rhs,
   const VectorType &                             level_set_field,
@@ -80,7 +82,7 @@ LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
 template <int dim>
 template <int ls_degree, typename Number>
 void
-LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
+adaflo::LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
   const MatrixFree<dim, Number> &                        data,
   LinearAlgebra::distributed::BlockVector<Number> &      dst,
   const LinearAlgebra::distributed::BlockVector<Number> &src,
@@ -121,7 +123,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
 template <int dim>
 template <int ls_degree>
 void
-LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
+adaflo::LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
   const MatrixFree<dim, double> &data,
   BlockVectorType &              dst,
   const VectorType &,
@@ -157,7 +159,7 @@ LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
 
 template <int dim>
 void
-LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
+adaflo::LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
   BlockVectorType &      dst,
   const BlockVectorType &src) const
 {
@@ -185,7 +187,7 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
 template <int dim>
 struct ComputeNormalMatrix
 {
-  ComputeNormalMatrix(const LevelSetOKZSolverComputeNormal<dim> &problem)
+  ComputeNormalMatrix(const adaflo::LevelSetOKZSolverComputeNormal<dim> &problem)
     : problem(problem)
   {}
 
@@ -197,7 +199,7 @@ struct ComputeNormalMatrix
     problem.compute_normal_vmult(dst, src);
   }
 
-  const LevelSetOKZSolverComputeNormal<dim> &problem;
+  const adaflo::LevelSetOKZSolverComputeNormal<dim> &problem;
 };
 
 
@@ -205,7 +207,7 @@ struct ComputeNormalMatrix
 // @sect4{LevelSetOKZSolverComputeNormal::compute_normal}
 template <int dim>
 void
-LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
+adaflo::LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
 {
   // This function computes the normal from a projection of $\nabla C$ onto
   // the space of linear finite elements (with some small damping)
@@ -275,6 +277,6 @@ LevelSetOKZSolverComputeNormal<dim>::compute_normal(const bool fast_computation)
     }
 }
 
-template class LevelSetOKZSolverComputeNormal<1>;
-template class LevelSetOKZSolverComputeNormal<2>;
-template class LevelSetOKZSolverComputeNormal<3>;
+template class adaflo::LevelSetOKZSolverComputeNormal<1>;
+template class adaflo::LevelSetOKZSolverComputeNormal<2>;
+template class adaflo::LevelSetOKZSolverComputeNormal<3>;

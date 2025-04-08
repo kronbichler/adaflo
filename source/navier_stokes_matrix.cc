@@ -36,10 +36,11 @@
 
 /* ----------------- Implementation Navier-Stokes matrix ----------------- */
 
+using namespace dealii;
 
 
 template <int dim>
-NavierStokesMatrix<dim>::NavierStokesMatrix(
+adaflo::NavierStokesMatrix<dim>::NavierStokesMatrix(
   const FlowParameters &                                 parameters,
   const unsigned int &                                   dof_index_u,
   const unsigned int &                                   dof_index_p,
@@ -83,9 +84,9 @@ NavierStokesMatrix<dim>::NavierStokesMatrix(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
-                                    const TimeStepping &   time_stepping_in,
-                                    const bool             pressure_average_fix)
+adaflo::NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
+                                            const TimeStepping &   time_stepping_in,
+                                            const bool             pressure_average_fix)
 {
   matrix_free                       = &matrix_free_in;
   time_stepping                     = &time_stepping_in;
@@ -172,7 +173,7 @@ NavierStokesMatrix<dim>::initialize(const MatrixFree<dim> &matrix_free_in,
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::clear()
+adaflo::NavierStokesMatrix<dim>::clear()
 {
   matrix_free   = 0;
   time_stepping = 0;
@@ -190,7 +191,7 @@ NavierStokesMatrix<dim>::clear()
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::apply_pressure_average_projection(
+adaflo::NavierStokesMatrix<dim>::apply_pressure_average_projection(
   LinearAlgebra::distributed::Vector<double> &vector) const
 {
   if (parameters.linearization != FlowParameters::projection &&
@@ -208,7 +209,7 @@ NavierStokesMatrix<dim>::apply_pressure_average_projection(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::apply_pressure_shift(
+adaflo::NavierStokesMatrix<dim>::apply_pressure_shift(
   const double                                shift,
   LinearAlgebra::distributed::Vector<double> &pressure) const
 {
@@ -220,7 +221,7 @@ NavierStokesMatrix<dim>::apply_pressure_shift(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::vmult(
+adaflo::NavierStokesMatrix<dim>::vmult(
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
@@ -262,9 +263,10 @@ NavierStokesMatrix<dim>::vmult(
 }
 
 
+
 template <int dim>
 void
-NavierStokesMatrix<dim>::residual(
+adaflo::NavierStokesMatrix<dim>::residual(
   LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
   const LinearAlgebra::distributed::BlockVector<double> &src,
   const LinearAlgebra::distributed::BlockVector<double> &user_rhs) const
@@ -298,7 +300,7 @@ NavierStokesMatrix<dim>::residual(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::divergence_vmult_add(
+adaflo::NavierStokesMatrix<dim>::divergence_vmult_add(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
   const bool                                        weight_by_viscosity) const
@@ -335,7 +337,7 @@ NavierStokesMatrix<dim>::divergence_vmult_add(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::velocity_vmult(
+adaflo::NavierStokesMatrix<dim>::velocity_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -384,7 +386,7 @@ NavierStokesMatrix<dim>::velocity_vmult(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::pressure_poisson_vmult(
+adaflo::NavierStokesMatrix<dim>::pressure_poisson_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -419,7 +421,7 @@ NavierStokesMatrix<dim>::pressure_poisson_vmult(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::pressure_mass_vmult(
+adaflo::NavierStokesMatrix<dim>::pressure_mass_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -457,7 +459,7 @@ NavierStokesMatrix<dim>::pressure_mass_vmult(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::pressure_convdiff_vmult(
+adaflo::NavierStokesMatrix<dim>::pressure_convdiff_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -600,7 +602,7 @@ namespace
 template <int dim>
 template <int degree_p, typename VectorType, int LocalOps>
 void
-NavierStokesMatrix<dim>::local_operation(
+adaflo::NavierStokesMatrix<dim>::local_operation(
   const MatrixFree<dim> &                      data,
   VectorType &                                 dst,
   const VectorType &                           src,
@@ -919,7 +921,7 @@ NavierStokesMatrix<dim>::local_operation(
 template <int dim>
 template <int degree_p, const bool weight_by_viscosity>
 void
-NavierStokesMatrix<dim>::local_divergence(
+adaflo::NavierStokesMatrix<dim>::local_divergence(
   const MatrixFree<dim> &                           data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -964,7 +966,7 @@ NavierStokesMatrix<dim>::local_divergence(
 template <int dim>
 template <int degree_p>
 void
-NavierStokesMatrix<dim>::local_pressure_poisson(
+adaflo::NavierStokesMatrix<dim>::local_pressure_poisson(
   const MatrixFree<dim> &                           data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -1035,7 +1037,7 @@ NavierStokesMatrix<dim>::local_pressure_poisson(
 template <int dim>
 template <int degree_p>
 void
-NavierStokesMatrix<dim>::local_pressure_mass(
+adaflo::NavierStokesMatrix<dim>::local_pressure_mass(
   const MatrixFree<dim> &                           data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -1074,7 +1076,7 @@ NavierStokesMatrix<dim>::local_pressure_mass(
 template <int dim>
 template <int degree_p>
 void
-NavierStokesMatrix<dim>::local_pressure_mass_weight(
+adaflo::NavierStokesMatrix<dim>::local_pressure_mass_weight(
   const MatrixFree<dim> &                     data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const unsigned int &,
@@ -1098,7 +1100,7 @@ NavierStokesMatrix<dim>::local_pressure_mass_weight(
 template <int dim>
 template <int degree_p>
 void
-NavierStokesMatrix<dim>::local_pressure_convdiff(
+adaflo::NavierStokesMatrix<dim>::local_pressure_convdiff(
   const MatrixFree<dim> &                           data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -1142,7 +1144,7 @@ NavierStokesMatrix<dim>::local_pressure_convdiff(
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::fix_linearization_point() const
+adaflo::NavierStokesMatrix<dim>::fix_linearization_point() const
 {
   linearized_velocities_preconditioner         = linearized_velocities;
   variable_densities_preconditioner            = variable_densities;
@@ -1154,7 +1156,7 @@ NavierStokesMatrix<dim>::fix_linearization_point() const
 
 template <int dim>
 std::size_t
-NavierStokesMatrix<dim>::memory_consumption() const
+adaflo::NavierStokesMatrix<dim>::memory_consumption() const
 {
   std::size_t memory = linearized_velocities.memory_consumption();
   memory += variable_densities.size();
@@ -1170,7 +1172,7 @@ NavierStokesMatrix<dim>::memory_consumption() const
 
 template <int dim>
 void
-NavierStokesMatrix<dim>::print_memory_consumption(std::ostream &stream) const
+adaflo::NavierStokesMatrix<dim>::print_memory_consumption(std::ostream &stream) const
 {
   stream << "| Linearized velocities: "
          << 1e-6 * double(linearized_velocities.memory_consumption() +
@@ -1192,7 +1194,7 @@ NavierStokesMatrix<dim>::print_memory_consumption(std::ostream &stream) const
 
 template <int dim>
 std::pair<Utilities::MPI::MinMaxAvg, unsigned int>
-NavierStokesMatrix<dim>::get_matvec_statistics() const
+adaflo::NavierStokesMatrix<dim>::get_matvec_statistics() const
 {
   std::pair<Utilities::MPI::MinMaxAvg, unsigned int> minmax;
   minmax.second = matvec_timer.first;
@@ -1206,6 +1208,6 @@ NavierStokesMatrix<dim>::get_matvec_statistics() const
 
 
 // explicit instantiations
-template class NavierStokesMatrix<1>;
-template class NavierStokesMatrix<2>;
-template class NavierStokesMatrix<3>;
+template class adaflo::NavierStokesMatrix<1>;
+template class adaflo::NavierStokesMatrix<2>;
+template class adaflo::NavierStokesMatrix<3>;

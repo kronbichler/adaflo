@@ -48,8 +48,12 @@
         OPERATION(4, 0);                                                  \
     }
 
+
+using namespace dealii;
+
+
 template <int dim>
-LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
+adaflo::LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
   const AlignedVector<VectorizedArray<double>> &         cell_diameters,
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
   const AffineConstraints<double> &                      constraints_curvature,
@@ -82,7 +86,7 @@ LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
 template <int dim>
 template <int ls_degree, int diffusion_setting>
 void
-LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
+adaflo::LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
   const MatrixFree<dim, double> &                   data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -208,7 +212,7 @@ namespace
 template <int dim>
 template <int ls_degree>
 void
-LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
+adaflo::LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
   const MatrixFree<dim, double> &             data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
@@ -258,7 +262,7 @@ LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
 
 template <int dim>
 void
-LevelSetOKZSolverComputeCurvature<dim>::compute_curvature_vmult(
+adaflo::LevelSetOKZSolverComputeCurvature<dim>::compute_curvature_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
   const bool                                        apply_diffusion) const
@@ -304,7 +308,7 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature_vmult(
 template <int dim>
 struct ComputeCurvatureMatrix
 {
-  ComputeCurvatureMatrix(const LevelSetOKZSolverComputeCurvature<dim> &problem)
+  ComputeCurvatureMatrix(const adaflo::LevelSetOKZSolverComputeCurvature<dim> &problem)
     : problem(problem)
   {}
 
@@ -315,7 +319,7 @@ struct ComputeCurvatureMatrix
     problem.compute_curvature_vmult(dst, src, true);
   }
 
-  const LevelSetOKZSolverComputeCurvature<dim> &problem;
+  const adaflo::LevelSetOKZSolverComputeCurvature<dim> &problem;
 };
 
 
@@ -323,7 +327,7 @@ struct ComputeCurvatureMatrix
 // @sect4{LevelSetOKZSolverComputeCurvature::compute_normal}
 template <int dim>
 void
-LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
+adaflo::LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 {
   // compute right hand side
   rhs = 0;
@@ -390,6 +394,6 @@ LevelSetOKZSolverComputeCurvature<dim>::compute_curvature(const bool)
 
 
 
-template class LevelSetOKZSolverComputeCurvature<1>;
-template class LevelSetOKZSolverComputeCurvature<2>;
-template class LevelSetOKZSolverComputeCurvature<3>;
+template class adaflo::LevelSetOKZSolverComputeCurvature<1>;
+template class adaflo::LevelSetOKZSolverComputeCurvature<2>;
+template class adaflo::LevelSetOKZSolverComputeCurvature<3>;

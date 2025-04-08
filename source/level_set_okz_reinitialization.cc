@@ -49,10 +49,11 @@
 
 using namespace dealii;
 
+
 template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
-LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
+adaflo::LevelSetOKZSolverReinitialization<dim>::local_reinitialize(
   const MatrixFree<dim, double> &              data,
   VectorType &                                 dst,
   const VectorType &                           src,
@@ -127,7 +128,7 @@ namespace
 template <int dim>
 template <int ls_degree, bool diffuse_only>
 void
-LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
+adaflo::LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
   const MatrixFree<dim, double> &data,
   VectorType &                   dst,
   const VectorType &,
@@ -191,7 +192,7 @@ LevelSetOKZSolverReinitialization<dim>::local_reinitialize_rhs(
 
 template <int dim>
 void
-LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
+adaflo::LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
   VectorType &      dst,
   const VectorType &src,
   const bool        diffuse_only) const
@@ -234,8 +235,8 @@ LevelSetOKZSolverReinitialization<dim>::reinitialization_vmult(
 template <int dim, typename VectorType>
 struct ReinitializationMatrix
 {
-  ReinitializationMatrix(const LevelSetOKZSolverReinitialization<dim> &problem,
-                         const bool                                    diffuse_only)
+  ReinitializationMatrix(const adaflo::LevelSetOKZSolverReinitialization<dim> &problem,
+                         const bool diffuse_only)
     : problem(problem)
     , diffuse_only(diffuse_only)
   {}
@@ -246,15 +247,15 @@ struct ReinitializationMatrix
     problem.reinitialization_vmult(dst, src, diffuse_only);
   }
 
-  const LevelSetOKZSolverReinitialization<dim> &problem;
-  const bool                                    diffuse_only;
+  const adaflo::LevelSetOKZSolverReinitialization<dim> &problem;
+  const bool                                            diffuse_only;
 };
 
 
 
 template <int dim>
 void
-LevelSetOKZSolverReinitialization<dim>::reinitialize(
+adaflo::LevelSetOKZSolverReinitialization<dim>::reinitialize(
   const double                     dt,
   const unsigned int               stab_steps,
   const unsigned int               diff_steps,
@@ -361,6 +362,6 @@ LevelSetOKZSolverReinitialization<dim>::reinitialize(
   this->time_stepping.next();
 }
 
-template class LevelSetOKZSolverReinitialization<1>;
-template class LevelSetOKZSolverReinitialization<2>;
-template class LevelSetOKZSolverReinitialization<3>;
+template class adaflo::LevelSetOKZSolverReinitialization<1>;
+template class adaflo::LevelSetOKZSolverReinitialization<2>;
+template class adaflo::LevelSetOKZSolverReinitialization<3>;

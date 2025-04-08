@@ -33,19 +33,7 @@
 #include <adaflo/navier_stokes_matrix.h>
 #include <adaflo/time_stepping.h>
 
-using namespace dealii;
 
-
-// forward declarations
-class MatrixFreeWrapper;
-class Precondition_LinML;
-template <int dim>
-class ComponentILUExtension;
-namespace AssemblyData
-{
-  template <int dim>
-  struct Preconditioner;
-}
 namespace dealii
 {
   namespace TrilinosWrappers
@@ -56,189 +44,207 @@ namespace dealii
   } // namespace TrilinosWrappers
 } // namespace dealii
 
-template <int dim>
-class NavierStokes;
 
-template <int dim>
-class NavierStokesPreconditioner
+namespace adaflo
 {
-public:
-  NavierStokesPreconditioner(const FlowParameters &           parameters,
-                             const NavierStokes<dim> &        base_algorithm,
-                             const Triangulation<dim> &       tria,
-                             const AffineConstraints<double> &constraints_u);
+  using namespace dealii;
 
-  void
-  clear();
 
-  void
-  compute();
-
-  void
-  vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
-        const LinearAlgebra::distributed::BlockVector<double> &src) const;
-
-  std::pair<unsigned int, double>
-  solve_projection_system(
-    const LinearAlgebra::distributed::BlockVector<double> &solution,
-    LinearAlgebra::distributed::BlockVector<double> &      solution_update,
-    LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
-    LinearAlgebra::distributed::Vector<double> &           projection_update,
-    TimerOutput &                                          timer) const;
-
-  void
-  solve_pressure_mass(LinearAlgebra::distributed::Vector<double> &      dst,
-                      const LinearAlgebra::distributed::Vector<double> &src) const;
-
-  void
-  initialize_matrices(const DoFHandler<dim> &          dof_handler_u,
-                      const DoFHandler<dim> &          dof_handler_p,
-                      const AffineConstraints<double> &constraints_p);
-  void
-  set_system_matrix(const NavierStokesMatrix<dim> &matrix);
-  void
-  assemble_matrices();
-
-  void
-  set_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
-                           const unsigned int                                face,
-                           const double                                      density);
-
-  double
-  get_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
-                           const unsigned int                                face);
-
-  bool
-  is_variable() const;
-
-  // Give an estimate of the memory consumption of this class. Note that not
-  // all Trilinos-internal data structure can be quantitatively characterized,
-  // so the actual memory usage is likely more.
-  std::size_t
-  memory_consumption() const;
-  void
-  print_memory_consumption(std::ostream &stream) const;
-
-  // Returns statistics of the sum of all preconditioner applications since
-  // the last call to this function in terms of minimum, average, and maximum
-  // of times as seen over all MPI processes (first argument) as well as the
-  // number of times the mat-vec was invoked. After returning the data, the
-  // internal counters are re-set, so in case you wish global statistics, make
-  // sure to accumulate the results of this call (note that adaflo has a
-  // global timer object that accumulates such data in a neat way).
-  //
-  // The data returned is:
-  // - the time spent in the velocity block
-  // - the time spent in the divergence block
-  // - the time spent in the pressure mass (and related) block
-  // - the time spent in the pressure Poisson solver (if enabled)
-  // - the total time in the preconditioner (sum of the above four, but with
-  //   separate timer in order to eliminate possible waiting/synchronization)
-  //
-  // Note: This is a collective call and must be invoked on all processors.
-  std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int>
-  get_timer_statistics() const;
-
-  bool do_inner_solves;
-  bool initialized;
-
-private:
-  const AffineConstraints<double> &constraints_u;
-
-  DoFHandler<dim>           dof_handler_u_scalar;
-  AffineConstraints<double> constraints_u_scalar;
-  AffineConstraints<double> constraints_schur_complement;
-  std::vector<unsigned int> constraints_schur_complement_only;
-
-  mutable LinearAlgebra::distributed::Vector<double> temp_vector, temp_vector2;
-
-  TrilinosWrappers::SparseMatrix matrix_u;
-  TrilinosWrappers::SparseMatrix matrix_p;
-  TrilinosWrappers::SparseMatrix mass_matrix_p;
-
-  DiagonalPreconditioner<double> pressure_diagonal_preconditioner;
-
-  std::vector<unsigned int> scalar_dof_indices;
-
-  std::shared_ptr<TrilinosWrappers::PreconditionILU> uu_ilu;
-  std::shared_ptr<ComponentILUExtension<dim>>        uu_ilu_scalar;
-  std::shared_ptr<MatrixFreeWrapper>                 uu_amg_mat;
-  std::shared_ptr<Precondition_LinML>                uu_amg;
-
-  std::shared_ptr<MatrixFreeWrapper>                  pp_mass_mat;
-  std::shared_ptr<TrilinosWrappers::PreconditionBase> pp_mass;
-  std::shared_ptr<MatrixFreeWrapper>                  pp_poisson_mat;
-  std::shared_ptr<Precondition_LinML>                 pp_poisson;
-
-  std::vector<std::vector<bool>> constant_modes_u;
-  std::vector<std::vector<bool>> constant_modes_p;
-
-  const NavierStokesMatrix<dim> *matrix;
-
-  struct IntegrationHelper
+  // forward declarations
+  class MatrixFreeWrapper;
+  class Precondition_LinML;
+  template <int dim>
+  class ComponentILUExtension;
+  namespace AssemblyData
   {
-    IntegrationHelper();
+    template <int dim>
+    struct Preconditioner;
+  }
+
+  template <int dim>
+  class NavierStokes;
+
+  template <int dim>
+  class NavierStokesPreconditioner
+  {
+  public:
+    NavierStokesPreconditioner(const FlowParameters &           parameters,
+                               const NavierStokes<dim> &        base_algorithm,
+                               const Triangulation<dim> &       tria,
+                               const AffineConstraints<double> &constraints_u);
 
     void
-    set_local_ordering_u(const FiniteElement<dim> &fe_u);
+    clear();
 
     void
-    initialize_linear_elements(const FiniteElement<dim> &fe_u,
-                               const FiniteElement<dim> &fe_p);
+    compute();
 
     void
-    get_indices_sub_elements(const FiniteElement<dim> &              fe,
-                             std::vector<std::vector<unsigned int>> &dof_to_lin) const;
+    vmult(LinearAlgebra::distributed::BlockVector<double> &      dst,
+          const LinearAlgebra::distributed::BlockVector<double> &src) const;
+
+    std::pair<unsigned int, double>
+    solve_projection_system(
+      const LinearAlgebra::distributed::BlockVector<double> &solution,
+      LinearAlgebra::distributed::BlockVector<double> &      solution_update,
+      LinearAlgebra::distributed::BlockVector<double> &      system_rhs,
+      LinearAlgebra::distributed::Vector<double> &           projection_update,
+      TimerOutput &                                          timer) const;
 
     void
-    get_indices_sub_quad(const unsigned int                      degree,
-                         std::vector<std::vector<unsigned int>> &quad_to_lin) const;
+    solve_pressure_mass(LinearAlgebra::distributed::Vector<double> &      dst,
+                        const LinearAlgebra::distributed::Vector<double> &src) const;
 
-    std::vector<std::vector<unsigned int>> local_ordering_u;
+    void
+    initialize_matrices(const DoFHandler<dim> &          dof_handler_u,
+                        const DoFHandler<dim> &          dof_handler_p,
+                        const AffineConstraints<double> &constraints_p);
+    void
+    set_system_matrix(const NavierStokesMatrix<dim> &matrix);
+    void
+    assemble_matrices();
 
-    // data structures for linear elements
-    unsigned int n_subelements_u;
-    unsigned int n_subelements_p;
+    void
+    set_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
+                             const unsigned int                                face,
+                             const double                                      density);
 
-    static constexpr unsigned int          n_dofs = GeometryInfo<dim>::vertices_per_cell;
-    Tensor<1, dim>                         grads_unit_cell[n_dofs][n_dofs];
-    double                                 values_unit_cell[n_dofs][n_dofs];
-    std::vector<std::vector<unsigned int>> dof_to_lin_u;
-    std::vector<std::vector<unsigned int>> dof_to_lin_p;
+    double
+    get_face_average_density(const typename Triangulation<dim>::cell_iterator &cell,
+                             const unsigned int                                face);
 
-    std::unique_ptr<Quadrature<dim>>       quadrature_sub_u;
-    std::unique_ptr<Quadrature<dim>>       quadrature_sub_p;
-    std::vector<std::vector<unsigned int>> quad_to_lin_u;
-    std::vector<std::vector<unsigned int>> quad_to_lin_p;
+    bool
+    is_variable() const;
+
+    // Give an estimate of the memory consumption of this class. Note that not
+    // all Trilinos-internal data structure can be quantitatively characterized,
+    // so the actual memory usage is likely more.
+    std::size_t
+    memory_consumption() const;
+    void
+    print_memory_consumption(std::ostream &stream) const;
+
+    // Returns statistics of the sum of all preconditioner applications since
+    // the last call to this function in terms of minimum, average, and maximum
+    // of times as seen over all MPI processes (first argument) as well as the
+    // number of times the mat-vec was invoked. After returning the data, the
+    // internal counters are re-set, so in case you wish global statistics, make
+    // sure to accumulate the results of this call (note that adaflo has a
+    // global timer object that accumulates such data in a neat way).
+    //
+    // The data returned is:
+    // - the time spent in the velocity block
+    // - the time spent in the divergence block
+    // - the time spent in the pressure mass (and related) block
+    // - the time spent in the pressure Poisson solver (if enabled)
+    // - the total time in the preconditioner (sum of the above four, but with
+    //   separate timer in order to eliminate possible waiting/synchronization)
+    //
+    // Note: This is a collective call and must be invoked on all processors.
+    std::pair<Utilities::MPI::MinMaxAvg[5], unsigned int>
+    get_timer_statistics() const;
+
+    bool do_inner_solves;
+    bool initialized;
+
+  private:
+    const AffineConstraints<double> &constraints_u;
+
+    DoFHandler<dim>           dof_handler_u_scalar;
+    AffineConstraints<double> constraints_u_scalar;
+    AffineConstraints<double> constraints_schur_complement;
+    std::vector<unsigned int> constraints_schur_complement_only;
+
+    mutable LinearAlgebra::distributed::Vector<double> temp_vector, temp_vector2;
+
+    TrilinosWrappers::SparseMatrix matrix_u;
+    TrilinosWrappers::SparseMatrix matrix_p;
+    TrilinosWrappers::SparseMatrix mass_matrix_p;
+
+    DiagonalPreconditioner<double> pressure_diagonal_preconditioner;
+
+    std::vector<unsigned int> scalar_dof_indices;
+
+    std::shared_ptr<TrilinosWrappers::PreconditionILU> uu_ilu;
+    std::shared_ptr<ComponentILUExtension<dim>>        uu_ilu_scalar;
+    std::shared_ptr<MatrixFreeWrapper>                 uu_amg_mat;
+    std::shared_ptr<Precondition_LinML>                uu_amg;
+
+    std::shared_ptr<MatrixFreeWrapper>                  pp_mass_mat;
+    std::shared_ptr<TrilinosWrappers::PreconditionBase> pp_mass;
+    std::shared_ptr<MatrixFreeWrapper>                  pp_poisson_mat;
+    std::shared_ptr<Precondition_LinML>                 pp_poisson;
+
+    std::vector<std::vector<bool>> constant_modes_u;
+    std::vector<std::vector<bool>> constant_modes_p;
+
+    const NavierStokesMatrix<dim> *matrix;
+
+    struct IntegrationHelper
+    {
+      IntegrationHelper();
+
+      void
+      set_local_ordering_u(const FiniteElement<dim> &fe_u);
+
+      void
+      initialize_linear_elements(const FiniteElement<dim> &fe_u,
+                                 const FiniteElement<dim> &fe_p);
+
+      void
+      get_indices_sub_elements(const FiniteElement<dim> &              fe,
+                               std::vector<std::vector<unsigned int>> &dof_to_lin) const;
+
+      void
+      get_indices_sub_quad(const unsigned int                      degree,
+                           std::vector<std::vector<unsigned int>> &quad_to_lin) const;
+
+      std::vector<std::vector<unsigned int>> local_ordering_u;
+
+      // data structures for linear elements
+      unsigned int n_subelements_u;
+      unsigned int n_subelements_p;
+
+      static constexpr unsigned int n_dofs = GeometryInfo<dim>::vertices_per_cell;
+      Tensor<1, dim>                grads_unit_cell[n_dofs][n_dofs];
+      double                        values_unit_cell[n_dofs][n_dofs];
+      std::vector<std::vector<unsigned int>> dof_to_lin_u;
+      std::vector<std::vector<unsigned int>> dof_to_lin_p;
+
+      std::unique_ptr<Quadrature<dim>>       quadrature_sub_u;
+      std::unique_ptr<Quadrature<dim>>       quadrature_sub_p;
+      std::vector<std::vector<unsigned int>> quad_to_lin_u;
+      std::vector<std::vector<unsigned int>> quad_to_lin_p;
+    };
+
+    IntegrationHelper integration_helper;
+
+    const FlowParameters &   parameters;
+    const NavierStokes<dim> &flow_algorithm;
+
+    // A table containing variable densities on faces for face integrals in
+    // augmented Taylor--Hood
+    std::vector<Table<2, double>> face_densities;
+
+    mutable std::pair<unsigned int, double[5]> precond_timer;
+
+    void
+    local_assemble_preconditioner(
+      const MatrixFree<dim, double> &matrix_free,
+      std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim>>>
+        &in_data,
+      const unsigned int &,
+      const std::pair<unsigned int, unsigned int> &cell_range);
+
+    friend struct AssemblyData::Preconditioner<dim>;
   };
-
-  IntegrationHelper integration_helper;
-
-  const FlowParameters &   parameters;
-  const NavierStokes<dim> &flow_algorithm;
-
-  // A table containing variable densities on faces for face integrals in
-  // augmented Taylor--Hood
-  std::vector<Table<2, double>> face_densities;
-
-  mutable std::pair<unsigned int, double[5]> precond_timer;
-
-  void
-  local_assemble_preconditioner(
-    const MatrixFree<dim, double> &matrix_free,
-    std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Preconditioner<dim>>>
-      &in_data,
-    const unsigned int &,
-    const std::pair<unsigned int, unsigned int> &cell_range);
-
-  friend struct AssemblyData::Preconditioner<dim>;
-};
+} // namespace adaflo
 
 
 
 template <int dim>
 inline void
-NavierStokesPreconditioner<dim>::set_face_average_density(
+adaflo::NavierStokesPreconditioner<dim>::set_face_average_density(
   const typename Triangulation<dim>::cell_iterator &cell,
   const unsigned int                                face,
   const double                                      density)
@@ -253,7 +259,7 @@ NavierStokesPreconditioner<dim>::set_face_average_density(
 
 template <int dim>
 inline double
-NavierStokesPreconditioner<dim>::get_face_average_density(
+adaflo::NavierStokesPreconditioner<dim>::get_face_average_density(
   const typename Triangulation<dim>::cell_iterator &cell,
   const unsigned int                                face)
 {
@@ -267,6 +273,5 @@ NavierStokesPreconditioner<dim>::get_face_average_density(
   Assert(density > 0, ExcMessage("Density on face has not been set"));
   return density;
 }
-
 
 #endif

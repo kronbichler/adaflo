@@ -41,6 +41,7 @@
 #include <fstream>
 #include <iostream>
 
+
 using namespace dealii;
 
 
@@ -48,7 +49,7 @@ using namespace dealii;
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
-PhaseFieldSolver<dim>::local_compute_force(
+adaflo::PhaseFieldSolver<dim>::local_compute_force(
   const MatrixFree<dim, double> &             data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
@@ -134,7 +135,7 @@ PhaseFieldSolver<dim>::local_compute_force(
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
-PhaseFieldSolver<dim>::local_residual(
+adaflo::PhaseFieldSolver<dim>::local_residual(
   const MatrixFree<dim, double> &                        data,
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src,
@@ -217,7 +218,7 @@ PhaseFieldSolver<dim>::local_residual(
 template <int dim>
 template <int ls_degree>
 void
-PhaseFieldSolver<dim>::local_vmult(
+adaflo::PhaseFieldSolver<dim>::local_vmult(
   const MatrixFree<dim, double> &                        data,
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src,
@@ -276,7 +277,7 @@ PhaseFieldSolver<dim>::local_vmult(
 template <int dim>
 template <int ls_degree>
 void
-PhaseFieldSolver<dim>::local_mass(
+adaflo::PhaseFieldSolver<dim>::local_mass(
   const MatrixFree<dim, double> &                   data,
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src,
@@ -300,7 +301,7 @@ PhaseFieldSolver<dim>::local_mass(
 template <int dim>
 template <int operation>
 void
-PhaseFieldSolver<dim>::apply_contact_bc(
+adaflo::PhaseFieldSolver<dim>::apply_contact_bc(
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
@@ -419,7 +420,7 @@ PhaseFieldSolver<dim>::apply_contact_bc(
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::compute_force()
+adaflo::PhaseFieldSolver<dim>::compute_force()
 {
   this->timer->enter_subsection("Compute force.");
 
@@ -441,7 +442,7 @@ PhaseFieldSolver<dim>::compute_force()
 
 template <int dim>
 double
-PhaseFieldSolver<dim>::compute_residual()
+adaflo::PhaseFieldSolver<dim>::compute_residual()
 {
   this->timer->enter_subsection("Cahn-Hilliard residual.");
   this->system_rhs = 0;
@@ -467,7 +468,7 @@ PhaseFieldSolver<dim>::compute_residual()
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::vmult(
+adaflo::PhaseFieldSolver<dim>::vmult(
   LinearAlgebra::distributed::BlockVector<double> &      dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
@@ -507,7 +508,7 @@ PhaseFieldSolver<dim>::vmult(
 
 template <int dim>
 void
-PhaseFieldSolver<dim>::mass_vmult(
+adaflo::PhaseFieldSolver<dim>::mass_vmult(
   LinearAlgebra::distributed::Vector<double> &      dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
@@ -542,5 +543,5 @@ PhaseFieldSolver<dim>::mass_vmult(
 
 // explicit instantiations
 
-template class PhaseFieldSolver<2>;
-template class PhaseFieldSolver<3>;
+template class adaflo::PhaseFieldSolver<2>;
+template class adaflo::PhaseFieldSolver<3>;

@@ -47,10 +47,10 @@
 using namespace dealii;
 
 
-
 template <int dim>
-LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &parameters_in,
-                                                  Triangulation<dim> &  tria_in)
+adaflo::LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(
+  const FlowParameters &parameters_in,
+  Triangulation<dim> &  tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                parameters_in.use_simplex_mesh ?
                                  std::shared_ptr<FiniteElement<dim>>(new FE_SimplexP<dim>(
@@ -143,8 +143,9 @@ LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(const FlowParameters &paramete
 
 template <int dim>
 void
-LevelSetBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_field,
-                                          const Function<dim> &initial_distance_function)
+adaflo::LevelSetBaseAlgorithm<dim>::setup_problem(
+  const Function<dim> &initial_velocity_field,
+  const Function<dim> &initial_distance_function)
 {
   this->TwoPhaseBaseAlgorithm<dim>::setup_problem(initial_velocity_field,
                                                   initial_distance_function);
@@ -157,7 +158,7 @@ LevelSetBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_
 // @sect4{LevelSetBaseAlgorithm::make_grid_and_dofs}
 template <int dim>
 void
-LevelSetBaseAlgorithm<dim>::initialize_data_structures()
+adaflo::LevelSetBaseAlgorithm<dim>::initialize_data_structures()
 {
   // now to the boundary conditions: the matrix system gets zero boundary
   // conditions on open boundaries
@@ -186,7 +187,7 @@ LevelSetBaseAlgorithm<dim>::initialize_data_structures()
 
 template <int dim>
 std::pair<unsigned int, unsigned int>
-LevelSetBaseAlgorithm<dim>::advance_time_step()
+adaflo::LevelSetBaseAlgorithm<dim>::advance_time_step()
 {
   // advance the time in the time stepping scheme. The Navier--Stokes class
   // takes care of setting the time step size and computing the current
@@ -293,7 +294,7 @@ LevelSetBaseAlgorithm<dim>::advance_time_step()
 
 template <int dim>
 bool
-LevelSetBaseAlgorithm<dim>::mark_cells_for_refinement()
+adaflo::LevelSetBaseAlgorithm<dim>::mark_cells_for_refinement()
 {
   if (this->parameters.adaptive_refinements == 0)
     return false;
@@ -414,7 +415,7 @@ LevelSetBaseAlgorithm<dim>::mark_cells_for_refinement()
 
 template <int dim>
 void
-LevelSetBaseAlgorithm<dim>::compute_density_on_faces()
+adaflo::LevelSetBaseAlgorithm<dim>::compute_density_on_faces()
 {
   if (this->parameters.augmented_taylor_hood == false ||
       this->parameters.density_diff == 0 ||
@@ -449,8 +450,9 @@ LevelSetBaseAlgorithm<dim>::compute_density_on_faces()
 
 template <int dim>
 void
-LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
-                                            const unsigned int n_subdivisions) const
+adaflo::LevelSetBaseAlgorithm<dim>::output_solution(
+  const std::string  output_name,
+  const unsigned int n_subdivisions) const
 {
   if (this->time_stepping.at_tick(this->parameters.output_frequency) == false)
     return;
@@ -694,5 +696,5 @@ LevelSetBaseAlgorithm<dim>::output_solution(const std::string  output_name,
 
 
 
-template class LevelSetBaseAlgorithm<2>;
-template class LevelSetBaseAlgorithm<3>;
+template class adaflo::LevelSetBaseAlgorithm<2>;
+template class adaflo::LevelSetBaseAlgorithm<3>;

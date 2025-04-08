@@ -22,46 +22,49 @@
 #include <fstream>
 #include <iostream>
 
-using namespace dealii;
 
-
-template <typename Number>
-class DiagonalPreconditioner
+namespace adaflo
 {
-public:
-  DiagonalPreconditioner()
-  {}
+  using namespace dealii;
 
-  DiagonalPreconditioner(
-    const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
-  DiagonalPreconditioner(
-    const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
-  void
-  reinit(const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
-  void
-  reinit(const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
-  void
-  vmult(LinearAlgebra::distributed::Vector<Number> &      dst,
-        const LinearAlgebra::distributed::Vector<Number> &src) const;
-  void
-  vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
-        const LinearAlgebra::distributed::BlockVector<Number> &src) const;
-  const LinearAlgebra::distributed::Vector<Number> &
-  get_inverse_vector() const
+  template <typename Number>
+  class DiagonalPreconditioner
   {
-    return inverse_diagonal_vector;
-  }
-  const LinearAlgebra::distributed::Vector<Number> &
-  get_vector() const
-  {
-    return diagonal_vector;
-  }
+  public:
+    DiagonalPreconditioner()
+    {}
 
-private:
-  LinearAlgebra::distributed::Vector<Number>      diagonal_vector;
-  LinearAlgebra::distributed::Vector<Number>      inverse_diagonal_vector;
-  LinearAlgebra::distributed::BlockVector<Number> inverse_diagonal_block_vector;
-};
+    DiagonalPreconditioner(
+      const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+    DiagonalPreconditioner(
+      const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+    void
+    reinit(const LinearAlgebra::distributed::Vector<Number> &diagonal_vector_in);
+    void
+    reinit(const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
+    void
+    vmult(LinearAlgebra::distributed::Vector<Number> &      dst,
+          const LinearAlgebra::distributed::Vector<Number> &src) const;
+    void
+    vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
+          const LinearAlgebra::distributed::BlockVector<Number> &src) const;
+    const LinearAlgebra::distributed::Vector<Number> &
+    get_inverse_vector() const
+    {
+      return inverse_diagonal_vector;
+    }
+    const LinearAlgebra::distributed::Vector<Number> &
+    get_vector() const
+    {
+      return diagonal_vector;
+    }
+
+  private:
+    LinearAlgebra::distributed::Vector<Number>      diagonal_vector;
+    LinearAlgebra::distributed::Vector<Number>      inverse_diagonal_vector;
+    LinearAlgebra::distributed::BlockVector<Number> inverse_diagonal_block_vector;
+  };
+} // namespace adaflo
 
 
 #endif

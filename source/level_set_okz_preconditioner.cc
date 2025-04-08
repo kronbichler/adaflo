@@ -53,9 +53,12 @@
         }                                                                 \
     }
 
+using namespace dealii;
+
+
 template <int dim, typename Number, typename VectorizedArrayType>
 void
-initialize_projection_matrix(
+adaflo::initialize_projection_matrix(
   const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
   const AffineConstraints<Number> &                   constraints_normals,
   const unsigned int                                  dof_index,
@@ -63,8 +66,8 @@ initialize_projection_matrix(
   const Number &                                      epsilon_used,
   const Number &                                      epsilon,
   const AlignedVector<VectorizedArrayType> &          cell_diameters,
-  BlockMatrixExtension &                              projection_matrix,
-  BlockILUExtension &                                 ilu_projection_matrix)
+  adaflo::BlockMatrixExtension &                      projection_matrix,
+  adaflo::BlockILUExtension &                         ilu_projection_matrix)
 {
   const auto &dof_handler = matrix_free.get_dof_handler(dof_index);
   const auto &fe          = dof_handler.get_fe();
@@ -181,7 +184,7 @@ initialize_projection_matrix(
   }
 }
 template void
-initialize_projection_matrix<1, double, VectorizedArray<double>>(
+adaflo::initialize_projection_matrix<1, double, VectorizedArray<double>>(
   const MatrixFree<1, double, VectorizedArray<double>> &matrix_free,
   const AffineConstraints<double> &                     constraints_normals,
   const unsigned int                                    dof_index,
@@ -193,7 +196,7 @@ initialize_projection_matrix<1, double, VectorizedArray<double>>(
   BlockILUExtension &                                   ilu_projection_matrix);
 
 template void
-initialize_projection_matrix<2, double, VectorizedArray<double>>(
+adaflo::initialize_projection_matrix<2, double, VectorizedArray<double>>(
   const MatrixFree<2, double, VectorizedArray<double>> &matrix_free,
   const AffineConstraints<double> &                     constraints_normals,
   const unsigned int                                    dof_index,
@@ -205,7 +208,7 @@ initialize_projection_matrix<2, double, VectorizedArray<double>>(
   BlockILUExtension &                                   ilu_projection_matrix);
 
 template void
-initialize_projection_matrix<3, double, VectorizedArray<double>>(
+adaflo::initialize_projection_matrix<3, double, VectorizedArray<double>>(
   const MatrixFree<3, double, VectorizedArray<double>> &matrix_free,
   const AffineConstraints<double> &                     constraints_normals,
   const unsigned int                                    dof_index,

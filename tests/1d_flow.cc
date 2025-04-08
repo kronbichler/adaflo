@@ -47,6 +47,7 @@
 #include <iostream>
 
 using namespace dealii;
+using namespace adaflo;
 
 /**
  * Simple test case for 1d Navier-Stokes

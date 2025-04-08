@@ -26,6 +26,8 @@
 
 #include <adaflo/level_set_okz_advance_concentration.h>
 
+using namespace dealii;
+
 namespace
 {
   /**
@@ -175,7 +177,7 @@ namespace
 
 
 template <int dim>
-LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentration(
+adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentration(
   VectorType &                                  solution,
   const VectorType &                            solution_old,
   const VectorType &                            solution_old_old,
@@ -215,7 +217,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentratio
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
-LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
+adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
   const MatrixFree<dim, double> &              data,
   VectorType &                                 dst,
   const VectorType &                           src,
@@ -286,7 +288,7 @@ namespace
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
-LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
+adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
   const MatrixFree<dim, double> &data,
   VectorType &                   dst,
   const VectorType &,
@@ -398,7 +400,7 @@ LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
 
 template <int dim>
 void
-LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
+adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
   VectorType &      dst,
   const VectorType &src) const
 {
@@ -482,7 +484,8 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
 template <int dim, typename VectorType>
 struct AdvanceConcentrationMatrix
 {
-  AdvanceConcentrationMatrix(const LevelSetOKZSolverAdvanceConcentration<dim> &problem)
+  AdvanceConcentrationMatrix(
+    const adaflo::LevelSetOKZSolverAdvanceConcentration<dim> &problem)
     : problem(problem)
   {}
 
@@ -492,7 +495,7 @@ struct AdvanceConcentrationMatrix
     problem.advance_concentration_vmult(dst, src);
   }
 
-  const LevelSetOKZSolverAdvanceConcentration<dim> &problem;
+  const adaflo::LevelSetOKZSolverAdvanceConcentration<dim> &problem;
 };
 
 
@@ -500,7 +503,7 @@ struct AdvanceConcentrationMatrix
 // @sect4{LevelSetOKZSolverAdvanceConcentration::advance_concentration}
 template <int dim>
 void
-LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double dt)
+adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double dt)
 {
   this->time_stepping.set_desired_time_step(dt);
   this->time_stepping.next();
@@ -649,6 +652,6 @@ LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration(const double d
 }
 
 
-template class LevelSetOKZSolverAdvanceConcentration<1>;
-template class LevelSetOKZSolverAdvanceConcentration<2>;
-template class LevelSetOKZSolverAdvanceConcentration<3>;
+template class adaflo::LevelSetOKZSolverAdvanceConcentration<1>;
+template class adaflo::LevelSetOKZSolverAdvanceConcentration<2>;
+template class adaflo::LevelSetOKZSolverAdvanceConcentration<3>;
