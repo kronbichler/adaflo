@@ -281,16 +281,16 @@ namespace adaflo
      * vectors that are not done by the standard solvers.
      */
     void
-    write_data_output(const std::string &       output_base_name,
-                      const TimeStepping &      time_stepping,
+    write_data_output(const std::string        &output_base_name,
+                      const TimeStepping       &time_stepping,
                       const double              output_frequency,
                       const Triangulation<dim> &triangulation,
-                      DataOut<dim> &            data_out) const;
+                      DataOut<dim>             &data_out) const;
 
     std::shared_ptr<helpers::BoundaryDescriptor<dim>> boundary;
 
     const std::shared_ptr<Mapping<dim>> mapping_data;
-    const Mapping<dim> &                mapping;
+    const Mapping<dim>                 &mapping;
   };
 } // namespace adaflo
 

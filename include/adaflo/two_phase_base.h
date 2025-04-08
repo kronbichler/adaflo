@@ -45,10 +45,10 @@ namespace adaflo
   class TwoPhaseBaseAlgorithm : public FlowBaseAlgorithm<dim>
   {
   public:
-    TwoPhaseBaseAlgorithm(const FlowParameters &                    parameters,
+    TwoPhaseBaseAlgorithm(const FlowParameters                     &parameters,
                           const std::shared_ptr<FiniteElement<dim>> fe,
-                          Triangulation<dim> &                      triangulation,
-                          TimerOutput *                             external_timer = 0);
+                          Triangulation<dim>                       &triangulation,
+                          TimerOutput                              *external_timer = 0);
 
     virtual ~TwoPhaseBaseAlgorithm();
 
@@ -207,7 +207,7 @@ namespace adaflo
     std::shared_ptr<TimerOutput> timer;
 
     // Reference to externally defined triangulation
-    Triangulation<dim> &                      triangulation;
+    Triangulation<dim>                       &triangulation;
     NavierStokes<dim>                         navier_stokes;
     MatrixFree<dim>                           matrix_free;
     const std::shared_ptr<FiniteElement<dim>> fe;
@@ -224,7 +224,7 @@ namespace adaflo
 
     LinearAlgebra::distributed::BlockVector<double> system_rhs;
 
-    TimeStepping &        time_stepping;
+    TimeStepping         &time_stepping;
     const FlowParameters &parameters;
 
     double                                 epsilon_used;

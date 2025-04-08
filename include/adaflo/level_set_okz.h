@@ -45,7 +45,7 @@ namespace adaflo
   {
   public:
     LevelSetOKZSolver(const FlowParameters &parameters,
-                      Triangulation<dim> &  triangulation);
+                      Triangulation<dim>   &triangulation);
     virtual ~LevelSetOKZSolver()
     {}
 
@@ -88,14 +88,14 @@ namespace adaflo
     // matrix-free worker operations for various operations
     template <int ls_degree, int velocity_degree>
     void
-    local_compute_force(const MatrixFree<dim, double> &                   data,
-                        LinearAlgebra::distributed::Vector<double> &      dst,
+    local_compute_force(const MatrixFree<dim, double>                    &data,
+                        LinearAlgebra::distributed::Vector<double>       &dst,
                         const LinearAlgebra::distributed::Vector<double> &src,
-                        const std::pair<unsigned int, unsigned int> &     cell_range);
+                        const std::pair<unsigned int, unsigned int>      &cell_range);
 
     void
     local_projection_matrix(
-      const MatrixFree<dim, double> &                                   data,
+      const MatrixFree<dim, double>                                    &data,
       std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
       const unsigned int &,
       const std::pair<unsigned int, unsigned int> &cell_range);
@@ -103,9 +103,9 @@ namespace adaflo
     template <int ls_degree>
     void
     local_projection_matrix(
-      const MatrixFree<dim, double> &                                   data,
+      const MatrixFree<dim, double>                                    &data,
       std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
-      const std::pair<unsigned int, unsigned int> &                     cell_range);
+      const std::pair<unsigned int, unsigned int>                      &cell_range);
 
     bool                           first_reinit_step;
     double                         global_max_velocity;

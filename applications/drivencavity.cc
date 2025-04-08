@@ -104,7 +104,7 @@ private:
   output_results() const;
 
   void
-  perform_data_exchange(std::vector<double> &        positions,
+  perform_data_exchange(std::vector<double>         &positions,
                         std::vector<Tensor<1, dim>> &velocities) const;
 
   ConditionalOStream pcout;
@@ -266,7 +266,7 @@ LidDrivenCavityProblem<dim>::output_results() const
 template <int dim>
 void
 LidDrivenCavityProblem<dim>::perform_data_exchange(
-  std::vector<double> &        positions,
+  std::vector<double>         &positions,
   std::vector<Tensor<1, dim>> &velocities) const
 {
   // Exchange data with other processors

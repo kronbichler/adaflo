@@ -56,7 +56,7 @@ using namespace dealii;
 
 template <int dim>
 adaflo::LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
-                                                  Triangulation<dim> &  tria_in)
+                                                  Triangulation<dim>   &tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
   , first_reinit_step(true)
 {
@@ -239,7 +239,7 @@ adaflo::LevelSetOKZSolver<dim>::initialize_data_structures()
 template <int dim>
 void
 adaflo::LevelSetOKZSolver<dim>::local_projection_matrix(
-  const MatrixFree<dim> &                                           data,
+  const MatrixFree<dim>                                            &data,
   std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
   const unsigned int &,
   const std::pair<unsigned int, unsigned int> &cell_range)
@@ -263,12 +263,12 @@ template <int dim>
 template <int ls_degree>
 void
 adaflo::LevelSetOKZSolver<dim>::local_projection_matrix(
-  const MatrixFree<dim> &                                           data,
+  const MatrixFree<dim>                                            &data,
   std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch_data,
-  const std::pair<unsigned int, unsigned int> &                     cell_range)
+  const std::pair<unsigned int, unsigned int>                      &cell_range)
 {
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1, double> phi(data, 4, 2);
-  AssemblyData::Data &                                   scratch = scratch_data->get();
+  AssemblyData::Data                                    &scratch = scratch_data->get();
 
   const VectorizedArray<double> min_diameter =
     make_vectorized_array(this->epsilon_used / this->parameters.epsilon);
@@ -318,7 +318,7 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 adaflo::LevelSetOKZSolver<dim>::local_compute_force(
-  const MatrixFree<dim, double> &             data,
+  const MatrixFree<dim, double>              &data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
   const std::pair<unsigned int, unsigned int> &cell_range)

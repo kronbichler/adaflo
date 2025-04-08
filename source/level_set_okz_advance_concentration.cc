@@ -37,7 +37,7 @@ namespace
   template <int dim, typename VectorType>
   double
   get_maximal_velocity(const DoFHandler<dim> &dof_handler,
-                       const VectorType &     solution,
+                       const VectorType      &solution,
                        const Quadrature<dim> &quad_in)
   {
     // [PM] We use QIterated in the case of hex mesh for backwards compatibility.
@@ -178,21 +178,21 @@ namespace
 
 template <int dim>
 adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::LevelSetOKZSolverAdvanceConcentration(
-  VectorType &                                  solution,
-  const VectorType &                            solution_old,
-  const VectorType &                            solution_old_old,
-  VectorType &                                  increment,
-  VectorType &                                  rhs,
-  const VectorType &                            vel_solution,
-  const VectorType &                            vel_solution_old,
-  const VectorType &                            vel_solution_old_old,
+  VectorType                                   &solution,
+  const VectorType                             &solution_old,
+  const VectorType                             &solution_old_old,
+  VectorType                                   &increment,
+  VectorType                                   &rhs,
+  const VectorType                             &vel_solution,
+  const VectorType                             &vel_solution_old,
+  const VectorType                             &vel_solution_old_old,
   const AlignedVector<VectorizedArray<double>> &cell_diameters,
-  const AffineConstraints<double> &             constraints,
-  const ConditionalOStream &                    pcout,
+  const AffineConstraints<double>              &constraints,
+  const ConditionalOStream                     &pcout,
   const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
-  const MatrixFree<dim> &                                             matrix_free,
-  const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-  const DiagonalPreconditioner<double> &                              preconditioner)
+  const MatrixFree<dim>                                              &matrix_free,
+  const LevelSetOKZSolverAdvanceConcentrationParameter               &parameters,
+  const DiagonalPreconditioner<double>                               &preconditioner)
   : parameters(parameters)
   , solution(solution)
   , solution_old(solution_old)
@@ -218,9 +218,9 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration(
-  const MatrixFree<dim, double> &              data,
-  VectorType &                                 dst,
-  const VectorType &                           src,
+  const MatrixFree<dim, double>               &data,
+  VectorType                                  &dst,
+  const VectorType                            &src,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
   // The second input argument below refers to which constrains should be used,
@@ -290,7 +290,7 @@ template <int ls_degree, int velocity_degree>
 void
 adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_rhs(
   const MatrixFree<dim, double> &data,
-  VectorType &                   dst,
+  VectorType                    &dst,
   const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range)
 {
@@ -401,7 +401,7 @@ adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::local_advance_concentration_
 template <int dim>
 void
 adaflo::LevelSetOKZSolverAdvanceConcentration<dim>::advance_concentration_vmult(
-  VectorType &      dst,
+  VectorType       &dst,
   const VectorType &src) const
 {
   dst = 0.;

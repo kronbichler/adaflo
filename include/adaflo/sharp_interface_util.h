@@ -53,11 +53,11 @@ namespace dealii
     void
     update_position_vector(const double                          dt,
                            const DoFHandler<spacedim, spacedim> &background_dofhandler,
-                           const Mapping<spacedim, spacedim> &   background_mapping,
-                           const VectorType &                    velocity_vector,
-                           const DoFHandler<dim, spacedim> &     euler_dofhandler,
-                           const Mapping<dim, spacedim> &        euler_mapping,
-                           VectorType &                          euler_coordinates_vector)
+                           const Mapping<spacedim, spacedim>    &background_mapping,
+                           const VectorType                     &velocity_vector,
+                           const DoFHandler<dim, spacedim>      &euler_dofhandler,
+                           const Mapping<dim, spacedim>         &euler_mapping,
+                           VectorType                           &euler_coordinates_vector)
     {
       FEValues<dim, spacedim> fe_eval(
         euler_mapping,
@@ -128,7 +128,7 @@ namespace dealii
     template <int dim, int spacedim>
     void
     construct_polygon(
-      const Mapping<dim, spacedim> &   mapping,
+      const Mapping<dim, spacedim>    &mapping,
       const DoFHandler<dim, spacedim> &dof_handler,
       boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double>> &poly)
     {
@@ -165,7 +165,7 @@ namespace dealii
     double
     within(
       const boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double>>
-        &               polygon,
+                       &polygon,
       const Point<dim> &point)
     {
       boost::geometry::model::d2::point_xy<double> p(point[0], point[1]);
@@ -177,7 +177,7 @@ namespace dealii
     VectorizedArray<double>
     within(
       const boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double>>
-        &                                        polygon,
+                                                &polygon,
       const Point<dim, VectorizedArray<double>> &points)
     {
       VectorizedArray<double> result;
@@ -194,10 +194,10 @@ namespace dealii
     template <int dim, int spacedim, typename VectorType>
     void
     within(const MappingFEField<dim, spacedim> &mapping,
-           const DoFHandler<dim, spacedim> &    dof_handler,
-           const Mapping<spacedim> &            background_mapping,
-           const DoFHandler<spacedim> &         background_dof_handler,
-           VectorType &                         force_vector_sharp_interface)
+           const DoFHandler<dim, spacedim>     &dof_handler,
+           const Mapping<spacedim>             &background_mapping,
+           const DoFHandler<spacedim>          &background_dof_handler,
+           VectorType                          &force_vector_sharp_interface)
     {
       typedef boost::geometry::model::d2::point_xy<double> point_type;
       typedef boost::geometry::model::polygon<
@@ -245,9 +245,9 @@ namespace adaflo
              std::vector<Tensor<1, spacedim, double>>,
              std::vector<Point<spacedim>>>
   collect_integration_points(
-    const Triangulation<spacedim, spacedim> &       tria,
-    const Mapping<spacedim, spacedim> &             mapping,
-    const std::vector<Point<spacedim>> &            integration_points,
+    const Triangulation<spacedim, spacedim>        &tria,
+    const Mapping<spacedim, spacedim>              &mapping,
+    const std::vector<Point<spacedim>>             &integration_points,
     const std::vector<Tensor<1, spacedim, double>> &integration_values)
   {
     std::vector<std::pair<Point<spacedim>, Tensor<1, spacedim, double>>>
@@ -332,16 +332,16 @@ namespace adaflo
   template <int dim, int spacedim, typename VectorType>
   void
   compute_force_vector_sharp_interface(
-    const Mapping<dim, spacedim> &   surface_mapping,
+    const Mapping<dim, spacedim>    &surface_mapping,
     const DoFHandler<dim, spacedim> &surface_dofhandler,
     const DoFHandler<dim, spacedim> &surface_dofhandler_dim,
-    const Quadrature<dim> &          surface_quadrature,
-    const Mapping<spacedim> &        mapping,
-    const DoFHandler<spacedim> &     dof_handler,
+    const Quadrature<dim>           &surface_quadrature,
+    const Mapping<spacedim>         &mapping,
+    const DoFHandler<spacedim>      &dof_handler,
     const double                     surface_tension,
-    const VectorType &               normal_vector,
-    const VectorType &               curvature_vector,
-    VectorType &                     force_vector)
+    const VectorType                &normal_vector,
+    const VectorType                &curvature_vector,
+    VectorType                      &force_vector)
   {
     std::vector<Point<spacedim>>             integration_points;
     std::vector<Tensor<1, spacedim, double>> integration_values;
@@ -442,9 +442,9 @@ namespace adaflo
    */
   template <int dim, int spacedim, typename VectorType>
   void
-  compute_normal(const Mapping<dim, spacedim> &   mapping,
+  compute_normal(const Mapping<dim, spacedim>    &mapping,
                  const DoFHandler<dim, spacedim> &dof_handler_dim,
-                 VectorType &                     normal_vector)
+                 VectorType                      &normal_vector)
   {
     FEValues<dim, spacedim> fe_eval_dim(
       mapping,
@@ -482,12 +482,12 @@ namespace adaflo
    */
   template <int dim, int spacedim, typename VectorType>
   void
-  compute_curvature(const Mapping<dim, spacedim> &   mapping,
+  compute_curvature(const Mapping<dim, spacedim>    &mapping,
                     const DoFHandler<dim, spacedim> &dof_handler_dim,
                     const DoFHandler<dim, spacedim> &dof_handler,
                     const Quadrature<dim>            quadrature,
-                    const VectorType &               normal_vector,
-                    VectorType &                     curvature_vector)
+                    const VectorType                &normal_vector,
+                    VectorType                      &curvature_vector)
   {
     FEValues<dim, spacedim> fe_eval(mapping,
                                     dof_handler.get_fe(),
@@ -541,12 +541,12 @@ namespace adaflo
              std::vector<unsigned int>,
              std::vector<double>,
              std::vector<Point<spacedim>>>
-  collect_evaluation_points(const Triangulation<dim, spacedim> &     surface_mesh,
-                            const Mapping<dim, spacedim> &           surface_mapping,
-                            const FiniteElement<dim, spacedim> &     surface_fe,
-                            const Quadrature<dim> &                  surface_quad,
+  collect_evaluation_points(const Triangulation<dim, spacedim>      &surface_mesh,
+                            const Mapping<dim, spacedim>            &surface_mapping,
+                            const FiniteElement<dim, spacedim>      &surface_fe,
+                            const Quadrature<dim>                   &surface_quad,
                             const Triangulation<spacedim, spacedim> &tria,
-                            const Mapping<spacedim, spacedim> &      mapping)
+                            const Mapping<spacedim, spacedim>       &mapping)
   {
     // step 1: determine quadrature points in real coordinate system and quadrature weight
     std::vector<std::pair<Point<spacedim>, double>> locally_owned_surface_points;
@@ -635,14 +635,14 @@ namespace adaflo
   void
   compute_force_vector_sharp_interface(const Triangulation<dim, spacedim> &surface_mesh,
                                        const Mapping<dim, spacedim> &surface_mapping,
-                                       const Quadrature<dim> &       surface_quadrature,
-                                       const Mapping<spacedim> &     mapping,
-                                       const DoFHandler<spacedim> &  dof_handler,
-                                       const DoFHandler<spacedim> &  dof_handler_dim,
+                                       const Quadrature<dim>        &surface_quadrature,
+                                       const Mapping<spacedim>      &mapping,
+                                       const DoFHandler<spacedim>   &dof_handler,
+                                       const DoFHandler<spacedim>   &dof_handler_dim,
                                        const double                  surface_tension,
-                                       const BlockVectorType &       normal_solution,
-                                       const VectorType &            curvature_solution,
-                                       VectorType &                  force_vector)
+                                       const BlockVectorType        &normal_solution,
+                                       const VectorType             &curvature_solution,
+                                       VectorType                   &force_vector)
   {
     using T = double; // type of data to be communicated (only |J|xW)
 
@@ -818,14 +818,14 @@ namespace adaflo
   template <int dim, typename VectorType, typename BlockVectorType>
   void
   compute_force_vector_sharp_interface(const Quadrature<dim - 1> &surface_quad,
-                                       const Mapping<dim> &       mapping,
-                                       const DoFHandler<dim> &    dof_handler,
-                                       const DoFHandler<dim> &    dof_handler_dim,
+                                       const Mapping<dim>        &mapping,
+                                       const DoFHandler<dim>     &dof_handler,
+                                       const DoFHandler<dim>     &dof_handler_dim,
                                        const double               surface_tension,
-                                       const BlockVectorType &    normal_vector_field,
-                                       const VectorType &         curvature_solution,
-                                       const VectorType &         ls_vector,
-                                       VectorType &               force_vector)
+                                       const BlockVectorType     &normal_vector_field,
+                                       const VectorType          &curvature_solution,
+                                       const VectorType          &ls_vector,
+                                       VectorType                &force_vector)
 
 
   {
@@ -993,7 +993,7 @@ namespace adaflo
                                    const double       surface_tension_coefficient,
                                    const VectorType1 &ls_solution,
                                    const VectorType1 &curvature_solution,
-                                   VectorType2 &      force_rhs)
+                                   VectorType2       &force_rhs)
   {
     (void)matrix_free;
     (void)ls_solution;
@@ -1005,7 +1005,7 @@ namespace adaflo
 
     matrix_free.template cell_loop<VectorType2, VectorType1>(
       [&](const auto &matrix_free,
-          auto &      force_rhs,
+          auto       &force_rhs,
           const auto &level_set_as_heaviside,
           auto        macro_cells) {
         FEEvaluation<dim, -1, 0, 1, double> level_set(matrix_free,

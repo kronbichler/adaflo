@@ -50,7 +50,7 @@ using namespace dealii;
 template <int dim>
 adaflo::LevelSetBaseAlgorithm<dim>::LevelSetBaseAlgorithm(
   const FlowParameters &parameters_in,
-  Triangulation<dim> &  tria_in)
+  Triangulation<dim>   &tria_in)
   : TwoPhaseBaseAlgorithm<dim>(parameters_in,
                                parameters_in.use_simplex_mesh ?
                                  std::shared_ptr<FiniteElement<dim>>(new FE_SimplexP<dim>(

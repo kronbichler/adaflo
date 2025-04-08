@@ -99,7 +99,7 @@ public:
   virtual void
   vector_value(const Point<dim> &p, Vector<double> &values) const override;
   virtual void
-  vector_gradient(const Point<dim> &           p,
+  vector_gradient(const Point<dim>            &p,
                   std::vector<Tensor<1, dim>> &gradients) const override;
 
 private:
@@ -112,7 +112,7 @@ private:
 template <int dim>
 void
 SimilarityVelocity<dim>::vector_value(const Point<dim> &unscaled,
-                                      Vector<double> &  values) const
+                                      Vector<double>   &values) const
 {
   Assert(values.size() == dim, ExcDimensionMismatch(values.size(), dim));
 
@@ -153,7 +153,7 @@ SimilarityVelocity<dim>::vector_value(const Point<dim> &unscaled,
 
 template <int dim>
 void
-SimilarityVelocity<dim>::vector_gradient(const Point<dim> &           p,
+SimilarityVelocity<dim>::vector_gradient(const Point<dim>            &p,
                                          std::vector<Tensor<1, dim>> &gradients) const
 {
   AssertDimension(gradients.size(), dim);

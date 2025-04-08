@@ -54,19 +54,19 @@ using namespace dealii;
 
 template <int dim>
 adaflo::LevelSetOKZSolverComputeCurvature<dim>::LevelSetOKZSolverComputeCurvature(
-  const AlignedVector<VectorizedArray<double>> &         cell_diameters,
+  const AlignedVector<VectorizedArray<double>>          &cell_diameters,
   const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
-  const AffineConstraints<double> &                      constraints_curvature,
-  const AffineConstraints<double> &                      constraints,
-  const double &                                         epsilon_used,
-  LinearAlgebra::distributed::Vector<double> &           system_rhs,
-  const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
-  LinearAlgebra::distributed::Vector<double> &           solution_curvature,
-  const LinearAlgebra::distributed::Vector<double> &     solution_ls,
-  const MatrixFree<dim> &                                matrix_free,
-  const DiagonalPreconditioner<double> &                 preconditioner,
-  std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
-  std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix)
+  const AffineConstraints<double>                       &constraints_curvature,
+  const AffineConstraints<double>                       &constraints,
+  const double                                          &epsilon_used,
+  LinearAlgebra::distributed::Vector<double>            &system_rhs,
+  const LevelSetOKZSolverComputeCurvatureParameter      &parameters,
+  LinearAlgebra::distributed::Vector<double>            &solution_curvature,
+  const LinearAlgebra::distributed::Vector<double>      &solution_ls,
+  const MatrixFree<dim>                                 &matrix_free,
+  const DiagonalPreconditioner<double>                  &preconditioner,
+  std::shared_ptr<BlockMatrixExtension>                 &projection_matrix,
+  std::shared_ptr<BlockILUExtension>                    &ilu_projection_matrix)
   : parameters(parameters)
   , solution_curvature(solution_curvature)
   , rhs(system_rhs)
@@ -87,10 +87,10 @@ template <int dim>
 template <int ls_degree, int diffusion_setting>
 void
 adaflo::LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
+  const MatrixFree<dim, double>                    &data,
+  LinearAlgebra::distributed::Vector<double>       &dst,
   const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
+  const std::pair<unsigned int, unsigned int>      &cell_range) const
 {
   // The second input argument below refers to which constrains should be used,
   // 3 means constraints_curvature
@@ -213,7 +213,7 @@ template <int dim>
 template <int ls_degree>
 void
 adaflo::LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
-  const MatrixFree<dim, double> &             data,
+  const MatrixFree<dim, double>              &data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
   const std::pair<unsigned int, unsigned int> &cell_range) const
@@ -263,7 +263,7 @@ adaflo::LevelSetOKZSolverComputeCurvature<dim>::local_compute_curvature_rhs(
 template <int dim>
 void
 adaflo::LevelSetOKZSolverComputeCurvature<dim>::compute_curvature_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
+  LinearAlgebra::distributed::Vector<double>       &dst,
   const LinearAlgebra::distributed::Vector<double> &src,
   const bool                                        apply_diffusion) const
 {
@@ -313,7 +313,7 @@ struct ComputeCurvatureMatrix
   {}
 
   void
-  vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+  vmult(LinearAlgebra::distributed::Vector<double>       &dst,
         const LinearAlgebra::distributed::Vector<double> &src) const
   {
     problem.compute_curvature_vmult(dst, src, true);

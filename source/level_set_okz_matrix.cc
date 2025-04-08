@@ -49,7 +49,7 @@ using namespace dealii;
 template <int dim>
 adaflo::LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(
   const FlowParameters &parameters_in,
-  Triangulation<dim> &  tria_in)
+  Triangulation<dim>   &tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
 {}
 
@@ -317,8 +317,8 @@ adaflo::LevelSetOKZMatrixSolver<dim>::compute_force()
 // tutorial program)
 template <int dim>
 double
-compute_viscosity(const std::vector<double> &        old_temperature,
-                  const std::vector<double> &        old_old_temperature,
+compute_viscosity(const std::vector<double>         &old_temperature,
+                  const std::vector<double>         &old_old_temperature,
                   const std::vector<Tensor<1, dim>> &old_temperature_grads,
                   const std::vector<Tensor<1, dim>> &old_old_temperature_grads,
                   const std::vector<Tensor<1, dim>> &old_velocity_values,

@@ -72,20 +72,20 @@ namespace adaflo
     using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
     LevelSetOKZSolverReinitialization(
-      const BlockVectorType &                           normal_vector_field,
-      const AlignedVector<VectorizedArray<double>> &    cell_diameters,
-      const double &                                    epsilon_used,
-      const double &                                    minimal_edge_length,
-      const AffineConstraints<double> &                 constraints,
-      VectorType &                                      solution_update,
-      VectorType &                                      solution,
-      VectorType &                                      system_rhs,
-      const ConditionalOStream &                        pcout,
-      const DiagonalPreconditioner<double> &            preconditioner,
-      const std::pair<double, double> &                 last_concentration_range,
+      const BlockVectorType                            &normal_vector_field,
+      const AlignedVector<VectorizedArray<double>>     &cell_diameters,
+      const double                                     &epsilon_used,
+      const double                                     &minimal_edge_length,
+      const AffineConstraints<double>                  &constraints,
+      VectorType                                       &solution_update,
+      VectorType                                       &solution,
+      VectorType                                       &system_rhs,
+      const ConditionalOStream                         &pcout,
+      const DiagonalPreconditioner<double>             &preconditioner,
+      const std::pair<double, double>                  &last_concentration_range,
       const LevelSetOKZSolverReinitializationParameter &parameters,
-      bool &                                            first_reinit_step,
-      const MatrixFree<dim, double> &                   matrix_free)
+      bool                                             &first_reinit_step,
+      const MatrixFree<dim, double>                    &matrix_free)
       : parameters(parameters)
       , solution(solution)
       , solution_update(solution_update)
@@ -112,23 +112,23 @@ namespace adaflo
       const std::function<void(bool)> &compute_normal = [](const bool) {});
 
     void
-    reinitialization_vmult(VectorType &      dst,
+    reinitialization_vmult(VectorType       &dst,
                            const VectorType &src,
                            const bool        diffuse_only) const;
 
   private:
     template <int ls_degree, bool diffuse_only>
     void
-    local_reinitialize(const MatrixFree<dim, double> &              data,
-                       VectorType &                                 dst,
-                       const VectorType &                           src,
+    local_reinitialize(const MatrixFree<dim, double>               &data,
+                       VectorType                                  &dst,
+                       const VectorType                            &src,
                        const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int ls_degree, bool diffuse_only>
     void
-    local_reinitialize_rhs(const MatrixFree<dim, double> &              data,
-                           VectorType &                                 dst,
-                           const VectorType &                           src,
+    local_reinitialize_rhs(const MatrixFree<dim, double>               &data,
+                           VectorType                                  &dst,
+                           const VectorType                            &src,
                            const std::pair<unsigned int, unsigned int> &cell_range);
 
     /**
@@ -148,14 +148,14 @@ namespace adaflo
     /**
      * MatrixFree
      */
-    const MatrixFree<dim> &          matrix_free; // [i]
+    const MatrixFree<dim>           &matrix_free; // [i]
     const AffineConstraints<double> &constraints; // [i]
 
     const AlignedVector<VectorizedArray<double>> &cell_diameters;            // [i]
-    const double &                                epsilon_used;              // [i]
-    const double &                                minimal_edge_length;       // [i]
-    const std::pair<double, double> &             last_concentration_range;  // [i]
-    bool &                                        first_reinit_step;         // [?]
+    const double                                 &epsilon_used;              // [i]
+    const double                                 &minimal_edge_length;       // [i]
+    const std::pair<double, double>              &last_concentration_range;  // [i]
+    bool                                         &first_reinit_step;         // [?]
     AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_normal; // [-]
 
     /**

@@ -96,21 +96,21 @@ namespace adaflo
     using VectorType = LinearAlgebra::distributed::Vector<double>;
 
     LevelSetOKZSolverAdvanceConcentration(
-      VectorType &                                  solution,
-      const VectorType &                            solution_old,
-      const VectorType &                            solution_old_old,
-      VectorType &                                  increment,
-      VectorType &                                  rhs,
-      const VectorType &                            vel_solution,
-      const VectorType &                            vel_solution_old,
-      const VectorType &                            vel_solution_old_old,
+      VectorType                                   &solution,
+      const VectorType                             &solution_old,
+      const VectorType                             &solution_old_old,
+      VectorType                                   &increment,
+      VectorType                                   &rhs,
+      const VectorType                             &vel_solution,
+      const VectorType                             &vel_solution_old,
+      const VectorType                             &vel_solution_old_old,
       const AlignedVector<VectorizedArray<double>> &cell_diameters,
-      const AffineConstraints<double> &             constraints,
-      const ConditionalOStream &                    pcout,
+      const AffineConstraints<double>              &constraints,
+      const ConditionalOStream                     &pcout,
       const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
-      const MatrixFree<dim> &                                             matrix_free,
-      const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-      const DiagonalPreconditioner<double> &                              preconditioner);
+      const MatrixFree<dim>                                              &matrix_free,
+      const LevelSetOKZSolverAdvanceConcentrationParameter               &parameters,
+      const DiagonalPreconditioner<double>                               &preconditioner);
 
     virtual ~LevelSetOKZSolverAdvanceConcentration() = default;
 
@@ -124,17 +124,17 @@ namespace adaflo
     template <int ls_degree, int velocity_degree>
     void
     local_advance_concentration(
-      const MatrixFree<dim, double> &              data,
-      VectorType &                                 dst,
-      const VectorType &                           src,
+      const MatrixFree<dim, double>               &data,
+      VectorType                                  &dst,
+      const VectorType                            &src,
       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     template <int ls_degree, int velocity_degree>
     void
     local_advance_concentration_rhs(
-      const MatrixFree<dim, double> &              data,
-      VectorType &                                 dst,
-      const VectorType &                           src,
+      const MatrixFree<dim, double>               &data,
+      VectorType                                  &dst,
+      const VectorType                            &src,
       const std::pair<unsigned int, unsigned int> &cell_range);
 
     /**
@@ -145,11 +145,11 @@ namespace adaflo
     /**
      * Vector section
      */
-    VectorType &      solution;         // [o] new ls solution
+    VectorType       &solution;         // [o] new ls solution
     const VectorType &solution_old;     // [i] old ls solution
     const VectorType &solution_old_old; // [i] old ls solution
-    VectorType &      increment;        // [-] temp
-    VectorType &      rhs;              // [-] temp
+    VectorType       &increment;        // [-] temp
+    VectorType       &rhs;              // [-] temp
 
     const VectorType &vel_solution;         // [i] new velocity solution
     const VectorType &vel_solution_old;     // [i] old velocity solution
@@ -158,7 +158,7 @@ namespace adaflo
     /**
      * MatrixFree
      */
-    const MatrixFree<dim> &          matrix_free; // [i]
+    const MatrixFree<dim>           &matrix_free; // [i]
     const AffineConstraints<double> &constraints; // [i]
 
     /**

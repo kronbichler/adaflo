@@ -170,7 +170,7 @@ FlowPastCylinder<dim>::output_results() const
 
 
 void
-create_triangulation(Triangulation<2> & tria,
+create_triangulation(Triangulation<2>  &tria,
                      const bool         use_simplex_mesh,
                      const unsigned int n_refinements)
 {
@@ -217,7 +217,7 @@ create_triangulation(Triangulation<2> & tria,
 
 
 void
-create_triangulation(Triangulation<3> & tria,
+create_triangulation(Triangulation<3>  &tria,
                      const bool         use_simplex_mesh,
                      const unsigned int n_refinements)
 {

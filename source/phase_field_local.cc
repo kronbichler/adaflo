@@ -50,7 +50,7 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 adaflo::PhaseFieldSolver<dim>::local_compute_force(
-  const MatrixFree<dim, double> &             data,
+  const MatrixFree<dim, double>              &data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
   const std::pair<unsigned int, unsigned int> &cell_range)
@@ -136,10 +136,10 @@ template <int dim>
 template <int ls_degree, int velocity_degree>
 void
 adaflo::PhaseFieldSolver<dim>::local_residual(
-  const MatrixFree<dim, double> &                        data,
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  const MatrixFree<dim, double>                         &data,
+  LinearAlgebra::distributed::BlockVector<double>       &dst,
   const LinearAlgebra::distributed::BlockVector<double> &src,
-  const std::pair<unsigned int, unsigned int> &          cell_range) const
+  const std::pair<unsigned int, unsigned int>           &cell_range) const
 {
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         c_values(data, 2, 2);
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1>         phi_values(data, 3, 2);
@@ -219,10 +219,10 @@ template <int dim>
 template <int ls_degree>
 void
 adaflo::PhaseFieldSolver<dim>::local_vmult(
-  const MatrixFree<dim, double> &                        data,
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  const MatrixFree<dim, double>                         &data,
+  LinearAlgebra::distributed::BlockVector<double>       &dst,
   const LinearAlgebra::distributed::BlockVector<double> &src,
-  const std::pair<unsigned int, unsigned int> &          cell_range) const
+  const std::pair<unsigned int, unsigned int>           &cell_range) const
 {
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> c_values(data, 2, 2);
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> phi_values(data, 3, 2);
@@ -278,10 +278,10 @@ template <int dim>
 template <int ls_degree>
 void
 adaflo::PhaseFieldSolver<dim>::local_mass(
-  const MatrixFree<dim, double> &                   data,
-  LinearAlgebra::distributed::Vector<double> &      dst,
+  const MatrixFree<dim, double>                    &data,
+  LinearAlgebra::distributed::Vector<double>       &dst,
   const LinearAlgebra::distributed::Vector<double> &src,
-  const std::pair<unsigned int, unsigned int> &     cell_range) const
+  const std::pair<unsigned int, unsigned int>      &cell_range) const
 {
   FEEvaluation<dim, ls_degree, 2 * ls_degree, 1> c_values(data, 2, 2);
   for (unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
@@ -302,7 +302,7 @@ template <int dim>
 template <int operation>
 void
 adaflo::PhaseFieldSolver<dim>::apply_contact_bc(
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  LinearAlgebra::distributed::BlockVector<double>       &dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   if (this->parameters.contact_angle == 0.)
@@ -316,8 +316,8 @@ adaflo::PhaseFieldSolver<dim>::apply_contact_bc(
   Vector<double>      local_dofs(this->fe->dofs_per_face);
   std::vector<double> evaluated;
   const unsigned int *indices  = &face_indices[0];
-  const double *      JxW      = &face_JxW[0];
-  double *            c_values = &face_evaluated_c[0];
+  const double       *JxW      = &face_JxW[0];
+  double             *c_values = &face_evaluated_c[0];
   for (unsigned int f = 0; f < n_faces; ++f)
     {
       const unsigned int n_face_q_points = face_JxW.size() / n_faces;
@@ -469,7 +469,7 @@ adaflo::PhaseFieldSolver<dim>::compute_residual()
 template <int dim>
 void
 adaflo::PhaseFieldSolver<dim>::vmult(
-  LinearAlgebra::distributed::BlockVector<double> &      dst,
+  LinearAlgebra::distributed::BlockVector<double>       &dst,
   const LinearAlgebra::distributed::BlockVector<double> &src) const
 {
   const unsigned int ls_degree = this->fe->degree;
@@ -509,7 +509,7 @@ adaflo::PhaseFieldSolver<dim>::vmult(
 template <int dim>
 void
 adaflo::PhaseFieldSolver<dim>::mass_vmult(
-  LinearAlgebra::distributed::Vector<double> &      dst,
+  LinearAlgebra::distributed::Vector<double>       &dst,
   const LinearAlgebra::distributed::Vector<double> &src) const
 {
   dst = 0.;

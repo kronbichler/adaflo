@@ -101,11 +101,11 @@ private:
   output_results() const;
 
   void
-  perform_data_exchange(std::vector<double> &        positions,
+  perform_data_exchange(std::vector<double>         &positions,
                         std::vector<Tensor<1, dim>> &velocities) const;
   template <int velocity_degree>
   void
-  local_compute_force(const MatrixFree<dim, double> &             data,
+  local_compute_force(const MatrixFree<dim, double>              &data,
                       LinearAlgebra::distributed::Vector<double> &dst,
                       const LinearAlgebra::distributed::Vector<double> &,
                       const std::pair<unsigned int, unsigned int> &cell_range) const;
@@ -176,7 +176,7 @@ PeriodicChannelProblem<dim>::output_results() const
 template <int dim>
 void
 PeriodicChannelProblem<dim>::perform_data_exchange(
-  std::vector<double> &        positions,
+  std::vector<double>         &positions,
   std::vector<Tensor<1, dim>> &velocities) const
 {
   // Exchange data with other processors
@@ -252,7 +252,7 @@ template <int dim>
 template <int velocity_degree>
 void
 PeriodicChannelProblem<dim>::local_compute_force(
-  const MatrixFree<dim, double> &             data,
+  const MatrixFree<dim, double>              &data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
   const std::pair<unsigned int, unsigned int> &cell_range) const

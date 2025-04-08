@@ -78,19 +78,19 @@ namespace adaflo
   {
   public:
     LevelSetOKZSolverComputeCurvature(
-      const AlignedVector<VectorizedArray<double>> &         cell_diameters,
+      const AlignedVector<VectorizedArray<double>>          &cell_diameters,
       const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field,
-      const AffineConstraints<double> &                      constraints_curvature,
-      const AffineConstraints<double> &                      constraints,
-      const double &                                         epsilon_used,
-      LinearAlgebra::distributed::Vector<double> &           system_rhs,
-      const LevelSetOKZSolverComputeCurvatureParameter &     parameters,
-      LinearAlgebra::distributed::Vector<double> &           solution_curvature,
-      const LinearAlgebra::distributed::Vector<double> &     solution_ls,
-      const MatrixFree<dim> &                                matrix_free,
-      const DiagonalPreconditioner<double> &                 preconditioner,
-      std::shared_ptr<BlockMatrixExtension> &                projection_matrix,
-      std::shared_ptr<BlockILUExtension> &                   ilu_projection_matrix);
+      const AffineConstraints<double>                       &constraints_curvature,
+      const AffineConstraints<double>                       &constraints,
+      const double                                          &epsilon_used,
+      LinearAlgebra::distributed::Vector<double>            &system_rhs,
+      const LevelSetOKZSolverComputeCurvatureParameter      &parameters,
+      LinearAlgebra::distributed::Vector<double>            &solution_curvature,
+      const LinearAlgebra::distributed::Vector<double>      &solution_ls,
+      const MatrixFree<dim>                                 &matrix_free,
+      const DiagonalPreconditioner<double>                  &preconditioner,
+      std::shared_ptr<BlockMatrixExtension>                 &projection_matrix,
+      std::shared_ptr<BlockILUExtension>                    &ilu_projection_matrix);
 
     virtual ~LevelSetOKZSolverComputeCurvature() = default;
 
@@ -98,7 +98,7 @@ namespace adaflo
     compute_curvature(const bool diffuse_large_values = false);
 
     void
-    compute_curvature_vmult(LinearAlgebra::distributed::Vector<double> &      dst,
+    compute_curvature_vmult(LinearAlgebra::distributed::Vector<double>       &dst,
                             const LinearAlgebra::distributed::Vector<double> &srcc,
                             const bool apply_diffusion) const;
 
@@ -107,17 +107,17 @@ namespace adaflo
     template <int ls_degree, int diffusion_setting>
     void
     local_compute_curvature(
-      const MatrixFree<dim, double> &                   data,
-      LinearAlgebra::distributed::Vector<double> &      dst,
+      const MatrixFree<dim, double>                    &data,
+      LinearAlgebra::distributed::Vector<double>       &dst,
       const LinearAlgebra::distributed::Vector<double> &src,
-      const std::pair<unsigned int, unsigned int> &     cell_range) const;
+      const std::pair<unsigned int, unsigned int>      &cell_range) const;
     template <int ls_degree>
     void
     local_compute_curvature_rhs(
-      const MatrixFree<dim, double> &                   data,
-      LinearAlgebra::distributed::Vector<double> &      dst,
+      const MatrixFree<dim, double>                    &data,
+      LinearAlgebra::distributed::Vector<double>       &dst,
       const LinearAlgebra::distributed::Vector<double> &src,
-      const std::pair<unsigned int, unsigned int> &     cell_range) const;
+      const std::pair<unsigned int, unsigned int>      &cell_range) const;
 
     /**
      * Parameters
@@ -127,15 +127,15 @@ namespace adaflo
     /**
      * Vector section
      */
-    LinearAlgebra::distributed::Vector<double> &           solution_curvature;  // [i]
-    LinearAlgebra::distributed::Vector<double> &           rhs;                 // [-]
-    const LinearAlgebra::distributed::Vector<double> &     solution_ls;         // [i]
+    LinearAlgebra::distributed::Vector<double>            &solution_curvature;  // [i]
+    LinearAlgebra::distributed::Vector<double>            &rhs;                 // [-]
+    const LinearAlgebra::distributed::Vector<double>      &solution_ls;         // [i]
     const LinearAlgebra::distributed::BlockVector<double> &normal_vector_field; // [i]
 
     /**
      * MatrixFree
      */
-    const MatrixFree<dim> &          matrix_free;           // [i]
+    const MatrixFree<dim>           &matrix_free;           // [i]
     const AffineConstraints<double> &constraints_curvature; // [i]
     const AffineConstraints<double> &constraints;           // [i]
 
@@ -143,14 +143,14 @@ namespace adaflo
      * Physics section
      */
     const AlignedVector<VectorizedArray<double>> &cell_diameters; // [i]
-    const double &                                epsilon_used;   // [i]
+    const double                                 &epsilon_used;   // [i]
 
     /**
      * Solver section
      */
-    const DiagonalPreconditioner<double> & preconditioner;        // [i]
+    const DiagonalPreconditioner<double>  &preconditioner;        // [i]
     std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
-    std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
+    std::shared_ptr<BlockILUExtension>    &ilu_projection_matrix; // [i]
   };
 } // namespace adaflo
 

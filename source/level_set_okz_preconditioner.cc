@@ -60,14 +60,14 @@ template <int dim, typename Number, typename VectorizedArrayType>
 void
 adaflo::initialize_projection_matrix(
   const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
-  const AffineConstraints<Number> &                   constraints_normals,
+  const AffineConstraints<Number>                    &constraints_normals,
   const unsigned int                                  dof_index,
   const unsigned int                                  quad_index,
-  const Number &                                      epsilon_used,
-  const Number &                                      epsilon,
-  const AlignedVector<VectorizedArrayType> &          cell_diameters,
-  adaflo::BlockMatrixExtension &                      projection_matrix,
-  adaflo::BlockILUExtension &                         ilu_projection_matrix)
+  const Number                                       &epsilon_used,
+  const Number                                       &epsilon,
+  const AlignedVector<VectorizedArrayType>           &cell_diameters,
+  adaflo::BlockMatrixExtension                       &projection_matrix,
+  adaflo::BlockILUExtension                          &ilu_projection_matrix)
 {
   const auto &dof_handler = matrix_free.get_dof_handler(dof_index);
   const auto &fe          = dof_handler.get_fe();
@@ -130,7 +130,7 @@ adaflo::initialize_projection_matrix(
 #define OPERATION(c_degree, u_degree)                                                   \
   const unsigned int n_q_points = c_degree == -1 ? 0 : 2 * c_degree;                    \
   FEEvaluation<dim, c_degree, n_q_points, 1, double> phi(data, dof_index, quad_index);  \
-  AssemblyData::Data &                               scratch = scratch_data->get();     \
+  AssemblyData::Data                                &scratch = scratch_data->get();     \
                                                                                         \
   const VectorizedArray<double> min_diameter =                                          \
     make_vectorized_array(epsilon_used / epsilon);                                      \
@@ -186,35 +186,35 @@ adaflo::initialize_projection_matrix(
 template void
 adaflo::initialize_projection_matrix<1, double, VectorizedArray<double>>(
   const MatrixFree<1, double, VectorizedArray<double>> &matrix_free,
-  const AffineConstraints<double> &                     constraints_normals,
+  const AffineConstraints<double>                      &constraints_normals,
   const unsigned int                                    dof_index,
   const unsigned int                                    quad_index,
-  const double &                                        epsilon_used,
-  const double &                                        epsilon,
-  const AlignedVector<VectorizedArray<double>> &        cell_diameters,
-  BlockMatrixExtension &                                projection_matrix,
-  BlockILUExtension &                                   ilu_projection_matrix);
+  const double                                         &epsilon_used,
+  const double                                         &epsilon,
+  const AlignedVector<VectorizedArray<double>>         &cell_diameters,
+  BlockMatrixExtension                                 &projection_matrix,
+  BlockILUExtension                                    &ilu_projection_matrix);
 
 template void
 adaflo::initialize_projection_matrix<2, double, VectorizedArray<double>>(
   const MatrixFree<2, double, VectorizedArray<double>> &matrix_free,
-  const AffineConstraints<double> &                     constraints_normals,
+  const AffineConstraints<double>                      &constraints_normals,
   const unsigned int                                    dof_index,
   const unsigned int                                    quad_index,
-  const double &                                        epsilon_used,
-  const double &                                        epsilon,
-  const AlignedVector<VectorizedArray<double>> &        cell_diameters,
-  BlockMatrixExtension &                                projection_matrix,
-  BlockILUExtension &                                   ilu_projection_matrix);
+  const double                                         &epsilon_used,
+  const double                                         &epsilon,
+  const AlignedVector<VectorizedArray<double>>         &cell_diameters,
+  BlockMatrixExtension                                 &projection_matrix,
+  BlockILUExtension                                    &ilu_projection_matrix);
 
 template void
 adaflo::initialize_projection_matrix<3, double, VectorizedArray<double>>(
   const MatrixFree<3, double, VectorizedArray<double>> &matrix_free,
-  const AffineConstraints<double> &                     constraints_normals,
+  const AffineConstraints<double>                      &constraints_normals,
   const unsigned int                                    dof_index,
   const unsigned int                                    quad_index,
-  const double &                                        epsilon_used,
-  const double &                                        epsilon,
-  const AlignedVector<VectorizedArray<double>> &        cell_diameters,
-  BlockMatrixExtension &                                projection_matrix,
-  BlockILUExtension &                                   ilu_projection_matrix);
+  const double                                         &epsilon_used,
+  const double                                         &epsilon,
+  const AlignedVector<VectorizedArray<double>>         &cell_diameters,
+  BlockMatrixExtension                                 &projection_matrix,
+  BlockILUExtension                                    &ilu_projection_matrix);

@@ -126,7 +126,7 @@ MicroFluidicProblem<dim>::evaluate_spurious_velocities(
                                           parameters.velocity_degree + 2);
   const unsigned int   n_q_points = quadrature_formula.size();
 
-  const MPI_Comm &            mpi_communicator = triangulation.get_communicator();
+  const MPI_Comm             &mpi_communicator = triangulation.get_communicator();
   FEValues<dim>               fe_values(navier_stokes_solver.get_fe_u(),
                           quadrature_formula,
                           update_values);

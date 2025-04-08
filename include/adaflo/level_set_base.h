@@ -32,7 +32,7 @@ namespace adaflo
   {
   public:
     LevelSetBaseAlgorithm(const FlowParameters &parameters,
-                          Triangulation<dim> &  triangulation);
+                          Triangulation<dim>   &triangulation);
     virtual ~LevelSetBaseAlgorithm()
     {}
 
@@ -55,8 +55,8 @@ namespace adaflo
 
   protected:
     virtual void
-    evaluate_heaviside_function(FEValues<dim> &              fe_values,
-                                std::vector<double> &        cell_heaviside,
+    evaluate_heaviside_function(FEValues<dim>               &fe_values,
+                                std::vector<double>         &cell_heaviside,
                                 std::vector<Tensor<1, dim>> &cell_delta) const override
     {
       for (unsigned int d = 0; d < dim; ++d)

@@ -82,7 +82,7 @@ adaflo::DiagonalPreconditioner<Number>::reinit(
 template <typename Number>
 void
 adaflo::DiagonalPreconditioner<Number>::vmult(
-  LinearAlgebra::distributed::Vector<Number> &      dst,
+  LinearAlgebra::distributed::Vector<Number>       &dst,
   const LinearAlgebra::distributed::Vector<Number> &src) const
 {
   AssertDimension(diagonal_vector.size(), src.size());
@@ -99,7 +99,7 @@ adaflo::DiagonalPreconditioner<Number>::vmult(
 template <typename Number>
 void
 adaflo::DiagonalPreconditioner<Number>::vmult(
-  LinearAlgebra::distributed::BlockVector<Number> &      dst,
+  LinearAlgebra::distributed::BlockVector<Number>       &dst,
   const LinearAlgebra::distributed::BlockVector<Number> &src) const
 {
   if (inverse_diagonal_block_vector.n_blocks() > 0)

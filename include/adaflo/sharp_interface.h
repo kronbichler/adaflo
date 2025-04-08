@@ -62,14 +62,14 @@ namespace adaflo
 
     LevelSetSolver(
       const Triangulation<dim> &tria,
-      const Function<dim> &     initial_values_ls,
-      const FlowParameters &    parameters,
-      const TimeStepping &      time_stepping,
-      VectorType &              velocity_solution,
-      VectorType &              velocity_solution_old,
-      VectorType &              velocity_solution_old_old,
+      const Function<dim>      &initial_values_ls,
+      const FlowParameters     &parameters,
+      const TimeStepping       &time_stepping,
+      VectorType               &velocity_solution,
+      VectorType               &velocity_solution_old,
+      VectorType               &velocity_solution_old_old,
       const std::map<types::boundary_id, std::shared_ptr<Function<dim>>> &fluid_type,
-      const std::set<types::boundary_id> &                                symmetry)
+      const std::set<types::boundary_id>                                 &symmetry)
       : pcout(std::cout, Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
       , parameters(parameters)
       , time_stepping(time_stepping)
@@ -429,7 +429,7 @@ namespace adaflo
 
     ConditionalOStream    pcout;
     const FlowParameters &parameters;
-    const TimeStepping &  time_stepping;
+    const TimeStepping   &time_stepping;
 
 
     std::pair<double, double>              last_concentration_range;
@@ -506,7 +506,7 @@ namespace adaflo
   public:
     using VectorType = LinearAlgebra::distributed::Vector<double>;
 
-    FrontTrackingSolver(NavierStokes<dim> &          navier_stokes_solver,
+    FrontTrackingSolver(NavierStokes<dim>           &navier_stokes_solver,
                         Triangulation<dim - 1, dim> &surface_mesh)
       : navier_stokes_solver(navier_stokes_solver)
       , surface_dofhandler_dim(surface_mesh)
@@ -756,9 +756,9 @@ namespace adaflo
   public:
     using VectorType = LinearAlgebra::distributed::Vector<double>;
 
-    MixedLevelSetSolver(NavierStokes<dim> &          navier_stokes_solver,
+    MixedLevelSetSolver(NavierStokes<dim>           &navier_stokes_solver,
                         Triangulation<dim - 1, dim> &surface_mesh,
-                        const Function<dim> &        initial_values_ls)
+                        const Function<dim>         &initial_values_ls)
       : use_auxiliary_surface_mesh(true)
       , use_sharp_interface(true)
       , navier_stokes_solver(navier_stokes_solver)
@@ -794,7 +794,7 @@ namespace adaflo
       this->update_surface_tension();
     }
 
-    MixedLevelSetSolver(NavierStokes<dim> &  navier_stokes_solver,
+    MixedLevelSetSolver(NavierStokes<dim>   &navier_stokes_solver,
                         const Function<dim> &initial_values_ls,
                         const bool           use_sharp_interface = true)
       : use_auxiliary_surface_mesh(false)
@@ -1064,7 +1064,7 @@ namespace adaflo
     const bool use_sharp_interface;
 
     // background mesh
-    NavierStokes<dim> & navier_stokes_solver;
+    NavierStokes<dim>  &navier_stokes_solver;
     LevelSetSolver<dim> level_set_solver;
 
     // surface mesh

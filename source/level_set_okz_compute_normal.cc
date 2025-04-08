@@ -52,18 +52,18 @@ using namespace dealii;
 
 template <int dim>
 adaflo::LevelSetOKZSolverComputeNormal<dim>::LevelSetOKZSolverComputeNormal(
-  BlockVectorType &                              normal_vector_field,
-  BlockVectorType &                              normal_vector_rhs,
-  const VectorType &                             level_set_field,
-  const AlignedVector<VectorizedArray<double>> & cell_diameters,
-  const double &                                 epsilon_used,
-  const double &                                 minimal_edge_length,
-  const AffineConstraints<double> &              constraints_normals,
+  BlockVectorType                               &normal_vector_field,
+  BlockVectorType                               &normal_vector_rhs,
+  const VectorType                              &level_set_field,
+  const AlignedVector<VectorizedArray<double>>  &cell_diameters,
+  const double                                  &epsilon_used,
+  const double                                  &minimal_edge_length,
+  const AffineConstraints<double>               &constraints_normals,
   const LevelSetOKZSolverComputeNormalParameter &parameters,
-  const MatrixFree<dim> &                        matrix_free,
-  const DiagonalPreconditioner<double> &         preconditioner,
-  const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
-  const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix)
+  const MatrixFree<dim>                         &matrix_free,
+  const DiagonalPreconditioner<double>          &preconditioner,
+  const std::shared_ptr<BlockMatrixExtension>   &projection_matrix,
+  const std::shared_ptr<BlockILUExtension>      &ilu_projection_matrix)
   : parameters(parameters)
   , normal_vector_field(normal_vector_field)
   , normal_vector_rhs(normal_vector_rhs)
@@ -83,10 +83,10 @@ template <int dim>
 template <int ls_degree, typename Number>
 void
 adaflo::LevelSetOKZSolverComputeNormal<dim>::local_compute_normal(
-  const MatrixFree<dim, Number> &                        data,
-  LinearAlgebra::distributed::BlockVector<Number> &      dst,
+  const MatrixFree<dim, Number>                         &data,
+  LinearAlgebra::distributed::BlockVector<Number>       &dst,
   const LinearAlgebra::distributed::BlockVector<Number> &src,
-  const std::pair<unsigned int, unsigned int> &          cell_range) const
+  const std::pair<unsigned int, unsigned int>           &cell_range) const
 {
   // The second input argument below refers to which constrains should be used,
   // 4 means constraints_normals
@@ -125,7 +125,7 @@ template <int ls_degree>
 void
 adaflo::LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
   const MatrixFree<dim, double> &data,
-  BlockVectorType &              dst,
+  BlockVectorType               &dst,
   const VectorType &,
   const std::pair<unsigned int, unsigned int> &cell_range) const
 {
@@ -160,7 +160,7 @@ adaflo::LevelSetOKZSolverComputeNormal<dim>::local_compute_normal_rhs(
 template <int dim>
 void
 adaflo::LevelSetOKZSolverComputeNormal<dim>::compute_normal_vmult(
-  BlockVectorType &      dst,
+  BlockVectorType       &dst,
   const BlockVectorType &src) const
 {
   dst = 0.;
@@ -193,7 +193,7 @@ struct ComputeNormalMatrix
 
   template <typename Number>
   void
-  vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
+  vmult(LinearAlgebra::distributed::BlockVector<Number>       &dst,
         const LinearAlgebra::distributed::BlockVector<Number> &src) const
   {
     problem.compute_normal_vmult(dst, src);

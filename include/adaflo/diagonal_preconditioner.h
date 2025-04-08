@@ -43,10 +43,10 @@ namespace adaflo
     void
     reinit(const LinearAlgebra::distributed::BlockVector<Number> &diagonal_vector_in);
     void
-    vmult(LinearAlgebra::distributed::Vector<Number> &      dst,
+    vmult(LinearAlgebra::distributed::Vector<Number>       &dst,
           const LinearAlgebra::distributed::Vector<Number> &src) const;
     void
-    vmult(LinearAlgebra::distributed::BlockVector<Number> &      dst,
+    vmult(LinearAlgebra::distributed::BlockVector<Number>       &dst,
           const LinearAlgebra::distributed::BlockVector<Number> &src) const;
     const LinearAlgebra::distributed::Vector<Number> &
     get_inverse_vector() const
