@@ -333,7 +333,7 @@ namespace adaflo
 
 
 template <int dim>
-inline const FiniteElement<dim> &
+inline const dealii::FiniteElement<dim> &
 adaflo::NavierStokes<dim>::get_fe_u() const
 {
   return fe_u;
@@ -342,7 +342,7 @@ adaflo::NavierStokes<dim>::get_fe_u() const
 
 
 template <int dim>
-inline const FiniteElement<dim> &
+inline const dealii::FiniteElement<dim> &
 adaflo::NavierStokes<dim>::get_fe_p() const
 {
   // We get simpler code by using FESystem, but we want to pretend we have a
@@ -353,7 +353,7 @@ adaflo::NavierStokes<dim>::get_fe_p() const
 
 
 template <int dim>
-inline const DoFHandler<dim> &
+inline const dealii::DoFHandler<dim> &
 adaflo::NavierStokes<dim>::get_dof_handler_u() const
 {
   return dof_handler_u;
@@ -362,7 +362,7 @@ adaflo::NavierStokes<dim>::get_dof_handler_u() const
 
 
 template <int dim>
-inline const DoFHandler<dim> &
+inline const dealii::DoFHandler<dim> &
 adaflo::NavierStokes<dim>::get_dof_handler_p() const
 {
   return dof_handler_p;
@@ -371,7 +371,7 @@ adaflo::NavierStokes<dim>::get_dof_handler_p() const
 
 
 template <int dim>
-inline const AffineConstraints<double> &
+inline const dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::get_constraints_u() const
 {
   return constraints_u;
@@ -380,7 +380,7 @@ adaflo::NavierStokes<dim>::get_constraints_u() const
 
 
 template <int dim>
-inline AffineConstraints<double> &
+inline dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::modify_constraints_u()
 {
   return constraints_u;
@@ -389,7 +389,7 @@ adaflo::NavierStokes<dim>::modify_constraints_u()
 
 
 template <int dim>
-inline const AffineConstraints<double> &
+inline const dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::get_hanging_node_constraints_u() const
 {
   return hanging_node_constraints_u;
@@ -398,7 +398,7 @@ adaflo::NavierStokes<dim>::get_hanging_node_constraints_u() const
 
 
 template <int dim>
-inline const AffineConstraints<double> &
+inline const dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::get_constraints_p() const
 {
   return constraints_p;
@@ -407,7 +407,7 @@ adaflo::NavierStokes<dim>::get_constraints_p() const
 
 
 template <int dim>
-inline const AffineConstraints<double> &
+inline const dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::get_hanging_node_constraints_p() const
 {
   return hanging_node_constraints_p;
@@ -416,7 +416,7 @@ adaflo::NavierStokes<dim>::get_hanging_node_constraints_p() const
 
 
 template <int dim>
-inline AffineConstraints<double> &
+inline dealii::AffineConstraints<double> &
 adaflo::NavierStokes<dim>::modify_constraints_p()
 {
   return constraints_p;
@@ -436,9 +436,9 @@ adaflo::NavierStokes<dim>::get_parameters() const
 template <int dim>
 inline void
 adaflo::NavierStokes<dim>::set_face_average_density(
-  const typename Triangulation<dim>::cell_iterator &cell,
-  const unsigned int                                face,
-  const double                                      density)
+  const typename dealii::Triangulation<dim>::cell_iterator &cell,
+  const unsigned int                                        face,
+  const double                                              density)
 {
   preconditioner.set_face_average_density(cell, face, density);
 }
