@@ -18,7 +18,10 @@
 #include <adaflo/parameters.h>
 
 
-FlowParameters::FlowParameters()
+using namespace dealii;
+
+
+adaflo::FlowParameters::FlowParameters()
   : dimension(numbers::invalid_unsigned_int)
 {
   // do nothing
@@ -26,7 +29,7 @@ FlowParameters::FlowParameters()
 
 
 
-FlowParameters::FlowParameters(const std::string &parameter_filename)
+adaflo::FlowParameters::FlowParameters(const std::string &parameter_filename)
 {
   ParameterHandler prm;
   FlowParameters::declare_parameters(prm);
@@ -37,8 +40,8 @@ FlowParameters::FlowParameters(const std::string &parameter_filename)
 
 
 void
-FlowParameters::check_for_file(const std::string &parameter_filename,
-                               ParameterHandler & /*prm*/) const
+adaflo::FlowParameters::check_for_file(const std::string &parameter_filename,
+                                       ParameterHandler & /*prm*/) const
 {
   std::ifstream parameter_file(parameter_filename.c_str());
 
@@ -56,7 +59,7 @@ FlowParameters::check_for_file(const std::string &parameter_filename,
 
 
 void
-FlowParameters::declare_parameters(ParameterHandler &prm)
+adaflo::FlowParameters::declare_parameters(ParameterHandler &prm)
 {
   prm.enter_subsection("Navier-Stokes");
   prm.declare_entry("dimension",
@@ -418,7 +421,8 @@ FlowParameters::declare_parameters(ParameterHandler &prm)
 
 
 void
-FlowParameters::parse_parameters(const std::string parameter_file, ParameterHandler &prm)
+adaflo::FlowParameters::parse_parameters(const std::string parameter_file,
+                                         ParameterHandler &prm)
 {
   try
     {
@@ -444,7 +448,7 @@ FlowParameters::parse_parameters(const std::string parameter_file, ParameterHand
 }
 
 void
-FlowParameters::parse_parameters(ParameterHandler &prm)
+adaflo::FlowParameters::parse_parameters(ParameterHandler &prm)
 {
   prm.enter_subsection("Navier-Stokes");
 

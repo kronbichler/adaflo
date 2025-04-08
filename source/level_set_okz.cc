@@ -55,8 +55,8 @@ using namespace dealii;
 
 
 template <int dim>
-LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
-                                          Triangulation<dim> &  tria_in)
+adaflo::LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
+                                                  Triangulation<dim> &  tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
   , first_reinit_step(true)
 {
@@ -200,7 +200,7 @@ LevelSetOKZSolver<dim>::LevelSetOKZSolver(const FlowParameters &parameters_in,
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::transform_distance_function(
+adaflo::LevelSetOKZSolver<dim>::transform_distance_function(
   LinearAlgebra::distributed::Vector<double> &vector) const
 {
   Assert(this->epsilon_used > 0, ExcInternalError());
@@ -213,7 +213,7 @@ LevelSetOKZSolver<dim>::transform_distance_function(
 // @sect4{LevelSetOKZSolver::make_grid_and_dofs}
 template <int dim>
 void
-LevelSetOKZSolver<dim>::initialize_data_structures()
+adaflo::LevelSetOKZSolver<dim>::initialize_data_structures()
 {
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
 
@@ -238,7 +238,7 @@ LevelSetOKZSolver<dim>::initialize_data_structures()
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::local_projection_matrix(
+adaflo::LevelSetOKZSolver<dim>::local_projection_matrix(
   const MatrixFree<dim> &                                           data,
   std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch,
   const unsigned int &,
@@ -262,7 +262,7 @@ LevelSetOKZSolver<dim>::local_projection_matrix(
 template <int dim>
 template <int ls_degree>
 void
-LevelSetOKZSolver<dim>::local_projection_matrix(
+adaflo::LevelSetOKZSolver<dim>::local_projection_matrix(
   const MatrixFree<dim> &                                           data,
   std::shared_ptr<Threads::ThreadLocalStorage<AssemblyData::Data>> &scratch_data,
   const std::pair<unsigned int, unsigned int> &                     cell_range)
@@ -317,7 +317,7 @@ LevelSetOKZSolver<dim>::local_projection_matrix(
 template <int dim>
 template <int ls_degree, int velocity_degree>
 void
-LevelSetOKZSolver<dim>::local_compute_force(
+adaflo::LevelSetOKZSolver<dim>::local_compute_force(
   const MatrixFree<dim, double> &             data,
   LinearAlgebra::distributed::Vector<double> &dst,
   const LinearAlgebra::distributed::Vector<double> &,
@@ -410,7 +410,7 @@ LevelSetOKZSolver<dim>::local_compute_force(
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_force()
+adaflo::LevelSetOKZSolver<dim>::compute_force()
 {
   compute_heaviside();
   compute_curvature();
@@ -436,7 +436,7 @@ LevelSetOKZSolver<dim>::compute_force()
 // @sect4{LevelSetOKZSolver::advance_concentration}
 template <int dim>
 void
-LevelSetOKZSolver<dim>::advance_concentration()
+adaflo::LevelSetOKZSolver<dim>::advance_concentration()
 {
   TimerOutput::Scope timer(*this->timer, "LS advance concentration.");
   advection_operator->advance_concentration(this->time_stepping.step_size());
@@ -447,7 +447,7 @@ LevelSetOKZSolver<dim>::advance_concentration()
 // @sect4{LevelSetOKZSolver::compute_normal}
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
+adaflo::LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
 {
   TimerOutput::Scope timer(*this->timer, "LS compute normal.");
   normal_operator->compute_normal(fast_computation);
@@ -458,7 +458,7 @@ LevelSetOKZSolver<dim>::compute_normal(const bool fast_computation)
 // @sect4{LevelSetOKZSolver::compute_normal}
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
+adaflo::LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 {
   // This function computes the curvature from the normal field. Could also
   // compute the curvature directly from C, but that is less accurate. TODO:
@@ -478,7 +478,7 @@ LevelSetOKZSolver<dim>::compute_curvature(const bool diffuse_large_values)
 // elements now
 template <int dim>
 void
-LevelSetOKZSolver<dim>::compute_heaviside()
+adaflo::LevelSetOKZSolver<dim>::compute_heaviside()
 {
   TimerOutput::Scope timer(*this->timer, "LS compute Heaviside.");
   const double       cutoff = std::tanh(2);
@@ -491,7 +491,7 @@ LevelSetOKZSolver<dim>::compute_heaviside()
                                                  endc = this->dof_handler.end();
   for (; cell != endc; ++cell)
     if (cell->is_locally_owned()) // Check if the cell is owned by the local
-                                  // processor
+      // processor
       {
         cell->get_dof_indices(local_dof_indices);
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -543,9 +543,10 @@ LevelSetOKZSolver<dim>::compute_heaviside()
 
 template <int dim>
 void
-LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
-                                     const unsigned int diff_steps,
-                                     const bool diffuse_cells_with_large_curvature_only)
+adaflo::LevelSetOKZSolver<dim>::reinitialize(
+  const unsigned int stab_steps,
+  const unsigned int diff_steps,
+  const bool         diffuse_cells_with_large_curvature_only)
 {
   (void)diffuse_cells_with_large_curvature_only;
 
@@ -559,6 +560,5 @@ LevelSetOKZSolver<dim>::reinitialize(const unsigned int stab_steps,
 }
 
 
-
-template class LevelSetOKZSolver<2>;
-template class LevelSetOKZSolver<3>;
+template class adaflo::LevelSetOKZSolver<2>;
+template class adaflo::LevelSetOKZSolver<3>;

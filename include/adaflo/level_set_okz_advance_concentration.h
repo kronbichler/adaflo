@@ -26,158 +26,162 @@
 #include <adaflo/time_stepping.h>
 #include <adaflo/util.h>
 
-using namespace dealii;
 
-/**
- * Parameters of the advection-concentration operator.
- */
-struct LevelSetOKZSolverAdvanceConcentrationParameter
+namespace adaflo
 {
-  /**
-   * TODO
-   */
-  unsigned int dof_index_ls;
+  using namespace dealii;
 
   /**
-   * TODO
+   * Parameters of the advection-concentration operator.
    */
-  unsigned int dof_index_vel;
+  struct LevelSetOKZSolverAdvanceConcentrationParameter
+  {
+    /**
+     * TODO
+     */
+    unsigned int dof_index_ls;
+
+    /**
+     * TODO
+     */
+    unsigned int dof_index_vel;
+
+    /**
+     * TODO
+     */
+    unsigned int quad_index;
+
+    /**
+     * TODO
+     */
+    bool convection_stabilization;
+
+    /**
+     * TODO
+     */
+    bool do_iteration;
+
+    /**
+     * TODO
+     */
+    double tol_nl_iteration;
+
+    /**
+     * TODO
+     */
+    TimeSteppingParameters time;
+  };
 
   /**
-   * TODO
+   * Boundary descriptors of the advection-concentration operator.
    */
-  unsigned int quad_index;
+  template <int dim>
+  struct LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor
+  {
+    /**
+     * TODO
+     */
+    std::map<types::boundary_id, std::shared_ptr<Function<dim>>> dirichlet;
 
-  /**
-   * TODO
-   */
-  bool convection_stabilization;
+    /**
+     * TODO
+     */
+    std::set<types::boundary_id> symmetry;
+  };
 
-  /**
-   * TODO
-   */
-  bool do_iteration;
+  template <int dim>
+  class LevelSetOKZSolverAdvanceConcentration
+  {
+  public:
+    using VectorType = LinearAlgebra::distributed::Vector<double>;
 
-  /**
-   * TODO
-   */
-  double tol_nl_iteration;
+    LevelSetOKZSolverAdvanceConcentration(
+      VectorType &                                  solution,
+      const VectorType &                            solution_old,
+      const VectorType &                            solution_old_old,
+      VectorType &                                  increment,
+      VectorType &                                  rhs,
+      const VectorType &                            vel_solution,
+      const VectorType &                            vel_solution_old,
+      const VectorType &                            vel_solution_old_old,
+      const AlignedVector<VectorizedArray<double>> &cell_diameters,
+      const AffineConstraints<double> &             constraints,
+      const ConditionalOStream &                    pcout,
+      const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
+      const MatrixFree<dim> &                                             matrix_free,
+      const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
+      const DiagonalPreconditioner<double> &                              preconditioner);
 
-  /**
-   * TODO
-   */
-  TimeSteppingParameters time;
-};
+    virtual ~LevelSetOKZSolverAdvanceConcentration() = default;
 
-/**
- * Boundary descriptors of the advection-concentration operator.
- */
-template <int dim>
-struct LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor
-{
-  /**
-   * TODO
-   */
-  std::map<types::boundary_id, std::shared_ptr<Function<dim>>> dirichlet;
+    virtual void
+    advance_concentration(const double dt);
 
-  /**
-   * TODO
-   */
-  std::set<types::boundary_id> symmetry;
-};
+    void
+    advance_concentration_vmult(VectorType &dst, const VectorType &src) const;
 
-template <int dim>
-class LevelSetOKZSolverAdvanceConcentration
-{
-public:
-  using VectorType = LinearAlgebra::distributed::Vector<double>;
+  private:
+    template <int ls_degree, int velocity_degree>
+    void
+    local_advance_concentration(
+      const MatrixFree<dim, double> &              data,
+      VectorType &                                 dst,
+      const VectorType &                           src,
+      const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  LevelSetOKZSolverAdvanceConcentration(
-    VectorType &                                  solution,
-    const VectorType &                            solution_old,
-    const VectorType &                            solution_old_old,
-    VectorType &                                  increment,
-    VectorType &                                  rhs,
-    const VectorType &                            vel_solution,
-    const VectorType &                            vel_solution_old,
-    const VectorType &                            vel_solution_old_old,
-    const AlignedVector<VectorizedArray<double>> &cell_diameters,
-    const AffineConstraints<double> &             constraints,
-    const ConditionalOStream &                    pcout,
-    const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> &boundary,
-    const MatrixFree<dim> &                                             matrix_free,
-    const LevelSetOKZSolverAdvanceConcentrationParameter &              parameters,
-    const DiagonalPreconditioner<double> &                              preconditioner);
+    template <int ls_degree, int velocity_degree>
+    void
+    local_advance_concentration_rhs(
+      const MatrixFree<dim, double> &              data,
+      VectorType &                                 dst,
+      const VectorType &                           src,
+      const std::pair<unsigned int, unsigned int> &cell_range);
 
-  virtual ~LevelSetOKZSolverAdvanceConcentration() = default;
+    /**
+     * Parameters
+     */
+    const LevelSetOKZSolverAdvanceConcentrationParameter parameters; // [i]
 
-  virtual void
-  advance_concentration(const double dt);
+    /**
+     * Vector section
+     */
+    VectorType &      solution;         // [o] new ls solution
+    const VectorType &solution_old;     // [i] old ls solution
+    const VectorType &solution_old_old; // [i] old ls solution
+    VectorType &      increment;        // [-] temp
+    VectorType &      rhs;              // [-] temp
 
-  void
-  advance_concentration_vmult(VectorType &dst, const VectorType &src) const;
+    const VectorType &vel_solution;         // [i] new velocity solution
+    const VectorType &vel_solution_old;     // [i] old velocity solution
+    const VectorType &vel_solution_old_old; // [i] old velocity solution
 
-private:
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration(
-    const MatrixFree<dim, double> &              data,
-    VectorType &                                 dst,
-    const VectorType &                           src,
-    const std::pair<unsigned int, unsigned int> &cell_range) const;
+    /**
+     * MatrixFree
+     */
+    const MatrixFree<dim> &          matrix_free; // [i]
+    const AffineConstraints<double> &constraints; // [i]
 
-  template <int ls_degree, int velocity_degree>
-  void
-  local_advance_concentration_rhs(
-    const MatrixFree<dim, double> &              data,
-    VectorType &                                 dst,
-    const VectorType &                           src,
-    const std::pair<unsigned int, unsigned int> &cell_range);
+    /**
+     * Utility
+     */
+    const ConditionalOStream &pcout;         // [i]
+    TimeStepping              time_stepping; // [i]
 
-  /**
-   * Parameters
-   */
-  const LevelSetOKZSolverAdvanceConcentrationParameter parameters; // [i]
+    /**
+     * Physics section
+     */
+    double                                        global_omega_diameter;           // [i]
+    const AlignedVector<VectorizedArray<double>> &cell_diameters;                  // [i]
+    const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
+    AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
+    double                                                 global_max_velocity;    // [o]
+    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;   // [o]
 
-  /**
-   * Vector section
-   */
-  VectorType &      solution;         // [o] new ls solution
-  const VectorType &solution_old;     // [i] old ls solution
-  const VectorType &solution_old_old; // [i] old ls solution
-  VectorType &      increment;        // [-] temp
-  VectorType &      rhs;              // [-] temp
-
-  const VectorType &vel_solution;         // [i] new velocity solution
-  const VectorType &vel_solution_old;     // [i] old velocity solution
-  const VectorType &vel_solution_old_old; // [i] old velocity solution
-
-  /**
-   * MatrixFree
-   */
-  const MatrixFree<dim> &          matrix_free; // [i]
-  const AffineConstraints<double> &constraints; // [i]
-
-  /**
-   * Utility
-   */
-  const ConditionalOStream &pcout;         // [i]
-  TimeStepping              time_stepping; // [i]
-
-  /**
-   * Physics section
-   */
-  double                                        global_omega_diameter;           // [i]
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;                  // [i]
-  const LevelSetOKZSolverAdvanceConcentrationBoundaryDescriptor<dim> boundary;   // [i]
-  AlignedVector<VectorizedArray<double>>                 artificial_viscosities; // [-]
-  double                                                 global_max_velocity;    // [o]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_convection;   // [o]
-
-  /**
-   * Solver section
-   */
-  const DiagonalPreconditioner<double> &preconditioner; // [i] preconditioner
-};
+    /**
+     * Solver section
+     */
+    const DiagonalPreconditioner<double> &preconditioner; // [i] preconditioner
+  };
+} // namespace adaflo
 
 #endif

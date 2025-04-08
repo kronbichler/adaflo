@@ -50,7 +50,7 @@
 #include <iostream>
 
 using namespace dealii;
-
+using namespace adaflo;
 
 
 // @sect4{Inflow}

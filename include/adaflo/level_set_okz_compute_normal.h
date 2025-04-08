@@ -26,118 +26,123 @@
 #include <adaflo/navier_stokes.h>
 
 
-using namespace dealii;
-
-/**
- * Parameters of the advection-concentration operator.
- */
-struct LevelSetOKZSolverComputeNormalParameter
+namespace adaflo
 {
-  /**
-   * TODO
-   */
-  unsigned int dof_index_ls;
+  using namespace dealii;
+
 
   /**
-   * TODO
+   * Parameters of the advection-concentration operator.
    */
-  unsigned int dof_index_normal;
+  struct LevelSetOKZSolverComputeNormalParameter
+  {
+    /**
+     * TODO
+     */
+    unsigned int dof_index_ls;
 
-  /**
-   * TODO
-   */
-  unsigned int quad_index;
+    /**
+     * TODO
+     */
+    unsigned int dof_index_normal;
 
-  /**
-   * TODO
-   */
-  double epsilon;
+    /**
+     * TODO
+     */
+    unsigned int quad_index;
 
-  /**
-   * TODO
-   */
-  bool approximate_projections;
-  /**
-   * TODO
-   */
-  double damping_scale_factor = 4.0;
-};
+    /**
+     * TODO
+     */
+    double epsilon;
 
-template <int dim>
-class LevelSetOKZSolverComputeNormal
-{
-public:
-  using VectorType      = LinearAlgebra::distributed::Vector<double>;
-  using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
+    /**
+     * TODO
+     */
+    bool approximate_projections;
+    /**
+     * TODO
+     */
+    double damping_scale_factor = 4.0;
+  };
 
-  LevelSetOKZSolverComputeNormal(
-    BlockVectorType &                              normal_vector_field,
-    BlockVectorType &                              normal_vector_rhs,
-    const VectorType &                             level_set_field,
-    const AlignedVector<VectorizedArray<double>> & cell_diameters,
-    const double &                                 epsilon_used,
-    const double &                                 minimal_edge_length,
-    const AffineConstraints<double> &              constraints_normals,
-    const LevelSetOKZSolverComputeNormalParameter &parameters,
-    const MatrixFree<dim> &                        matrix_free,
-    const DiagonalPreconditioner<double> &         preconditioner,
-    const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
-    const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix);
+  template <int dim>
+  class LevelSetOKZSolverComputeNormal
+  {
+  public:
+    using VectorType      = LinearAlgebra::distributed::Vector<double>;
+    using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
-  virtual ~LevelSetOKZSolverComputeNormal() = default;
+    LevelSetOKZSolverComputeNormal(
+      BlockVectorType &                              normal_vector_field,
+      BlockVectorType &                              normal_vector_rhs,
+      const VectorType &                             level_set_field,
+      const AlignedVector<VectorizedArray<double>> & cell_diameters,
+      const double &                                 epsilon_used,
+      const double &                                 minimal_edge_length,
+      const AffineConstraints<double> &              constraints_normals,
+      const LevelSetOKZSolverComputeNormalParameter &parameters,
+      const MatrixFree<dim> &                        matrix_free,
+      const DiagonalPreconditioner<double> &         preconditioner,
+      const std::shared_ptr<BlockMatrixExtension> &  projection_matrix,
+      const std::shared_ptr<BlockILUExtension> &     ilu_projection_matrix);
 
-  virtual void
-  compute_normal(const bool fast_computation);
+    virtual ~LevelSetOKZSolverComputeNormal() = default;
 
-  void
-  compute_normal_vmult(BlockVectorType &dst, const BlockVectorType &sr) const;
+    virtual void
+    compute_normal(const bool fast_computation);
 
-private:
-  template <int ls_degree, typename Number>
-  void
-  local_compute_normal(const MatrixFree<dim, Number> &                        data,
-                       LinearAlgebra::distributed::BlockVector<Number> &      dst,
-                       const LinearAlgebra::distributed::BlockVector<Number> &src,
-                       const std::pair<unsigned int, unsigned int> &cell_range) const;
+    void
+    compute_normal_vmult(BlockVectorType &dst, const BlockVectorType &sr) const;
 
-  template <int ls_degree>
-  void
-  local_compute_normal_rhs(const MatrixFree<dim, double> &              data,
-                           BlockVectorType &                            dst,
-                           const VectorType &                           src,
-                           const std::pair<unsigned int, unsigned int> &cell_range) const;
+  private:
+    template <int ls_degree, typename Number>
+    void
+    local_compute_normal(const MatrixFree<dim, Number> &                        data,
+                         LinearAlgebra::distributed::BlockVector<Number> &      dst,
+                         const LinearAlgebra::distributed::BlockVector<Number> &src,
+                         const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  /**
-   * Parameters
-   */
-  const LevelSetOKZSolverComputeNormalParameter parameters; // [i]
+    template <int ls_degree>
+    void
+    local_compute_normal_rhs(
+      const MatrixFree<dim, double> &              data,
+      BlockVectorType &                            dst,
+      const VectorType &                           src,
+      const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  /**
-   * Vector section
-   */
-  BlockVectorType & normal_vector_field; // [o]
-  BlockVectorType & normal_vector_rhs;   // [-]
-  const VectorType &level_set_solution;  // [i]
+    /**
+     * Parameters
+     */
+    const LevelSetOKZSolverComputeNormalParameter parameters; // [i]
 
-  /**
-   * MatrixFree
-   */
-  const MatrixFree<dim> &          matrix_free;         // [i]
-  const AffineConstraints<double> &constraints_normals; // [i]
+    /**
+     * Vector section
+     */
+    BlockVectorType & normal_vector_field; // [o]
+    BlockVectorType & normal_vector_rhs;   // [-]
+    const VectorType &level_set_solution;  // [i]
 
-  /**
-   * Physics section
-   */
-  const AlignedVector<VectorizedArray<double>> &cell_diameters;      // [i]
-  const double &                                epsilon_used;        // [i]
-  const double &                                minimal_edge_length; // [i]
+    /**
+     * MatrixFree
+     */
+    const MatrixFree<dim> &          matrix_free;         // [i]
+    const AffineConstraints<double> &constraints_normals; // [i]
 
-  /**
-   * Solver section
-   */
-  const DiagonalPreconditioner<double> &       preconditioner;        // [i]
-  const std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
-  const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
-};
+    /**
+     * Physics section
+     */
+    const AlignedVector<VectorizedArray<double>> &cell_diameters;      // [i]
+    const double &                                epsilon_used;        // [i]
+    const double &                                minimal_edge_length; // [i]
+
+    /**
+     * Solver section
+     */
+    const DiagonalPreconditioner<double> &       preconditioner;        // [i]
+    const std::shared_ptr<BlockMatrixExtension> &projection_matrix;     // [i]
+    const std::shared_ptr<BlockILUExtension> &   ilu_projection_matrix; // [i]
+  };
+} // namespace adaflo
 
 #endif

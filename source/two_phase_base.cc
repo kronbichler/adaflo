@@ -44,7 +44,6 @@
 
 using namespace dealii;
 
-
 namespace
 {
   template <int dim>
@@ -63,7 +62,7 @@ namespace
 
 
 template <int dim>
-TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
+adaflo::TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
   const FlowParameters &                    parameters_in,
   const std::shared_ptr<FiniteElement<dim>> fe_in,
   Triangulation<dim> &                      tria_in,
@@ -100,7 +99,7 @@ TwoPhaseBaseAlgorithm<dim>::TwoPhaseBaseAlgorithm(
 
 
 template <int dim>
-TwoPhaseBaseAlgorithm<dim>::~TwoPhaseBaseAlgorithm()
+adaflo::TwoPhaseBaseAlgorithm<dim>::~TwoPhaseBaseAlgorithm()
 {
   matrix_free.clear();
   dof_handler.clear();
@@ -111,15 +110,16 @@ TwoPhaseBaseAlgorithm<dim>::~TwoPhaseBaseAlgorithm()
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::clear_data()
+adaflo::TwoPhaseBaseAlgorithm<dim>::clear_data()
 {}
 
 
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_field,
-                                          const Function<dim> &initial_distance_function)
+adaflo::TwoPhaseBaseAlgorithm<dim>::setup_problem(
+  const Function<dim> &initial_velocity_field,
+  const Function<dim> &initial_distance_function)
 {
   timer->enter_subsection("TP setup problem.");
 
@@ -198,7 +198,7 @@ TwoPhaseBaseAlgorithm<dim>::setup_problem(const Function<dim> &initial_velocity_
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::distribute_dofs()
+adaflo::TwoPhaseBaseAlgorithm<dim>::distribute_dofs()
 {
   clear_data();
   constraints.clear();
@@ -226,7 +226,7 @@ TwoPhaseBaseAlgorithm<dim>::distribute_dofs()
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
+adaflo::TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
 {
   hanging_node_constraints.close();
   constraints.close();
@@ -306,7 +306,7 @@ TwoPhaseBaseAlgorithm<dim>::initialize_data_structures()
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::print_n_dofs() const
+adaflo::TwoPhaseBaseAlgorithm<dim>::print_n_dofs() const
 {
   std::pair<unsigned int, unsigned int> ns_dofs = navier_stokes.n_dofs();
   pcout << std::endl
@@ -323,7 +323,7 @@ TwoPhaseBaseAlgorithm<dim>::print_n_dofs() const
 
 template <int dim>
 bool
-TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
+adaflo::TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
 {
   // in this base algorithm, refine at most every fifth time step
   if (this->parameters.adaptive_refinements == 0 || time_stepping.step_no() % 5 != 0)
@@ -392,7 +392,7 @@ TwoPhaseBaseAlgorithm<dim>::mark_cells_for_refinement()
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::refine_grid()
+adaflo::TwoPhaseBaseAlgorithm<dim>::refine_grid()
 {
   if (mark_cells_for_refinement() == false)
     return;
@@ -440,7 +440,7 @@ TwoPhaseBaseAlgorithm<dim>::refine_grid()
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::init_time_advance()
+adaflo::TwoPhaseBaseAlgorithm<dim>::init_time_advance()
 {
   navier_stokes.init_time_advance(parameters.output_verbosity > 0);
 
@@ -478,7 +478,7 @@ TwoPhaseBaseAlgorithm<dim>::init_time_advance()
 
 template <int dim>
 double
-TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
+adaflo::TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
 {
   const QIterated<dim> quadrature_formula(QTrapezoid<1>(),
                                           parameters.velocity_degree + 1);
@@ -512,7 +512,7 @@ TwoPhaseBaseAlgorithm<dim>::get_maximal_velocity() const
 
 template <int dim>
 std::pair<double, double>
-TwoPhaseBaseAlgorithm<dim>::get_concentration_range() const
+adaflo::TwoPhaseBaseAlgorithm<dim>::get_concentration_range() const
 {
   const QIterated<dim> quadrature_formula(QTrapezoid<1>(), fe->degree + 2);
   FEValues<dim>        fe_values(*fe, quadrature_formula, update_values);
@@ -549,8 +549,9 @@ TwoPhaseBaseAlgorithm<dim>::get_concentration_range() const
 // @sect4{TwoPhaseBaseAlgorithm::output_solution}
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::output_solution(const std::string  output_name,
-                                            const unsigned int n_subdivisions) const
+adaflo::TwoPhaseBaseAlgorithm<dim>::output_solution(
+  const std::string  output_name,
+  const unsigned int n_subdivisions) const
 {
   if (time_stepping.at_tick(parameters.output_frequency) == false)
     return;
@@ -594,7 +595,8 @@ TwoPhaseBaseAlgorithm<dim>::output_solution(const std::string  output_name,
 
 template <int dim>
 void
-TwoPhaseBaseAlgorithm<dim>::set_adaptive_time_step(const double norm_velocity) const
+adaflo::TwoPhaseBaseAlgorithm<dim>::set_adaptive_time_step(
+  const double norm_velocity) const
 {
   // Evaluate the time step according to the stability condition.
 
@@ -618,7 +620,7 @@ TwoPhaseBaseAlgorithm<dim>::set_adaptive_time_step(const double norm_velocity) c
 
 template <>
 std::vector<double>
-TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
+adaflo::TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
   std::vector<Tensor<2, 2>> *interface_points,
   const unsigned int         sub_refinements) const
 {
@@ -969,8 +971,8 @@ TwoPhaseBaseAlgorithm<2>::compute_bubble_statistics(
 
 template <>
 std::vector<double>
-TwoPhaseBaseAlgorithm<3>::compute_bubble_statistics(std::vector<Tensor<2, 3>> *,
-                                                    const unsigned int) const
+adaflo::TwoPhaseBaseAlgorithm<3>::compute_bubble_statistics(std::vector<Tensor<2, 3>> *,
+                                                            const unsigned int) const
 {
   const unsigned int dim = 3;
 
@@ -1092,7 +1094,7 @@ TwoPhaseBaseAlgorithm<3>::compute_bubble_statistics(std::vector<Tensor<2, 3>> *,
 
 template <int dim>
 std::vector<double>
-TwoPhaseBaseAlgorithm<dim>::compute_bubble_statistics_immersed(
+adaflo::TwoPhaseBaseAlgorithm<dim>::compute_bubble_statistics_immersed(
   std::vector<Tensor<2, dim>> * /*interface_points*/) const
 {
   // this needs immersed/cut functionality which is not currently available in
@@ -1103,6 +1105,5 @@ TwoPhaseBaseAlgorithm<dim>::compute_bubble_statistics_immersed(
 }
 
 
-
-template class TwoPhaseBaseAlgorithm<2>;
-template class TwoPhaseBaseAlgorithm<3>;
+template class adaflo::TwoPhaseBaseAlgorithm<2>;
+template class adaflo::TwoPhaseBaseAlgorithm<3>;

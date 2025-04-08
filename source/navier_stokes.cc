@@ -47,10 +47,12 @@
 #include <iomanip>
 #include <iostream>
 
+using namespace dealii;
+
 
 
 template <int dim>
-NavierStokes<dim>::NavierStokes(
+adaflo::NavierStokes<dim>::NavierStokes(
   const FlowParameters &                            parameters,
   Triangulation<dim> &                              triangulation_in,
   TimerOutput *                                     external_timer,
@@ -67,7 +69,7 @@ NavierStokes<dim>::NavierStokes(
 
 
 template <int dim>
-NavierStokes<dim>::NavierStokes(
+adaflo::NavierStokes<dim>::NavierStokes(
   const Mapping<dim> &                              mapping,
   const FlowParameters &                            parameters,
   Triangulation<dim> &                              triangulation_in,
@@ -140,7 +142,7 @@ NavierStokes<dim>::NavierStokes(
 
 
 template <int dim>
-NavierStokes<dim>::~NavierStokes()
+adaflo::NavierStokes<dim>::~NavierStokes()
 {
   solver_memory.release_unused_memory();
   GrowingVectorMemory<
@@ -150,9 +152,10 @@ NavierStokes<dim>::~NavierStokes()
 }
 
 
+
 template <int dim>
 std::pair<unsigned int, unsigned int>
-NavierStokes<dim>::n_dofs() const
+adaflo::NavierStokes<dim>::n_dofs() const
 {
   Assert(dofs_distributed == true, ExcInternalError());
   return std::pair<unsigned int, unsigned int>(dof_handler_u.n_dofs(),
@@ -163,7 +166,7 @@ NavierStokes<dim>::n_dofs() const
 
 template <int dim>
 void
-NavierStokes<dim>::print_n_dofs() const
+adaflo::NavierStokes<dim>::print_n_dofs() const
 {
   std::pair<unsigned int, unsigned int> n_dofs = this->n_dofs();
   const double min_cell_diameter = -Utilities::MPI::max(-triangulation.last()->diameter(),
@@ -184,7 +187,7 @@ NavierStokes<dim>::print_n_dofs() const
 
 template <int dim>
 void
-NavierStokes<dim>::distribute_dofs()
+adaflo::NavierStokes<dim>::distribute_dofs()
 {
   timer->enter_subsection("NS distribute DoFs.");
 
@@ -221,7 +224,7 @@ NavierStokes<dim>::distribute_dofs()
 
 template <int dim>
 void
-NavierStokes<dim>::initialize_data_structures()
+adaflo::NavierStokes<dim>::initialize_data_structures()
 {
   if (system_is_setup == true)
     return;
@@ -357,8 +360,8 @@ NavierStokes<dim>::initialize_data_structures()
 
 template <int dim>
 void
-NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
-                                 const Function<dim> &)
+adaflo::NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
+                                         const Function<dim> &)
 {
   if (parameters.use_simplex_mesh)
     AssertDimension(parameters.global_refinements, 0);
@@ -389,11 +392,11 @@ NavierStokes<dim>::setup_problem(const Function<dim> &initial_velocity_field,
 
 template <int dim>
 void
-NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_free,
-                                          const unsigned int dof_index_u,
-                                          const unsigned int dof_index_p,
-                                          const unsigned int quad_index_u,
-                                          const unsigned int quad_index_p)
+adaflo::NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_free,
+                                                  const unsigned int dof_index_u,
+                                                  const unsigned int dof_index_p,
+                                                  const unsigned int quad_index_u,
+                                                  const unsigned int quad_index_p)
 {
   this->dof_index_u  = dof_index_u;
   this->dof_index_p  = dof_index_p;
@@ -499,7 +502,7 @@ NavierStokes<dim>::initialize_matrix_free(MatrixFree<dim> *  external_matrix_fre
 
 template <int dim>
 void
-NavierStokes<dim>::assemble_preconditioner()
+adaflo::NavierStokes<dim>::assemble_preconditioner()
 {
   timer->enter_subsection("NS assemble preconditioner.");
 
@@ -514,7 +517,7 @@ NavierStokes<dim>::assemble_preconditioner()
 
 template <int dim>
 void
-NavierStokes<dim>::build_preconditioner()
+adaflo::NavierStokes<dim>::build_preconditioner()
 {
   assemble_preconditioner();
 
@@ -552,7 +555,7 @@ NavierStokes<dim>::build_preconditioner()
 
 template <int dim>
 std::pair<unsigned int, double>
-NavierStokes<dim>::solve_system(const double linear_tolerance)
+adaflo::NavierStokes<dim>::solve_system(const double linear_tolerance)
 {
   if (parameters.linearization == FlowParameters::projection)
     return preconditioner.solve_projection_system(
@@ -650,7 +653,7 @@ NavierStokes<dim>::solve_system(const double linear_tolerance)
 
 template <int dim>
 void
-NavierStokes<dim>::init_time_advance(const bool print_time_info)
+adaflo::NavierStokes<dim>::init_time_advance(const bool print_time_info)
 {
   Assert(system_is_setup == true, ExcMessage("System has not yet been set up!"));
 
@@ -742,7 +745,7 @@ NavierStokes<dim>::init_time_advance(const bool print_time_info)
 
 template <int dim>
 std::pair<unsigned int, unsigned int>
-NavierStokes<dim>::advance_time_step()
+adaflo::NavierStokes<dim>::advance_time_step()
 {
   init_time_advance();
   return evaluate_time_step();
@@ -752,7 +755,7 @@ NavierStokes<dim>::advance_time_step()
 
 template <int dim>
 std::pair<unsigned int, unsigned int>
-NavierStokes<dim>::evaluate_time_step()
+adaflo::NavierStokes<dim>::evaluate_time_step()
 {
   const double initial_residual = compute_initial_residual(true);
 
@@ -772,7 +775,7 @@ NavierStokes<dim>::evaluate_time_step()
 
 template <int dim>
 double
-NavierStokes<dim>::compute_residual()
+adaflo::NavierStokes<dim>::compute_residual()
 {
   TimerOutput::Scope scope(*timer, "NS assemble nonlinear residual.");
   system_rhs.equ(1., const_rhs);
@@ -797,7 +800,7 @@ NavierStokes<dim>::compute_residual()
 
 template <int dim>
 double
-NavierStokes<dim>::compute_initial_residual(const bool)
+adaflo::NavierStokes<dim>::compute_initial_residual(const bool)
 {
   if (parameters.output_verbosity == 1)
     pcout << "  Residual/iterations: ";
@@ -826,7 +829,7 @@ NavierStokes<dim>::compute_initial_residual(const bool)
 
 template <int dim>
 std::pair<unsigned int, unsigned int>
-NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
+adaflo::NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
 {
   Timer        nl_timer;
   unsigned int step = 0;
@@ -1154,7 +1157,7 @@ NavierStokes<dim>::solve_nonlinear_system(const double initial_residual)
 
 template <int dim>
 void
-NavierStokes<dim>::compute_initial_stokes_field()
+adaflo::NavierStokes<dim>::compute_initial_stokes_field()
 {
   apply_boundary_conditions();
   if (solution.block(0).l2_norm() > 0)
@@ -1206,7 +1209,7 @@ NavierStokes<dim>::compute_initial_stokes_field()
 
 template <int dim>
 void
-NavierStokes<dim>::apply_boundary_conditions()
+adaflo::NavierStokes<dim>::apply_boundary_conditions()
 {
   const double time = time_stepping.now();
   {
@@ -1314,9 +1317,10 @@ NavierStokes<dim>::apply_boundary_conditions()
 
 template <int dim>
 void
-NavierStokes<dim>::refine_grid_pressure_based(const unsigned int max_grid_level,
-                                              const double       refine_fraction_of_cells,
-                                              const double coarsen_fraction_of_cells)
+adaflo::NavierStokes<dim>::refine_grid_pressure_based(
+  const unsigned int max_grid_level,
+  const double       refine_fraction_of_cells,
+  const double       coarsen_fraction_of_cells)
 {
   // The Kelly estimator needs all degrees of freedom on neighboring cells
   // because it computes the jumps of gradients over faces. The solution
@@ -1364,7 +1368,7 @@ NavierStokes<dim>::refine_grid_pressure_based(const unsigned int max_grid_level,
 
 template <int dim>
 void
-NavierStokes<dim>::prepare_coarsening_and_refinement()
+adaflo::NavierStokes<dim>::prepare_coarsening_and_refinement()
 {
   sol_trans_u =
     std::make_shared<parallel::distributed::
@@ -1405,7 +1409,7 @@ NavierStokes<dim>::prepare_coarsening_and_refinement()
 
 template <int dim>
 void
-NavierStokes<dim>::interpolate_pressure_field(
+adaflo::NavierStokes<dim>::interpolate_pressure_field(
   const Function<dim> &                       pressure_function,
   LinearAlgebra::distributed::Vector<double> &pressure_vector) const
 {
@@ -1425,10 +1429,11 @@ NavierStokes<dim>::interpolate_pressure_field(
 }
 
 
+
 template <int dim>
 void
-NavierStokes<dim>::output_solution(const std::string  output_name,
-                                   const unsigned int n_subdivisions) const
+adaflo::NavierStokes<dim>::output_solution(const std::string  output_name,
+                                           const unsigned int n_subdivisions) const
 {
   DataOut<dim> data_out;
 
@@ -1457,7 +1462,7 @@ NavierStokes<dim>::output_solution(const std::string  output_name,
 
 template <int dim>
 std::size_t
-NavierStokes<dim>::memory_consumption() const
+adaflo::NavierStokes<dim>::memory_consumption() const
 {
   std::size_t memory = sizeof(this);
   memory += dof_handler_u.memory_consumption() + dof_handler_p.memory_consumption();
@@ -1476,7 +1481,7 @@ NavierStokes<dim>::memory_consumption() const
 
 template <int dim>
 void
-NavierStokes<dim>::print_memory_consumption(std::ostream &stream) const
+adaflo::NavierStokes<dim>::print_memory_consumption(std::ostream &stream) const
 {
   if (this_mpi_process == 0)
     {
@@ -1510,6 +1515,6 @@ NavierStokes<dim>::print_memory_consumption(std::ostream &stream) const
 
 
 // explicit instantiations
-template class NavierStokes<1>;
-template class NavierStokes<2>;
-template class NavierStokes<3>;
+template class adaflo::NavierStokes<1>;
+template class adaflo::NavierStokes<2>;
+template class adaflo::NavierStokes<3>;

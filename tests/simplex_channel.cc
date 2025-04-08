@@ -51,8 +51,10 @@
 
 #define MESH_VERSION 1
 
-using namespace dealii;
 
+
+using namespace dealii;
+using namespace adaflo;
 
 
 // @sect4{Inflow}
@@ -318,8 +320,6 @@ main(int argc, char **argv)
 {
   try
     {
-      using namespace dealii;
-
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc,
                                                           argv,
                                                           numbers::invalid_unsigned_int);

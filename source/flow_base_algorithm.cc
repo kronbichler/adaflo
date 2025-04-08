@@ -21,9 +21,8 @@
 using namespace dealii;
 
 
-
 template <int dim>
-helpers::BoundaryDescriptor<dim>::BoundaryDescriptor()
+adaflo::helpers::BoundaryDescriptor<dim>::BoundaryDescriptor()
 {
   for (unsigned int d = 0; d < dim; ++d)
     periodic_boundaries[d] = std::pair<types::boundary_id, types::boundary_id>(-1, -1);
@@ -32,7 +31,7 @@ helpers::BoundaryDescriptor<dim>::BoundaryDescriptor()
 
 
 template <int dim>
-FlowBaseAlgorithm<dim>::FlowBaseAlgorithm(
+adaflo::FlowBaseAlgorithm<dim>::FlowBaseAlgorithm(
   const std::shared_ptr<Mapping<dim>> mapping_data)
   : boundary(new helpers::BoundaryDescriptor<dim>())
   , mapping_data(mapping_data)
@@ -42,21 +41,21 @@ FlowBaseAlgorithm<dim>::FlowBaseAlgorithm(
 
 
 template <int dim>
-FlowBaseAlgorithm<dim>::FlowBaseAlgorithm()
+adaflo::FlowBaseAlgorithm<dim>::FlowBaseAlgorithm()
   : FlowBaseAlgorithm(std::make_shared<MappingQ<dim>>(3))
 {}
 
 
 
 template <int dim>
-FlowBaseAlgorithm<dim>::~FlowBaseAlgorithm()
+adaflo::FlowBaseAlgorithm<dim>::~FlowBaseAlgorithm()
 {}
 
 
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::clear_all_boundary_conditions()
+adaflo::FlowBaseAlgorithm<dim>::clear_all_boundary_conditions()
 {
   boundary->dirichlet_conditions_u.clear();
   boundary->open_conditions_p.clear();
@@ -70,7 +69,7 @@ FlowBaseAlgorithm<dim>::clear_all_boundary_conditions()
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_velocity_dirichlet_boundary(
+adaflo::FlowBaseAlgorithm<dim>::set_velocity_dirichlet_boundary(
   const types::boundary_id              boundary_id,
   const std::shared_ptr<Function<dim>> &velocity_function,
   const int                             inflow_fluid_type)
@@ -102,7 +101,7 @@ FlowBaseAlgorithm<dim>::set_velocity_dirichlet_boundary(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_open_boundary(
+adaflo::FlowBaseAlgorithm<dim>::set_open_boundary(
   const types::boundary_id              boundary_id,
   const std::shared_ptr<Function<dim>> &pressure_function,
   const int                             inflow_fluid_type)
@@ -138,7 +137,7 @@ FlowBaseAlgorithm<dim>::set_open_boundary(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_open_boundary_with_normal_flux(
+adaflo::FlowBaseAlgorithm<dim>::set_open_boundary_with_normal_flux(
   const types::boundary_id              boundary_id,
   const std::shared_ptr<Function<dim>> &pressure_function,
   const int                             inflow_fluid_type)
@@ -175,7 +174,7 @@ FlowBaseAlgorithm<dim>::set_open_boundary_with_normal_flux(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::fix_pressure_constant(
+adaflo::FlowBaseAlgorithm<dim>::fix_pressure_constant(
   const types::boundary_id              boundary_id,
   const std::shared_ptr<Function<dim>> &pressure_function)
 {
@@ -188,7 +187,8 @@ FlowBaseAlgorithm<dim>::fix_pressure_constant(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_symmetry_boundary(const types::boundary_id boundary_id)
+adaflo::FlowBaseAlgorithm<dim>::set_symmetry_boundary(
+  const types::boundary_id boundary_id)
 {
   boundary->symmetry.insert(boundary_id);
 }
@@ -197,7 +197,7 @@ FlowBaseAlgorithm<dim>::set_symmetry_boundary(const types::boundary_id boundary_
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_no_slip_boundary(const types::boundary_id boundary_id)
+adaflo::FlowBaseAlgorithm<dim>::set_no_slip_boundary(const types::boundary_id boundary_id)
 {
   boundary->no_slip.insert(boundary_id);
 }
@@ -206,7 +206,7 @@ FlowBaseAlgorithm<dim>::set_no_slip_boundary(const types::boundary_id boundary_i
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::set_periodic_direction(
+adaflo::FlowBaseAlgorithm<dim>::set_periodic_direction(
   const unsigned int       direction,
   const types::boundary_id incoming_boundary_id,
   const types::boundary_id outgoing_boundary_id)
@@ -221,11 +221,11 @@ FlowBaseAlgorithm<dim>::set_periodic_direction(
 
 template <int dim>
 void
-FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
-                                          const TimeStepping &      time_stepping,
-                                          const double              output_frequency,
-                                          const Triangulation<dim> &tria,
-                                          DataOut<dim> &            data_out) const
+adaflo::FlowBaseAlgorithm<dim>::write_data_output(const std::string & output_name,
+                                                  const TimeStepping &time_stepping,
+                                                  const double        output_frequency,
+                                                  const Triangulation<dim> &tria,
+                                                  DataOut<dim> &data_out) const
 {
   std::ostringstream filename;
   std::ostringstream filename_time;
@@ -277,6 +277,6 @@ FlowBaseAlgorithm<dim>::write_data_output(const std::string &       output_name,
     }
 }
 
-template struct FlowBaseAlgorithm<1>;
-template struct FlowBaseAlgorithm<2>;
-template struct FlowBaseAlgorithm<3>;
+template struct adaflo::FlowBaseAlgorithm<1>;
+template struct adaflo::FlowBaseAlgorithm<2>;
+template struct adaflo::FlowBaseAlgorithm<3>;

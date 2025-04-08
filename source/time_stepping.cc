@@ -18,7 +18,10 @@
 #include <adaflo/parameters.h>
 #include <adaflo/time_stepping.h>
 
-TimeStepping::TimeStepping(const FlowParameters &parameters)
+using namespace dealii;
+
+
+adaflo::TimeStepping::TimeStepping(const FlowParameters &parameters)
   : start_val(parameters.start_time)
   , final_val(parameters.end_time)
   , scheme_val(parameters.time_step_scheme)
@@ -58,7 +61,7 @@ TimeStepping::TimeStepping(const FlowParameters &parameters)
     }
 }
 
-TimeStepping::TimeStepping(const TimeSteppingParameters &parameters)
+adaflo::TimeStepping::TimeStepping(const TimeSteppingParameters &parameters)
   : start_val(parameters.start_time)
   , final_val(parameters.end_time)
   , scheme_val(parameters.time_step_scheme)
@@ -99,7 +102,7 @@ TimeStepping::TimeStepping(const TimeSteppingParameters &parameters)
 }
 
 void
-TimeStepping::restart()
+adaflo::TimeStepping::restart()
 {
   step_no_val      = 0;
   now_val          = start_val;
@@ -118,7 +121,7 @@ TimeStepping::restart()
 
 
 double
-TimeStepping::next()
+adaflo::TimeStepping::next()
 {
   Assert(at_end_val == false, ExcMessage("Final time already reached, cannot proceed"));
   double s = current_step_val;
@@ -199,7 +202,7 @@ TimeStepping::next()
 
 
 std::string
-TimeStepping::name() const
+adaflo::TimeStepping::name() const
 {
   std::string result;
   if (scheme_val == TimeSteppingParameters::Scheme::implicit_euler)
@@ -214,8 +217,8 @@ TimeStepping::name() const
 }
 
 
-TimeSteppingParameters::Scheme
-TimeStepping::scheme() const
+adaflo::TimeSteppingParameters::Scheme
+adaflo::TimeStepping::scheme() const
 {
   return scheme_val;
 }
@@ -223,7 +226,7 @@ TimeStepping::scheme() const
 
 
 bool
-TimeStepping::at_tick(const double tick) const
+adaflo::TimeStepping::at_tick(const double tick) const
 {
   const double time     = now();
   const int    position = int(time * 1.0000000001 / tick);
@@ -237,7 +240,7 @@ TimeStepping::at_tick(const double tick) const
 
 
 void
-TimeStepping::set_time_step(const double value)
+adaflo::TimeStepping::set_time_step(const double value)
 {
   current_step_val = value;
   step_val         = current_step_val;
@@ -246,7 +249,7 @@ TimeStepping::set_time_step(const double value)
 
 
 void
-TimeStepping::set_desired_time_step(const double desired_value)
+adaflo::TimeStepping::set_desired_time_step(const double desired_value)
 {
   // We take into account the first iteration regarding to the
   // previous used time step

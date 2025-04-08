@@ -46,10 +46,10 @@
 using namespace dealii;
 
 
-
 template <int dim>
-LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(const FlowParameters &parameters_in,
-                                                      Triangulation<dim> &  tria_in)
+adaflo::LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(
+  const FlowParameters &parameters_in,
+  Triangulation<dim> &  tria_in)
   : LevelSetBaseAlgorithm<dim>(parameters_in, tria_in)
 {}
 
@@ -57,7 +57,7 @@ LevelSetOKZMatrixSolver<dim>::LevelSetOKZMatrixSolver(const FlowParameters &para
 
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::transform_distance_function(
+adaflo::LevelSetOKZMatrixSolver<dim>::transform_distance_function(
   LinearAlgebra::distributed::Vector<double> &vector) const
 {
   Assert(this->epsilon_used > 0, ExcInternalError());
@@ -71,7 +71,7 @@ LevelSetOKZMatrixSolver<dim>::transform_distance_function(
 // @sect4{LevelSetOKZMatrixSolver::make_grid_and_dofs}
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::initialize_data_structures()
+adaflo::LevelSetOKZMatrixSolver<dim>::initialize_data_structures()
 {
   system_matrix.clear();
   this->LevelSetBaseAlgorithm<dim>::initialize_data_structures();
@@ -94,7 +94,7 @@ LevelSetOKZMatrixSolver<dim>::initialize_data_structures()
 
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::compute_force()
+adaflo::LevelSetOKZMatrixSolver<dim>::compute_force()
 {
   compute_heaviside();
   compute_curvature();
@@ -370,7 +370,7 @@ compute_viscosity(const std::vector<double> &        old_temperature,
 // @sect4{LevelSetOKZMatrixSolver::advance_concentration}
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::advance_concentration()
+adaflo::LevelSetOKZMatrixSolver<dim>::advance_concentration()
 {
   TimerOutput::Scope timer(*this->timer, "Advance concentration.");
 
@@ -610,7 +610,7 @@ LevelSetOKZMatrixSolver<dim>::advance_concentration()
 // @sect4{LevelSetOKZMatrixSolver::compute_normal}
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::compute_normal(const bool fast_computation)
+adaflo::LevelSetOKZMatrixSolver<dim>::compute_normal(const bool fast_computation)
 {
   // This function computes the normal from a projection of $\nabla C$ onto
   // the space of linear finite elements (with some small damping)
@@ -719,7 +719,7 @@ LevelSetOKZMatrixSolver<dim>::compute_normal(const bool fast_computation)
 // @sect4{LevelSetOKZMatrixSolver::compute_normal}
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::compute_curvature(const bool)
+adaflo::LevelSetOKZMatrixSolver<dim>::compute_curvature(const bool)
 {
   // This function computes the curvature from the normal field.
   compute_normal(false);
@@ -843,7 +843,7 @@ LevelSetOKZMatrixSolver<dim>::compute_curvature(const bool)
 // elements now
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::compute_heaviside()
+adaflo::LevelSetOKZMatrixSolver<dim>::compute_heaviside()
 {
   TimerOutput::Scope timer(*this->timer, "Compute Heaviside.");
   const double       cutoff = std::tanh(2);
@@ -856,7 +856,7 @@ LevelSetOKZMatrixSolver<dim>::compute_heaviside()
                                                  endc = this->dof_handler.end();
   for (; cell != endc; ++cell)
     if (cell->is_locally_owned()) // Check if the cell is owned by the local
-                                  // processor
+      // processor
       {
         cell->get_dof_indices(local_dof_indices);
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -908,9 +908,9 @@ LevelSetOKZMatrixSolver<dim>::compute_heaviside()
 
 template <int dim>
 void
-LevelSetOKZMatrixSolver<dim>::reinitialize(const unsigned int stab_steps,
-                                           const unsigned int diff_steps,
-                                           const bool)
+adaflo::LevelSetOKZMatrixSolver<dim>::reinitialize(const unsigned int stab_steps,
+                                                   const unsigned int diff_steps,
+                                                   const bool)
 {
   TimerOutput::Scope timer(*this->timer, "Reinitialization.");
 
@@ -1113,5 +1113,5 @@ LevelSetOKZMatrixSolver<dim>::reinitialize(const unsigned int stab_steps,
 
 
 
-template class LevelSetOKZMatrixSolver<2>;
-template class LevelSetOKZMatrixSolver<3>;
+template class adaflo::LevelSetOKZMatrixSolver<2>;
+template class adaflo::LevelSetOKZMatrixSolver<3>;

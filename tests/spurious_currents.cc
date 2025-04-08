@@ -27,6 +27,7 @@
 
 
 using namespace dealii;
+using namespace adaflo;
 
 
 struct TwoPhaseParameters : public FlowParameters
@@ -294,9 +295,6 @@ MicroFluidicProblem<dim>::run()
 int
 main(int argc, char **argv)
 {
-  using namespace dealii;
-
-
   try
     {
       deallog.depth_console(0);

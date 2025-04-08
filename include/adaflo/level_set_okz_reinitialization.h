@@ -27,143 +27,148 @@
 #include <adaflo/parameters.h>
 #include <adaflo/time_stepping.h>
 
-using namespace dealii;
 
-/**
- * Parameters of the reinitialization operator.
- */
-struct LevelSetOKZSolverReinitializationParameter
+namespace adaflo
 {
-  /**
-   * TODO
-   */
-  unsigned int dof_index_ls;
+  using namespace dealii;
+
 
   /**
-   * TODO
+   * Parameters of the reinitialization operator.
    */
-  unsigned int dof_index_normal;
+  struct LevelSetOKZSolverReinitializationParameter
+  {
+    /**
+     * TODO
+     */
+    unsigned int dof_index_ls;
 
-  /**
-   * TODO
-   */
-  unsigned int quad_index;
+    /**
+     * TODO
+     */
+    unsigned int dof_index_normal;
 
-  /**
-   * TODO
-   */
-  bool do_iteration;
+    /**
+     * TODO
+     */
+    unsigned int quad_index;
 
-  /**
-   * TODO
-   */
-  TimeSteppingParameters time;
-};
+    /**
+     * TODO
+     */
+    bool do_iteration;
 
-template <int dim>
-class LevelSetOKZSolverReinitialization
-{
-public:
-  using VectorType      = LinearAlgebra::distributed::Vector<double>;
-  using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
+    /**
+     * TODO
+     */
+    TimeSteppingParameters time;
+  };
 
-  LevelSetOKZSolverReinitialization(
-    const BlockVectorType &                           normal_vector_field,
-    const AlignedVector<VectorizedArray<double>> &    cell_diameters,
-    const double &                                    epsilon_used,
-    const double &                                    minimal_edge_length,
-    const AffineConstraints<double> &                 constraints,
-    VectorType &                                      solution_update,
-    VectorType &                                      solution,
-    VectorType &                                      system_rhs,
-    const ConditionalOStream &                        pcout,
-    const DiagonalPreconditioner<double> &            preconditioner,
-    const std::pair<double, double> &                 last_concentration_range,
-    const LevelSetOKZSolverReinitializationParameter &parameters,
-    bool &                                            first_reinit_step,
-    const MatrixFree<dim, double> &                   matrix_free)
-    : parameters(parameters)
-    , solution(solution)
-    , solution_update(solution_update)
-    , system_rhs(system_rhs)
-    , normal_vector_field(normal_vector_field)
-    , matrix_free(matrix_free)
-    , constraints(constraints)
-    , cell_diameters(cell_diameters)
-    , epsilon_used(epsilon_used)
-    , minimal_edge_length(minimal_edge_length)
-    , last_concentration_range(last_concentration_range)
-    , first_reinit_step(first_reinit_step)
-    , pcout(pcout)
-    , time_stepping(parameters.time)
-    , preconditioner(preconditioner)
-  {}
+  template <int dim>
+  class LevelSetOKZSolverReinitialization
+  {
+  public:
+    using VectorType      = LinearAlgebra::distributed::Vector<double>;
+    using BlockVectorType = LinearAlgebra::distributed::BlockVector<double>;
 
-  // performs reinitialization
-  void
-  reinitialize(
-    const double                     dt,
-    const unsigned int               stab_steps,
-    const unsigned int               diff_steps     = 0,
-    const std::function<void(bool)> &compute_normal = [](const bool) {});
+    LevelSetOKZSolverReinitialization(
+      const BlockVectorType &                           normal_vector_field,
+      const AlignedVector<VectorizedArray<double>> &    cell_diameters,
+      const double &                                    epsilon_used,
+      const double &                                    minimal_edge_length,
+      const AffineConstraints<double> &                 constraints,
+      VectorType &                                      solution_update,
+      VectorType &                                      solution,
+      VectorType &                                      system_rhs,
+      const ConditionalOStream &                        pcout,
+      const DiagonalPreconditioner<double> &            preconditioner,
+      const std::pair<double, double> &                 last_concentration_range,
+      const LevelSetOKZSolverReinitializationParameter &parameters,
+      bool &                                            first_reinit_step,
+      const MatrixFree<dim, double> &                   matrix_free)
+      : parameters(parameters)
+      , solution(solution)
+      , solution_update(solution_update)
+      , system_rhs(system_rhs)
+      , normal_vector_field(normal_vector_field)
+      , matrix_free(matrix_free)
+      , constraints(constraints)
+      , cell_diameters(cell_diameters)
+      , epsilon_used(epsilon_used)
+      , minimal_edge_length(minimal_edge_length)
+      , last_concentration_range(last_concentration_range)
+      , first_reinit_step(first_reinit_step)
+      , pcout(pcout)
+      , time_stepping(parameters.time)
+      , preconditioner(preconditioner)
+    {}
 
-  void
-  reinitialization_vmult(VectorType &      dst,
-                         const VectorType &src,
-                         const bool        diffuse_only) const;
+    // performs reinitialization
+    void
+    reinitialize(
+      const double                     dt,
+      const unsigned int               stab_steps,
+      const unsigned int               diff_steps     = 0,
+      const std::function<void(bool)> &compute_normal = [](const bool) {});
 
-private:
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize(const MatrixFree<dim, double> &              data,
-                     VectorType &                                 dst,
-                     const VectorType &                           src,
-                     const std::pair<unsigned int, unsigned int> &cell_range) const;
+    void
+    reinitialization_vmult(VectorType &      dst,
+                           const VectorType &src,
+                           const bool        diffuse_only) const;
 
-  template <int ls_degree, bool diffuse_only>
-  void
-  local_reinitialize_rhs(const MatrixFree<dim, double> &              data,
-                         VectorType &                                 dst,
-                         const VectorType &                           src,
-                         const std::pair<unsigned int, unsigned int> &cell_range);
+  private:
+    template <int ls_degree, bool diffuse_only>
+    void
+    local_reinitialize(const MatrixFree<dim, double> &              data,
+                       VectorType &                                 dst,
+                       const VectorType &                           src,
+                       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
-  /**
-   * Parameters
-   */
-  const LevelSetOKZSolverReinitializationParameter parameters;
+    template <int ls_degree, bool diffuse_only>
+    void
+    local_reinitialize_rhs(const MatrixFree<dim, double> &              data,
+                           VectorType &                                 dst,
+                           const VectorType &                           src,
+                           const std::pair<unsigned int, unsigned int> &cell_range);
 
-  /**
-   * Vector section
-   */
-  VectorType &solution;        // [o]
-  VectorType &solution_update; // [-]
-  VectorType &system_rhs;      // [-]
+    /**
+     * Parameters
+     */
+    const LevelSetOKZSolverReinitializationParameter parameters;
 
-  const BlockVectorType &normal_vector_field; // [i];
+    /**
+     * Vector section
+     */
+    VectorType &solution;        // [o]
+    VectorType &solution_update; // [-]
+    VectorType &system_rhs;      // [-]
 
-  /**
-   * MatrixFree
-   */
-  const MatrixFree<dim> &          matrix_free; // [i]
-  const AffineConstraints<double> &constraints; // [i]
+    const BlockVectorType &normal_vector_field; // [i];
 
-  const AlignedVector<VectorizedArray<double>> &         cell_diameters;           // [i]
-  const double &                                         epsilon_used;             // [i]
-  const double &                                         minimal_edge_length;      // [i]
-  const std::pair<double, double> &                      last_concentration_range; // [i]
-  bool &                                                 first_reinit_step;        // [?]
-  AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_normal;         // [-]
+    /**
+     * MatrixFree
+     */
+    const MatrixFree<dim> &          matrix_free; // [i]
+    const AffineConstraints<double> &constraints; // [i]
 
-  /**
-   * Utility
-   */
-  const ConditionalOStream &pcout;         // [i]
-  TimeStepping              time_stepping; // [-]
+    const AlignedVector<VectorizedArray<double>> &cell_diameters;            // [i]
+    const double &                                epsilon_used;              // [i]
+    const double &                                minimal_edge_length;       // [i]
+    const std::pair<double, double> &             last_concentration_range;  // [i]
+    bool &                                        first_reinit_step;         // [?]
+    AlignedVector<Tensor<1, dim, VectorizedArray<double>>> evaluated_normal; // [-]
 
-  /**
-   * Solver section
-   */
-  const DiagonalPreconditioner<double> &preconditioner; // [i]
-};
+    /**
+     * Utility
+     */
+    const ConditionalOStream &pcout;         // [i]
+    TimeStepping              time_stepping; // [-]
+
+    /**
+     * Solver section
+     */
+    const DiagonalPreconditioner<double> &preconditioner; // [i]
+  };
+} // namespace adaflo
 
 #endif
