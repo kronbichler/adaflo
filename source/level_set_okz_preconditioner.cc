@@ -100,7 +100,8 @@ adaflo::initialize_projection_matrix(
     csp.reinit(dof_handler.locally_owned_dofs(),
                dof_handler.locally_owned_dofs(),
                relevant_dofs,
-               dof_handler.get_mpi_communicator());
+               dof_handler.get_mpi_communicator(),
+               0);
     std::vector<types::global_dof_index> local_dof_indices(fe.dofs_per_cell);
 
     for (const auto &cell : dof_handler.active_cell_iterators())

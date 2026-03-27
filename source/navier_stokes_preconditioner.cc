@@ -1192,7 +1192,8 @@ adaflo::NavierStokesPreconditioner<dim>::initialize_matrices(
     csp.reinit(dof_handler_u.locally_owned_dofs(),
                dof_handler_u.locally_owned_dofs(),
                constraints_u.get_local_lines(),
-               triangulation.get_mpi_communicator());
+               triangulation.get_mpi_communicator(),
+               0);
 
     if (parameters.precondition_velocity == FlowParameters::u_amg ||
         parameters.precondition_velocity == FlowParameters::u_ilu)
@@ -1299,7 +1300,8 @@ adaflo::NavierStokesPreconditioner<dim>::initialize_matrices(
     TrilinosWrappers::SparsityPattern csp(dof_handler_p.locally_owned_dofs(),
                                           dof_handler_p.locally_owned_dofs(),
                                           constraints_p.get_local_lines(),
-                                          triangulation.get_mpi_communicator());
+                                          triangulation.get_mpi_communicator(),
+                                          0);
 
     if (parameters.precondition_velocity != FlowParameters::u_amg_linear ||
         parameters.augmented_taylor_hood)
@@ -1336,7 +1338,8 @@ adaflo::NavierStokesPreconditioner<dim>::initialize_matrices(
         TrilinosWrappers::SparsityPattern    sparsity(dof_handler_p.locally_owned_dofs(),
                                                    dof_handler_p.locally_owned_dofs(),
                                                    constraints_p.get_local_lines(),
-                                                   triangulation.get_mpi_communicator());
+                                                   triangulation.get_mpi_communicator(),
+                                                   0);
         std::vector<types::global_dof_index> local_dof_indices(fe_p.dofs_per_cell);
         std::vector<types::global_dof_index> neigh_dof_indices(fe_p.dofs_per_cell);
         std::vector<types::global_dof_index> const_dof_index(1);

@@ -250,7 +250,8 @@ adaflo::PhaseFieldSolver<dim>::create_cahn_hilliard_preconditioner()
       TrilinosWrappers::SparsityPattern csp(this->dof_handler.locally_owned_dofs(),
                                             this->dof_handler.locally_owned_dofs(),
                                             relevant_dofs,
-                                            this->triangulation.get_mpi_communicator());
+                                            this->triangulation.get_mpi_communicator(),
+                                            0);
       DoFTools::make_sparsity_pattern(this->dof_handler, csp);
       csp.compress();
       preconditioner_matrix.reinit(csp);
